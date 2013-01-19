@@ -18,5 +18,7 @@ LDFLAGS = -init main -Map kernel.map -N  -T orex.ld -L/u/wbcowan/gnuarm-4.0.2/li
 
 all:		
 
+staff:
+
 clean:
 	-rm -f a0.elf *.s *.o a0.map

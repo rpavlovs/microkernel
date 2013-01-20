@@ -1,17 +1,5 @@
-
-
-int activate( active ) {
-	return 0;
-}
-
-
-int schedule( Schedule *sched ) {
-	return 0;
-}
-
-int getNextRequest( ) {
-  return activate( schedule( ) ); //the active task doesn't change
-}
+#include "kernel/sched.h"
+#include "lib/bwio.h"
 
 // Initialize Schedule sturct
 void init_schedule( Schedule *sched ) {
@@ -25,15 +13,15 @@ void init_schedule( Schedule *sched ) {
 	sched->latest_tid = 0;
 }
 
-// Add process to scheduler
-int Create( int priority, void (*code) ( ), Schedule *sched ) {
+// Add task to scheduler as ready to run
+int add_task( int priority, void (*code) ( ), Schedule *sched ) {
 	
 	if( sched->priority[priority]->size > SCHED_QUEUE_MAX_LENGTH ) {
 		bwprintf( COM2, "ERROR: Scheduler round buffer overflow.");
 		return -3;
 	}
 
-	if( sched->platest_tid >= SCHED_TID_MAX_VAL ) {
+	if( sched->latest_tid >= SCHED_TID_MAX_VAL ) {
 		bwprintf( COM2, "ERROR: Scheduler is out of task descriptors.");
 		return -2;
 	}
@@ -44,7 +32,7 @@ int Create( int priority, void (*code) ( ), Schedule *sched ) {
 	}
 	
 	if( sched->priority[priority]->size == 0 ) {
-		Process *new_proc = sched->priority[priority]->buffer;
+		Task *new_proc = sched->priority[priority]->queue;
 		sched->priority[priority]->newest = new_proc;
 		sched->priority[priority]->oldest = new_proc;
 		sched->priority[priority]->size = 1;
@@ -52,9 +40,9 @@ int Create( int priority, void (*code) ( ), Schedule *sched ) {
 		return new_proc->tid;
 	}
 
-	Process *new_proc = sched->priority[priority]->newest + 1;
-	if( new_proc >= sched->priority[priority]->buffer + SCHED_QUEUE_MAX_LENGTH ) {
-		new_proc = sched->priority[priority]->buffer;
+	Task *new_proc = sched->priority[priority]->newest + 1;
+	if( new_proc >= sched->priority[priority]->queue + SCHED_QUEUE_MAX_LENGTH ) {
+		new_proc = sched->priority[priority]->queue;
 	}
 	
 	sched->priority[priority]->newest = new_proc;
@@ -62,4 +50,26 @@ int Create( int priority, void (*code) ( ), Schedule *sched ) {
 	new_proc->tid = sched->latest_tid++;
 	return new_proc->tid;
 
+}
+
+int parent_tid_syscall( Schedule *sched ) {
+	return 0;
+}
+
+int activate( int tid ) {
+	return 0;
+}
+
+void pass_syscall( ) {
+
+}
+
+
+int schedule( Schedule *sched ) {
+	return 0;
+}
+
+
+int getNextRequest( Schedule *sched ) {
+  return activate( schedule( sched ) ); //the active task doesn't change
 }

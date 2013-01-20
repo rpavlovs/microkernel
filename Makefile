@@ -5,6 +5,8 @@ XCC     = gcc
 AS			= as
 LD      = ld
 
+USER:=$(shell whoami)
+
 CFLAGS  = -c -fPIC -Wall -Iinclude -mcpu=arm920t -msoft-float
 # -g: include hooks for gdb
 # -c: only compile
@@ -24,7 +26,11 @@ OBJS = $(SRC:kernel/%.c=build/%.o) $(ASM:kernel/%.s=build/%.o)
 all: build/kernel.elf
 
 clean:
-	rm build/*
+	rm -f build/*
+
+install:
+	cp build/kernel.elf /u/cs452/tftp/ARM/$(USER)/kernel.elf
+	chmod a+r /u/cs452/tftp/ARM/$(USER)/kernel.elf
 
 
 ## Compile

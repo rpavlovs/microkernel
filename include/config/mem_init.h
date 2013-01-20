@@ -1,6 +1,7 @@
 //This is the first byte of RAM memory
 #define RAM_START		0x00000000
 
+//
 #define REDBOOT_START		0x00000000
 #define REDBOOT_END		0x00217FFF
 
@@ -26,5 +27,3 @@
 
 //This is the first byte of ROM memory
 #define ROM_START		0x60000000
-
-void initialize();

@@ -26,7 +26,7 @@ all: build/kernel.elf
 staff:
 
 clean:
-  rm -f build/*
+	rm build/*
 
 
 ## Compile

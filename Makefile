@@ -23,8 +23,10 @@ OBJS = $(SRC:kernel/%.c=build/%.o) $(ASM:kernel/%.s=build/%.o)
 
 all: build/kernel.elf
 
+staff:
+
 clean:
-	rm -f build/*
+  rm -f build/*
 
 
 ## Compile

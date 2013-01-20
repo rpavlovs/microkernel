@@ -1,5 +1,5 @@
 
-void initialize(){
+void initialize() {
 	//Where is the kernel entry?
 	//Turn off interrupts in ICU!
 	//Prepare the kernel data structures
@@ -25,7 +25,7 @@ void initialize(){
 //Where is the kernel stack pointer right now?
 __asm__(
 	"mov r0, #1\n"
-	"mov r1, sp"
+	"mov r1, sp\n"
 	"bl bwputr\n"
 );
 

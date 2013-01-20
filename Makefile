@@ -24,7 +24,7 @@ OBJS = $(SRC:kernel/%.c=build/%.o) $(ASM:kernel/%.s=build/%.o)
 all: build/kernel.elf
 
 clean:
-	rm -f build/*
+	rm build/*
 
 
 ## Compile

@@ -1,7 +1,7 @@
 #include "kernel/sched.h"
 #include "lib/bwio.h"
 
-// Initialize Schedule sturct
+// Initialize Schedule struct
 void init_schedule( Schedule *sched ) {
 	int i;
 	for (i = 0; i < SCHED_NUM_PRIORITIES; ++i)
@@ -30,6 +30,7 @@ int add_task( int priority, void (*code) ( ), Schedule *sched ) {
 		bwprintf( COM2, "ERROR: Scheduler was given a wrong task priority.");
 		return -1;
 	}
+	
 	
 	if( sched->priority[priority]->size == 0 ) {
 		Task *new_proc = sched->priority[priority]->queue;

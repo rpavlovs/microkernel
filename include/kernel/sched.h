@@ -28,6 +28,7 @@ typedef struct {
 } Task;
 
 typedef struct {
+	//Main array, containing tasks queue
 	Task queue[SCHED_QUEUE_MAX_LENGTH];
 	//what is the oldest element of the queue
 	Task *oldest;
@@ -41,7 +42,7 @@ typedef struct {
 	Task_queue *priority[SCHED_NUM_PRIORITIES];
 	//what is the latest tid scheduled to run
 	int latest_tid;
-} Schedule; 
+} Schedule;
 
 void init_schedule( Schedule * );
 

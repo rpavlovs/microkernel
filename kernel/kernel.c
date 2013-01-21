@@ -43,16 +43,16 @@ void handle_request( int request ) {
 }
 
 int main( ) {
-  
-	Kern_Globals KERN_GLOBALS;
-  initialize( &KERN_GLOBALS );  // includes starting the first user task
-  
-  int request;
-  
-  FOREVER {
-    request = getNextRequest( &(KERN_GLOBALS.schedule) );
-    handle_request( request );
-  }
 
-  return 0;
+	Kern_Globals KERN_GLOBALS;
+	initialize( &KERN_GLOBALS );
+
+	int request;
+
+	FOREVER {
+		  request = getNextRequest( &(KERN_GLOBALS.schedule) );
+		  handle_request( request );
+	}
+
+	return 0;
 }

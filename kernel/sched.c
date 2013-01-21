@@ -6,6 +6,7 @@ void init_schedule( Schedule *sched ) {
 	int i;
 	for (i = 0; i < SCHED_NUM_PRIORITIES; ++i)
 	{
+		//Resetting all priority queues
 		sched->priority[i]->oldest = 0;
 		sched->priority[i]->newest = 0;
 		sched->priority[i]->size = 0;
@@ -16,6 +17,7 @@ void init_schedule( Schedule *sched ) {
 // Add task to scheduler as ready to run
 int add_task( int priority, void (*code) ( ), Schedule *sched ) {
 	
+	//Checking for errors
 	if( sched->priority[priority]->size > SCHED_QUEUE_MAX_LENGTH ) {
 		bwprintf( COM2, "ERROR: Scheduler round buffer overflow.");
 		return -3;
@@ -30,10 +32,12 @@ int add_task( int priority, void (*code) ( ), Schedule *sched ) {
 		bwprintf( COM2, "ERROR: Scheduler was given a wrong task priority.");
 		return -1;
 	}
-	
-	
+
+	//Add a task to a priority queue
 	if( sched->priority[priority]->size == 0 ) {
+		//Getting address of the queue, which is also address of the first element
 		Task *new_proc = sched->priority[priority]->queue;
+		//Updating priority queue
 		sched->priority[priority]->newest = new_proc;
 		sched->priority[priority]->oldest = new_proc;
 		sched->priority[priority]->size = 1;
@@ -42,10 +46,12 @@ int add_task( int priority, void (*code) ( ), Schedule *sched ) {
 	}
 
 	Task *new_proc = sched->priority[priority]->newest + 1;
+	//If the end of the buffer is reached, start from the begining
 	if( new_proc >= sched->priority[priority]->queue + SCHED_QUEUE_MAX_LENGTH ) {
 		new_proc = sched->priority[priority]->queue;
 	}
 	
+	//Updating priority queue
 	sched->priority[priority]->newest = new_proc;
 	sched->priority[priority]->size++;
 	new_proc->tid = sched->latest_tid++;

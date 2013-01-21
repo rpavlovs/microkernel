@@ -22,9 +22,9 @@ typedef struct {
 	int priority;		//Task's priority
 	int ptid;		//Task identifier of the parent task
 	int *stack;		//Stack pointer, which points to task's private memory
-	int SPSR;		//Task's saved program status register (SPSR). TODO: Check why this field is needed.
+	int SPSR;		//Task's saved program status register (SPSR). 					TODO: Check why this field is needed.
 	int rvalue;		//Task's return value, which is to be return to the task during next execution. TODO: Check why this field is needed.
-	int registers[16];
+	int registers[16];	//Task's processor registers							TODO: Check is registers should be on the task's stack
 } Task;
 
 typedef struct {

@@ -41,6 +41,7 @@ int add_task( int priority, void (*code) ( ), Schedule *sched ) {
 		sched->priority[priority]->newest = new_proc;
 		sched->priority[priority]->oldest = new_proc;
 		sched->priority[priority]->size = 1;
+		//What is happening here?
 		new_proc->tid = sched->latest_tid++;
 		return new_proc->tid;
 	}
@@ -54,6 +55,7 @@ int add_task( int priority, void (*code) ( ), Schedule *sched ) {
 	//Updating priority queue
 	sched->priority[priority]->newest = new_proc;
 	sched->priority[priority]->size++;
+	//What is happening here?
 	new_proc->tid = sched->latest_tid++;
 
 	return new_proc->tid;
@@ -65,7 +67,9 @@ int parent_tid_syscall( Schedule *sched ) {
 }
 
 int activate( int tid ) {
-	return 0;
+	int request = 0;
+	//Get request somehow from the last active task :)
+	return request;
 }
 
 //Why do we need this function? Don't we have it in syscall.c?
@@ -73,12 +77,37 @@ void pass_syscall( ) {
 
 }
 
-
+//Getting the next task to be executed
 int schedule( Schedule *sched ) {
-	return 0;
-}
+	int tid = 0;
+	
+	//Find non-empty queue with the highest priority
+	int i;
+	for(i = 0; i < SCHED_NUM_PRIORITIES; i++){
+		if(sched->priority[i]->size > 0){
+			break;
+		}
+	}
+	
+	//Get the first task from the queue
+	Task *ready = sched->priority[i]->oldest;
+	tid = *ready->tid;
 
+	//The queue should be updated later depending on the method called (Pass or Exit)
+
+	return tid;
+}
 
 int getNextRequest( Schedule *sched ) {
   return activate( schedule( sched ) ); //the active task doesn't change
 }
+
+
+
+
+
+
+
+
+
+

@@ -1,34 +1,62 @@
+#define CREATE_SYSCALL 0
+#define MYTID_SYSCALL 1
+#define MYPARENTTID_SYSCALL 2
+#define PASS_SYSCALL 3
+#define EXIT_SYSCALL 4
+
+typedef struct {
+	
+	// Place to put syscall return value (let's hope it's always integer)
+	int ret; 							// fp - 24
+
+	// Additional args for create syscall
+	int priority;					// fp - 20
+	void (*code) ( );			// fp - 16
+
+} Syscall_args;
 
 
 int Create( int priority, void (*code) ( ) ) {
 
-	//store r0-r3
-	//r0 - code; r1 - priority
-	//swi n <- special nuber for create syscall
-	//
+	Syscall_args args;
 
+	args.priority = priority;
+	args.code = code;
 
-	return -1;
+	asm ( "swi\t%0"	"\n\t" :: "J" (CREATE_SYSCALL) );
+
+	return args.ret;
 }
-
 
 int MyTid( ) {
 
-	return -1;
+	Syscall_args args;
+
+	asm ( "swi\t%0"	"\n\t" :: "J" (MYTID_SYSCALL) );
+
+	return args.ret;
 }
 
 
 int MyParentTid( ) {
 
-	return -1;
+	Syscall_args args;
+
+	asm ( "swi\t%0"	"\n\t" :: "J" (MYPARENTTID_SYSCALL) );
+
+	return args.ret;
 }
 
 
 void Pass( ) {
 
+	asm ( "swi\t%0"	"\n\t" :: "J" (PASS_SYSCALL) );
+
 }
 
 
 void Exit( ) {
+
+	asm ( "swi\t%0"	"\n\t" :: "J" (EXIT_SYSCALL) );
 
 }

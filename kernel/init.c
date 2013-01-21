@@ -1,5 +1,7 @@
+#include "kernel/kernel_globals.h"
 
-void initialize() {
+
+void initialize( Kern_Globals *KERN_GLOBALS ) {
 	//Where is the kernel entry?
 	//Turn off interrupts in ICU!
 	//Prepare the kernel data structures

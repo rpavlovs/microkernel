@@ -86,7 +86,7 @@ int schedule( Schedule *sched ) {
 	
 	//Get the first task from the queue
 	Task *ready = sched->priority[i]->oldest;
-	tid = *ready->tid;
+	tid = ready->tid;
 
 	return tid;
 }

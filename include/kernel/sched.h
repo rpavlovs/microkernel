@@ -6,6 +6,15 @@
 #define SCHED_NUM_PRIORITIES 16
 #define SCHED_TID_MAX_VAL 2147483600
 
+//Task states
+#define READY 0
+#define ACTIVE 1
+#define ZOMBIE 2
+#define SEND_BLOCKED 3
+#define RECEIVE_BLOCKED 4
+#define REPLY_BLOCKED 5
+#define EVENT_BLOCKED 6
+
 typedef struct {
 	void (*code) ( );
 	int tid;		//Task identifier, unique for each instance of the task

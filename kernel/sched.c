@@ -61,20 +61,15 @@ int add_task( int priority, void (*code) ( ), Schedule *sched ) {
 	return new_proc->tid;
 }
 
-//Why do we need this function? Don't we have it in syscall.c?
-int parent_tid_syscall( Schedule *sched ) {
-	return 0;
-}
-
 int activate( int tid ) {
+	//Here CONTEXT SWITCH to the specified task should happen
+
+	//The queue should be updated later depending on the method called by the task (Pass or Exit)
+	//The method will define if the task will be rescheduled or completely removed from the queue
+
 	int request = 0;
-	//Get request somehow from the last active task :)
+
 	return request;
-}
-
-//Why do we need this function? Don't we have it in syscall.c?
-void pass_syscall( ) {
-
 }
 
 //Getting the next task to be executed
@@ -93,13 +88,21 @@ int schedule( Schedule *sched ) {
 	Task *ready = sched->priority[i]->oldest;
 	tid = *ready->tid;
 
-	//The queue should be updated later depending on the method called (Pass or Exit)
-
 	return tid;
 }
 
 int getNextRequest( Schedule *sched ) {
   return activate( schedule( sched ) ); //the active task doesn't change
+}
+
+//Why do we need this function? Don't we have it in syscall.c?
+int parent_tid_syscall( Schedule *sched ) {
+	return 0;
+}
+
+//Why do we need this function? Don't we have it in syscall.c?
+void pass_syscall( ) {
+
 }
 
 

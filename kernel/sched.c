@@ -55,10 +55,11 @@ int add_task( int priority, void (*code) ( ), Schedule *sched ) {
 	sched->priority[priority]->newest = new_proc;
 	sched->priority[priority]->size++;
 	new_proc->tid = sched->latest_tid++;
-	return new_proc->tid;
 
+	return new_proc->tid;
 }
 
+//Why do we need this function? Don't we have it in syscall.c?
 int parent_tid_syscall( Schedule *sched ) {
 	return 0;
 }
@@ -67,6 +68,7 @@ int activate( int tid ) {
 	return 0;
 }
 
+//Why do we need this function? Don't we have it in syscall.c?
 void pass_syscall( ) {
 
 }

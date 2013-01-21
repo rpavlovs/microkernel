@@ -18,12 +18,12 @@
 typedef struct {
 	void (*code) ( );
 	int tid;		//Task identifier, unique for each instance of the task
-	int state;		//TODO: Task's state: READY, ACTIVE, ZOMBIE, etc.
-	int priority;		//TODO: Task's priority
-	int ptid;		//TODO: Task identifier of the parent task
-	int *stack;		//TODO: Stack pointer, which points to task's private memory
-	int SPSR;		//TODO: Task's saved program status register (SPSR)
-	int rvalue;		//TODO: Task's return value, which is to be return to the task during next execution
+	int state;		//Task's state: READY, ACTIVE, ZOMBIE, etc.
+	int priority;		//Task's priority
+	int ptid;		//Task identifier of the parent task
+	int *stack;		//Stack pointer, which points to task's private memory
+	int SPSR;		//Task's saved program status register (SPSR). TODO: Check why this field is needed.
+	int rvalue;		//Task's return value, which is to be return to the task during next execution. TODO: Check why this field is needed.
 	int registers[16];
 } Task;
 

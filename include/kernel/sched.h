@@ -25,7 +25,7 @@ typedef struct {
 	int SPSR;		//Task's saved program status register (SPSR). 					TODO: Check why this field is needed.
 	int rvalue;		//Task's return value, which is to be return to the task during next execution. TODO: Check why this field is needed.
 	int registers[16];	//Task's processor registers							TODO: Check is registers should be on the task's stack
-} Task;
+} Task;	//TODO: Maybe we should rename it to TD (task descriptor) to follow the kernel specification???
 
 typedef struct {
 	//Main array, containing tasks queue
@@ -39,7 +39,7 @@ typedef struct {
 } Task_queue;
 
 typedef struct {
-	Task_queue *priority[SCHED_NUM_PRIORITIES];
+	Task_queue *priority[SCHED_NUM_PRIORITIES];	//TODO: Maybe we should rename "priority" to something like "pqueues" (priority queues)???
 	//what is the latest tid scheduled to run
 	int latest_tid;
 } Schedule;

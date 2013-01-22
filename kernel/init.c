@@ -1,5 +1,5 @@
 #include "kernel/kernel_globals.h"
-
+#include "kernel/init.h"
 
 void initialize( Kern_Globals *KERN_GLOBALS ) {
 	//Where is the kernel entry?

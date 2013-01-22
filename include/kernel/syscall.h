@@ -1,6 +1,23 @@
 #ifndef ___SYSCALL___
 #define ___SYSCALL___
 
+#define CREATE_SYSCALL 0
+#define MYTID_SYSCALL 1
+#define MYPARENTTID_SYSCALL 2
+#define PASS_SYSCALL 3
+#define EXIT_SYSCALL 4
+
+typedef struct {
+
+	// Additional args for create syscall
+	int priority;					// fp - 24
+	void (*code) ( );			// fp - 20
+ 
+	// Place to put syscall return value (let's hope it's always integer)
+	int ret; 							// fp - 16     		
+
+} Syscall_args;
+
 // Name:
 // Create - instantiate a task.
 // 

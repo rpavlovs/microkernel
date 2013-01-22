@@ -1,21 +1,4 @@
-#define CREATE_SYSCALL 0
-#define MYTID_SYSCALL 1
-#define MYPARENTTID_SYSCALL 2
-#define PASS_SYSCALL 3
-#define EXIT_SYSCALL 4
-
-typedef struct {
-
-
-	// Additional args for create syscall
-	int priority;					// fp - 24
-	void (*code) ( );			// fp - 20
- 
-	// Place to put syscall return value (let's hope it's always integer)
-	int ret; 							// fp - 16     		
-
-} Syscall_args;
-
+#include "kernel/syscall.h"
 
 int Create( int priority, void (*code) ( ) ) {
 
@@ -61,3 +44,4 @@ void Exit( ) {
 	asm ( "swi\t%0"	"\n\t" :: "J" (EXIT_SYSCALL) );
 
 }
+

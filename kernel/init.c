@@ -54,6 +54,13 @@ void initialize( Kern_Globals *KERN_GLOBALS ) {
 	bwprintf( COM2, "\n\r" );
 
 	init_task_descriptors( KERN_GLOBALS );
+
+	//DEBUGGING
+	bwprintf( COM2, "Task descriptors are initialized." );
+
 	init_schedule( 8, first_task, KERN_GLOBALS );
+
+	//DEBUGGING
+	bwprintf( COM2, "Schedule is initialized" );
 
 }

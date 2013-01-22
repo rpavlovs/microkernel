@@ -120,12 +120,12 @@ int schedule( Kern_Globals * GLOBALS) {
 	return next_td->tid;
 }
 
-// Start running the taks with specified tid
+// Start running the task with specified tid
 // Return:
 // interrupt ID of the first recieved interrupt
 int activate( int tid, Kern_Globals *GLOBALS ) {
 	//DEBUGGING
-	bwprintf( COM2, "Activating TID: %d", tid );
+	bwprintf( COM2, "Activating TID: %d\n\r", tid );
 	
 	// Getting TD of the specified task
 	Task_descriptor *td = &(GLOBALS->tasks[tid]);

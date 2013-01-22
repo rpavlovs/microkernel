@@ -111,8 +111,10 @@ int schedule( Kern_Globals * GLOBALS) {
 	// Get the non-empty queue with the highest priority
 	Task_queue *queue = &(GLOBALS->schedule.priority[p]);
 
+	// TD of the task, which should run next
 	Task_descriptor *next_td = queue->td_ptrs[queue->oldest];
 
+	// TODO: Why this is happening here? Maybe we should encapsulate in into the queue method?
 	if( ++queue->oldest >= SCHED_QUEUE_LENGTH ) queue->oldest = 0;
 	queue->size = 0;
 
@@ -123,8 +125,10 @@ int schedule( Kern_Globals * GLOBALS) {
 // Return:
 // interrupt ID of the first recieved interrupt
 int activate( int tid, Kern_Globals *GLOBALS ) {
+	// Getting TD of the specified task
 	Task_descriptor *td = &(GLOBALS->tasks[tid]);
 	
+	// ASSERT: the task should be in the READY state
 	assert( td->state == READY_TASK, "It should only be possible to activate a READY task" );
 	td->state = ACTIVE_TASK;
 
@@ -132,26 +136,26 @@ int activate( int tid, Kern_Globals *GLOBALS ) {
 	//	GRACEFULLY EXIT KERNEL
 	//
 
-	// Save kernel register
+	// Save kernel registers
 	asm (	"mov	ip, sp"																								"\n\t" );
 	asm (	"stmfd	sp!, {r4, r5, r6, r7, r8, r9, r10, fp, ip, lr, pc}"	"\n\t" );
 	
-	// set PSR of the next active process
+	// Set PSR of the task to be activated
 	asm ( "msr	spsr, %0" 																							"\n\t"
 				:: "r" (td->spsr) );
 
-	// set lr to jump to the next active process 
+	// Set LR to jump to the next active process
 	asm ( "mov	lr, %0" 																								"\n\t"
 				:: "r" (td->lr) );
 
-	// set system mode
+	// Switch to system mode
 	asm ( "msr	cpsr, #0xdf" 																					"\n\t" );
 	
-	// set stack pointer of hte active process
+	// Set stack pointer of the active process
 	asm ( "mov 	sp, %0" 																							"\n\t"
 				:: "r" (td->sp) );
 
-	// load all process registers from *it's* stack
+	// Load all process registers from *it's* stack
 	asm ( "ldmfd sp!, {r0-r12, lr}" 																	"\n\t");
 
 	// go back to supervisor mode

@@ -111,6 +111,9 @@ int schedule( Kern_Globals * GLOBALS) {
 	//DEBUGGING
 	bwprintf( COM2, "Schedule: TD: %x\n\r", next_td );
 
+	//DEBUGGING
+	bwprintf( COM2, "Schedule: TD->tid: %d\n\r", next_td->tid );
+
 	if( ++(queue->oldest) >= SCHED_QUEUE_LENGTH ) queue->oldest = 0;
 	--(queue->size);
 

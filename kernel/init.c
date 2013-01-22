@@ -8,9 +8,14 @@
 
 // NOTE: Stacks grow downwards, with sp pointing to the empty spot;
 void init_task_descriptors( Kern_Globals *KERN_GLOBALS ) {
-
+	// Task ID
 	int tid;
-	for( tid = 0; tid < MAX_NUM_TASKS; tid++) {
+
+	//DEBUGGING
+	bwprintf( COM2, "Started init_td...");
+
+	for( tid = 0; tid < MAX_NUM_TASKS; tid++) 
+	{
 		Task_descriptor *td = &( KERN_GLOBALS->tasks[tid] );
 		td->tid = tid;
 		// set stack pointer to the appropriate address so that everyone get eqal stacks
@@ -18,6 +23,9 @@ void init_task_descriptors( Kern_Globals *KERN_GLOBALS ) {
 		td->fp = td->sp;
 		td->state = FREE_TASK;
 	}
+
+	//DEBUGGING
+	bwprintf( COM2, "Finishing init_td...");
 
 }
 

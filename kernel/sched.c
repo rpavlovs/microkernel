@@ -52,7 +52,7 @@ int add_task( int priority, void (*code) ( ), Kern_Globals *GLOBALS ) {
 
 	// Find a free task descriptor for a new task.
 	new_tid = sched->last_issued_tid + 1;
-	if( new_tid >= MAX_NUM_TASKS ) new_tid = 0;				//TODO: I think we can return error right now, because it shouldn't be possible to have more than 100 tasks
+	if( new_tid >= MAX_NUM_TASKS ) new_tid = 0;
 	while( GLOBALS->tasks[new_tid].state != FREE_TASK ) {
 		// ERROR: Scheduler is out of task descriptors. 
 		if( ++new_tid >= MAX_NUM_TASKS ) return -2;
@@ -74,7 +74,7 @@ int add_task( int priority, void (*code) ( ), Kern_Globals *GLOBALS ) {
 
 	// If the queue is empty or the newest pointer is at the end of the td_ptrs buffer
 	// put the next td_ptr at the beginning on the buffer  
-	if (queue->size == 0 || queue->newest++ >= SCHED_QUEUE_LENGTH) queue->newest = 0;	//TODO: maybe ++newest?
+	if (queue->size == 0 || ++(queue->newest) >= SCHED_QUEUE_LENGTH) queue->newest = 0;
 	
 	// If the queue was empty then newest and oldest elements are the same 
 	// and are at the beginning of the buffer
@@ -86,16 +86,6 @@ int add_task( int priority, void (*code) ( ), Kern_Globals *GLOBALS ) {
 
 	return new_tid;
 }
-
-int parent_tid_syscall( Schedule *sched ) {
-	return 0;
-}
-
-
-void pass_syscall( ) {
-
-}
-
 
 // Return:
 // tid of the next task to run
@@ -114,7 +104,6 @@ int schedule( Kern_Globals * GLOBALS) {
 	// TD of the task, which should run next
 	Task_descriptor *next_td = queue->td_ptrs[queue->oldest];
 
-	// TODO: Why this is happening here? Maybe we should encapsulate in into the queue method?
 	if( ++queue->oldest >= SCHED_QUEUE_LENGTH ) queue->oldest = 0;
 	queue->size = 0;
 
@@ -177,11 +166,10 @@ int activate( int tid, Kern_Globals *GLOBALS ) {
 	// etc...
 	// 
 
-	// return the interrupt ID
+	// TODO: return the interrupt ID
 	return 0;
 
 }
-
 
 int getNextRequest( Kern_Globals *GLOBALS ) {
 

@@ -11,15 +11,15 @@ void handle_request( int request ) {
 
 int main( ) {
   
-	Kern_Globals KERN_GLOBALS;
-  initialize( &KERN_GLOBALS );  // includes starting the first user task
+	Kern_Globals KERN_GLOBALS;		// "Global" kernel structure
+	initialize( &KERN_GLOBALS );	// includes starting the first user task
   
-  int request;
+	int request;
   
-  FOREVER {
-    request = getNextRequest( &KERN_GLOBALS );
-    handle_request( request );
-  }
+	FOREVER {
+		request = getNextRequest( &KERN_GLOBALS );
+		handle_request( request );
+	}
 
-  return 0;
+	return 0;
 }

@@ -17,7 +17,7 @@ int main( ) {
   int request;
   
   FOREVER {
-    request = getNextRequest( &(KERN_GLOBALS.schedule) );
+    request = getNextRequest( &KERN_GLOBALS );
     handle_request( request );
   }
 

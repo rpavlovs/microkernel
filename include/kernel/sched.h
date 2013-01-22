@@ -1,55 +1,34 @@
-
 #ifndef ___SCHED___
 #define ___SCHED___
 
-#define SCHED_QUEUE_MAX_LENGTH 100
-#define SCHED_NUM_PRIORITIES 16
-#define SCHED_TID_MAX_VAL 2147483600
+#include "kernel/kernel_globals.h"
 
-//Task states
-#define READY 0
-#define ACTIVE 1
-#define ZOMBIE 2
-#define SEND_BLOCKED 3
-#define RECEIVE_BLOCKED 4
-#define REPLY_BLOCKED 5
-#define EVENT_BLOCKED 6
+// Description:
+// Init schedule structure in the kernel globals.
+// Specify the first task to be executed and it's priority 
+// 
+void init_schedule( int, void (*) ( ), Kern_Globals * );
 
-typedef struct {
-	void (*code) ( );
-	int tid;		//Task identifier, unique for each instance of the task
-	int state;		//Task's state: READY, ACTIVE, ZOMBIE, etc.
-	int priority;		//Task's priority
-	int ptid;		//Task identifier of the parent task
-	int *stack;		//Stack pointer, which points to task's private memory
-	int SPSR;		//Task's saved program status register (SPSR). 					TODO: Check why this field is needed.
-	int rvalue;		//Task's return value, which is to be return to the task during next execution. TODO: Check why this field is needed.
-	int registers[16];	//Task's processor registers							TODO: Check is registers should be on the task's stack
-} Task;	//TODO: Maybe we should rename it to TD (task descriptor) to follow the kernel specification???
+// Description:
+// Find an unused task descriptor
+// Set it up for a new task
+// Add it to the specific scheduler queue 
+// 
+// Return:
+// task id of the new process
+// -1 if wrong task priority was given
+// -2 if no task descriptors left
+// 
+int add_task( int, void (*) ( ), Kern_Globals * );
 
-typedef struct {
-	//Main array, containing tasks queue
-	Task queue[SCHED_QUEUE_MAX_LENGTH];
-	//what is the oldest element of the queue
-	Task *oldest;
-	//what is the youngest element of the queue
-	Task *newest;
-	//how many tasks are in the queue right now
-	int size;
-} Task_queue;
 
-typedef struct {
-	Task_queue *priority[SCHED_NUM_PRIORITIES];	//TODO: Maybe we should rename "priority" to something like "pqueues" (priority queues)???
-	//what is the latest tid scheduled to run
-	int latest_tid;
-} Schedule;
+// Description:
+// Run the next scheduled task until interrupt recieved
+// 
+// Return:
+// Interrupt id
+// 
+int getNextRequest( Kern_Globals * );
 
-void init_schedule( Schedule * );
-
-int activate( int );
-
-int schedule( Schedule * );
-
-int getNextRequest( Schedule * );
 
 #endif

@@ -41,6 +41,4 @@ void bwputw( int channel, int n, char fc, char *bf );
 
 void bwprintf( int channel, char *format, ... );
 
-void panic( char *format, ... );
-
 #endif

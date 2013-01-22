@@ -1,8 +1,25 @@
 #include "kernel/kernel_globals.h"
 #include "kernel/init.h"
+#include "kernel/sched.h"
 #include "config/ts7200.h"
+#include "config/mem_init.h"
 #include "tasks/first.h"
 #include "lib/bwio.h"
+
+// NOTE: Stacks grow downwards, with sp pointing to the empty spot;
+void init_task_descriptors( Kern_Globals *KERN_GLOBALS ) {
+
+	int tid;
+	for( tid = 0; tid < MAX_NUM_TASKS; tid++) {
+		Task_descriptor *td = &( KERN_GLOBALS->tasks[tid] );
+		td->tid = tid;
+		// set stack pointer to the appropriate address so that everyone get eqal stacks
+		td->sp = (int *)( TASKS_MEMORY_START - (tid * TASKS_MEMORY_PER_INSTANCE) );
+		td->fp = td->sp;
+		td->state = FREE_TASK;
+	}
+
+}
 
 void initialize( Kern_Globals *KERN_GLOBALS ) {
 	//Where is the kernel entry?
@@ -36,6 +53,7 @@ void initialize( Kern_Globals *KERN_GLOBALS ) {
 		);
 	bwprintf( COM2, "\n\r" );
 
-	first_task();
+	init_task_descriptors( KERN_GLOBALS );
+	init_schedule( 8, first_task, KERN_GLOBALS );
 
 }

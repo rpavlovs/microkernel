@@ -6,10 +6,14 @@
 // Initialize Schedule sturct
 void init_schedule( int first_task_priority, void (*first_task_code) ( ), Kern_Globals *GLOBALS ) {
 	
+	//Verifying that the task priority is correct
 	assert(first_task_priority < SCHED_NUM_PRIORITIES && first_task_priority >= 0,
 		"first task should have priority between 0 and 16" );
 
+	//Getting the schedule
 	Schedule *sched = &(GLOBALS->schedule);
+
+	//Initializing all priority queues
 	int p;
 	for (p = 0; p < SCHED_NUM_PRIORITIES; ++p)
 	{
@@ -18,27 +22,30 @@ void init_schedule( int first_task_priority, void (*first_task_code) ( ), Kern_G
 		sched->priority[p].size = 0;
 	}
 
-	// add first task to the queue
-	
+	//Adding the first task to the queue//////////////////////
+	//Getting task descriptor
 	Task_descriptor *first_td = &(GLOBALS->tasks[0]);
-
+	//Setting task state to READY
 	first_td->state = READY_TASK;
+	//Setting link register to the address of task code
 	first_td->lr = (int *)first_task_code;
 	
+	//Updating the queue appropriately////////////////////////
 	sched->priority[first_task_priority].newest = 0;
 	sched->priority[first_task_priority].oldest = 0;
 	sched->priority[first_task_priority].size++;
 
+	//Updating the schedule appropriately
 	sched->last_issued_tid = 0;
-
 }
 
 // Add task to scheduler as ready to run
 int add_task( int priority, void (*code) ( ), Kern_Globals *GLOBALS ) {
 	
-	if( priority < 0 || priority >= SCHED_NUM_PRIORITIES ) return -1;
 	// ERROR: Scheduler was given a wrong task priority.
-
+	if( priority < 0 || priority >= SCHED_NUM_PRIORITIES ) return -1;
+	
+	// Getting the schedule
 	Schedule *sched = &(GLOBALS->schedule);
 	int new_tid;
 	Task_descriptor *new_td;
@@ -47,8 +54,8 @@ int add_task( int priority, void (*code) ( ), Kern_Globals *GLOBALS ) {
 	new_tid = sched->last_issued_tid + 1;
 	if( new_tid >= MAX_NUM_TASKS ) new_tid = 0;
 	while( GLOBALS->tasks[new_tid].state != FREE_TASK ) {
+		// ERROR: Scheduler is out of task descriptors. 
 		if( ++new_tid >= MAX_NUM_TASKS ) return -2;
-			// ERROR: Scheduler is out of task descriptors. 
 	}
 	sched->last_issued_tid = new_tid;
 	

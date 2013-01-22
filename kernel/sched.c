@@ -125,10 +125,13 @@ int schedule( Kern_Globals * GLOBALS) {
 // interrupt ID of the first recieved interrupt
 int activate( int tid, Kern_Globals *GLOBALS ) {
 	//DEBUGGING
-	bwprintf( COM2, "Activating TID: %d\n\r", tid );
+	bwprintf( COM2, "activate: TID: %d\n\r", tid );
 	
 	// Getting TD of the specified task
 	Task_descriptor *td = &(GLOBALS->tasks[tid]);
+
+	//DEBUGGING
+	bwprintf( COM2, "activate: TD: %x\n\r", td );
 	
 	// ASSERT: the task should be in the READY state
 	assert( td->state == READY_TASK, "It should only be possible to activate a READY task" );

@@ -133,9 +133,15 @@ int activate( int tid, Kern_Globals *GLOBALS ) {
 	//DEBUGGING
 	bwprintf( COM2, "activate: TD: %x\n\r", td );
 	
+	//DEBUGGING
+	bwprintf( COM2, "activate: TD->state: %d\n\r", td->state );
+
 	// ASSERT: the task should be in the READY state
 	assert( td->state == READY_TASK, "It should only be possible to activate a READY task" );
 	td->state = ACTIVE_TASK;
+
+	//DEBUGGING
+	bwprintf( COM2, "activate: BEFORE ASSEMBLY!!!" );
 
 	//
 	//	GRACEFULLY EXIT KERNEL

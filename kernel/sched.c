@@ -105,8 +105,8 @@ int schedule( Kern_Globals * GLOBALS) {
 	// TD of the task, which should run next
 	Task_descriptor *next_td = queue->td_ptrs[queue->oldest];
 
-	if( ++queue->oldest >= SCHED_QUEUE_LENGTH ) queue->oldest = 0;
-	queue->size = 0;
+	if( ++(queue->oldest) >= SCHED_QUEUE_LENGTH ) queue->oldest = 0;
+	--(queue->size);
 
 	return next_td->tid;
 }

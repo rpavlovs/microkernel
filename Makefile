@@ -5,7 +5,8 @@ XCC     = gcc
 AS			= as
 LD      = ld
 
-USER:=$(shell whoami; mkdir -p build)
+USER:=$(shell whoami)
+$(shell mkdir -p build)
 
 CFLAGS  = -c -fPIC -Wall -Iinclude -mcpu=arm920t -msoft-float
 # -g: include hooks for gdb
@@ -17,13 +18,13 @@ CFLAGS  = -c -fPIC -Wall -Iinclude -mcpu=arm920t -msoft-float
 ASFLAGS	= -mcpu=arm920t -mapcs-32
 # -mapcs: always generate a complete stack frame
 
-LDFLAGS = -init main -Map kernel.map -N  -T orex.ld -L/u/wbcowan/gnuarm-4.0.2/lib/gcc/arm-elf/4.0.2 -Llib
+LDFLAGS = -init main -Map build/kernel.map -N  -T orex.ld -L/u/wbcowan/gnuarm-4.0.2/lib/gcc/arm-elf/4.0.2 -Llib
 
 SRC = $(wildcard kernel/*.c kernel/*.C)
 ASM = $(wildcard kernel/*.s kernel/*.S)
 OBJS = $(SRC:kernel/%.c=build/%.o) $(ASM:kernel/%.s=build/%.o)
 
-all: build/kernel.elf
+all: $(ASM) build/kernel.elf
 
 clean:
 	rm -f build/*

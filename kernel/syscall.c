@@ -5,13 +5,14 @@
 #define EXIT_SYSCALL 4
 
 typedef struct {
-	
-	// Place to put syscall return value (let's hope it's always integer)
-	int ret; 							// fp - 24
+
 
 	// Additional args for create syscall
-	int priority;					// fp - 20
-	void (*code) ( );			// fp - 16
+	int priority;					// fp - 24
+	void (*code) ( );			// fp - 20
+ 
+	// Place to put syscall return value (let's hope it's always integer)
+	int ret; 							// fp - 16     		
 
 } Syscall_args;
 

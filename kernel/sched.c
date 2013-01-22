@@ -105,6 +105,9 @@ int schedule( Kern_Globals * GLOBALS) {
 	// TD of the task, which should run next
 	Task_descriptor *next_td = queue->td_ptrs[queue->oldest];
 
+	//DEBUGGING
+	bwprintf( COM2, "Schedule: TD: %x", next_td );
+
 	if( ++(queue->oldest) >= SCHED_QUEUE_LENGTH ) queue->oldest = 0;
 	--(queue->size);
 
@@ -115,6 +118,9 @@ int schedule( Kern_Globals * GLOBALS) {
 // Return:
 // interrupt ID of the first recieved interrupt
 int activate( int tid, Kern_Globals *GLOBALS ) {
+	//DEBUGGING
+	bwprintf( COM2, "Activating TID: %d", tid );
+	
 	// Getting TD of the specified task
 	Task_descriptor *td = &(GLOBALS->tasks[tid]);
 	

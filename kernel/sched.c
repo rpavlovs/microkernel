@@ -141,7 +141,7 @@ int activate( int tid, Kern_Globals *GLOBALS ) {
 	td->state = ACTIVE_TASK;
 
 	//DEBUGGING
-	bwprintf( COM2, "activate: BEFORE ASSEMBLY!!!" );
+	bwprintf( COM2, "activate: BEFORE ASSEMBLY!!!\n\r" );
 
 	//
 	//	GRACEFULLY EXIT KERNEL

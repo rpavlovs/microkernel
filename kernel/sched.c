@@ -101,12 +101,15 @@ int schedule( Kern_Globals * GLOBALS) {
 
 	// Get the non-empty queue with the highest priority
 	Task_queue *queue = &(GLOBALS->schedule.priority[p]);
+	
+	//DEBUGGING
+	bwprintf( COM2, "Schedule: Queue: %x\n\r", queue );
 
 	// TD of the task, which should run next
 	Task_descriptor *next_td = queue->td_ptrs[queue->oldest];
 
 	//DEBUGGING
-	bwprintf( COM2, "Schedule: TD: %x", next_td );
+	bwprintf( COM2, "Schedule: TD: %x\n\r", next_td );
 
 	if( ++(queue->oldest) >= SCHED_QUEUE_LENGTH ) queue->oldest = 0;
 	--(queue->size);

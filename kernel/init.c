@@ -12,7 +12,7 @@ void init_task_descriptors( Kern_Globals *KERN_GLOBALS ) {
 	int tid;
 
 	//DEBUGGING
-	bwprintf( COM2, "Started init_td...");
+	bwprintf( COM2, "Started initializing task descriptors...\n\r");
 
 	for( tid = 0; tid < MAX_NUM_TASKS; tid++) 
 	{
@@ -25,7 +25,7 @@ void init_task_descriptors( Kern_Globals *KERN_GLOBALS ) {
 	}
 
 	//DEBUGGING
-	bwprintf( COM2, "Finishing init_td...");
+	bwprintf( COM2, "Finishing initializing task descriptors...\n\r");
 
 }
 
@@ -64,11 +64,11 @@ void initialize( Kern_Globals *KERN_GLOBALS ) {
 	init_task_descriptors( KERN_GLOBALS );
 
 	//DEBUGGING
-	bwprintf( COM2, "Task descriptors are initialized." );
+	bwprintf( COM2, "Task descriptors are initialized.\n\r" );
 
 	init_schedule( 8, first_task, KERN_GLOBALS );
 
 	//DEBUGGING
-	bwprintf( COM2, "Schedule is initialized" );
+	bwprintf( COM2, "Schedule is initialized\n\r" );
 
 }

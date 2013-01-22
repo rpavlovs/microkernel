@@ -20,11 +20,12 @@ ASFLAGS	= -mcpu=arm920t -mapcs-32
 
 LDFLAGS = -init main -Map build/kernel.map -N  -T orex.ld -L/u/wbcowan/gnuarm-4.0.2/lib/gcc/arm-elf/4.0.2 -Llib
 
-SRC = $(wildcard kernel/*.c kernel/*.C)
-ASM = $(wildcard kernel/*.s kernel/*.S)
-OBJS = $(SRC:kernel/%.c=build/%.o) $(ASM:kernel/%.s=build/%.o)
+KERNEL_SRC = $(wildcard kernel/*.c)
+TASKS_SRC = $(wildcard tasks/*.c)
+ASM = $(wildcard kernel/*.s)
+OBJS = $(KERNEL_SRC:kernel/%.c=build/%.o) $(TASKS_SRC:tasks/%.c=build/%.o) $(ASM:kernel/%.s=build/%.o)
 
-all: $(ASM) build/kernel.elf
+all: build/kernel.elf
 
 clean:
 	rm -f build/*
@@ -36,6 +37,9 @@ install:
 ## Compile
 
 build/%.s: kernel/%.c
+	$(XCC) -S $(CFLAGS) -o $@ $<
+
+build/%.s: tasks/%.c
 	$(XCC) -S $(CFLAGS) -o $@ $<
 
 build/%.s: kernel/%.S

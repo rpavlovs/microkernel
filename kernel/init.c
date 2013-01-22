@@ -1,5 +1,8 @@
 #include "kernel/kernel_globals.h"
 #include "kernel/init.h"
+#include "config/ts7200.h"
+#include "tasks/first.h"
+#include "lib/bwio.h"
 
 void initialize( Kern_Globals *KERN_GLOBALS ) {
 	//Where is the kernel entry?
@@ -24,11 +27,15 @@ void initialize( Kern_Globals *KERN_GLOBALS ) {
 
 
 
-//Where is the kernel stack pointer right now?
-__asm__(
-	"mov r0, #1\n"
-	"mov r1, sp\n"
-	"bl bwputr\n"
-);
+	//Where is the kernel stack pointer right now?
+	bwprintf( COM2, "Kernel stack pointer: " );
+	asm (
+			"mov r0, #1"	"\n\t"
+			"mov r1, sp"	"\n\t"
+			"bl bwputr"		"\n\t"
+		);
+	bwprintf( COM2, "\n\r" );
+
+	first_task();
 
 }

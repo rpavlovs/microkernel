@@ -31,6 +31,7 @@ void init_schedule( int first_task_priority, void (*first_task_code) ( ), Kern_G
 	first_td->lr = (int *)first_task_code;
 	
 	//Updating the queue appropriately////////////////////////
+	sched->priority[first_task_priority].td_ptrs[0] = first_td;
 	sched->priority[first_task_priority].newest = 0;
 	sched->priority[first_task_priority].oldest = 0;
 	sched->priority[first_task_priority].size++;

@@ -46,10 +46,18 @@ __asm__(
 	"LDR	r0, [ sp, #-4 ]\n\t"		// Remove the temporarily stored r0. 
 	"ADD	sp, sp, #4\n\t"			// Remove the stored "counter"
 	"LDR	PC, [ sp, #-4 ]\n\t"		// Jump to the next instruction in the user task. 
+
+	/*
+	// Debugging
+	"MOV	r4, r0\n\t"
+	"MOV	r0, #1\n\t"
+	"MOV	r1, r4\n\t"
+	"BL	bwputr\n\t"*/
+
+
 );
 
-
-
+extern void execute_user_task(unsigned int userTaskSP, unsigned int nextInstruction, unsigned int taskID);
 
 // Initialize Schedule struct
 void init_schedule( int first_task_priority, void (*first_task_code) ( ), Kern_Globals *GLOBALS )
@@ -199,21 +207,23 @@ int activate( int tid, Kern_Globals *GLOBALS ) {
 	//DEBUGGING
 	bwprintf( COM2, "activate. SINTs. td->sp: %x ; td->next_instruction: %x ; td->lr: %x ; td: %x \n", td->sp, td->next_instruction, td->lr, td );
 
-	unsigned int uisp = (unsigned int) td->sp;
-	unsigned int uini = (unsigned int) td->next_instruction;
-	unsigned int uilr = (unsigned int) td->lr;
-	unsigned int uitd = (unsigned int) td;
+	unsigned int uisp = (unsigned int) 0x01d00000;  // td->sp;	//This is right, judging by memory allocation
+	unsigned int uini = (unsigned int) td->next_instruction;	//This is right, judging by the map file and arithmetic :)
+	unsigned int uilr = (unsigned int) td->lr;			//This is right, judging by the map file
+	unsigned int uitd = (unsigned int) td;				//This seems to be right...
 
 	//DEBUGGING
 	bwprintf( COM2, "activate. UINTs. td->sp: %x ; td->next_instruction: %x ; td->lr: %x ; td: %x \n", uisp, uini, uilr, uitd );
 
-	execute_user_task(uisp, uilr, uitd);
+	//Executing using link register
+	execute_user_task(uisp, uini, uitd);
 
-	//
-	//	GRACEFULLY EXIT KERNEL
-	//
-	/*
-	// Save kernel registers
+	//Executing using next instruction
+	//execute_user_task(uisp, uini, uitd);
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+/*	// Save kernel registers
 	asm (	"mov	ip, sp"																								"\n\t" );
 	asm (	"stmfd	sp!, {r4, r5, r6, r7, r8, r9, r10, fp, ip, lr, pc}"	"\n\t" );
 	
@@ -240,19 +250,8 @@ int activate( int tid, Kern_Globals *GLOBALS ) {
 	
 	// Jump to start executing active task
 	// NOTE:this should set cpsr after the jump to contents of spsr 
-	asm ( "movs pc, lr"																								"\n\t");
-
-	// DONE
-	
-
-	//
-	//	GRACEFULLY ENTER THE KERNEL
-	//
-
-	// Save task registers
-	// 
-	// etc...
-	// */
+	asm ( "movs pc, lr"																								"\n\t");*/
+///////////////////////////////////////////////////////////////////////////////////////////////////
 
 	// TODO: return the interrupt ID
 	return 0;

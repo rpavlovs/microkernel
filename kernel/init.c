@@ -17,10 +17,13 @@ void init_task_descriptors( Kern_Globals *KERN_GLOBALS ) {
 	for( tid = 0; tid < MAX_NUM_TASKS; tid++) 
 	{
 		Task_descriptor *td = &( KERN_GLOBALS->tasks[tid] );
+		// Setting the Task ID
 		td->tid = tid;
-		// set stack pointer to the appropriate address so that everyone get eqal stacks
+		// Setting stack pointer to give each task the same address space
 		td->sp = (int *)( TASKS_MEMORY_START - (tid * TASKS_MEMORY_PER_INSTANCE) );
+		// Setting function pointer
 		td->fp = td->sp;
+		// Setting the state of the task
 		td->state = FREE_TASK;
 	}
 

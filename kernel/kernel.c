@@ -13,7 +13,7 @@ int main( ) {
   
 	Kern_Globals KERN_GLOBALS;		// "Global" kernel structure
 	initialize( &KERN_GLOBALS );	// includes starting the first user task
-  
+
 	int request;
   
 	FOREVER {

@@ -27,6 +27,8 @@ void init_schedule( int first_task_priority, void (*first_task_code) ( ), Kern_G
 	Task_descriptor *first_td = &(GLOBALS->tasks[0]);
 	//Setting task state to READY
 	first_td->state = READY_TASK;
+	//Setting priority of the task
+	first_td->priority = first_task_priority;
 	//Setting link register to the address of task code
 	first_td->lr = (int *)first_task_code;
 	
@@ -65,6 +67,7 @@ int add_task( int priority, void (*code) ( ), Kern_Globals *GLOBALS ) {
 	// Setup new task descriptor
 	new_td = &(GLOBALS->tasks[new_tid]);
 	new_td->state = READY_TASK;
+	new_td->priority = priority;
 	new_td->lr = (int *)code;
 
 	// Add new task descriptor to a proper scheduler queue

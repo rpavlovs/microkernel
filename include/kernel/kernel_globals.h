@@ -19,6 +19,7 @@ typedef struct {
 	int tid;							// Task ID
 	int parent_tid;						// Parent task ID
 	int state;							// Current task's state
+	int priority;						// ROMA, DON'T DELETE IT!!! O_o   Priority of the current task.
 	int *sp;							// Stack pointer
 	int spsr;							// SPSR - Saved Program Status Register
 	int *lr;							// Link register

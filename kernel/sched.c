@@ -2,6 +2,54 @@
 #include "kernel/kernel_globals.h"
 #include "lib/bwio.h"
 #include "kernel/helpers.h"
+#include "config/mem_init.h"
+
+__asm__(
+	/*
+		execute_user_task: 
+		This method should be executed whenever the kernel wants to return control to an user task. 
+		It performs the opposite task to the swi_main_handler. 
+		Parameters:
+		- The SP of the user task.  
+		- The next instruction to execute in the user task.
+		- The TID of the current ( active ) user task. 
+	*/
+	"\nexecute_user_task:\n\t"
+
+	// Store the information about the kernel as would happen in a normal task. 
+	"MOV	ip, sp\n\t"
+	"STMFD	sp!, { fp, ip, lr, pc }\n\t"
+	"SUB	fp, ip, #4\n\t"
+
+	// Store the kernel state.
+	"SUB	sp, sp, #4\n\t"
+	"STR	r2, [ sp, #0 ]\n\t"		// Store the TID
+	"STMFD	sp!, { r4-r11 }\n\t"
+
+	// Store information temporarily
+	"SUB	sp, sp, #4\n\t"
+	"LDR	r3, [ r0, #14*4 ]\n\t"		// The task's SPSR is loaded. 
+	"STR	r1, [ r0, #14*4 ]\n\t"		// The next instruction to execute in the user task.	
+	"STR	r3, [ sp, #0 ]\n\t"		// The task's SPSR
+
+	// Load the state of the task. 
+	"MSR	cpsr_c, #0x1F\n\t"		// Switch to system mode. 
+	"MOV	sp, r0\n\t"			
+	"LDMFD	sp!, { r0-r12, lr }\n\t"	
+	"STR	r0, [ sp, #-4 ]\n\t"		// Temporarily store the r0 (to be able to use this registry). 
+	"MSR	cpsr_c, #0x13\n\t"		// Return to supervisor mode. 
+
+	// Pass control to the user task. 
+	"LDR	r0, [ sp, #0 ]\n\t"		// Loads the previously stored SPSR.   
+	"ADD	sp, sp, #4\n\t"			// "Remove" the top elements of the stack that won't be used anymore. (Kernel's stack). 
+	"MSR	cpsr, r0\n\t"  			// Switch to user mode. 
+	"LDR	r0, [ sp, #-4 ]\n\t"		// Remove the temporarily stored r0. 
+	"ADD	sp, sp, #4\n\t"			// Remove the stored "counter"
+	"LDR	PC, [ sp, #-4 ]\n\t"		// Jump to the next instruction in the user task. 
+);
+
+
+
 
 // Initialize Schedule struct
 void init_schedule( int first_task_priority, void (*first_task_code) ( ), Kern_Globals *GLOBALS )
@@ -31,6 +79,8 @@ void init_schedule( int first_task_priority, void (*first_task_code) ( ), Kern_G
 	first_td->priority = first_task_priority;
 	//Setting link register to the address of task code
 	first_td->lr = (int *)first_task_code;
+	//Setting the next instruction
+	first_td->next_instruction = (unsigned int)first_task_code + ELF_START;
 	
 	//Updating the queue appropriately////////////////////////
 	sched->priority[first_task_priority].td_ptrs[0] = first_td;
@@ -145,6 +195,19 @@ int activate( int tid, Kern_Globals *GLOBALS ) {
 
 	//DEBUGGING
 	bwprintf( COM2, "activate: BEFORE ASSEMBLY!!!\n\r" );
+
+	//CHECK: Jesus, was passing uint, and now its a pointer to an integer
+	//DEBUGGING
+	bwprintf( COM2, "activate. td->sp: %x ; td->next_instruction: %x ; td: %x \n", td->sp, td->next_instruction, td );
+
+	unsigned int uisp = (unsigned int) td->sp;
+	unsigned int uini = (unsigned int) td->next_instruction;
+	unsigned int uitd = (unsigned int) td;
+
+	//DEBUGGING
+	bwprintf( COM2, "activate. UINTs. td->sp: %x ; td->next_instruction: %x ; td: %x \n", uisp, uini, uitd );
+
+	execute_user_task(uisp, uini, uitd);
 
 	//
 	//	GRACEFULLY EXIT KERNEL

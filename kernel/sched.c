@@ -80,7 +80,7 @@ void init_schedule( int first_task_priority, void (*first_task_code) ( ), Kern_G
 	//Setting link register to the address of task code
 	first_td->lr = (int *)first_task_code;
 	//Setting the next instruction
-	first_td->next_instruction = (unsigned int)first_task_code + ELF_START;
+	first_td->next_instruction = (unsigned int) first_task_code + ELF_START;
 	
 	//Updating the queue appropriately////////////////////////
 	sched->priority[first_task_priority].td_ptrs[0] = first_td;
@@ -196,18 +196,18 @@ int activate( int tid, Kern_Globals *GLOBALS ) {
 	//DEBUGGING
 	bwprintf( COM2, "activate: BEFORE ASSEMBLY!!!\n\r" );
 
-	//CHECK: Jesus, was passing uint, and now its a pointer to an integer
 	//DEBUGGING
-	bwprintf( COM2, "activate. td->sp: %x ; td->next_instruction: %x ; td: %x \n", td->sp, td->next_instruction, td );
+	bwprintf( COM2, "activate. SINTs. td->sp: %x ; td->next_instruction: %x ; td->lr: %x ; td: %x \n", td->sp, td->next_instruction, td->lr, td );
 
 	unsigned int uisp = (unsigned int) td->sp;
 	unsigned int uini = (unsigned int) td->next_instruction;
+	unsigned int uilr = (unsigned int) td->lr;
 	unsigned int uitd = (unsigned int) td;
 
 	//DEBUGGING
-	bwprintf( COM2, "activate. UINTs. td->sp: %x ; td->next_instruction: %x ; td: %x \n", uisp, uini, uitd );
+	bwprintf( COM2, "activate. UINTs. td->sp: %x ; td->next_instruction: %x ; td->lr: %x ; td: %x \n", uisp, uini, uilr, uitd );
 
-	execute_user_task(uisp, uini, uitd);
+	execute_user_task(uisp, uilr, uitd);
 
 	//
 	//	GRACEFULLY EXIT KERNEL

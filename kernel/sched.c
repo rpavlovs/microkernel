@@ -146,7 +146,7 @@ int activate( int tid, Kern_Globals *GLOBALS ) {
 	//
 	//	GRACEFULLY EXIT KERNEL
 	//
-
+	/*
 	// Save kernel registers
 	asm (	"mov	ip, sp"																								"\n\t" );
 	asm (	"stmfd	sp!, {r4, r5, r6, r7, r8, r9, r10, fp, ip, lr, pc}"	"\n\t" );
@@ -186,11 +186,10 @@ int activate( int tid, Kern_Globals *GLOBALS ) {
 	// Save task registers
 	// 
 	// etc...
-	// 
+	// */
 
 	// TODO: return the interrupt ID
 	return 0;
-
 }
 
 int getNextRequest( Kern_Globals *GLOBALS ) {

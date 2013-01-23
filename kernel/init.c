@@ -71,4 +71,6 @@ void initialize( Kern_Globals *KERN_GLOBALS ) {
 	//DEBUGGING
 	bwprintf( COM2, "Schedule is initialized\n\r" );
 
+	//DEBUGGING
+	bwprintf( COM2, "Initialization is complete." );
 }

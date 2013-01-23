@@ -4,8 +4,8 @@
 #include "kernel/helpers.h"
 
 // Initialize Schedule struct
-void init_schedule( int first_task_priority, void (*first_task_code) ( ), Kern_Globals *GLOBALS ) {
-	
+void init_schedule( int first_task_priority, void (*first_task_code) ( ), Kern_Globals *GLOBALS )
+{	
 	//Verifying that the task priority is correct
 	assert(first_task_priority < SCHED_NUM_PRIORITIES && first_task_priority >= 0,
 		"first task should have priority between 0 and 16" );
@@ -192,7 +192,7 @@ int activate( int tid, Kern_Globals *GLOBALS ) {
 	return 0;
 }
 
-int getNextRequest( Kern_Globals *GLOBALS ) {
-
-  return activate( schedule( GLOBALS ), GLOBALS );
+int getNextRequest( Kern_Globals *GLOBALS ) 
+{
+	return activate( schedule( GLOBALS ), GLOBALS );
 }

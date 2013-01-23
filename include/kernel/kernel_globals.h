@@ -18,11 +18,11 @@ typedef struct Kern_Globals GLOBALS;
 typedef struct {
 	int tid;							// Task ID
 	int parent_tid;						// Parent task ID
+	int state;							// Current task's state
 	int *sp;							// Stack pointer
 	int spsr;							// SPSR - Saved Program Status Register
 	int *lr;							// Link register
 	int *fp;							// Frame pointer
-	int state;
 } Task_descriptor;
 
 // Schedule structures

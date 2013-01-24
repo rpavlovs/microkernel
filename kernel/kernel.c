@@ -15,6 +15,7 @@ int main( ) {
 	FOREVER {
 		request = getNextRequest( &KERN_GLOBALS );
 		handle_request( request, &KERN_GLOBALS );
+		bwgetc(COM2);
 	}
 
 	return 0;

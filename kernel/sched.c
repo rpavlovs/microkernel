@@ -207,7 +207,7 @@ int activate( int tid, Kern_Globals *GLOBALS ) {
 	//DEBUGGING
 	bwprintf( COM2, "activate. SINTs. td->sp: %x ; td->next_instruction: %x ; td->lr: %x ; td: %x \n", td->sp, td->next_instruction, td->lr, td );
 
-	unsigned int uisp = (unsigned int) 0x01d00000;  // td->sp;	//This is right, judging by memory allocation
+	unsigned int uisp = (unsigned int) td->sp;			//This is right, judging by memory allocation
 	unsigned int uini = (unsigned int) td->next_instruction;	//This is right, judging by the map file and arithmetic :)
 	unsigned int uilr = (unsigned int) td->lr;			//This is right, judging by the map file
 	unsigned int uitd = (unsigned int) td;				//This seems to be right...
@@ -216,42 +216,7 @@ int activate( int tid, Kern_Globals *GLOBALS ) {
 	bwprintf( COM2, "activate. UINTs. td->sp: %x ; td->next_instruction: %x ; td->lr: %x ; td: %x \n", uisp, uini, uilr, uitd );
 
 	//Executing using link register
-	execute_user_task(uisp, uini, uitd);
-
-	//Executing using next instruction
-	//execute_user_task(uisp, uini, uitd);
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-/*	// Save kernel registers
-	asm (	"mov	ip, sp"																								"\n\t" );
-	asm (	"stmfd	sp!, {r4, r5, r6, r7, r8, r9, r10, fp, ip, lr, pc}"	"\n\t" );
-	
-	// Set PSR of the task to be activated
-	asm ( "msr	spsr, %0" 																							"\n\t"
-				:: "r" (td->spsr) );
-
-	// Set LR to jump to the next active process
-	asm ( "mov	lr, %0" 																								"\n\t"
-				:: "r" (td->lr) );
-
-	// Switch to system mode
-	asm ( "msr	cpsr, #0xdf" 																					"\n\t" );
-	
-	// Set stack pointer of the active process
-	asm ( "mov 	sp, %0" 																							"\n\t"
-				:: "r" (td->sp) );
-
-	// Load all process registers from *it's* stack
-	asm ( "ldmfd sp!, {r0-r12, lr}" 																	"\n\t");
-
-	// go back to supervisor mode
-	asm ( "msr cpsr, #0xd3"																						"\n\t");
-	
-	// Jump to start executing active task
-	// NOTE:this should set cpsr after the jump to contents of spsr 
-	asm ( "movs pc, lr"																								"\n\t");*/
-///////////////////////////////////////////////////////////////////////////////////////////////////
+	execute_user_task(uisp, uilr, uitd);
 
 	// TODO: return the interrupt ID
 	return 0;

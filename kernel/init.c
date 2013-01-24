@@ -20,9 +20,57 @@ void init_task_descriptors( Kern_Globals *KERN_GLOBALS ) {
 		// Setting the Task ID
 		td->tid = tid;
 		// Setting stack pointer to give each task the same address space
-		td->sp = (int *)( TASKS_MEMORY_START - (tid * TASKS_MEMORY_PER_INSTANCE) );
+		td->sp = (int *)( TASKS_MEMORY_START - (tid * TASKS_MEMORY_PER_INSTANCE) - 3 );		// DIRTY HACK!!!
 		// Setting function pointer
-		td->fp = td->sp;
+		td->fp = td->sp;		
+		
+		// Initializing the stack////////////////////////////////////////////////
+		int *temp_sp = td->sp;
+		temp_sp--;
+
+		//DEBUGGING
+		bwprintf( COM2, "Temp stack: %x\n\r", temp_sp);
+
+		// SPSR in the user mode with everything turned off
+		*temp_sp = 0x10;
+		//DEBUGGING
+		bwprintf( COM2, "Temp stack assignment: %x\n\r", *temp_sp);
+		temp_sp--;
+		
+		// Assigning random values to the registers
+		int i;
+		for(i=0; i < 10 ; i++){
+			*temp_sp = i;
+
+			//DEBUGGING
+			bwprintf( COM2, "Temp stack random assignment: %x\n\r", *temp_sp);
+
+			temp_sp--;
+		}
+		
+		// Function pointer
+		*temp_sp = *(td->fp);
+
+		//DEBUGGING
+		bwprintf( COM2, "Temp stack FP assignment: %x\n\r", *temp_sp);
+
+		temp_sp--;
+
+		*temp_sp = 11;
+
+		//DEBUGGING
+		bwprintf( COM2, "Temp stack assignment 11: %x\n\r", *temp_sp);
+
+		temp_sp--;
+
+		*temp_sp = 0;
+
+		//DEBUGGING
+		bwprintf( COM2, "Temp stack assignment sp: %x\n\r", *temp_sp);
+
+		//CHECK THIS LATER... JUST IN CASE
+		td->sp = temp_sp;
+
 		// Setting the state of the task
 		td->state = FREE_TASK;
 	}

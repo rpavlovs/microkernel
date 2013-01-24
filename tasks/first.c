@@ -12,12 +12,12 @@ void other_task() {
 
 
 // first user task gets launched with priority 8
-void first_task() {
+void first_stub_task() {
 	bwprintf( COM2, "First: Howdy, user!\n\r");
 }
 
 // first user task gets launched with priority 8
-void first_real_task() {
+void first_task() {
 	int tid;
 	
 	tid = Create( 1, other_task);

@@ -3,6 +3,10 @@
 #include "lib/bwio.h"
 #include "kernel/helpers.h"
 #include "config/mem_init.h"
+#include "kernel/syscall.h"
+#include "kernel/sysfuncs.h"
+
+extern int execute_user_task(unsigned int userTaskSP, unsigned int nextInstruction, unsigned int taskID);
 
 __asm__(
 	/*
@@ -42,16 +46,7 @@ __asm__(
 	// Pass control to the user task. 
 	"LDR	r0, [ sp, #0 ]\n\t"		// Loads the previously stored SPSR.   
 	"ADD	sp, sp, #4\n\t"			// "Remove" the top elements of the stack that won't be used anymore. (Kernel's stack). 
-
-	// Debugging
-	/*"MOV	r4, r0\n\t"
-	"MOV	r0, #1\n\t"
-	"MOV	r1, r4\n\t"
-	"BL	bwputr\n\t"*/
-
 	"MSR	cpsr, r0\n\t"  			// Switch to user mode. 
-
-
 	"LDR	r0, [ sp, #-4 ]\n\t"		// Remove the temporarily stored r0. 
 	"ADD	sp, sp, #4\n\t"			// Remove the stored "counter"
 	"LDR	PC, [ sp, #-4 ]\n\t"		// Jump to the next instruction in the user task. 
@@ -62,11 +57,114 @@ __asm__(
 	"MOV	r0, #1\n\t"
 	"MOV	r1, r4\n\t"
 	"BL	bwputr\n\t"*/
-
-
 );
 
-extern void execute_user_task(unsigned int userTaskSP, unsigned int nextInstruction, unsigned int taskID);
+// TODO: Refactor this to a header file.
+#define MAX_NUM_ARGUMENTS 10
+
+// TODO: Refactor this functions.
+void RetrieveSysCallArgs( int *sysCallArguments, int numArguments, unsigned int taskSP )
+{
+	//DEBUGGING
+	bwprintf( COM2, "RetrieveSysCallArgs: ENTERED");
+
+	// TODO: Add an assertion here. 
+
+	// The arguments are stored in the memory addresses that hold R0-R3 of the user task. 
+	// If there are more arguments they are stored in the user task's stack. 	
+	int *ptr = ( int * ) taskSP; 
+	//ptr += 13; 	// Position it at the R0 address. // TODO: Set this as a constant. 
+
+
+	// DEBUGGING
+	int j; 
+	for ( j = 0; j < 20; j++ )
+	{
+		bwprintf( COM2, "DEB VALUES. Stack value: %x\n", *(ptr + j) );
+	}
+	
+	int i; 
+	for ( i = 0; i < numArguments && i < MAX_NUM_ARGUMENTS ; i++ )
+	{
+		// Copy the arguments.
+		*( sysCallArguments++ ) = *( ptr++ ); 
+
+		// The last register that holds arguments. The next place to look arguments is the normal user task stack. 
+		if ( i == 3 ) 
+		{
+			// TODO: Modify this for more than 4 arguments. 
+		}
+	}
+}
+
+void SetSysCallReturn( int returnValue, unsigned int taskSP )
+{
+	//DEBUGGING
+	bwprintf( COM2, "SetSysCallReturn: ENTERED");
+
+	// The return value is in the address that currently holds R0 for the task. 
+	int *ptr = ( int * ) taskSP; 
+	//ptr += 13; 	// Position the pointer at the R0 address. // TODO: Set this as a constant. 
+
+	*( ptr ) = returnValue; 
+}
+
+void handle_request( int request, Kern_Globals *GLOBALS ) 
+{
+	//DEBUGGING
+	bwprintf( COM2, "handle_request: ENTERED");
+
+	//DEBUGGING
+	//bwprintf( COM2, "Handle Request. Request ID: %d Current Task ID: %d \n", request, GLOBALS->schedule.last_active_tid );
+
+	// Create a placeholder for the arguments.
+	int sysCallArguments[ MAX_NUM_ARGUMENTS ]; //POINTER???
+
+	// The arguments are retrieved.
+	int numArguments = 2;
+	Task_descriptor *td = &( GLOBALS->tasks[ GLOBALS->schedule.last_active_tid ]);
+	RetrieveSysCallArgs( sysCallArguments, numArguments, ( unsigned int ) td->sp ); 
+	
+	//bwprintf( COM2, "Handle Request. First arg: %x  Second arg:  %x \n", sysCallArguments[0], sysCallArguments[1] );
+
+	int new_tid;
+
+	switch ( request )
+	{
+		case CREATE_SYSCALL:		// Create
+			new_tid = sys_create(sysCallArguments[0], (void *) sysCallArguments[1], GLOBALS);
+			
+			//DEBUGGING
+			bwprintf( COM2, "The new_tid: %d\n", new_tid);
+
+			break;
+		case MYTID_SYSCALL:  		// MyTid
+			break;
+		case MYPARENTTID_SYSCALL: 	// MyParentTid
+			break;
+		case PASS_SYSCALL: 		// Pass
+			break;
+		case EXIT_SYSCALL:		// Exit
+			break;
+	}
+
+	// The return value is put in the user task's stack. 
+
+
+
+	//System function call
+	//Get the return value
+
+	//SetSysCallReturn
+
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+//
+//
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 // Initialize Schedule struct
 void init_schedule( int first_task_priority, void (*first_task_code) ( ), Kern_Globals *GLOBALS )
@@ -92,6 +190,7 @@ void init_schedule( int first_task_priority, void (*first_task_code) ( ), Kern_G
 	Task_descriptor *first_td = &(GLOBALS->tasks[0]);
 	//Setting task state to READY
 	first_td->state = READY_TASK;
+
 	//Setting priority of the task
 	first_td->priority = first_task_priority;
 	//Setting link register to the address of task code
@@ -109,58 +208,12 @@ void init_schedule( int first_task_priority, void (*first_task_code) ( ), Kern_G
 	sched->last_issued_tid = 0;
 }
 
-// Add task to scheduler as ready to run
-int add_task( int priority, void (*code) ( ), Kern_Globals *GLOBALS ) {
-	
-	// ERROR: Scheduler was given a wrong task priority.
-	if( priority < 0 || priority >= SCHED_NUM_PRIORITIES ) return -1;
-	
-	// Getting the schedule
-	Schedule *sched = &(GLOBALS->schedule);
-	int new_tid;
-	Task_descriptor *new_td;
-
-	// Find a free task descriptor for a new task.
-	new_tid = sched->last_issued_tid + 1;
-	if( new_tid >= MAX_NUM_TASKS ) new_tid = 0;
-	while( GLOBALS->tasks[new_tid].state != FREE_TASK ) {
-		// ERROR: Scheduler is out of task descriptors. 
-		if( ++new_tid >= MAX_NUM_TASKS ) return -2;
-	}
-
-	//Updating the schedule
-	sched->last_issued_tid = new_tid;
-	
-	// Setup new task descriptor
-	new_td = &(GLOBALS->tasks[new_tid]);
-	new_td->state = READY_TASK;
-	new_td->priority = priority;
-	new_td->lr = (int *)code;
-
-	// Add new task descriptor to a proper scheduler queue
-	Task_queue *queue = &(sched->priority[priority]);
-
-	// ASSERT: Verifying the size of the queue
-	assert( queue->size < SCHED_QUEUE_LENGTH, "Scheduler queue must not be full" );
-
-	// If the queue is empty or the newest pointer is at the end of the td_ptrs buffer
-	// put the next td_ptr at the beginning on the buffer  
-	if (queue->size == 0 || ++(queue->newest) >= SCHED_QUEUE_LENGTH) queue->newest = 0;
-	
-	// If the queue was empty then newest and oldest elements are the same 
-	// and are at the beginning of the buffer
-	if (queue->size == 0) queue->oldest = 0;
-
-	// Updating the queue
-	queue->size++;
-	queue->td_ptrs[queue->newest] = new_td;
-
-	return new_tid;
-}
-
 // Return:
 // tid of the next task to run
 int schedule( Kern_Globals * GLOBALS) {
+	//DEBUGGING
+	bwprintf( COM2, "schedule: ENTERED" );
+
 	int p = SCHED_NUM_PRIORITIES - 1;
 
 	// If there are no tasks in all priority queues - PANIC
@@ -173,19 +226,22 @@ int schedule( Kern_Globals * GLOBALS) {
 	Task_queue *queue = &(GLOBALS->schedule.priority[p]);
 	
 	//DEBUGGING
-	bwprintf( COM2, "Schedule: Queue: %x\n\r", queue );
+	//bwprintf( COM2, "Schedule: Queue: %x\n\r", queue );
 
 	// TD of the task, which should run next
 	Task_descriptor *next_td = queue->td_ptrs[queue->oldest];
 
 	//DEBUGGING
-	bwprintf( COM2, "Schedule: TD: %x\n\r", next_td );
+	//bwprintf( COM2, "Schedule: TD: %x\n\r", next_td );
 
 	//DEBUGGING
-	bwprintf( COM2, "Schedule: TD->tid: %d\n\r", next_td->tid );
+	//bwprintf( COM2, "Schedule: TD->tid: %d\n\r", next_td->tid );
 
 	if( ++(queue->oldest) >= SCHED_QUEUE_LENGTH ) queue->oldest = 0;
 	--(queue->size);
+
+	//Setting the last active task in the GLOBALS
+	GLOBALS->schedule.last_active_tid = next_td->tid;
 
 	return next_td->tid;
 }
@@ -195,26 +251,27 @@ int schedule( Kern_Globals * GLOBALS) {
 // interrupt ID of the first recieved interrupt
 int activate( int tid, Kern_Globals *GLOBALS ) {
 	//DEBUGGING
+	bwprintf( COM2, "activate: ENTERED");
 	bwprintf( COM2, "activate: TID: %d\n\r", tid );
 	
 	// Getting TD of the specified task
 	Task_descriptor *td = &(GLOBALS->tasks[tid]);
 
 	//DEBUGGING
-	bwprintf( COM2, "activate: TD: %x\n\r", td );
+	//bwprintf( COM2, "activate: TD: %x\n\r", td );
 	
 	//DEBUGGING
-	bwprintf( COM2, "activate: TD->state: %d\n\r", td->state );
+	//bwprintf( COM2, "activate: TD->state: %d\n\r", td->state );
 
 	// ASSERT: the task should be in the READY state
 	assert( td->state == READY_TASK, "It should only be possible to activate a READY task" );
 	td->state = ACTIVE_TASK;
 
 	//DEBUGGING
-	bwprintf( COM2, "activate: BEFORE ASSEMBLY!!!\n\r" );
+	//bwprintf( COM2, "activate: BEFORE ASSEMBLY!!!\n\r" );
 
 	//DEBUGGING
-	bwprintf( COM2, "activate. SINTs. td->sp: %x ; td->next_instruction: %x ; td->lr: %x ; td: %x \n", td->sp, td->next_instruction, td->lr, td );
+	//bwprintf( COM2, "activate. SINTs. td->sp: %x ; td->next_instruction: %x ; td->lr: %x ; td: %x \n", td->sp, td->next_instruction, td->lr, td );
 
 	unsigned int uisp = (unsigned int) td->sp;			//This is right, judging by memory allocation
 	unsigned int uini = (unsigned int) td->next_instruction;	//This is right, judging by the map file and arithmetic :)
@@ -222,26 +279,24 @@ int activate( int tid, Kern_Globals *GLOBALS ) {
 	unsigned int uitd = (unsigned int) td;				//This seems to be right...
 
 	//DEBUGGING
-	bwprintf( COM2, "activate. UINTs. td->sp: %x ; td->next_instruction: %x ; td->lr: %x ; td: %x \n", uisp, uini, uilr, uitd );
+	//bwprintf( COM2, "activate. UINTs. td->sp: %x ; td->next_instruction: %x ; td->lr: %x ; td: %x \n", uisp, uini, uilr, uitd );
 
 	//Executing using link register
-	execute_user_task(uisp, uilr, uitd);
+	int request = execute_user_task(uisp, uilr, uitd);
 
-	// TODO: return the interrupt ID
-	return 0;
+	//DEBUGGING
+	bwprintf( COM2, "activate. Request ID: %d\n", request );
+
+	return request;
 }
 
 int getNextRequest( Kern_Globals *GLOBALS ) 
 {
+	//DEBUGGING
+	bwprintf( COM2, "getNextRequest. ENTERED");
+
 	return activate( schedule( GLOBALS ), GLOBALS );
 }
-
-void handle_request( int request, Kern_Globals *GLOBALS ) {
-	
-}
-
-
-
 
 
 

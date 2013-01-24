@@ -8,6 +8,8 @@
 
 #define SWI_VECTOR 0x8
 
+extern void swi_main_handler();
+
 __asm__(
 	/*
 		This handler is executed whenever there's a software interrupt. 
@@ -40,19 +42,47 @@ __asm__(
 	// Restore the kernel state
 	"LDMFD	sp!, { r4-r11 }\n\t"
 
-	// Execute the C system call handler
+	/*// Execute the C system call handler
 	"LDR	r2, [ lr, #-4 ]\n\t"		// Store the next instruction to run in the r1 so that it is stored later into the TR. 
 	"BIC	r2, r2, #0xff000000\n\t"	
 	"LDR	r3, [ sp, #0 ]\n\t"		// The pointer to the active TD is loaded into register 3.
+	"BL	ExecuteCSWIHandler\n\t"*/
+
+	// Execute the C system call handler. 
+	"LDR	r2, [ sp, #0 ]\n\t"		// The pointer to the active TD is loaded into register 2.
+	"LDR	r3, [ lr, #-4 ]\n\t"		// Store the next instruction to run in the r1 so that it is stored later into the TR. 
+	"BIC	r3, r3, #0xff000000\n\t"
+	"STR	r3, [ sp, #0 ]\n\t"		// This variable is stored in local memory to prevent it from being deleted by the function call. 
 	"BL	ExecuteCSWIHandler\n\t"
+	"LDR	r0, [ sp, #0 ]\n\t"		// Set the return value.
 	
 	// Return control to the kernel C code. 
 	"sub	sp, fp, #12\n\t"
 	"LDMFD	sp, { fp, sp, pc }\n\t"
 );
 
-extern void swi_main_handler();
+void ExecuteCSWIHandler( unsigned int taskSP, unsigned int nextAddress, unsigned int activeTD )
+{
+	//DEBUGGING
+	bwprintf( COM2, "ExecuteCSWIHandler: ENTERED\n\r");
 
+	//DEBUGGING
+	//bwprintf( COM2, "kerxit.c: Updating Active Task   TaskSP: %d    ReturnValue: %d    SWIValue: %d    activeTID: %d .\n\r", taskSP, nextAddress, activeTD );
+
+	// Update the task descriptor
+	Task_descriptor *td = ( Task_descriptor * ) activeTD;
+	td->sp = ( int * ) taskSP;
+	td->next_instruction = nextAddress;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+//Initializations
+//
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+//Executed once during initialization
 int installSwiHandler( unsigned int handlerLoc, unsigned int *vector )
 {
 	unsigned int vec; 
@@ -69,47 +99,13 @@ int installSwiHandler( unsigned int handlerLoc, unsigned int *vector )
 	return 0; 
 }
 
-void ExecuteCSWIHandler( unsigned int taskSP, unsigned int nextAddress, unsigned int swiValue, unsigned int activeTID )
-{
-	bwprintf( COM2, "kerxit.c: Updating Active Task   TaskSP: %d    ReturnValue: %d    SWIValue: %d    activeTID: %d .\n\r", taskSP, nextAddress, swiValue, activeTID );
-
-	// Update the task descriptor	
-	Task_descriptor *td = ( Task_descriptor * ) activeTID; 
-	td->sp = ( int * ) taskSP; 
-	td->next_instruction = nextAddress;
-
-/*
-	#define CREATE_SYSCALL 0
-	#define MYTID_SYSCALL 1
-	#define MYPARENTTID_SYSCALL 2
-	#define PASS_SYSCALL 3
-	#define EXIT_SYSCALL 4
-*/
-
-
-	/*// Execute the right system call function. 
-	switch ( swiValue )
-	{
-		case: CREATE_SYSCALL		// Create
-			break;
-		case: MYTID_SYSCALL  		// MyTid
-			break;
-		case: MYPARENTTID_SYSCALL 	// MyParentTid
-			break;
-		case: PASS_SYSCALL 		// Pass
-			break;
-		case: EXIT_SYSCALL		// Exit
-			break;
-	}*/
-}
-
 // NOTE: Stacks grow downwards, with sp pointing to the empty spot;
 void init_task_descriptors( Kern_Globals *KERN_GLOBALS ) {
 	// Task ID
 	int tid;
 
 	//DEBUGGING
-	bwprintf( COM2, "Started initializing task descriptors...\n\r");
+	//bwprintf( COM2, "Started initializing task descriptors...\n\r");
 
 	for( tid = 0; tid < MAX_NUM_TASKS; tid++) 
 	{
@@ -136,7 +132,7 @@ void init_task_descriptors( Kern_Globals *KERN_GLOBALS ) {
 		
 		// Assigning random values to the registers
 		int i;
-		for(i=0; i < 10 ; i++){
+		for(i=0; i <= 10 ; i++){
 			*temp_sp = i;
 
 			/*//DEBUGGING
@@ -166,7 +162,7 @@ void init_task_descriptors( Kern_Globals *KERN_GLOBALS ) {
 		bwprintf( COM2, "Temp stack assignment sp: %x\n\r", *temp_sp);*/
 
 		//DEBUGGING
-		if(tid==0){
+		/*if(tid==0){
 
 			bwprintf( COM2, "Showing the first task's stack.\n\r");
 
@@ -176,7 +172,7 @@ void init_task_descriptors( Kern_Globals *KERN_GLOBALS ) {
 			}
 
 			bwprintf( COM2, "Showing the first task's stack.\n\r");
-		}
+		}*/
 
 		//CHECK THIS LATER... JUST IN CASE
 		td->sp = temp_sp;
@@ -214,29 +210,29 @@ void initialize( Kern_Globals *KERN_GLOBALS ) {
 	//bwsetfifo( COM2, OFF );
 
 	//Where is the kernel stack pointer right now?
-	bwprintf( COM2, "Kernel stack pointer: " );
+	/*bwprintf( COM2, "Kernel stack pointer: " );
 	asm (
 			"mov r0, #1"	"\n\t"
 			"mov r1, sp"	"\n\t"
 			"bl bwputr"		"\n\t"
 		);
-	bwprintf( COM2, "\n\r" );
+	bwprintf( COM2, "\n\r" );*/
 
 	installSwiHandler((unsigned int) swi_main_handler, (unsigned int) SWI_VECTOR);
 
 	//DEBUGGING
-	bwprintf( COM2, "Task descriptors are initialized.\n\r" );
+	//bwprintf( COM2, "Task descriptors are initialized.\n\r" );
 
 	init_task_descriptors( KERN_GLOBALS );
 
 	//DEBUGGING
-	bwprintf( COM2, "Task descriptors are initialized.\n\r" );
+	//bwprintf( COM2, "Task descriptors are initialized.\n\r" );
 
 	init_schedule( 8, first_task, KERN_GLOBALS );
 
 	//DEBUGGING
-	bwprintf( COM2, "Schedule is initialized\n\r" );
+	//bwprintf( COM2, "Schedule is initialized\n\r" );
 
 	//DEBUGGING
-	bwprintf( COM2, "Initialization is complete." );
+	//bwprintf( COM2, "Initialization is complete." );
 }

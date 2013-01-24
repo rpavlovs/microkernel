@@ -18,7 +18,7 @@ void first_stub_task() {
 // first user task gets launched with priority 8
 void first_task() {
 	//DEBUGGING
-	bwprintf( COM2, "FIRST TASK: entered\n\r");
+	bwprintf( COM2, "first_task: ENTERED\n\r");
 
 	int tid;
 	

@@ -41,7 +41,7 @@ typedef struct {
 //   	same task id.
 // • -1 – if the priority is invalid.
 // • -2 – if the kernel is out of task descriptors.
-int Create( int priority, void (*code) ( ) );
+extern int Create( int priority, void (*code) ( ) );
 
 // Name:
 // MyTid - find my task id.

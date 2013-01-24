@@ -47,6 +47,9 @@ typedef struct {
 	
 	// The latest tid scheduled to run
 	int last_issued_tid;
+
+	// The last activated tid
+	int last_active_tid;
 } Schedule; 
 
 typedef struct {
@@ -55,3 +58,33 @@ typedef struct {
 } Kern_Globals;
 
 #endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

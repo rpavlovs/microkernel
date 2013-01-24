@@ -5,7 +5,7 @@
 
 int Create( int priority, void (*code) ( ) ) {
 	//DEBUGGING
-	bwprintf( COM2, "Create (system call): ENTERED\n\r");
+	//bwprintf( COM2, "Create (system call): ENTERED\n\r");
 
 	//Syscall_args args;
 
@@ -17,31 +17,34 @@ int Create( int priority, void (*code) ( ) ) {
 
 	__asm__(
 		
-		"MOV	r0, #9\n\t"
+		//"MOV	r0, #9\n\t"
 		"swi	0\n\t"
 	); 	
 	//asm ( "swi\t%0"	"\n\t" :: "J" (CREATE_SYSCALL) );
 
-	return 0;
+	//return 0;
 }
 
 int MyTid( ) {
+	//DEBUGGING
+	bwprintf( COM2, "MyTid (system call): ENTERED\n\r");
 
-	Syscall_args args;
+	//Syscall_args args;
 
 	asm ( "swi\t%0"	"\n\t" :: "J" (MYTID_SYSCALL) );
 
-	return args.ret;
+	//return args.ret;
+	return 0;
 }
 
 
 int MyParentTid( ) {
 
-	Syscall_args args;
+	//Syscall_args args;
 
 	asm ( "swi\t%0"	"\n\t" :: "J" (MYPARENTTID_SYSCALL) );
 
-	return args.ret;
+	return 0; //args.ret;
 }
 
 

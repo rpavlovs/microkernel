@@ -13,6 +13,12 @@
 #define PASS_ARGS 		0
 #define EXIT_ARGS 		0
 
+#define CREATE_RETURN 		1
+#define MYTID_RETURN 		1
+#define MYPARENTTID_RETURN 	1
+#define PASS_RETURN 		0
+#define EXIT_RETURN		0
+
 typedef struct {
 
 	// Additional args for create syscall
@@ -41,7 +47,7 @@ typedef struct {
 //   	same task id.
 // • -1 – if the priority is invalid.
 // • -2 – if the kernel is out of task descriptors.
-extern int Create( int priority, void (*code) ( ) );
+int Create( int priority, void (*code) ( ) );
 
 // Name:
 // MyTid - find my task id.

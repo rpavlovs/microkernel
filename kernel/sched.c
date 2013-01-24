@@ -76,12 +76,12 @@ void RetrieveSysCallArgs( int *sysCallArguments, int numArguments, unsigned int 
 	//ptr += 13; 	// Position it at the R0 address. // TODO: Set this as a constant. 
 
 
-	// DEBUGGING
+	/*// DEBUGGING
 	int j; 
 	for ( j = 0; j < 20; j++ )
 	{
 		bwprintf( COM2, "DEB VALUES. Stack value: %x\n", *(ptr + j) );
-	}
+	}*/
 	
 	int i; 
 	for ( i = 0; i < numArguments && i < MAX_NUM_ARGUMENTS ; i++ )
@@ -120,43 +120,56 @@ void handle_request( int request, Kern_Globals *GLOBALS )
 	// Create a placeholder for the arguments.
 	int sysCallArguments[ MAX_NUM_ARGUMENTS ]; //POINTER???
 
-	// The arguments are retrieved.
-	int numArguments = 2;
 	Task_descriptor *td = &( GLOBALS->tasks[ GLOBALS->schedule.last_active_tid ]);
-	RetrieveSysCallArgs( sysCallArguments, numArguments, ( unsigned int ) td->sp ); 
 	
 	//bwprintf( COM2, "Handle Request. First arg: %x  Second arg:  %x \n", sysCallArguments[0], sysCallArguments[1] );
-
-	int new_tid;
+	
+	int returnValue;
+	unsigned int taskSP =  ( unsigned int ) td->sp;
 
 	switch ( request )
 	{
-		case CREATE_SYSCALL:		// Create
-			new_tid = sys_create(sysCallArguments[0], (void *) sysCallArguments[1], GLOBALS);
+		case CREATE_SYSCALL:
+			RetrieveSysCallArgs( sysCallArguments, CREATE_ARGS, taskSP);
+			returnValue = sys_create(sysCallArguments[0], (void *) sysCallArguments[1], GLOBALS);
+			SetSysCallReturn(returnValue, taskSP);
 			
 			//DEBUGGING
-			bwprintf( COM2, "The new_tid: %d\n", new_tid);
+			bwprintf( COM2, "new_tid: %d\n", returnValue);
 
 			break;
-		case MYTID_SYSCALL:  		// MyTid
+
+		case MYTID_SYSCALL:
+			returnValue = sys_mytid(td, GLOBALS);
+			SetSysCallReturn(returnValue, taskSP);
+
+			//DEBUGGING
+			bwprintf( COM2, "my_tid: %d\n", returnValue);
+
 			break;
-		case MYPARENTTID_SYSCALL: 	// MyParentTid
+		case MYPARENTTID_SYSCALL:
+			returnValue = sys_myparenttid(td, GLOBALS);
+			SetSysCallReturn(returnValue, taskSP);
+
+			//DEBUGGING
+			bwprintf( COM2, "my_tid: %d\n", returnValue);
+
 			break;
-		case PASS_SYSCALL: 		// Pass
+		case PASS_SYSCALL:
+			sys_pass(td, GLOBALS);
+
+			//DEBUGGING
+			bwprintf( COM2, "sys_pass is executed");
+
 			break;
-		case EXIT_SYSCALL:		// Exit
+		case EXIT_SYSCALL:
+			sys_exit(td, GLOBALS);
+
+			//DEBUGGING
+			bwprintf( COM2, "sys_exit is executed");
+	
 			break;
 	}
-
-	// The return value is put in the user task's stack. 
-
-
-
-	//System function call
-	//Get the return value
-
-	//SetSysCallReturn
-
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -212,7 +225,7 @@ void init_schedule( int first_task_priority, void (*first_task_code) ( ), Kern_G
 // tid of the next task to run
 int schedule( Kern_Globals * GLOBALS) {
 	//DEBUGGING
-	bwprintf( COM2, "schedule: ENTERED" );
+	bwprintf( COM2, "schedule: ENTERED\n" );
 
 	int p = SCHED_NUM_PRIORITIES - 1;
 
@@ -237,8 +250,23 @@ int schedule( Kern_Globals * GLOBALS) {
 	//DEBUGGING
 	//bwprintf( COM2, "Schedule: TD->tid: %d\n\r", next_td->tid );
 
+	// Deleting the task from the scheduler
 	if( ++(queue->oldest) >= SCHED_QUEUE_LENGTH ) queue->oldest = 0;
 	--(queue->size);
+
+	/*//If there are more than one task in the queue
+	if(queue->size > 1)
+	{
+		// Removing the first task from the queue
+		if (++(queue->oldest) >= SCHED_QUEUE_LENGTH) queue->oldest = 0;
+
+		// Updating the task's state
+		next_td->state = READY_TASK;
+
+		// Adding the task to the end of the queue
+		if (++(queue->newest) >= SCHED_QUEUE_LENGTH) queue->newest = 0;
+		queue->td_ptrs[queue->newest] = next_td;
+	}*/
 
 	//Setting the last active task in the GLOBALS
 	GLOBALS->schedule.last_active_tid = next_td->tid;
@@ -251,7 +279,7 @@ int schedule( Kern_Globals * GLOBALS) {
 // interrupt ID of the first recieved interrupt
 int activate( int tid, Kern_Globals *GLOBALS ) {
 	//DEBUGGING
-	bwprintf( COM2, "activate: ENTERED");
+	bwprintf( COM2, "activate: ENTERED\n");
 	bwprintf( COM2, "activate: TID: %d\n\r", tid );
 	
 	// Getting TD of the specified task
@@ -290,10 +318,10 @@ int activate( int tid, Kern_Globals *GLOBALS ) {
 	return request;
 }
 
-int getNextRequest( Kern_Globals *GLOBALS ) 
+int getNextRequest( Kern_Globals *GLOBALS )
 {
 	//DEBUGGING
-	bwprintf( COM2, "getNextRequest. ENTERED");
+	bwprintf( COM2, "getNextRequest. ENTERED\n");
 
 	return activate( schedule( GLOBALS ), GLOBALS );
 }

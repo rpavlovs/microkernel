@@ -4,9 +4,11 @@
 #include "config/ts7200.h"
 
 void other_task() {
-	bwprintf( COM2, "My tid: %d\tMy parent tid:%d\n\r", MyTid(), MyParentTid());
+	int mytid = MyTid();
+	int myparenttid = MyParentTid();
+	bwprintf( COM2, "My tid: %d\tMy parent tid:%d\n\r", mytid, myparenttid);
 	Pass();
-	bwprintf( COM2, "My tid: %d\tMy parent tid:%d\n\r", MyTid(), MyParentTid());	
+	bwprintf( COM2, "My tid: %d\tMy parent tid:%d\n\r", mytid, myparenttid);	
 	Exit();
 }
 

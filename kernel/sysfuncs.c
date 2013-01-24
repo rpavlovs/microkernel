@@ -5,7 +5,7 @@
 
 int sys_create( int priority, void (*code) ( ), Kern_Globals *GLOBALS ) {
 	//DEBUGGING
-	bwprintf( COM2, "sys_create: ENTERED");
+	bwprintf( COM2, "sys_create: ENTERED\n");
 
 	// ERROR: Scheduler was given a wrong task priority.
 	if( priority < 0 || priority >= SCHED_NUM_PRIORITIES ) return -1;
@@ -55,21 +55,35 @@ int sys_create( int priority, void (*code) ( ), Kern_Globals *GLOBALS ) {
 
 int sys_mytid(Task_descriptor *td, Kern_Globals *GLOBALS )
 {
+	//DEBUGGING
+	bwprintf( COM2, "sys_mytid: ENTERED\n");
+
 	sys_reschedule(td, GLOBALS);
 	return td->tid;
 }
 
 int sys_myparenttid(Task_descriptor *td, Kern_Globals *GLOBALS )
 {
+	//DEBUGGING
+	bwprintf( COM2, "sys_myparenttid: ENTERED\n");
+
 	sys_reschedule(td, GLOBALS);
 	return td->parent_tid;
 }
 
-void sys_pass(Task_descriptor *td, Kern_Globals *GLOBALS ) {
+void sys_pass(Task_descriptor *td, Kern_Globals *GLOBALS )
+{
+	//DEBUGGING
+	bwprintf( COM2, "sys_pass: ENTERED\n");
+
 	sys_reschedule(td, GLOBALS);
 }
 
-void sys_exit(Task_descriptor *td, Kern_Globals *GLOBALS ) {
+void sys_exit(Task_descriptor *td, Kern_Globals *GLOBALS ) 
+{
+	//DEBUGGING
+	bwprintf( COM2, "sys_exit: ENTERED\n");
+
 	// Getting task properties
 	int tid = td->tid;
 	int priority = td->priority;
@@ -89,8 +103,8 @@ void sys_exit(Task_descriptor *td, Kern_Globals *GLOBALS ) {
 }
 
 void sys_reschedule(Task_descriptor *td, Kern_Globals *GLOBALS ){
-	// If the task is alone - do nothing
-	// Else enqueue -dequeue
+	//DEBUGGING
+	bwprintf( COM2, "sys_reschedule: ENTERED\n");
 
 	// Getting task properties
 	int tid = td->tid;
@@ -98,11 +112,15 @@ void sys_reschedule(Task_descriptor *td, Kern_Globals *GLOBALS ){
 	
 	// Getting the schedule
 	Schedule *sched = &(GLOBALS->schedule);
+	// Getting the priority queue
 	Task_queue *pqueue = &(sched->priority[priority]);
 
 	//If there are more than one task in the queue
 	if(pqueue->size > 1)
 	{
+		//DEBUGGING
+		bwprintf( COM2, "sys_reschedule: MORE THAN 1 TASK\n");
+
 		// Removing the first task from the queue
 		if (++(pqueue->oldest) >= SCHED_QUEUE_LENGTH) pqueue->oldest = 0;
 
@@ -110,7 +128,7 @@ void sys_reschedule(Task_descriptor *td, Kern_Globals *GLOBALS ){
 		td->state = READY_TASK;
 
 		// Adding the task to the end of the queue
-		(pqueue->newest)++;
+		if (++(pqueue->newest) >= SCHED_QUEUE_LENGTH) pqueue->newest = 0;
 		pqueue->td_ptrs[pqueue->newest] = td;
 	}
 }

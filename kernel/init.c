@@ -86,7 +86,8 @@ void ExecuteCSWIHandler( unsigned int taskSP, unsigned int nextAddress, unsigned
 	#define EXIT_SYSCALL 4
 */
 
-	// Execute the right system call function. 
+
+	/*// Execute the right system call function. 
 	switch ( swiValue )
 	{
 		case: CREATE_SYSCALL		// Create
@@ -99,7 +100,7 @@ void ExecuteCSWIHandler( unsigned int taskSP, unsigned int nextAddress, unsigned
 			break;
 		case: EXIT_SYSCALL		// Exit
 			break;
-	}
+	}*/
 }
 
 // NOTE: Stacks grow downwards, with sp pointing to the empty spot;

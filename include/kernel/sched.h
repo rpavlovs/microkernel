@@ -30,5 +30,6 @@ int add_task( int, void (*) ( ), Kern_Globals * );
 // 
 int getNextRequest( Kern_Globals * );
 
+void handle_request( int, Kern_Globals * );
 
 #endif

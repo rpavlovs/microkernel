@@ -131,7 +131,7 @@ void handle_request( int request, Kern_Globals *GLOBALS )
 	{
 		case CREATE_SYSCALL:
 			RetrieveSysCallArgs( sysCallArguments, CREATE_ARGS, taskSP);
-			returnValue = sys_create(sysCallArguments[0], (void *) sysCallArguments[1], GLOBALS);
+			returnValue = sys_create(sysCallArguments[0], (void *) sysCallArguments[1], td, GLOBALS);
 			SetSysCallReturn(returnValue, taskSP);
 			
 			//DEBUGGING
@@ -177,7 +177,6 @@ void handle_request( int request, Kern_Globals *GLOBALS )
 //
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 // Initialize Schedule struct
 void init_schedule( int first_task_priority, void (*first_task_code) ( ), Kern_Globals *GLOBALS )
@@ -251,8 +250,8 @@ int schedule( Kern_Globals * GLOBALS) {
 	//bwprintf( COM2, "Schedule: TD->tid: %d\n\r", next_td->tid );
 
 	// Deleting the task from the scheduler
-	if( ++(queue->oldest) >= SCHED_QUEUE_LENGTH ) queue->oldest = 0;
-	--(queue->size);
+	//if( ++(queue->oldest) >= SCHED_QUEUE_LENGTH ) queue->oldest = 0;
+	//--(queue->size);
 
 	/*//If there are more than one task in the queue
 	if(queue->size > 1)

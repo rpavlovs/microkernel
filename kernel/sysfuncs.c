@@ -3,7 +3,7 @@
 #include "kernel/helpers.h"
 #include "lib/bwio.h"
 
-int sys_create( int priority, void (*code) ( ), Kern_Globals *GLOBALS ) {
+int sys_create( int priority, void (*code) ( ), Task_descriptor *td, Kern_Globals *GLOBALS ) {
 	//DEBUGGING
 	bwprintf( COM2, "sys_create: ENTERED\n");
 
@@ -49,6 +49,9 @@ int sys_create( int priority, void (*code) ( ), Kern_Globals *GLOBALS ) {
 	// Updating the queue
 	queue->size++;
 	queue->td_ptrs[queue->newest] = new_td;
+
+	// Rescheduling the task
+	sys_reschedule(td, GLOBALS);
 
 	return new_tid;
 }

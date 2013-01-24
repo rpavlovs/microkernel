@@ -1,6 +1,6 @@
 #include "kernel/kernel_globals.h"
 
-int sys_create( int priority, void (*code) ( ), Kern_Globals * );
+int sys_create( int priority, void (*code) ( ), Task_descriptor *, Kern_Globals * );
 
 int sys_mytid(Task_descriptor *, Kern_Globals * );
 

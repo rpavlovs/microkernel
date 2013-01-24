@@ -9,3 +9,5 @@ int sys_myparenttid(Task_descriptor *, Kern_Globals * );
 void sys_pass(Task_descriptor *, Kern_Globals * );
 
 void sys_exit(Task_descriptor *, Kern_Globals * );
+
+void sys_reschedule(Task_descriptor *, Kern_Globals * );

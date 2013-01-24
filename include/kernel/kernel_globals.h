@@ -7,10 +7,10 @@
 
 #define MAX_NUM_TASKS	100
 
-#define READY_TASK 		0
+#define READY_TASK 	0
 #define ACTIVE_TASK 	1
 #define ZOMBIE_TASK 	2
-#define FREE_TASK 		3
+#define FREE_TASK 	3
 
 
 typedef struct Kern_Globals GLOBALS;

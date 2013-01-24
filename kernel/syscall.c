@@ -1,4 +1,5 @@
 #include "kernel/syscall.h"
+#include "lib/bwio.h"
 
 int Create( int priority, void (*code) ( ) ) {
 
@@ -6,6 +7,9 @@ int Create( int priority, void (*code) ( ) ) {
 
 	args.priority = priority;
 	args.code = code;
+
+	//DEBUGGING
+	bwprintf( COM2, "CREATE: before SWI\n\r" );
 
 	asm ( "swi\t%0"	"\n\t" :: "J" (CREATE_SYSCALL) );
 

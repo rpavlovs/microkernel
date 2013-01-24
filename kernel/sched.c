@@ -42,7 +42,16 @@ __asm__(
 	// Pass control to the user task. 
 	"LDR	r0, [ sp, #0 ]\n\t"		// Loads the previously stored SPSR.   
 	"ADD	sp, sp, #4\n\t"			// "Remove" the top elements of the stack that won't be used anymore. (Kernel's stack). 
+
+	// Debugging
+	/*"MOV	r4, r0\n\t"
+	"MOV	r0, #1\n\t"
+	"MOV	r1, r4\n\t"
+	"BL	bwputr\n\t"*/
+
 	"MSR	cpsr, r0\n\t"  			// Switch to user mode. 
+
+
 	"LDR	r0, [ sp, #-4 ]\n\t"		// Remove the temporarily stored r0. 
 	"ADD	sp, sp, #4\n\t"			// Remove the stored "counter"
 	"LDR	PC, [ sp, #-4 ]\n\t"		// Jump to the next instruction in the user task. 

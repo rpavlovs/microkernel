@@ -10,3 +10,7 @@ void panic( char * panic_reason ) {
 	bwprintf( COM2, "Kernel panic: %s\n\r", panic_reason );
 	for( ; ; );
 }
+
+void debug( char * msg ) {
+	bwprintf( COM2, "DEBUG: %s\n\r", msg );
+}

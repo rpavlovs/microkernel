@@ -5,4 +5,6 @@ void assert( int, char *);
 
 void panic( char *);
 
+void debug( char *);
+
 #endif

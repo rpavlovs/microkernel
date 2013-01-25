@@ -12,6 +12,8 @@
 #define ZOMBIE_TASK 	2
 #define FREE_TASK 	3
 
+#define MAX_NUM_ARGUMENTS 10
+
 
 typedef struct Kern_Globals GLOBALS;
 

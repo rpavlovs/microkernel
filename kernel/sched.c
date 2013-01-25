@@ -11,14 +11,16 @@ extern int execute_user_task(unsigned int userTaskSP, unsigned int nextInstructi
 __asm__(
 	/*
 		execute_user_task: 
-		This method should be executed whenever the kernel wants to return control to an user task. 
-		It performs the opposite task to the swi_main_handler. 
+		This method should be executed whenever the kernel wants to return control
+		to an user task. It performs the opposite task to the swi_main_handler. 
 		Parameters:
 		- The SP of the user task.  
 		- The next instruction to execute in the user task.
 		- The TID of the current ( active ) user task. 
 	*/
-	"\nexecute_user_task:\n\t"
+
+	"\n"
+	"execute_user_task:"											"\n\t"
 
 	// Store the information about the kernel as would happen in a normal task. 
 	"MOV	ip, sp"															"\n\t"
@@ -37,55 +39,60 @@ __asm__(
 
 	// The task's SPSR is loaded.
 	"LDR	r3, [ r0, #14*4 ]"									"\n\t"
-	"STR	r1, [ r0, #14*4 ]\n\t"		// The next instruction to execute in the user task.	
-	"STR	r3, [ sp, #0 ]\n\t"		// The task's SPSR
+
+	// The next instruction to execute in the user task.
+	"STR	r1, [ r0, #14*4 ]"									"\n\t"
+
+	// The task's SPSR		
+	"STR	r3, [ sp, #0 ]"											"\n\t"
 
 	// Load the state of the task. 
-	"MSR	cpsr_c, #0x1F\n\t"		// Switch to system mode. 
-	"MOV	sp, r0\n\t"			
-	"LDMFD	sp!, { r0-r12, lr }\n\t"	
-	"STR	r0, [ sp, #-4 ]\n\t"		// Temporarily store the r0 (to be able to use this registry). 
-	"MSR	cpsr_c, #0x13\n\t"		// Return to supervisor mode. 
+	// 
+	// Switch to system mode.
+	"MSR	cpsr_c, #0x1F"											"\n\t" 
+	"MOV	sp, r0"															"\n\t"			
+	"LDMFD	sp!, { r0-r12, lr }"							"\n\t"
+	
+	// Temporarily store the r0 (to be able to use this registry).
+	"STR	r0, [ sp, #-4 ]"										"\n\t"
 
-	// Pass control to the user task. 
-	"LDR	r0, [ sp, #0 ]\n\t"		// Loads the previously stored SPSR.   
-	"ADD	sp, sp, #4\n\t"			// "Remove" the top elements of the stack that won't be used anymore. (Kernel's stack). 
-	"MSR	cpsr, r0\n\t"  			// Switch to user mode. 
-	"LDR	r0, [ sp, #-4 ]\n\t"		// Remove the temporarily stored r0. 
-	"ADD	sp, sp, #4\n\t"			// Remove the stored "counter"
-	"LDR	PC, [ sp, #-4 ]\n\t"		// Jump to the next instruction in the user task. 
+	// Return to supervisor mode.  
+	"MSR	cpsr_c, #0x13"											"\n\t"
 
-	/*
-	// Debugging
-	"MOV	r4, r0\n\t"
-	"MOV	r0, #1\n\t"
-	"MOV	r1, r4\n\t"
-	"BL	bwputr\n\t"*/
+	// Pass control to the user task.
+	// 
+	// Loads the previously stored SPSR. 
+	"LDR	r0, [ sp, #0 ]"											"\n\t"
+	
+	// "Remove" the top elements of the stack that won't be used anymore.
+	// (Kernel's stack).	  
+	"ADD	sp, sp, #4"													"\n\t"
+	
+	// Switch to user mode.			
+	"MSR	cpsr, r0"														"\n\t"
+
+	// Remove the temporarily stored r0. 
+	"LDR	r0, [ sp, #-4 ]"										"\n\t"
+
+	// Remove the stored "counter"
+	"ADD	sp, sp, #4"													"\n\t"
+
+	// Jump to the next instruction in the user task.
+	"LDR	PC, [ sp, #-4 ]"										"\n\t"
+
 );
 
-// TODO: Refactor this to a header file.
-#define MAX_NUM_ARGUMENTS 10
 
-// TODO: Refactor this functions.
 void RetrieveSysCallArgs( int *sysCallArguments, int numArguments, unsigned int taskSP )
 {
 	// bwprintf( COM2, "RetrieveSysCallArgs: ENTERED\n");
 
-	// TODO: Add an assertion here. 
+	// TODO: Add an assertion here.
 
 	// The arguments are stored in the memory addresses that hold R0-R3 of the user task. 
 	// If there are more arguments they are stored in the user task's stack. 	
 	int *ptr = ( int * ) taskSP; 
-	//ptr += 13; 	// Position it at the R0 address. // TODO: Set this as a constant. 
 
-
-	/*// DEBUGGING
-	int j; 
-	for ( j = 0; j < 20; j++ )
-	{
-		bwprintf( COM2, "DEB VALUES. Stack value: %x\n", *(ptr + j) );
-	}*/
-	
 	int i; 
 	for ( i = 0; i < numArguments && i < MAX_NUM_ARGUMENTS ; i++ )
 	{
@@ -95,7 +102,7 @@ void RetrieveSysCallArgs( int *sysCallArguments, int numArguments, unsigned int 
 		// The last register that holds arguments. The next place to look arguments is the normal user task stack. 
 		if ( i == 3 ) 
 		{
-			// TODO: Modify this for more than 4 arguments. 
+			// TODO: Modify this for more than 4 arguments.
 		}
 	}
 }
@@ -106,24 +113,19 @@ void SetSysCallReturn( int returnValue, unsigned int taskSP )
 
 	// The return value is in the address that currently holds R0 for the task. 
 	int *ptr = ( int * ) taskSP; 
-	//ptr += 13; 	// Position the pointer at the R0 address. // TODO: Set this as a constant. 
+	//ptr += 13; 	// Position the pointer at the R0 address.
+	// TODO: Set this as a constant. 
 
 	*( ptr ) = returnValue; 
 }
 
 void handle_request( int request, Kern_Globals *GLOBALS ) 
 {
-	// bwprintf( COM2, "handle_request: ENTERED\n");
-
-	//DEBUGGING
-	//bwprintf( COM2, "Handle Request. Request ID: %d Current Task ID: %d \n", request, GLOBALS->schedule.last_active_tid );
 
 	// Create a placeholder for the arguments.
-	int sysCallArguments[ MAX_NUM_ARGUMENTS ]; //POINTER???
+	int sysCallArguments[ MAX_NUM_ARGUMENTS ];
 
 	Task_descriptor *td = &( GLOBALS->tasks[ GLOBALS->schedule.last_active_tid ]);
-	
-	//bwprintf( COM2, "Handle Request. First arg: %x  Second arg:  %x \n", sysCallArguments[0], sysCallArguments[1] );
 	
 	int returnValue;
 	unsigned int taskSP =  ( unsigned int ) td->sp;
@@ -132,38 +134,44 @@ void handle_request( int request, Kern_Globals *GLOBALS )
 	{
 		case CREATE_SYSCALL:
 			RetrieveSysCallArgs( sysCallArguments, CREATE_ARGS, taskSP);
-			returnValue = sys_create(sysCallArguments[0], (void *) sysCallArguments[1], td, GLOBALS);
+			
+			returnValue = sys_create( sysCallArguments[0],
+																(void *) sysCallArguments[1],
+																td, GLOBALS);
+			
 			SetSysCallReturn(returnValue, taskSP);
 			
-			// bwprintf( COM2, "new_tid: %d\n", returnValue);
+			debug( "CREATE_SYSCALL handled" );
 
 			break;
 
 		case MYTID_SYSCALL:
 			returnValue = sys_mytid(td, GLOBALS);
+			
 			SetSysCallReturn(returnValue, taskSP);
 
-			// bwprintf( COM2, "my_tid: %d\n", returnValue);
+			debug( "MYTID_SYSCALL handled" );
 
 			break;
 		case MYPARENTTID_SYSCALL:
 			returnValue = sys_myparenttid(td, GLOBALS);
 			SetSysCallReturn(returnValue, taskSP);
 
-			// bwprintf( COM2, "my_tid: %d\n", returnValue);
+			debug( "MYPARENTTID_SYSCALL handled" );
 
 			break;
 		case PASS_SYSCALL:
 			sys_pass(td, GLOBALS);
 
-			// bwprintf( COM2, "sys_pass is executed");
+			debug( "PASS_SYSCALL handled" );
 
 			break;
 		case EXIT_SYSCALL:
+
 			sys_exit(td, GLOBALS);
 
-			// bwprintf( COM2, "sys_exit is executed");
-	
+			debug( "EXIT_SYSCALL handled" );
+			
 			break;
 	}
 }
@@ -291,7 +299,6 @@ int activate( int tid, Kern_Globals *GLOBALS ) {
 	unsigned int uilr = (unsigned int) td->lr;			//This is right, judging by the map file
 	unsigned int uitd = (unsigned int) td;				//This seems to be right...
 
-	//DEBUGGING
 	//bwprintf( COM2, "activate. UINTs. td->sp: %x ; td->next_instruction: %x ; td->lr: %x ; td: %x \n", uisp, uini, uilr, uitd );
 
 	//Executing using link register

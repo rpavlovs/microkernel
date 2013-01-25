@@ -18,17 +18,17 @@ void first_task() {
 	int tid;
 	
 	tid = Create( 5, other_task);
-	bwprintf( COM2, "Created: %d.\n", tid);
+	bwprintf( COM2, "Created: %d.\n\r", tid);
 	
 	tid = Create( 5, other_task);
-	bwprintf( COM2, "Created: %d.\n", tid);
+	bwprintf( COM2, "Created: %d.\n\r", tid);
 
 	tid = Create( 12, other_task);
-	bwprintf( COM2, "Created: %d.\n", tid);
+	bwprintf( COM2, "Created: %d.\n\r", tid);
 
 	tid = Create( 15, other_task);
-	bwprintf( COM2, "Created: %d.\n", tid);
+	bwprintf( COM2, "Created: %d.\n\r", tid);
 
-	bwprintf( COM2, "First: exiting.\n");
+	bwprintf( COM2, "First: exiting.\n\r");
 	Exit();
 }

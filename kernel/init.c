@@ -10,7 +10,7 @@
 
 extern void swi_main_handler();
 
-__asm__(
+asm (
 	/*
 		This handler is executed whenever there's a software interrupt. 
 		The processor automatically leaves the system in the following state. 
@@ -24,63 +24,96 @@ __asm__(
 		5- Forces the PC to 0x08 (the default SWI handler). This address is in the
 		   vector table (spring board).  
 	*/
-	"\nswi_main_handler:\n\t"
 
-	// Save in the stack the arguments (in the registers) since they might get erased. 
-	// NOTE: The current SP is the SP_SVC, so the user SP is not affected. 
-	"MSR	CPSR_c, #0x1F\n\t"		// Switch to system mode. 
-	"SUB	sp, sp, #4\n\t"			// Leave space for SPSR. 
-	"STMFD	sp!, { r0-r12, lr }\n\r"	// Store all the registers (except 13-sp- and 15-pc-).
-	"MOV	r0, sp\n\r"			// Store the task's SP so that it can be stored later into the TR.
-	"MSR	cpsr_c, #0x13\n\t"		// Return to supervisor mode. 
+	"\n"
+
+	"swi_main_handler:"													"\n\t"
+	// Save in the stack the arguments (in the registers) since they might get
+	// erased. 
+	// NOTE: The current SP is the SP_SVC, so the user SP is not affected.
+	//       
+	// Switch to system mode. 
+	"MSR	CPSR_c, #0x1F"												"\n\t"
+
+	// Leave space for SPSR. 	 
+	"SUB	sp, sp, #4"														"\n\t"
+
+	// Store all the registers (except 13-sp- and 15-pc-).		
+	"STMFD	sp!, { r0-r12, lr }"								"\n\t"
+
+	// Store the task's SP so that it can be stored later into the TR.
+	"MOV	r0, sp"																"\n\t"
+
+	// Return to supervisor mode. 
+	"MSR	cpsr_c, #0x13"												"\n\t"
 
 	// Get the value of the system call
-	"MRS	r1, spsr\n\t"			// Store in the task's stack the spsr (the original CPSR of the task). 
-	"STR	r1, [ r0, #14*4 ]\n\t"
-	"MOV	r1, lr\n\t"			// Store the return value in the r1 so that it is stored later into the TR. 
+	// 
+	// Store in the task's stack the spsr (the original CPSR of the task).
+	"MRS	r1, spsr"															"\n\t"			 
+	"STR	r1, [ r0, #14*4 ]"										"\n\t"
+
+	// Store the return value in the r1 so that it is stored later into the TR. 
+	"MOV	r1, lr"																"\n\t"		
 
 	// Restore the kernel state
-	"LDMFD	sp!, { r4-r11 }\n\t"
+	"LDMFD	sp!, { r4-r11 }"										"\n\t"
 
 	/*// Execute the C system call handler
-	"LDR	r2, [ lr, #-4 ]\n\t"		// Store the next instruction to run in the r1 so that it is stored later into the TR. 
+	// Store the next instruction to run in the r1 so that it is stored later
+	// into the TR. 
+	"LDR	r2, [ lr, #-4 ]\n\t"		
 	"BIC	r2, r2, #0xff000000\n\t"	
-	"LDR	r3, [ sp, #0 ]\n\t"		// The pointer to the active TD is loaded into register 3.
+	"LDR	r3, [ sp, #0 ]\n\t"		// The pointer to the active TD is loaded into
+	register 3.
 	"BL	ExecuteCSWIHandler\n\t"*/
 
-	// Execute the C system call handler. 
-	"LDR	r2, [ sp, #0 ]\n\t"		// The pointer to the active TD is loaded into register 2.
-	"LDR	r3, [ lr, #-4 ]\n\t"		// Store the next instruction to run in the r1 so that it is stored later into the TR. 
-	"BIC	r3, r3, #0xff000000\n\t"
-	"STR	r3, [ sp, #0 ]\n\t"		// This variable is stored in local memory to prevent it from being deleted by the function call. 
-	"BL	ExecuteCSWIHandler\n\t"
-	"LDR	r0, [ sp, #0 ]\n\t"		// Set the return value.
+	// Execute the C system call handler.
+	// The pointer to the active TD is loaded into register 2.
+	"LDR	r2, [ sp, #0 ]"												"\n\t"		
+
+	// Store the next instruction to run in the r1 so that it is stored later
+	// into the TR. 
+	"LDR	r3, [ lr, #-4 ]"											"\n\t"		
+	"BIC	r3, r3, #0xff000000"									"\n\t"
+
+	// This variable is stored in local memory to prevent it from being deleted
+	// by the function call. 
+	"STR	r3, [ sp, #0 ]"												"\n\t"
+
+	// r0 - task stack pointer
+	// r1 - next address
+	// r2 - task descriptor pointer	
+	"BL	ExecuteCSWIHandler"											"\n\t"
+
+	// Set the return value.
+	"LDR	r0, [ sp, #0 ]"												"\n\t"	
 	
 	// Return control to the kernel C code. 
-	"sub	sp, fp, #12\n\t"
-	"LDMFD	sp, { fp, sp, pc }\n\t"
+	"sub	sp, fp, #12"													"\n\t"
+	"LDMFD	sp, { fp, sp, pc }"									"\n\t"
 );
 
-void ExecuteCSWIHandler( unsigned int taskSP, unsigned int nextAddress, unsigned int activeTD )
+void ExecuteCSWIHandler( unsigned int taskSP, unsigned int lr,
+													unsigned int activeTD )
 {
-	//DEBUGGING
-	bwprintf( COM2, "ExecuteCSWIHandler: ENTERED\n\r");
 
-	//DEBUGGING
-	//bwprintf( COM2, "kerxit.c: Updating Active Task   TaskSP: %d    ReturnValue: %d    SWIValue: %d    activeTID: %d .\n\r", taskSP, nextAddress, activeTD );
+	//bwprintf( COM2, "kerxit.c: Updating Active Task   TaskSP: %d 
+	//				ReturnValue: %d    SWIValue: %d    activeTID: %d .\n\r",
+	//   		taskSP, nextAddress, activeTD );
 
 	// Update the task descriptor
 	Task_descriptor *td = ( Task_descriptor * ) activeTD;
 	td->sp = ( int * ) taskSP;
-	td->next_instruction = nextAddress;
+	td->lr = lr;
+
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 //
 //Initializations
 //
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+//////////////////////////////////////////////////////////////////////////////
 
 //Executed once during initialization
 int installSwiHandler( unsigned int handlerLoc, unsigned int *vector )
@@ -117,12 +150,11 @@ void init_task_descriptors( Kern_Globals *KERN_GLOBALS ) {
 		// Setting function pointer
 		td->fp = td->sp;
 		
-		// Initializing the stack////////////////////////////////////////////////
+		// Initializing the stack
 		int *temp_sp = td->sp;
-		//temp_sp--;
+		// temp_sp--;
 
-		/*//DEBUGGING
-		bwprintf( COM2, "Temp stack: %x\n\r", temp_sp);*/
+		// bwprintf( COM2, "Temp stack: %x\n\r", temp_sp);
 
 		// SPSR in the user mode with everything turned off
 		*temp_sp = 0x10;
@@ -181,9 +213,6 @@ void init_task_descriptors( Kern_Globals *KERN_GLOBALS ) {
 		td->state = FREE_TASK;
 	}
 
-	/*//DEBUGGING
-	bwprintf( COM2, "Finishing initializing task descriptors...\n\r");*/
-
 }
 
 void initialize( Kern_Globals *KERN_GLOBALS ) {
@@ -220,19 +249,8 @@ void initialize( Kern_Globals *KERN_GLOBALS ) {
 
 	installSwiHandler((unsigned int) swi_main_handler, (unsigned int) SWI_VECTOR);
 
-	//DEBUGGING
-	//bwprintf( COM2, "Task descriptors are initialized.\n\r" );
-
 	init_task_descriptors( KERN_GLOBALS );
-
-	//DEBUGGING
-	//bwprintf( COM2, "Task descriptors are initialized.\n\r" );
 
 	init_schedule( 8, first_task, KERN_GLOBALS );
 
-	//DEBUGGING
-	//bwprintf( COM2, "Schedule is initialized\n\r" );
-
-	//DEBUGGING
-	//bwprintf( COM2, "Initialization is complete." );
 }

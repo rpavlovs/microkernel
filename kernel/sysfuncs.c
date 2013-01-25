@@ -4,8 +4,7 @@
 #include "lib/bwio.h"
 
 int sys_create( int priority, void (*code) ( ), Task_descriptor *td, Kern_Globals *GLOBALS ) {
-	//DEBUGGING
-	bwprintf( COM2, "sys_create: ENTERED\n");
+	// bwprintf( COM2, "sys_create: ENTERED\n");
 
 	// ERROR: Scheduler was given a wrong task priority.
 	if( priority < 0 || priority >= SCHED_NUM_PRIORITIES ) return -1;
@@ -25,6 +24,7 @@ int sys_create( int priority, void (*code) ( ), Task_descriptor *td, Kern_Global
 
 	//Updating the schedule
 	sched->last_issued_tid = new_tid;
+	sched->tasks_alive++;
 	
 	// Setup new task descriptor
 	new_td = &(GLOBALS->tasks[new_tid]);
@@ -58,8 +58,7 @@ int sys_create( int priority, void (*code) ( ), Task_descriptor *td, Kern_Global
 
 int sys_mytid(Task_descriptor *td, Kern_Globals *GLOBALS )
 {
-	//DEBUGGING
-	bwprintf( COM2, "sys_mytid: ENTERED\n");
+	// bwprintf( COM2, "sys_mytid: ENTERED\n");
 
 	sys_reschedule(td, GLOBALS);
 	return td->tid;
@@ -67,8 +66,7 @@ int sys_mytid(Task_descriptor *td, Kern_Globals *GLOBALS )
 
 int sys_myparenttid(Task_descriptor *td, Kern_Globals *GLOBALS )
 {
-	//DEBUGGING
-	bwprintf( COM2, "sys_myparenttid: ENTERED\n");
+	// bwprintf( COM2, "sys_myparenttid: ENTERED\n");
 
 	sys_reschedule(td, GLOBALS);
 	return td->parent_tid;
@@ -76,19 +74,16 @@ int sys_myparenttid(Task_descriptor *td, Kern_Globals *GLOBALS )
 
 void sys_pass(Task_descriptor *td, Kern_Globals *GLOBALS )
 {
-	//DEBUGGING
-	bwprintf( COM2, "sys_pass: ENTERED\n");
+	// bwprintf( COM2, "sys_pass: ENTERED\n");
 
 	sys_reschedule(td, GLOBALS);
 }
 
 void sys_exit(Task_descriptor *td, Kern_Globals *GLOBALS ) 
 {
-	//DEBUGGING
-	bwprintf( COM2, "sys_exit: ENTERED\n");
+	// bwprintf( COM2, "sys_exit: ENTERED\n");
 
 	// Getting task properties
-	int tid = td->tid;
 	int priority = td->priority;
 	
 	// Getting the schedule
@@ -103,14 +98,15 @@ void sys_exit(Task_descriptor *td, Kern_Globals *GLOBALS )
 
 	// Updating the queue
 	(pqueue->size)--;
+
+	// Updating the schedule
+	sched->tasks_alive--;
 }
 
 void sys_reschedule(Task_descriptor *td, Kern_Globals *GLOBALS ){
-	//DEBUGGING
-	bwprintf( COM2, "sys_reschedule: ENTERED\n");
+	// bwprintf( COM2, "sys_reschedule: ENTERED\n");
 
 	// Getting task properties
-	int tid = td->tid;
 	int priority = td->priority;
 	
 	// Getting the schedule
@@ -121,19 +117,19 @@ void sys_reschedule(Task_descriptor *td, Kern_Globals *GLOBALS ){
 	//If there are more than one task in the queue
 	if(pqueue->size > 1)
 	{
-		//DEBUGGING
-		bwprintf( COM2, "sys_reschedule: MORE THAN 1 TASK\n");
+		// bwprintf( COM2, "sys_reschedule: MORE THAN 1 TASK\n");
 
 		// Removing the first task from the queue
 		if (++(pqueue->oldest) >= SCHED_QUEUE_LENGTH) pqueue->oldest = 0;
 
-		// Updating the task's state
-		td->state = READY_TASK;
 
 		// Adding the task to the end of the queue
 		if (++(pqueue->newest) >= SCHED_QUEUE_LENGTH) pqueue->newest = 0;
 		pqueue->td_ptrs[pqueue->newest] = td;
 	}
+
+	// Updating the task's state
+	td->state = READY_TASK;
 }
 
 /*// Add task to scheduler as ready to run

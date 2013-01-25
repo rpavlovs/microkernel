@@ -1,7 +1,9 @@
 #include "config/ts7200.h"
 #include "kernel/sched.h"
+#include "kernel/syscall.h"
 #include "kernel/kernel_globals.h"
 #include "kernel/init.h"
+#include "lib/bwio.h"
 
 #define FOREVER for( ; ; )
 
@@ -14,8 +16,10 @@ int main( ) {
 
 	FOREVER {
 		request = getNextRequest( &KERN_GLOBALS );
+		if( request == EXIT_SYSCALL && KERN_GLOBALS.schedule.tasks_alive == 1)
+			return;
 		handle_request( request, &KERN_GLOBALS );
-		bwgetc(COM2);
+		// bwprintf( COM2, "%c", bwgetc(COM2));
 	}
 
 	return 0;

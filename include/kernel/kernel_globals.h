@@ -24,7 +24,6 @@ typedef struct {
 	int spsr;			// SPSR - Saved Program Status Register
 	int *lr;			// Link register
 	int *fp;			// Frame pointer
-	unsigned int next_instruction;	// Needs to be passed to context switch
 } Task_descriptor;
 
 // Schedule structures
@@ -50,6 +49,8 @@ typedef struct {
 
 	// The last activated tid
 	int last_active_tid;
+	
+	int tasks_alive;
 } Schedule; 
 
 typedef struct {
@@ -58,33 +59,4 @@ typedef struct {
 } Kern_Globals;
 
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

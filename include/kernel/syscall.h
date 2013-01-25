@@ -1,23 +1,23 @@
 #ifndef ___SYSCALL___
 #define ___SYSCALL___
 
-#define CREATE_SYSCALL 		0
-#define MYTID_SYSCALL 		1
-#define MYPARENTTID_SYSCALL 	2
-#define PASS_SYSCALL 		3
-#define EXIT_SYSCALL 		4
+#define CREATE_SYSCALL 			0
+#define MYTID_SYSCALL 			1
+#define MYPARENTTID_SYSCALL 2
+#define PASS_SYSCALL 				3
+#define EXIT_SYSCALL 				4
 
-#define CREATE_ARGS 		2
-#define MYTID_ARGS 		0
-#define MYPARENTTID_ARGS 	0
-#define PASS_ARGS 		0
-#define EXIT_ARGS 		0
+#define CREATE_ARGS 				2
+#define MYTID_ARGS 					0
+#define MYPARENTTID_ARGS 		0
+#define PASS_ARGS 					0
+#define EXIT_ARGS 					0
 
-#define CREATE_RETURN 		1
-#define MYTID_RETURN 		1
+#define CREATE_RETURN 			1
+#define MYTID_RETURN 				1
 #define MYPARENTTID_RETURN 	1
-#define PASS_RETURN 		0
-#define EXIT_RETURN		0
+#define PASS_RETURN 				0
+#define EXIT_RETURN					0
 
 typedef struct {
 

@@ -11,9 +11,26 @@
 #define ACTIVE_TASK 	1
 #define ZOMBIE_TASK 	2
 #define FREE_TASK 	3
-
+#define SEND_TASK 	4
+#define RECEIVE_TASK 	5
+#define REPLY_TASK 	6
 
 typedef struct Kern_Globals GLOBALS;
+
+typedef struct {
+
+	int tids[MAX_NUM_TASKS];
+
+	// position of the newest and oldest td pointers in the queue
+	int newest, oldest;
+
+	// Number of tasks are in the queue right now
+	int size;
+
+} Wait_queue;
+
+void enqueue_wqueue(int item, Wait_queue *queue);
+int dequeue_wqueue();
 
 typedef struct {
 	int tid;			// Task ID
@@ -24,10 +41,11 @@ typedef struct {
 	int spsr;			// SPSR - Saved Program Status Register
 	int *lr;			// Link register
 	int *fp;			// Frame pointer
+
+	Wait_queue *receive_queue;	//Queue for accepting sends
 } Task_descriptor;
 
 // Schedule structures
-
 typedef struct {
 
 	Task_descriptor *td_ptrs[SCHED_QUEUE_LENGTH];
@@ -39,7 +57,6 @@ typedef struct {
 	int size;
 
 } Task_queue;
-
 
 typedef struct {
 	Task_queue priority[SCHED_NUM_PRIORITIES];
@@ -54,6 +71,7 @@ typedef struct {
 } Schedule; 
 
 typedef struct {
+	Wait_queue wqueues[MAX_NUM_TASKS];
 	Task_descriptor tasks[MAX_NUM_TASKS];
 	Schedule schedule;
 } Kern_Globals;

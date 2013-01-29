@@ -134,17 +134,50 @@ void sys_reschedule(Task_descriptor *td, Kern_Globals *GLOBALS ){
 
 int sys_send(int Tid, char *msg, int msglen, char *reply, int replylen, Task_descriptor *td, Kern_Globals *GLOBALS ){
 
+	//Change the state of the calling task to SEND_BLOCKED
+	td->state = SEND_TASK;
+
+	//Getting TD of the target task
+	Task_descriptor *target_td = &(GLOBALS->tasks[Tid]);
+
+	//Getting the receive queue of the target task
+	Wait_queue *receive_queue = target_td->receive_queue;
+
+	
+	
+	
+	//Reschedule the task to the end of the priority queue
+	sys_reschedule(td, GLOBALS);
+
 	return 0;
 
 }
 
 int sys_receive(int *tid, char *msg, int msglen, Task_descriptor *td, Kern_Globals *GLOBALS ){
 
+	//Change the state of the calling task to RECEIVE_BLOCKED
+	td->state = RECEIVE_TASK;
+
+	//
+
+	//Reschedule the task to the end of the priority queue
+	sys_reschedule(td, GLOBALS);
+
+	int priority = td->priority;
+	Schedule *sched = &(GLOBALS->schedule);
+	Task_queue *pqueue = &(sched->priority[priority]);
+
 	return 0;
 
 }
 
 int sys_reply(int tid, char *reply, int replylen, Task_descriptor *td, Kern_Globals *GLOBALS ){
+
+	//Change the state of the calling task to REPLY_BLOCKED
+	td->state = REPLY_TASK;
+
+	//Reschedule the task to the end of the priority queue
+	sys_reschedule(td, GLOBALS);
 
 	return 0;
 

@@ -132,6 +132,17 @@ int installSwiHandler( unsigned int handlerLoc, unsigned int *vector )
 	return 0; 
 }
 
+void init_wait_queues( Kern_Globals *KERN_GLOBALS ){
+
+	int i;
+	for(i=0;i<MAX_NUM_TASKS;i++){
+		KERN_GLOBALS->wqueues[i].newest = -1;
+		KERN_GLOBALS->wqueues[i].oldest = 0;
+		KERN_GLOBALS->wqueues[i].size = 0;
+	}
+
+}
+
 // NOTE: Stacks grow downwards, with sp pointing to the empty spot;
 void init_task_descriptors( Kern_Globals *KERN_GLOBALS ) {
 	// Task ID
@@ -211,6 +222,9 @@ void init_task_descriptors( Kern_Globals *KERN_GLOBALS ) {
 
 		// Setting the state of the task
 		td->state = FREE_TASK;
+
+		// Setting the wait queue pointer
+		td->receive_queue = &(KERN_GLOBALS->wqueues[tid]);
 	}
 
 }
@@ -248,6 +262,8 @@ void initialize( Kern_Globals *KERN_GLOBALS ) {
 	bwprintf( COM2, "\n\r" );*/
 
 	installSwiHandler((unsigned int) swi_main_handler, (unsigned int) SWI_VECTOR);
+
+	init_wait_queues( KERN_GLOBALS );
 
 	init_task_descriptors( KERN_GLOBALS );
 

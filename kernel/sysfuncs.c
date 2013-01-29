@@ -143,33 +143,66 @@ int sys_send(int Tid, char *msg, int msglen, char *reply, int replylen, Task_des
 	//Getting the receive queue of the target task
 	Wait_queue *receive_queue = target_td->receive_queue;
 
-	//Adding the current tid to the target queue
-	enqueue_wqueue(td->tid, receive_queue);
+	//Adding the current send arguments to the target queue
+	Send_args args;
+	args.sending_tid = td->tid;
+	args.msg = msg;
+	args.msglen = msglen;
+	args.reply = reply;
+	args.replylen = replylen;
+	
+	enqueue_wqueue(&args, receive_queue);
 
 	//Unblocking the target task
 	sys_unblock_receive(target_td);
 	
-	
-	//Reschedule the task to the end of the priority queue
-	sys_reschedule(td, GLOBALS);
+	//Remove the task from the READY queue
+	int priority = td->priority;
+	Schedule *sched = &(GLOBALS->schedule);
+	Task_queue *pqueue = &(sched->priority[priority]);
+	dequeue_tqueue(pqueue);
 
 	return 0;
-
 }
 
 int sys_receive(int *tid, char *msg, int msglen, Task_descriptor *td, Kern_Globals *GLOBALS ){
 
-	//Change the state of the calling task to RECEIVE_BLOCKED
-	td->state = RECEIVE_TASK;
+	//If there are SOME sends from other tasks to the current task
+	if(td->receive_queue->size > 0){
+		//Retrieve send arguments from the queue
+		Send_args *sargs = dequeue_wqueue(td->receive_queue);
 
-	//
+		//Copying the message from sender to receiver
+		char *smsg = sargs->msg;
+		char *rmsg = msg;
 
-	//Reschedule the task to the end of the priority queue
-	sys_reschedule(td, GLOBALS);
+		int i;
+		int length;
+		if(msglen >= sargs->msglen) length = sargs->msglen;
+		else length = msglen;
 
-	int priority = td->priority;
-	Schedule *sched = &(GLOBALS->schedule);
-	Task_queue *pqueue = &(sched->priority[priority]);
+		for(i=0; i<length; i++){
+			*(rmsg++) = *(smsg++);
+		}
+	}
+	//If there are NO sends from other tasks to the current task
+	else{
+		//Change the state of the calling task to RECEIVE_BLOCKED
+		td->state = RECEIVE_TASK;
+
+		//Save the current receive arguments
+		Receive_args rargs;
+		rargs.tid = tid;
+		rargs.msg = msg;
+		rargs.msglen = msglen;
+		td->receive_args = &rargs;
+
+		//Remove the task from the READY queue
+		int priority = td->priority;
+		Schedule *sched = &(GLOBALS->schedule);
+		Task_queue *pqueue = &(sched->priority[priority]);
+		dequeue_tqueue(pqueue);
+	}
 
 	return 0;
 
@@ -181,19 +214,49 @@ int sys_reply(int tid, char *reply, int replylen, Task_descriptor *td, Kern_Glob
 	td->state = REPLY_TASK;
 
 	//Reschedule the task to the end of the priority queue
-	sys_reschedule(td, GLOBALS);
+	//sys_reschedule(td, GLOBALS);
 
 	return 0;
 
 }
 
-void sys_unblock_receive(Task_descriptor *td){
-	if(td->state == RECEIVE_TASK){
+void sys_unblock_receive(Task_descriptor *td, Kern_Globals *GLOBALS ){
+	//The target task was waiting and there are SOME sends
+	if((td->state == RECEIVE_TASK) && (td->receive_queue->size > 0)){
+
+		//COPYING THE MESSAGE////////////////////////////////
+		//Retrieve send arguments from the receive queue
+		Send_args *sargs = dequeue_wqueue(td->receive_queue);
+
+		//Retrieve saved receive arguments
+		Receive_args *rargs = td->receive_args;
+
+		//Copying the message from sender to receiver
+		char *smsg = sargs->msg;
+		char *rmsg = rargs->msg;
+
+		int i;
+		int length;
+		if(rargs->msglen >= sargs->msglen) length = sargs->msglen;
+		else length = rargs->msglen;
+
+		for(i=0; i<length; i++){
+			*(rmsg++) = *(smsg++);
+		}
+
+		//RESCHEDULING///////////////////////////////////////
 		//Unblocking the task
 		td->state = READY_TASK;
-		
+
 		//Rescheduling the task
-		
+		int priority = td->priority;
+		Schedule *sched = &(GLOBALS->schedule);
+		Task_queue *pqueue = &(sched->priority[priority]);
+		enqueue_tqueue(td, pqueue);
+	}
+	//The target task was waiting and there are NO sends
+	else if((td->state == RECEIVE_TASK) && (td->receive_queue->size == 0)){
+		//Do nothing
 	}
 }
 

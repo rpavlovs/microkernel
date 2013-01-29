@@ -57,6 +57,7 @@ typedef struct {
 	int *fp;			// Frame pointer
 
 	Wait_queue *receive_queue;	//Queue for accepting sends
+	Receive_args *receive_args;	//Last arguments for receiving
 } Task_descriptor;
 
 // Schedule structures

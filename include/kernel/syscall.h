@@ -24,9 +24,9 @@
 #define MYPARENTTID_RETURN 	1
 #define PASS_RETURN 		0
 #define EXIT_RETURN		0
-#define SEND_SYSCALL 		1
-#define RECEIVE_SYSCALL 	1
-#define REPLY_SYSCALL 		1
+#define SEND_RETURN 		1
+#define RECEIVE_RETURN  	1
+#define REPLY_RETURN 		1
 
 typedef struct {
 

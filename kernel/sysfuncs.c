@@ -132,13 +132,22 @@ void sys_reschedule(Task_descriptor *td, Kern_Globals *GLOBALS ){
 	td->state = READY_TASK;
 }
 
-int sys_send(int Tid, char *msg, int msglen, char *reply, int replylen, Task_descriptor *, Kern_Globals * ){
+int sys_send(int Tid, char *msg, int msglen, char *reply, int replylen, Task_descriptor *td, Kern_Globals *GLOBALS ){
+
+	return 0;
+
 }
 
-int sys_receive(int *tid, char *msg, int msglen, Task_descriptor *, Kern_Globals * ){
+int sys_receive(int *tid, char *msg, int msglen, Task_descriptor *td, Kern_Globals *GLOBALS ){
+
+	return 0;
+
 }
 
-int sys_reply(int tid, char *reply, int replylen, Task_descriptor *, Kern_Globals * ){
+int sys_reply(int tid, char *reply, int replylen, Task_descriptor *td, Kern_Globals *GLOBALS ){
+
+	return 0;
+
 }
 
 

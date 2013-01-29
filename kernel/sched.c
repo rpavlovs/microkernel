@@ -95,7 +95,7 @@ void RetrieveSysCallArgs( int *sysCallArguments, int numArguments, unsigned int 
 		// The last register that holds arguments. The next place to look arguments is the normal user task stack. 
 		if ( i == 3 ) 
 		{
-			// TODO: Modify this for more than 4 arguments. 
+			// TODO: Modify this for more than 4 arguments.
 		}
 	}
 }

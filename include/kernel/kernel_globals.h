@@ -18,8 +18,22 @@
 typedef struct Kern_Globals GLOBALS;
 
 typedef struct {
+	int sending_tid;
+	char *msg;
+	int msglen;
+	char *reply;
+	int replylen;
+} Send_args;
 
-	int tids[MAX_NUM_TASKS];
+typedef struct {
+	int *tid;
+	char *msg;
+	int msglen;
+} Receive_args;
+
+typedef struct {
+
+	Send_args *args[MAX_NUM_TASKS];
 
 	// position of the newest and oldest td pointers in the queue
 	int newest, oldest;
@@ -29,8 +43,8 @@ typedef struct {
 
 } Wait_queue;
 
-void enqueue_wqueue(int item, Wait_queue *queue);
-int dequeue_wqueue();
+void enqueue_wqueue(Send_args *item, Wait_queue *queue);
+Send_args *dequeue_wqueue(Wait_queue *queue);
 
 typedef struct {
 	int tid;			// Task ID
@@ -58,6 +72,9 @@ typedef struct {
 
 } Task_queue;
 
+void enqueue_tqueue(Task_descriptor *td, Task_queue *q);
+Task_descriptor *dequeue_tqueue(Task_queue *q);
+
 typedef struct {
 	Task_queue priority[SCHED_NUM_PRIORITIES];
 	
@@ -68,7 +85,8 @@ typedef struct {
 	int last_active_tid;
 	
 	int tasks_alive;
-} Schedule; 
+} Schedule;
+
 
 typedef struct {
 	Wait_queue wqueues[MAX_NUM_TASKS];

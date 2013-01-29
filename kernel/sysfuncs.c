@@ -143,7 +143,11 @@ int sys_send(int Tid, char *msg, int msglen, char *reply, int replylen, Task_des
 	//Getting the receive queue of the target task
 	Wait_queue *receive_queue = target_td->receive_queue;
 
-	
+	//Adding the current tid to the target queue
+	enqueue_wqueue(td->tid, receive_queue);
+
+	//Unblocking the target task
+	sys_unblock_receive(target_td);
 	
 	
 	//Reschedule the task to the end of the priority queue
@@ -181,6 +185,16 @@ int sys_reply(int tid, char *reply, int replylen, Task_descriptor *td, Kern_Glob
 
 	return 0;
 
+}
+
+void sys_unblock_receive(Task_descriptor *td){
+	if(td->state == RECEIVE_TASK){
+		//Unblocking the task
+		td->state = READY_TASK;
+		
+		//Rescheduling the task
+		
+	}
 }
 
 int sys_testcall(int a, int b, int c, int d, int e, int f){

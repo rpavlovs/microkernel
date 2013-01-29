@@ -132,58 +132,14 @@ void sys_reschedule(Task_descriptor *td, Kern_Globals *GLOBALS ){
 	td->state = READY_TASK;
 }
 
-/*// Add task to scheduler as ready to run
-int add_task( int priority, void (*code) ( ), Kern_Globals *GLOBALS ) {
-	
-	// ERROR: Scheduler was given a wrong task priority.
-	if( priority < 0 || priority >= SCHED_NUM_PRIORITIES ) return -1;
-	
-	// Getting the schedule
-	Schedule *sched = &(GLOBALS->schedule);
-	int new_tid;
-	Task_descriptor *new_td;
+int sys_send(int Tid, char *msg, int msglen, char *reply, int replylen, Task_descriptor *, Kern_Globals * ){
+}
 
-	// Find a free task descriptor for a new task.
-	new_tid = sched->last_issued_tid + 1;
-	if( new_tid >= MAX_NUM_TASKS ) new_tid = 0;
-	while( GLOBALS->tasks[new_tid].state != FREE_TASK ) {
-		// ERROR: Scheduler is out of task descriptors. 
-		if( ++new_tid >= MAX_NUM_TASKS ) return -2;
-	}
+int sys_receive(int *tid, char *msg, int msglen, Task_descriptor *, Kern_Globals * ){
+}
 
-	//Updating the schedule
-	sched->last_issued_tid = new_tid;
-	
-	// Setup new task descriptor
-	new_td = &(GLOBALS->tasks[new_tid]);
-	new_td->state = READY_TASK;
-	new_td->priority = priority;
-	new_td->lr = (int *)code;
-
-	// Add new task descriptor to a proper scheduler queue
-	Task_queue *queue = &(sched->priority[priority]);
-
-	// ASSERT: Verifying the size of the queue
-	assert( queue->size < SCHED_QUEUE_LENGTH, "Scheduler queue must not be full" );
-
-	// If the queue is empty or the newest pointer is at the end of the td_ptrs buffer
-	// put the next td_ptr at the beginning on the buffer  
-	if (queue->size == 0 || ++(queue->newest) >= SCHED_QUEUE_LENGTH) queue->newest = 0;
-	
-	// If the queue was empty then newest and oldest elements are the same 
-	// and are at the beginning of the buffer
-	if (queue->size == 0) queue->oldest = 0;
-
-	// Updating the queue
-	queue->size++;
-	queue->td_ptrs[queue->newest] = new_td;
-
-	return new_tid;
-}*/
-
-
-
-
+int sys_reply(int tid, char *reply, int replylen, Task_descriptor *, Kern_Globals * ){
+}
 
 
 

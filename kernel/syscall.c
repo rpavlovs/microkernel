@@ -68,13 +68,19 @@ void Exit( ) {
 
 int Send(int Tid, char *msg, int msglen, char *reply, int replylen){
 
+	asm ( "swi\t%0"	"\n\t" :: "J" (SEND_SYSCALL) );
+
 }
 
 int Receive(int *tid, char *msg, int msglen){
 
+	asm ( "swi\t%0"	"\n\t" :: "J" (RECEIVE_SYSCALL) );
+
 }
 
 int Reply(int tid, char *reply, int replylen){
+
+	asm ( "swi\t%0"	"\n\t" :: "J" (REPLY_SYSCALL) );
 
 }
 

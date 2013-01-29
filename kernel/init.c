@@ -251,6 +251,23 @@ void initialize( Kern_Globals *KERN_GLOBALS ) {
 
 	init_task_descriptors( KERN_GLOBALS );
 
-	init_schedule( 8, first_task, KERN_GLOBALS );
-
+	//init_schedule( 8, first_task, KERN_GLOBALS );
+	init_schedule( 8, test_task, KERN_GLOBALS );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

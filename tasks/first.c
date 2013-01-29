@@ -32,3 +32,13 @@ void first_task() {
 	bwprintf( COM2, "First: exiting.\n");
 	Exit();
 }
+
+void test_task(){
+
+	int sum;
+
+	sum = TestCall(11,22,33,44,55,66);
+	bwprintf( COM2, "The sum is:%d", sum);
+
+	Exit();
+}

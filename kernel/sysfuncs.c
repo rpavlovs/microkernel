@@ -150,6 +150,13 @@ int sys_reply(int tid, char *reply, int replylen, Task_descriptor *td, Kern_Glob
 
 }
 
+int sys_testcall(int a, int b, int c, int d, int e, int f){
+//int sys_testcall(int a, int b, int c, int d, int e){ //, int f){
+//int sys_testcall(int a, int b, int c, int d){
+
+	return a + b + c + d + e + f;
+
+}
 
 
 

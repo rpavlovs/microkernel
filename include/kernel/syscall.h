@@ -9,6 +9,7 @@
 #define SEND_SYSCALL 		5
 #define RECEIVE_SYSCALL 	6
 #define REPLY_SYSCALL 		7
+#define TESTCALL_SYSCALL	99
 
 #define CREATE_ARGS 		2
 #define MYTID_ARGS 		0
@@ -18,6 +19,7 @@
 #define SEND_ARGS 		5
 #define RECEIVE_ARGS	 	3
 #define REPLY_ARGS 		3
+#define TESTCALL_ARGS 		6
 
 #define CREATE_RETURN 		1
 #define MYTID_RETURN 		1
@@ -27,6 +29,7 @@
 #define SEND_RETURN 		1
 #define RECEIVE_RETURN  	1
 #define REPLY_RETURN 		1
+#define TESTCALL_RETURN		1
 
 typedef struct {
 
@@ -109,6 +112,10 @@ int Send(int Tid, char *msg, int msglen, char *reply, int replylen);
 int Receive(int *tid, char *msg, int msglen);
 
 int Reply(int tid, char *reply, int replylen);
+
+//int TestCall(int a, int b, int c, int d);
+//int TestCall(int a, int b, int c, int d, int e); //, int f);
+int TestCall(int a, int b, int c, int d, int e, int f);
 
 
 

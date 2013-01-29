@@ -79,12 +79,12 @@ void RetrieveSysCallArgs( int *sysCallArguments, int numArguments, unsigned int 
 	//ptr += 13; 	// Position it at the R0 address. // TODO: Set this as a constant. 
 
 
-	/*// DEBUGGING
+	// DEBUGGING
 	int j; 
-	for ( j = 0; j < 20; j++ )
+	for ( j = -1; j < 30; j++ )
 	{
-		bwprintf( COM2, "DEB VALUES. Stack value: %x\n", *(ptr + j) );
-	}*/
+		bwprintf( COM2, "DEB VALUES. Index:%d Stack value: %d\n", j, *(ptr + j) );
+	}
 	
 	int i; 
 	for ( i = 0; i < numArguments && i < MAX_NUM_ARGUMENTS ; i++ )
@@ -95,7 +95,8 @@ void RetrieveSysCallArgs( int *sysCallArguments, int numArguments, unsigned int 
 		// The last register that holds arguments. The next place to look arguments is the normal user task stack. 
 		if ( i == 3 ) 
 		{
-			// TODO: Modify this for more than 4 arguments.
+			//WHITE MAGIC
+			ptr += 20;
 		}
 	}
 }
@@ -163,6 +164,14 @@ void handle_request( int request, Kern_Globals *GLOBALS )
 			sys_exit(td, GLOBALS);
 
 			// bwprintf( COM2, "sys_exit is executed");
+	
+			break;
+
+		case TESTCALL_SYSCALL:
+			RetrieveSysCallArgs( sysCallArguments, TESTCALL_ARGS, taskSP);
+			returnValue = sys_testcall(sysCallArguments[0], sysCallArguments[1], sysCallArguments[2],
+						   sysCallArguments[3], sysCallArguments[4], sysCallArguments[5]);
+			SetSysCallReturn(returnValue, taskSP);
 	
 			break;
 	}

@@ -94,4 +94,22 @@ void Pass( );
 // should return cleanly to RedBoot.
 void Exit( );
 
+
+int Send(int Tid, char *msg, int msglen, char *reply, int replylen);
+
+int Receive(int *tid, char *msg, int msglen);
+
+int Reply(int tid, char *reply, int replylen);
+
+
+
+
+
+
+
+
+
+
+
+
 #endif

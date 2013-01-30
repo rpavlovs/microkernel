@@ -12,10 +12,46 @@
 #define ZOMBIE_TASK 	2
 #define FREE_TASK 	3
 
-#define MAX_NUM_ARGUMENTS 10
-
+#define SEND_TASK 	4
+#define RECEIVE_TASK 	5
+#define REPLY_TASK 	6
 
 typedef struct Kern_Globals GLOBALS;
+
+typedef struct {
+	int sending_tid;
+	char *msg;
+	int msglen;
+	char *reply;
+	int replylen;
+} Send_args;
+
+typedef struct {
+	int *tid;
+	char *msg;
+	int msglen;
+} Receive_args;
+
+typedef struct {
+	int sending_tid;
+	char *reply;
+	int replylen;
+} Args_for_reply;
+
+typedef struct {
+
+	Send_args *args[MAX_NUM_TASKS];
+
+	// position of the newest and oldest td pointers in the queue
+	int newest, oldest;
+
+	// Number of tasks are in the queue right now
+	int size;
+
+} Wait_queue;
+
+void enqueue_wqueue(Send_args *item, Wait_queue *queue);
+Send_args *dequeue_wqueue(Wait_queue *queue);
 
 typedef struct {
 	int tid;			// Task ID
@@ -26,10 +62,14 @@ typedef struct {
 	int spsr;			// SPSR - Saved Program Status Register
 	int *lr;			// Link register
 	int *fp;			// Frame pointer
+
+	Wait_queue *receive_queue;	//Queue for accepting sends
+	Receive_args *receive_args;	//Last arguments for receiving
+	Args_for_reply args_for_reply[MAX_NUM_TASKS]; //Arguments for REPLY function
+	
 } Task_descriptor;
 
 // Schedule structures
-
 typedef struct {
 
 	Task_descriptor *td_ptrs[SCHED_QUEUE_LENGTH];
@@ -42,6 +82,8 @@ typedef struct {
 
 } Task_queue;
 
+void enqueue_tqueue(Task_descriptor *td, Task_queue *q);
+Task_descriptor *dequeue_tqueue(Task_queue *q);
 
 typedef struct {
 	Task_queue priority[SCHED_NUM_PRIORITIES];
@@ -53,9 +95,11 @@ typedef struct {
 	int last_active_tid;
 	
 	int tasks_alive;
-} Schedule; 
+} Schedule;
+
 
 typedef struct {
+	Wait_queue wqueues[MAX_NUM_TASKS];
 	Task_descriptor tasks[MAX_NUM_TASKS];
 	Schedule schedule;
 } Kern_Globals;

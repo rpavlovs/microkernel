@@ -1,3 +1,4 @@
+#include "config/ts7200.h"
 
 // Operation numbers
 #define RPS_OP_SIGNUP                   0
@@ -9,6 +10,24 @@
 
 // Buffers
 #define RPS_MAX_RECEIVE_BUFFER_SIZE     2
+
+int
+start_timer() {
+    int *hi;
+    hi = (int *)Timer4ValueHigh;
+    *hi = (1 << 8);
+    return 0;
+}
+
+long
+get_time() {
+    int *timer_hi, *timer_lo;
+    long cur_time;
+    timer_hi = (int *)Timer4ValueHigh;
+    timer_lo = (int *)Timer4ValueLow;
+    cur_time = (*timer_lo + (*timer_hi << 8)) / 983;
+    return cur_time;
+}
 
 /*
  *      RPS Messages:
@@ -72,7 +91,7 @@ void client() {
         EXIT();
     }
 
-    
+
 
     EXIT();
 }

@@ -1,6 +1,8 @@
 #include "kernel/kernel_globals.h"
 #include "kernel/helpers.h"
 #include "kernel/syscall.h"
+#include "lib/bwio.h"
+#include "config/ts7200.h"
 
 
 typedef struct {
@@ -25,6 +27,8 @@ int find_entry( const char * name, const ns_table *table ) {
 
 void nameserver() {
 
+	debug( "starting nameserver" );
+
 	char msg[ NS_NAME_MAX_LENGTH + 1 ];
 	char reply[2];
 	int tid;
@@ -34,7 +38,12 @@ void nameserver() {
 	init_ns_table( &table );
 
 	FOREVER {
+
+		debug( "Nameserver: Recieving request" );
+		
 		msg_size = Receive( &tid, msg, NS_NAME_MAX_LENGTH + 3 );
+
+		bwprintf( COM2, "DEBUG: Nameserver: Recieved new request. TID: %d MSG: %s\n", tid, msg);
 
 		switch( msg[0] ) {
 		case NS_REQUEST_REGISTER_AS:

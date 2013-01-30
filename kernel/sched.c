@@ -144,8 +144,8 @@ void handle_request( int request, Kern_Globals *GLOBALS )
 			RetrieveSysCallArgs( sysCallArguments, CREATE_ARGS, taskSP);
 			
 			returnValue = sys_create( sysCallArguments[0],
-																(void *) sysCallArguments[1],
-																td, GLOBALS);
+								(void *) sysCallArguments[1],
+								td, GLOBALS);
 			
 			SetSysCallReturn(returnValue, taskSP);
 			
@@ -188,6 +188,41 @@ void handle_request( int request, Kern_Globals *GLOBALS )
 						   sysCallArguments[3], sysCallArguments[4], sysCallArguments[5]);
 			SetSysCallReturn(returnValue, taskSP);
 	
+			break;
+
+		case SEND_SYSCALL:
+			RetrieveSysCallArgs( sysCallArguments, SEND_ARGS, taskSP);
+			returnValue = sys_send(
+							sysCallArguments[0], 
+							sysCallArguments[1], 
+							sysCallArguments[2],
+						   	sysCallArguments[3], 
+						   	sysCallArguments[4],
+						   	td, GLOBALS);
+			SetSysCallReturn(returnValue, taskSP);
+
+			break;
+
+		case RECEIVE_SYSCALL:
+			RetrieveSysCallArgs( sysCallArguments, RECEIVE_ARGS, taskSP);
+			returnValue = sys_receive(
+							sysCallArguments[0], 
+							sysCallArguments[1], 
+							sysCallArguments[2],
+							td, GLOBALS);
+			SetSysCallReturn(returnValue, taskSP);
+
+			break;
+
+		case REPLY_SYSCALL:
+			RetrieveSysCallArgs( sysCallArguments, REPLY_ARGS, taskSP);
+			returnValue = sys_reply(
+							sysCallArguments[0], 
+							sysCallArguments[1], 
+							sysCallArguments[2],
+							td, GLOBALS);
+			SetSysCallReturn(returnValue, taskSP);
+
 			break;
 	}
 }
@@ -256,9 +291,6 @@ int schedule( Kern_Globals * GLOBALS) {
 	// Get the non-empty queue with the highest priority
 	Task_queue *queue = &(GLOBALS->schedule.priority[p]);
 	
-	//DEBUGGING
-	//bwprintf( COM2, "Schedule: Queue: %x\n\r", queue );
-
 	// TD of the task, which should run next
 	Task_descriptor *next_td = queue->td_ptrs[queue->oldest];
 
@@ -289,33 +321,16 @@ int schedule( Kern_Globals * GLOBALS) {
 // Start running the task with specified tid
 // Return:
 // interrupt ID of the first recieved interrupt
-int activate( int tid, Kern_Globals *GLOBALS ) {
-	//DEBUGGING
+int activate( const int tid, Kern_Globals *GLOBALS ) {
 	
-	// Getting TD of the specified task
 	Task_descriptor *td = &(GLOBALS->tasks[tid]);
 
-	//DEBUGGING
-	//bwprintf( COM2, "activate: TD: %x\n\r", td );
-	
-	//DEBUGGING
-	//bwprintf( COM2, "activate: TD->state: %d\n\r", td->state );
-
-	// ASSERT: the task should be in the READY state
 	assert( td->state == READY_TASK, "It should only be possible to activate a READY task" );
 	td->state = ACTIVE_TASK;
 
-	//DEBUGGING
-	//bwprintf( COM2, "activate: BEFORE ASSEMBLY!!!\n\r" );
-
-	//DEBUGGING
-	//bwprintf( COM2, "activate. SINTs. td->sp: %x ; td->next_instruction: %x ; td->lr: %x ; td: %x \n", td->sp, td->next_instruction, td->lr, td );
-
-	unsigned int uisp = (unsigned int) td->sp;			//This is right, judging by memory allocation
-	unsigned int uilr = (unsigned int) td->lr;			//This is right, judging by the map file
-	unsigned int uitd = (unsigned int) td;				//This seems to be right...
-
-	//bwprintf( COM2, "activate. UINTs. td->sp: %x ; td->next_instruction: %x ; td->lr: %x ; td: %x \n", uisp, uini, uilr, uitd );
+	unsigned int uisp = (unsigned int) td->sp;
+	unsigned int uilr = (unsigned int) td->lr;
+	unsigned int uitd = (unsigned int) td;
 
 	//Executing using link register
 	int request = execute_user_task(uisp, uilr, uitd);

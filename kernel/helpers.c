@@ -14,3 +14,22 @@ void panic( char * panic_reason ) {
 void debug( char * msg ) {
 	bwprintf( COM2, "DEBUG: %s\n\r", msg );
 }
+
+void str_cpy( const char * source, char * target ) {
+	int pos = 0;
+	while( source[pos] != '\0' ) {
+		target[pos] = source[pos];
+	}
+}
+
+void mem_cpy( const char * source, char * target, const unsigned int len ) {
+	int pos = -1;
+	while( ++pos < len ) {
+		target[pos] = source[pos];
+	}
+}
+
+int strcmp( const char *s1, const char *s2 ) {
+    while( (*s1 && *s2) && (*s1++ == *s2++) );
+    return *(--s1) - *(--s2);
+}

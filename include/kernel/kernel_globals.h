@@ -1,22 +1,36 @@
 #ifndef __KERNEL_GLOBALS__
 #define __KERNEL_GLOBALS__
 
-#define SCHED_QUEUE_LENGTH 100
-#define SCHED_NUM_PRIORITIES 16
-#define SCHED_TID_MAX_VAL 2147483600
+#define SCHED_QUEUE_LENGTH 					100
+#define SCHED_NUM_PRIORITIES 				16
+#define SCHED_TID_MAX_VAL 					2147483600
 
-#define MAX_NUM_TASKS	100
+#define MAX_NUM_TASKS						100
+					
+#define READY_TASK 							0
+#define ACTIVE_TASK 						1
+#define ZOMBIE_TASK 						2
+#define FREE_TASK 							3
+#define SEND_TASK 							4
+#define RECEIVE_TASK 						5
+#define REPLY_TASK 							6
 
-#define READY_TASK 	0
-#define ACTIVE_TASK 	1
-#define ZOMBIE_TASK 	2
-#define FREE_TASK 	3
+#define MAX_NUM_ARGUMENTS 					10
 
-#define SEND_TASK 	4
-#define RECEIVE_TASK 	5
-#define REPLY_TASK 	6
+#define NS_TID 								1
+#define NS_NAME_MAX_LENGTH 					200
+#define NS_TABLE_MAX_SIZE					200
 
-#define MAX_NUM_ARGUMENTS 10
+#define NS_REQUEST_REGISTER_AS				0
+#define NS_REQUEST_WHO_IS					1
+
+#define NS_ERROR_NOT_LEGAL_NAME				0
+#define NS_ERROR_TID_IS_NOT_A_TASK			1
+#define NS_ERROR_TID_IS_NOT_A_NAMESERVER	2
+#define NS_ERROR_TASK_NOT_FOUND				3
+
+
+
 
 typedef struct Kern_Globals GLOBALS;
 

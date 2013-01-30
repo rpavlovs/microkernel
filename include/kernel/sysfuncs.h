@@ -18,6 +18,8 @@ int sys_receive(int *tid, char *msg, int msglen, Task_descriptor *, Kern_Globals
 
 int sys_reply(int tid, char *reply, int replylen, Task_descriptor *, Kern_Globals * );
 
+void sys_unblock_receive(Task_descriptor *td, Kern_Globals *GLOBALS );
+
 //int sys_testcall(int a, int b, int c, int d);
 //int sys_testcall(int a, int b, int c, int d, int e); //, int f);
 int sys_testcall(int a, int b, int c, int d, int e, int f);

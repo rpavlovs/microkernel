@@ -32,6 +32,12 @@ typedef struct {
 } Receive_args;
 
 typedef struct {
+	int sending_tid;
+	char *reply;
+	int replylen;
+} Args_for_reply;
+
+typedef struct {
 
 	Send_args *args[MAX_NUM_TASKS];
 
@@ -58,6 +64,8 @@ typedef struct {
 
 	Wait_queue *receive_queue;	//Queue for accepting sends
 	Receive_args *receive_args;	//Last arguments for receiving
+	Args_for_reply args_for_reply[MAX_NUM_TASKS]; //Arguments for REPLY function
+	
 } Task_descriptor;
 
 // Schedule structures

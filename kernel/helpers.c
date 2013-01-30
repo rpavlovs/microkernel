@@ -12,7 +12,7 @@ void panic( char * panic_reason ) {
 }
 
 void debug( char * msg ) {
-	bwprintf( COM2, "DEBUG: %s\n", msg );
+	// bwprintf( COM2, "DEBUG: %s\n", msg );
 }
 
 void my_strcpy( const char * source, char * target ) {

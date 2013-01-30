@@ -104,7 +104,7 @@ void sys_exit(Task_descriptor *td, Kern_Globals *GLOBALS )
 	sched->tasks_alive--;
 }
 
-void sys_reschedule(Task_descriptor *td, Kern_Globals *GLOBALS ){
+void sys_reschedule(Task_descriptor *td, Kern_Globals *GLOBALS ) {
 	debug( "sys_reschedule: ENTERED" );
 
 	// Getting task properties
@@ -131,7 +131,7 @@ void sys_reschedule(Task_descriptor *td, Kern_Globals *GLOBALS ){
 	td->state = READY_TASK;
 }
 
-int sys_send(int receiver_tid, char *msg, int msglen, char *reply, int replylen,
+int sys_send( int receiver_tid, char *msg, int msglen, char *reply, int replylen,
 	Task_descriptor *sender_td, Kern_Globals *GLOBALS ) {
 
 	//Getting TD of the target task
@@ -158,7 +158,7 @@ int sys_send(int receiver_tid, char *msg, int msglen, char *reply, int replylen,
 	
 
 	//Unblocking the target task
-	sys_unblock_receive(receiver_td, GLOBALS);
+	sys_unblock_receive( receiver_td, GLOBALS );
 
 	//BLOCKING///////////////////////////////////////////////////
 	//Change the state of the calling task to SEND_BLOCKED
@@ -234,10 +234,13 @@ int sys_reply( int sender_tid, char *reply, int replylen,
 	Task_descriptor *sender_td = &(GLOBALS->tasks[sender_tid]);
 
 	//Rescheduling the task
+
+
 	sender_td->state = READY_TASK;
 	Task_queue *pqueue = &(GLOBALS->schedule.priority[sender_td->priority]);
-	enqueue_tqueue(sender_td, pqueue);
+	enqueue_tqueue( sender_td, pqueue );
 
+	sys_reschedule( receiver_td, GLOBALS );
 	return 0;
 }
 

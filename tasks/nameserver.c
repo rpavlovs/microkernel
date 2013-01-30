@@ -31,7 +31,7 @@ void nameserver() {
 
 	char msg[ NS_NAME_MAX_LENGTH + 1 ];
 	char reply[2];
-	int tid;
+	int sender_tid;
 	int msg_size, pos;
 	ns_table table;
 
@@ -41,10 +41,10 @@ void nameserver() {
 
 		debug( "Nameserver: Recieving request" );
 		
-		msg_size = Receive( &tid, msg, NS_NAME_MAX_LENGTH + 3 );
+		msg_size = Receive( &sender_tid, msg, NS_NAME_MAX_LENGTH + 3 );
 
 		bwprintf( COM2, "DEBUG: Nameserver: Recieved new request. TID: %d MSG: [%d][%s]\n",
-			tid, msg[0], msg + 1 );
+			sender_tid, msg[0], msg + 1 );
 
 		switch( msg[0] ) {
 		case NS_REQUEST_REGISTER_AS:
@@ -55,7 +55,7 @@ void nameserver() {
 				pos = table.size++;
 				my_strcpy( msg + 1, table.entrie[pos].name );
 			}
-			table.entrie[pos].tid = tid;
+			table.entrie[pos].tid = sender_tid;
 			reply[0] = SUCCESS;
 			break;
 		
@@ -70,8 +70,10 @@ void nameserver() {
 			}
 			break;
 		}
+		
 		bwprintf( COM2, "DEBUG: Nameserver: reply to TID: %d reply[0]: %d reply[1]: [%d]\n",
-			tid, reply[0], reply[1] );
-		Reply( tid, reply, 2 );
+			sender_tid, reply[0], reply[1] );
+		
+		Reply( sender_tid, reply, 2 );
 	}
 }

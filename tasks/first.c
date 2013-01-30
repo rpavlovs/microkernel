@@ -26,7 +26,7 @@ void first_task() {
 	tid = Create( 14, nameserver );
 	bwprintf( COM2, "Nameserver true TID: %d\n", tid);
 
-	status = RegisterAs("the_first");
+	status = RegisterAs( "the_first" );
 	bwprintf( COM2, "First registered with status: %d\n", status);
 
 	tid = Create( 4, sub );

@@ -14,7 +14,7 @@ int main( ) {
 
 	FOREVER {
 		request = getNextRequest( &KERN_GLOBALS );
-		if( request == EXIT_SYSCALL && KERN_GLOBALS.schedule.tasks_alive == 1)
+		if( request == EXIT_SYSCALL && KERN_GLOBALS.schedule.tasks_alive == 2 )
 			return 0;
 		handle_request( request, &KERN_GLOBALS );
 		// bwprintf( COM2, "%c", bwgetc(COM2));

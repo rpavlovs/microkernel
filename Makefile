@@ -2,7 +2,7 @@
 # Makefile for cs452 micokernel
 #
 XCC     = gcc
-AS			= as
+AS		= as
 LD      = ld
 
 USER:=$(shell whoami)

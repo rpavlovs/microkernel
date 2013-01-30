@@ -16,6 +16,8 @@
 #define RECEIVE_TASK 	5
 #define REPLY_TASK 	6
 
+#define MAX_NUM_ARGUMENTS 10
+
 typedef struct Kern_Globals GLOBALS;
 
 typedef struct {

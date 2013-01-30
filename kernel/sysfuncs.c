@@ -227,12 +227,12 @@ int sys_reply(int tid, char *reply, int replylen, Task_descriptor *td, Kern_Glob
 	Args_for_reply args = td->args_for_reply[tid];
 
 	//Copying the reply from receiver to sender
-	char *srpl = args->reply; 	//sender's reply buffer
+	char *srpl = args.reply; 	//sender's reply buffer
 	char *rrpl = reply;		//reciever's reply buffer
 	
 	int i;
 	int length;
-	if(replylen >= args->replylen) length = args->replylen;
+	if(replylen >= args.replylen) length = args.replylen;
 	else length = replylen;
 
 	for(i=0; i<length; i++){

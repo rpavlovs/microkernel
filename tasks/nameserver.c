@@ -43,8 +43,8 @@ void nameserver() {
 		
 		msg_size = Receive( &sender_tid, msg, NS_NAME_MAX_LENGTH + 3 );
 
-		bwprintf( COM2, "DEBUG: Nameserver: Recieved new request. TID: %d MSG: [%d][%s]\n",
-			sender_tid, msg[0], msg + 1 );
+		// bwprintf( COM2, "DEBUG: Nameserver: Recieved new request. TID: %d MSG: [%d][%s]\n",
+		// 	sender_tid, msg[0], msg + 1 );
 
 		switch( msg[0] ) {
 		case NS_REQUEST_REGISTER_AS:
@@ -70,9 +70,9 @@ void nameserver() {
 			}
 			break;
 		}
-		
-		bwprintf( COM2, "DEBUG: Nameserver: reply to TID: %d reply[0]: %d reply[1]: [%d]\n",
-			sender_tid, reply[0], reply[1] );
+
+		// bwprintf( COM2, "DEBUG: Nameserver: reply to TID: %d reply[0]: %d reply[1]: [%d]\n",
+		// 	sender_tid, reply[0], reply[1] );
 		
 		Reply( sender_tid, reply, 2 );
 	}

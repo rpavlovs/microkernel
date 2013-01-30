@@ -75,8 +75,8 @@ int RegisterAs( char *name ) {
 	msg[0] = NS_REQUEST_REGISTER_AS;
 	my_strcpy( name, msg + 1 );
 
-	bwprintf( COM2, "DEBUG: RegisterAs: received_name: %s msg: %s msg_length: %d\n", 
-		name, msg + 1, msg_length);
+	// bwprintf( COM2, "DEBUG: RegisterAs: received_name: %s msg: %s msg_length: %d\n", 
+	// 	name, msg + 1, msg_length);
 
 	status = Send( NS_TID, msg, msg_length + 2, reply_buf, 1 );
 

@@ -98,7 +98,7 @@ void sys_exit(Task_descriptor *td, Kern_Globals *GLOBALS )
 	td->state = ZOMBIE_TASK;
 
 	// Updating the queue
-	(pqueue->size)--;
+	pqueue->size--;
 
 	// Updating the schedule
 	sched->tasks_alive--;
@@ -163,6 +163,7 @@ int sys_send( int receiver_tid, char *msg, int msglen, char *reply, int replylen
 	//BLOCKING///////////////////////////////////////////////////
 	//Change the state of the calling task to SEND_BLOCKED
 	sender_td->state = SEND_TASK;
+	GLOBALS->schedule.tasks_alive--;
 	
 	//Remove the task from the READY queue
 	Task_queue *pqueue = &(GLOBALS->schedule.priority[sender_td->priority]);
@@ -212,6 +213,7 @@ int sys_receive(int *sender_tid, char *msg, int msglen,
 		//BLOCKING THE TASK//////////////////////////////////
 		//Change the state of the calling task
 		receiver_td->state = RECEIVE_TASK;
+		GLOBALS->schedule.tasks_alive--;
 
 		//Remove the task from the READY queue
 		Schedule *sched = &(GLOBALS->schedule);
@@ -234,9 +236,9 @@ int sys_reply( int sender_tid, char *reply, int replylen,
 	Task_descriptor *sender_td = &(GLOBALS->tasks[sender_tid]);
 
 	//Rescheduling the task
-
-
 	sender_td->state = READY_TASK;
+	GLOBALS->schedule.tasks_alive++;
+
 	Task_queue *pqueue = &(GLOBALS->schedule.priority[sender_td->priority]);
 	enqueue_tqueue( sender_td, pqueue );
 
@@ -279,6 +281,7 @@ void sys_unblock_receive( Task_descriptor *receiver_td, Kern_Globals *GLOBALS ){
 	//RESCHEDULING///////////////////////////////////////
 	//Unblocking the task
 	receiver_td->state = READY_TASK;
+	GLOBALS->schedule.tasks_alive++;
 
 	//Rescheduling the task
 	Task_queue *pqueue = &(GLOBALS->schedule.priority[receiver_td->priority]);

@@ -22,6 +22,7 @@ void sub() {
 
 
 void first_task() {
+	bwprintf( COM2, "First is entered\n" );
 	int tid, status;
 
 	tid = Create( 14, nameserver );
@@ -40,12 +41,6 @@ void first_task() {
 	bwprintf( COM2, "Exiting first\n" );
 	Exit();
 }
-
-
-
-
-
-
 
 
 

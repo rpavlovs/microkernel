@@ -20,65 +20,65 @@ __asm__(
 	*/
 
 	"\n"
-	"execute_user_task:"											"\n\t"
+	"execute_user_task:"												"\n\t"
 
 	// Store the information about the kernel as would happen in a normal task. 
-	"MOV	ip, sp"															"\n\t"
-	"STMFD	sp!, { fp, ip, lr, pc }"					"\n\t"
+	"MOV	ip, sp"														"\n\t"
+	"STMFD	sp!, { fp, ip, lr, pc }"									"\n\t"
 	"SUB	fp, ip, #4"													"\n\t"
 
 	// Store the kernel state.
 	"SUB	sp, sp, #4"													"\n\t"
 
 	// Store the TID
-	"STR	r2, [ sp, #0 ]"											"\n\t"
-	"STMFD	sp!, { r4-r11 }"									"\n\t"
+	"STR	r2, [ sp, #0 ]"												"\n\t"
+	"STMFD	sp!, { r4-r11 }"											"\n\t"
 
 	// Store information temporarily
 	"SUB	sp, sp, #4"													"\n\t"
 
 	// The task's SPSR is loaded.
-	"LDR	r3, [ r0, #14*4 ]"									"\n\t"
+	"LDR	r3, [ r0, #14*4 ]"											"\n\t"
 
 	// The next instruction to execute in the user task.
-	"STR	r1, [ r0, #14*4 ]"									"\n\t"
+	"STR	r1, [ r0, #14*4 ]"											"\n\t"
 
 	// The task's SPSR		
-	"STR	r3, [ sp, #0 ]"											"\n\t"
+	"STR	r3, [ sp, #0 ]"												"\n\t"
 
 	// Load the state of the task. 
 	// 
 	// Switch to system mode.
-	"MSR	cpsr_c, #0x1F"											"\n\t" 
-	"MOV	sp, r0"															"\n\t"			
-	"LDMFD	sp!, { r0-r12, lr }"							"\n\t"
+	"MSR	cpsr_c, #0x1F"												"\n\t" 
+	"MOV	sp, r0"														"\n\t"			
+	"LDMFD	sp!, { r0-r12, lr }"										"\n\t"
 	
 	// Temporarily store the r0 (to be able to use this registry).
-	"STR	r0, [ sp, #-4 ]"										"\n\t"
+	"STR	r0, [ sp, #-4 ]"											"\n\t"
 
 	// Return to supervisor mode.  
-	"MSR	cpsr_c, #0x13"											"\n\t"
+	"MSR	cpsr_c, #0x13"												"\n\t"
 
 	// Pass control to the user task.
 	// 
 	// Loads the previously stored SPSR. 
-	"LDR	r0, [ sp, #0 ]"											"\n\t"
+	"LDR	r0, [ sp, #0 ]"												"\n\t"
 	
 	// "Remove" the top elements of the stack that won't be used anymore.
 	// (Kernel's stack).	  
 	"ADD	sp, sp, #4"													"\n\t"
 	
 	// Switch to user mode.			
-	"MSR	cpsr, r0"														"\n\t"
+	"MSR	cpsr, r0"													"\n\t"
 
 	// Remove the temporarily stored r0. 
-	"LDR	r0, [ sp, #-4 ]"										"\n\t"
+	"LDR	r0, [ sp, #-4 ]"											"\n\t"
 
 	// Remove the stored "counter"
 	"ADD	sp, sp, #4"													"\n\t"
 
 	// Jump to the next instruction in the user task.
-	"LDR	PC, [ sp, #-4 ]"										"\n\t"
+	"LDR	PC, [ sp, #-4 ]"											"\n\t"
 
 );
 
@@ -93,12 +93,12 @@ void RetrieveSysCallArgs( int *sysCallArguments, int numArguments, unsigned int 
 	// If there are more arguments they are stored in the user task's stack. 	
 	int *ptr = ( int * ) taskSP; 
 
-	// DEBUGGING
-	int j; 
-	for ( j = -1; j < 30; j++ )
-	{
-		bwprintf( COM2, "DEB VALUES. Index:%d Stack value: %d\n", j, *(ptr + j) );
-	}
+	// // DEBUGGING
+	// int j; 
+	// for ( j = -1; j < 30; j++ )
+	// {
+	// 	bwprintf( COM2, "DEB VALUES. Index:%d Stack value: %d\n", j, *(ptr + j) );
+	// }
 	
 	int i; 
 	for ( i = 0; i < numArguments && i < MAX_NUM_ARGUMENTS ; i++ )

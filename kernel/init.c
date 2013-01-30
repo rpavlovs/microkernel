@@ -178,9 +178,6 @@ void init_task_descriptors( Kern_Globals *KERN_GLOBALS ) {
 		for(i=0; i <= 10 ; i++){
 			*temp_sp = i;
 
-			/*//DEBUGGING
-			bwprintf( COM2, "Temp stack random assignment: %x\n\r", *temp_sp);*/
-
 			temp_sp--;
 		}
 		
@@ -268,7 +265,7 @@ void initialize( Kern_Globals *KERN_GLOBALS ) {
 	init_task_descriptors( KERN_GLOBALS );
 
 	//init_schedule( 8, first_task, KERN_GLOBALS );
-	init_schedule( 8, test_task, KERN_GLOBALS );
+	init_schedule( 8, first_task, KERN_GLOBALS );
 }
 
 

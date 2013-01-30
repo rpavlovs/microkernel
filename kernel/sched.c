@@ -294,24 +294,6 @@ int schedule( Kern_Globals * GLOBALS) {
 	// TD of the task, which should run next
 	Task_descriptor *next_td = queue->td_ptrs[queue->oldest];
 
-	// Deleting the task from the scheduler
-	//if( ++(queue->oldest) >= SCHED_QUEUE_LENGTH ) queue->oldest = 0;
-	//--(queue->size);
-
-	/*//If there are more than one task in the queue
-	if(queue->size > 1)
-	{
-		// Removing the first task from the queue
-		if (++(queue->oldest) >= SCHED_QUEUE_LENGTH) queue->oldest = 0;
-
-		// Updating the task's state
-		next_td->state = READY_TASK;
-
-		// Adding the task to the end of the queue
-		if (++(queue->newest) >= SCHED_QUEUE_LENGTH) queue->newest = 0;
-		queue->td_ptrs[queue->newest] = next_td;
-	}*/
-
 	//Setting the last active task in the GLOBALS
 	GLOBALS->schedule.last_active_tid = next_td->tid;
 
@@ -325,8 +307,8 @@ int activate( const int tid, Kern_Globals *GLOBALS ) {
 	
 	Task_descriptor *td = &(GLOBALS->tasks[tid]);
 
-	bwprintf( COM2, "DEBUG: activate: activating %d with state %d\n", tid, td->state );
-	
+	// bwprintf( COM2, "DEBUG: activate: activating %d with state %d\n", tid, td->state );
+
 	assert( td->state == READY_TASK, "It should only be possible to activate a READY task" );
 	td->state = ACTIVE_TASK;
 

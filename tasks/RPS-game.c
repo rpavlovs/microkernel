@@ -14,12 +14,4 @@ void server() {
 
 
 
-/*
- *	Nameserver
- */
-
-void nameserver() {
-
-
-}
 

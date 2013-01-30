@@ -5,8 +5,6 @@
 #include "kernel/init.h"
 #include "lib/bwio.h"
 
-#define FOREVER for( ; ; )
-
 int main( ) {
   
 	Kern_Globals KERN_GLOBALS;	// "Global" kernel structure

@@ -104,8 +104,8 @@ void ExecuteCSWIHandler( unsigned int taskSP, unsigned int lr,
 
 	// Update the task descriptor
 	Task_descriptor *td = ( Task_descriptor * ) activeTD;
-	td->sp = ( int * ) taskSP;
-	td->lr = lr;
+	td->sp = (int *) taskSP;
+	td->lr = (int *) lr;
 
 }
 
@@ -261,7 +261,7 @@ void initialize( Kern_Globals *KERN_GLOBALS ) {
 		);
 	bwprintf( COM2, "\n\r" );*/
 
-	installSwiHandler((unsigned int) swi_main_handler, (unsigned int) SWI_VECTOR);
+	installSwiHandler((unsigned int) swi_main_handler, (unsigned int *) SWI_VECTOR);
 
 	init_wait_queues( KERN_GLOBALS );
 

@@ -117,8 +117,9 @@ int Reply(int tid, char *reply, int replylen);
 //int TestCall(int a, int b, int c, int d, int e); //, int f);
 int TestCall(int a, int b, int c, int d, int e, int f);
 
+int RegisterAs( char * );
 
-
+int WhoIs( char * );
 
 
 

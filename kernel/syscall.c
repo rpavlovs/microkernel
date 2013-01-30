@@ -59,44 +59,58 @@ int Reply( int tid, char *reply, int replylen ){
 // Wrappers
 ////////////////////
 //
-// Sends messege to nameserver [reqest_id][trearid][firstcharofname]....[\0] 
+// Sends messege to nameserver [reqest_id][trearid][firstcharofname]....[\0]
+// 
+// Note: name should be a null-terminated string with no more than 10 charachters.
 int RegisterAs( char *name ) {	
-	int msg_length;
+	int msg_length, status;
 	char msg[NS_NAME_MAX_LENGTH + 1], reply_buf[1];
 	
 	for( msg_length = 0; msg_length < NS_NAME_MAX_LENGTH; ++msg_length ) {
 		if( name[msg_length] == '\0' ) break;
 	}
 	
-	assert( msg_length != NS_NAME_MAX_LENGTH, "REGISTER_AS: Name is to long" );
-	
-	msg[0] = NAMESERVER_REGISTER_REQUEST;
+	if( msg_length != NS_NAME_MAX_LENGTH ) return NS_ERROR_NOT_LEGAL_NAME;
+
+	msg[0] = NS_REQUEST_REGISTER_AS;
 	mem_cpy( name, msg + 1, msg_length );
 
-	Send( NAMESERVER_TID, msg, msg_length + 1, reply_buf, 1 );
+	status = Send( NS_TID, msg, msg_length + 1, reply_buf, 1 );
 
-	return - (int)(reply_buf[0]);
+	if( status == SEND_ERROR_TID_IMPOSSIBLE || status == SEND_ERROR_TID_HAS_NO_TASK )
+		return NS_ERROR_TID_IS_NOT_A_TASK;
+
+	if( status == SEND_ERROR_TRANSACTION_FAILED )
+		return NS_ERROR_TID_IS_NOT_A_NAMESERVER;
+
+	return reply_buf[0];
 }
 
 // Sends messege to nameserver [reqest_id][firstcharofname]....[\0] 
 int WhoIs( char *name ) {
-	int msg_length;
+	int msg_length, status;
 	char msg[NS_NAME_MAX_LENGTH + 1], reply_buf[2];
 	
 	for( msg_length = 0; msg_length < NS_NAME_MAX_LENGTH; ++msg_length ) {
 		if( name[msg_length] == '\0' ) break;
 	}
 	
-	assert( msg_length != NS_NAME_MAX_LENGTH, "REGISTER_AS: Name is to long" );
+	if( msg_length != NS_NAME_MAX_LENGTH ) return NS_ERROR_NOT_LEGAL_NAME;
 	
-	msg[0] = NS_REQUEST_REGISTER_AS;
+	msg[0] = NS_REQUEST_WHO_IS;
 	mem_cpy( name, msg + 1, msg_length );
 
-	Send( NS_TID, msg, msg_length + 1, reply_buf, 2 );
+	status = Send( NS_TID, msg, msg_length + 1, reply_buf, 2 );
 
-	if( reply_buf[0] != 0 ) {
-		return - (int)(reply_buf[0]);
-	}
+	if( status == SEND_ERROR_TID_IMPOSSIBLE || status == SEND_ERROR_TID_HAS_NO_TASK )
+	return NS_ERROR_TID_IS_NOT_A_TASK;
+
+	if( status == SEND_ERROR_TRANSACTION_FAILED )
+		return NS_ERROR_TID_IS_NOT_A_NAMESERVER;
+
+	if( ( -reply_buf[0] ) == NS_ERROR_TASK_NOT_FOUND )
+		return NS_ERROR_TASK_NOT_FOUND;
+
 	return reply_buf[1];
 }
 

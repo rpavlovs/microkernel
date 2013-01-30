@@ -61,4 +61,21 @@ void server() {
 
 
 
+void client() {
+    int status, my_tid;
+
+    my_tid = MyTid();   
+    status = WhoIs( "RPS-server" );
+
+    if( status < 0 ) {
+        bwprintf( COM2, "Client tid %d: RPS-server not found", my_tid );
+        EXIT();
+    }
+
+    
+
+    EXIT();
+}
+
+
 

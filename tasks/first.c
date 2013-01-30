@@ -19,8 +19,6 @@ void sub() {
 	Exit();
 }
 
-
-
 void first_task() {
 	bwprintf( COM2, "First is entered\n" );
 	int tid, status;
@@ -34,13 +32,27 @@ void first_task() {
 	tid = Create( 4, sub );
 	bwprintf( COM2, "Sub() is created. TID: %d\n", tid );
 
-	Pass();
-
-	bwprintf( COM2, "WhoIs the_sub: %d\n", WhoIs("the_sub") );
-
 	bwprintf( COM2, "Exiting first\n" );
 	Exit();
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

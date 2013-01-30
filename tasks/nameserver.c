@@ -20,8 +20,8 @@ void init_ns_table( ns_table * table ) {
 }
 
 int find_entry( const char * name, const ns_table *table ) {
-	int pos = 0;
-	while( strcmp( name, table->entrie[pos].name) != 0 && pos < table->size );
+	int pos = -1;
+	while( strcmp( name, table->entrie[++pos].name ) != 0 && pos < table->size );
 	return pos != table->size ? pos : -1; 
 }
 
@@ -48,17 +48,19 @@ void nameserver() {
 
 		switch( msg[0] ) {
 		case NS_REQUEST_REGISTER_AS:
+			debug( "nameserver: RegisterAs request recived" );
 			pos = find_entry( msg + 1, &table );
 			if ( pos == -1 ) {
+				debug( "nameserver: new ns record required" );
 				pos = table.size++;
-				mem_cpy( msg+1, table.entrie[pos].name, msg_size - 1);
+				my_strcpy( msg + 1, table.entrie[pos].name );
 			}
 			table.entrie[pos].tid = tid;
 			reply[0] = SUCCESS;
 			break;
 		
 		case NS_REQUEST_WHO_IS:
-
+			debug( "nameserver: WhoIs request recived" );
 			pos = find_entry( msg + 1, &table );
 			if( pos == -1 ) {
 				reply[0] = ( -NS_ERROR_TASK_NOT_FOUND );
@@ -68,6 +70,8 @@ void nameserver() {
 			}
 			break;
 		}
+		bwprintf( COM2, "DEBUG: Nameserver: reply to TID: %d reply[0]: %d reply[1]: [%d]\n",
+			tid, reply[0], reply[1] );
 		Reply( tid, reply, 2 );
 	}
 }

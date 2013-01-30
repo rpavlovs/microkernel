@@ -12,14 +12,15 @@ void panic( char * panic_reason ) {
 }
 
 void debug( char * msg ) {
-	bwprintf( COM2, "DEBUG: %s\n\r", msg );
+	bwprintf( COM2, "DEBUG: %s\n", msg );
 }
 
-void str_cpy( const char * source, char * target ) {
-	int pos = 0;
-	while( source[pos] != '\0' ) {
+void my_strcpy( const char * source, char * target ) {
+	int pos = -1;
+	while( source[++pos] != '\0' ) {
 		target[pos] = source[pos];
 	}
+	target[pos] = '\0';
 }
 
 void mem_cpy( const char * source, char * target, const unsigned int len ) {

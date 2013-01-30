@@ -70,12 +70,15 @@ int RegisterAs( char *name ) {
 		if( name[msg_length] == '\0' ) break;
 	}
 	
-	if( msg_length != NS_NAME_MAX_LENGTH ) return NS_ERROR_NOT_LEGAL_NAME;
+	if( msg_length >= NS_NAME_MAX_LENGTH ) return NS_ERROR_NOT_LEGAL_NAME;
 
 	msg[0] = NS_REQUEST_REGISTER_AS;
-	mem_cpy( name, msg + 1, msg_length );
+	my_strcpy( name, msg + 1 );
 
-	status = Send( NS_TID, msg, msg_length + 1, reply_buf, 1 );
+	bwprintf( COM2, "DEBUG: RegisterAs: received_name: %s msg: %s msg_length: %d\n", 
+		name, msg + 1, msg_length);
+
+	status = Send( NS_TID, msg, msg_length + 2, reply_buf, 1 );
 
 	if( status == SEND_ERROR_TID_IMPOSSIBLE || status == SEND_ERROR_TID_HAS_NO_TASK )
 		return NS_ERROR_TID_IS_NOT_A_TASK;
@@ -114,7 +117,7 @@ int WhoIs( char *name ) {
 	return reply_buf[1];
 }
 
-int TestCall(int a, int b, int c, int d, int e, int f){
+int TestCall(int a, int b, int c, int d, int e, int f) {
 //int TestCall(int a, int b, int c, int d, int e){ //, int f){
 //int TestCall(int a, int b, int c, int d){
 

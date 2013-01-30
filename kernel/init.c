@@ -132,15 +132,14 @@ int installSwiHandler( unsigned int handlerLoc, unsigned int *vector )
 	return 0; 
 }
 
-void init_wait_queues( Kern_Globals *KERN_GLOBALS ){
-
-	int i;
-	for(i=0;i<MAX_NUM_TASKS;i++){
-		KERN_GLOBALS->wqueues[i].newest = -1;
-		KERN_GLOBALS->wqueues[i].oldest = 0;
-		KERN_GLOBALS->wqueues[i].size = 0;
+void init_message_queues( Kern_Globals *GLOBALS ) {
+	int tid ;
+	for( tid = 0; tid < MAX_NUM_TASKS; ++tid) {
+		Message_queue *receive_queue = &(GLOBALS->tasks[tid].receive_queue);
+		receive_queue->newest = -1;
+		receive_queue->oldest = 0;
+		receive_queue->size = 0;
 	}
-
 }
 
 // NOTE: Stacks grow downwards, with sp pointing to the empty spot;
@@ -219,53 +218,18 @@ void init_task_descriptors( Kern_Globals *KERN_GLOBALS ) {
 
 		// Setting the state of the task
 		td->state = FREE_TASK;
-
-		// Setting the wait queue pointer
-		td->receive_queue = &(KERN_GLOBALS->wqueues[tid]);
 	}
-
 }
 
-void initialize( Kern_Globals *KERN_GLOBALS ) {
-	//Where is the kernel entry?
-	//Turn off interrupts in ICU!
-	//Prepare the kernel data structures
-		//Where is the kernel stack pointer right now? (Kernel stack pointer is in the end of the RAM memory)
-		//What does the stack look like? (Stack goes downwards from the end of the RAM memory)
-		//Do we want it there? YES
-		//Do we want it somewhere else? NO
-		//This is the last chance to change it! OK :)
-		//If we are going to change it - it is a good idea to keep changed stuff around! WHATEVER :)
-	//Kernel data structures
-		//An array of empty ready queues
-		//A pointer to the TD of the active task
-		//An array of TDs
-		//A free list of pointers to free TDs
-	//Prepare memory to be used by tasks
-		//Allocate task memory
-	//Create first user task
-		//Can run with interrupts turned off by now
-	//NOTE: the place where the kernel starts executing has the global name main which cannot be reused
-
-	//bwsetfifo( COM2, OFF );
-
-	//Where is the kernel stack pointer right now?
-	/*bwprintf( COM2, "Kernel stack pointer: " );
-	asm (
-			"mov r0, #1"	"\n\t"
-			"mov r1, sp"	"\n\t"
-			"bl bwputr"		"\n\t"
-		);
-	bwprintf( COM2, "\n\r" );*/
+void initialize( Kern_Globals *GLOBALS ) {
 
 	installSwiHandler((unsigned int) swi_main_handler, (unsigned int *) SWI_VECTOR);
 
-	init_wait_queues( KERN_GLOBALS );
+	init_message_queues( GLOBALS );
 
-	init_task_descriptors( KERN_GLOBALS );
+	init_task_descriptors( GLOBALS );
 
-	//init_schedule( 8, first_task, KERN_GLOBALS );
-	init_schedule( 8, first_task, KERN_GLOBALS );
+	init_schedule( 8, first_task, GLOBALS );
 }
 
 

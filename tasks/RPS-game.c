@@ -325,7 +325,7 @@ void client_that_gets_bored() {
 
     // Play
     
-    for( i = 0; i < 4; ++i ) {
+    for( i = 0; i < 4; i++ ) {
         msg[0] = RPS_OP_PLAY;
         msg[1] = 1 + get_time() % 3;
         Send( server_tid, msg, 2, reply, 2 );

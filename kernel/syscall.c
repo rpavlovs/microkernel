@@ -62,14 +62,16 @@ int Reply( int tid, char *reply, int replylen ){
 // Sends messege to nameserver [reqest_id][trearid][firstcharofname]....[\0]
 // 
 // Note: name should be a null-terminated string with no more than 10 charachters.
-int RegisterAs( char *name ) {	
+int RegisterAs( char *name ) {
 	int msg_length, status;
 	char msg[NS_NAME_MAX_LENGTH + 1], reply_buf[1];
 	
+	//Iterate until name is terminated
 	for( msg_length = 0; msg_length < NS_NAME_MAX_LENGTH; ++msg_length ) {
 		if( name[msg_length] == '\0' ) break;
 	}
 	
+	//Name length is exceeded
 	if( msg_length >= NS_NAME_MAX_LENGTH ) return NS_ERROR_NOT_LEGAL_NAME;
 
 	msg[0] = NS_REQUEST_REGISTER_AS;
@@ -89,15 +91,17 @@ int RegisterAs( char *name ) {
 	return reply_buf[0];
 }
 
-// Sends messege to nameserver [reqest_id][firstcharofname]....[\0] 
+// Sends message to nameserver [reqest_id][firstcharofname]....[\0] 
 int WhoIs( char *name ) {
 	int msg_length, status;
 	char msg[NS_NAME_MAX_LENGTH + 1], reply_buf[2];
 	
+	//Iterate until name is terminated
 	for( msg_length = 0; msg_length < NS_NAME_MAX_LENGTH; ++msg_length ) {
 		if( name[msg_length] == '\0' ) break;
 	}
 	
+	//Name length is exceeded
 	if( msg_length >= NS_NAME_MAX_LENGTH ) return NS_ERROR_NOT_LEGAL_NAME;
 	
 	msg[0] = NS_REQUEST_WHO_IS;

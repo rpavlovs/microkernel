@@ -1,6 +1,3 @@
-
-
-
 void interrupt_handle( ) {
 	// get here immidiately after swi was called
 

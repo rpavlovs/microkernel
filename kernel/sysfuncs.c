@@ -118,7 +118,6 @@ void sys_reschedule(Task_descriptor *td, Kern_Globals *GLOBALS ) {
 	//If there are more than one task in the queue
 	if(pqueue->size > 1)
 	{
-
 		// Removing the first task from the queue
 		if (++(pqueue->oldest) >= SCHED_QUEUE_LENGTH) pqueue->oldest = 0;
 

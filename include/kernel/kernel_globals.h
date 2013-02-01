@@ -20,7 +20,7 @@
 #define MAX_NUM_ARGUMENTS 					10
 
 #define NS_TID 								1
-#define NS_NAME_MAX_LENGTH 					16
+#define NS_NAME_MAX_LENGTH 					16	//TODO: Why length is not 10?
 #define NS_TABLE_MAX_SIZE					200
 
 #define NS_REQUEST_REGISTER_AS				0

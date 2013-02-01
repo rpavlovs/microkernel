@@ -1,13 +1,13 @@
 #include "config/ts7200.h"
+#include "kernel/init.h"
+#include "kernel/kernel_globals.h"
 #include "kernel/sched.h"
 #include "kernel/syscall.h"
-#include "kernel/kernel_globals.h"
-#include "kernel/init.h"
 #include "lib/bwio.h"
 
 int main( ) {
   
-	Kern_Globals KERN_GLOBALS;	// "Global" kernel structure
+	Kern_Globals KERN_GLOBALS;		// "Global" kernel structure
 	initialize( &KERN_GLOBALS );	// includes starting the first user task
 
 	int request;

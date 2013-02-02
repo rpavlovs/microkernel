@@ -105,7 +105,7 @@ void ExecuteCSWIHandler( unsigned int taskSP, unsigned int lr,
 
 }
 
-void execute_user_task() {
+int execute_user_task( unsigned int a, unsigned int b, unsigned int c ) {
 	
 	asm (
 	/*

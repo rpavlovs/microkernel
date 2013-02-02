@@ -3,7 +3,10 @@
 #include "kernel/syscall.h"
 #include "kernel/sysfuncs.h"
 
-asm (
+
+void swi_main_handler() {
+
+	asm (
 	/*
 		This handler is executed whenever there's a software interrupt. 
 		The processor automatically leaves the system in the following state. 
@@ -20,7 +23,6 @@ asm (
 
 	"\n"
 
-	"swi_main_handler:"													"\n\t"
 	// Save in the stack the arguments (in the registers) since they might get
 	// erased. 
 	// NOTE: The current SP is the SP_SVC, so the user SP is not affected.
@@ -85,7 +87,8 @@ asm (
 	// Return control to the kernel C code. 
 	"sub	sp, fp, #12"													"\n\t"
 	"LDMFD	sp, { fp, sp, pc }"									"\n\t"
-);
+	);
+}
 
 void ExecuteCSWIHandler( unsigned int taskSP, unsigned int lr,
 													unsigned int activeTD )
@@ -102,7 +105,9 @@ void ExecuteCSWIHandler( unsigned int taskSP, unsigned int lr,
 
 }
 
-__asm__(
+void execute_user_task() {
+	
+	asm (
 	/*
 		execute_user_task: 
 		This method should be executed whenever the kernel wants to return control
@@ -114,7 +119,6 @@ __asm__(
 	*/
 
 	"\n"
-	"execute_user_task:"												"\n\t"
 
 	// Store the information about the kernel as would happen in a normal task. 
 	"MOV	ip, sp"														"\n\t"
@@ -174,7 +178,8 @@ __asm__(
 	// Jump to the next instruction in the user task.
 	"LDR	PC, [ sp, #-4 ]"											"\n\t"
 
-);
+	);
+}
 
 void RetrieveSysCallArgs( int *sysCallArguments, int numArguments, unsigned int taskSP )
 {

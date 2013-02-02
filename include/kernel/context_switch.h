@@ -3,11 +3,11 @@
 
 #include "kernel/kernel_globals.h"
 
-extern void swi_main_handler();
+void swi_main_handler();
 
 void ExecuteCSWIHandler( unsigned int, unsigned int, unsigned int );
 
-extern int execute_user_task(unsigned int, unsigned int, unsigned int);
+int execute_user_task(unsigned int, unsigned int, unsigned int);
 
 void RetrieveSysCallArgs( int *, int, unsigned int);
 

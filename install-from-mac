@@ -1,4 +1,4 @@
 cp -R . /Volumes/home/cs452/microkernel 2>/dev/null
 
 
-ssh uw "cd cs452/microkernel && make clean >/dev/null && make >/dev/null && make install >/dev/null"
+ssh uw "cd cs452/microkernel && make clean >/dev/null && make && make install >/dev/null"

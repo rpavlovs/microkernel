@@ -2,7 +2,7 @@
 
 int sys_create( int priority, void (*code) ( ), Task_descriptor *td, Kern_Globals *GLOBALS ) {
 	
-	debug( "sys_create: ENTERED" );
+	debug( DBG_CURR_LVL, DBG_KERN, "sys_create: ENTERED" );
 
 	// ERROR: Scheduler was given a wrong task priority.
 	if( priority < 0 || priority >= SCHED_NUM_PRIORITIES ) return -1;
@@ -56,7 +56,7 @@ int sys_create( int priority, void (*code) ( ), Task_descriptor *td, Kern_Global
 
 int sys_mytid(Task_descriptor *td, Kern_Globals *GLOBALS )
 {
-	debug( "sys_mytid: ENTERED" );
+	debug( DBG_CURR_LVL, DBG_KERN, "sys_mytid: ENTERED" );
 
 	sys_reschedule(td, GLOBALS);
 	return td->tid;
@@ -64,7 +64,7 @@ int sys_mytid(Task_descriptor *td, Kern_Globals *GLOBALS )
 
 int sys_myparenttid(Task_descriptor *td, Kern_Globals *GLOBALS )
 {
-	debug( "sys_myparenttid: ENTERED");
+	debug( DBG_CURR_LVL, DBG_KERN, "sys_myparenttid: ENTERED");
 
 	sys_reschedule(td, GLOBALS);
 	return td->parent_tid;
@@ -72,14 +72,14 @@ int sys_myparenttid(Task_descriptor *td, Kern_Globals *GLOBALS )
 
 void sys_pass(Task_descriptor *td, Kern_Globals *GLOBALS )
 {
-	debug( "sys_pass: ENTERED" );
+	debug( DBG_CURR_LVL, DBG_KERN, "sys_pass: ENTERED" );
 
 	sys_reschedule(td, GLOBALS);
 }
 
 void sys_exit(Task_descriptor *td, Kern_Globals *GLOBALS ) 
 {
-	debug( "sys_exit: ENTERED" );
+	debug( DBG_CURR_LVL, DBG_KERN, "sys_exit: ENTERED" );
 
 	// Getting task properties
 	int priority = td->priority;
@@ -102,7 +102,7 @@ void sys_exit(Task_descriptor *td, Kern_Globals *GLOBALS )
 }
 
 void sys_reschedule(Task_descriptor *td, Kern_Globals *GLOBALS ) {
-	debug( "sys_reschedule: ENTERED" );
+	debug( DBG_CURR_LVL, DBG_KERN, "sys_reschedule: ENTERED" );
 
 	// Getting task properties
 	int priority = td->priority;
@@ -174,7 +174,7 @@ int sys_receive(int *sender_tid, char *msg, int msglen,
 	Message_queue *receive_queue = &(receiver_td->receive_queue);
 	//If there are SOME sends from other tasks to the current task
 	if( receive_queue->size > 0 ) {
-		debug( "SYS_RECEIVE: Task unblocked. There are messages waiting to be recieved" );
+		debug( DBG_CURR_LVL, DBG_KERN, "SYS_RECEIVE: Task unblocked. There are messages waiting to be recieved" );
 
 		//Modifying the queue
 		receive_queue->size--;
@@ -198,7 +198,7 @@ int sys_receive(int *sender_tid, char *msg, int msglen,
 	}
 	//If there are NO sends from other tasks to the current task
 	else {
-		debug ("SYS_RECEIVE: Task unblocked. No tasks in the queue.");
+		debug( DBG_CURR_LVL, DBG_KERN, "SYS_RECEIVE: Task unblocked. No tasks in the queue." );
 
 		//Save the current receive arguments
 		Receive_info *receive_info = &(receiver_td->receive_info);
@@ -216,7 +216,7 @@ int sys_receive(int *sender_tid, char *msg, int msglen,
 		Task_queue *pqueue = &(sched->priority[receiver_td->priority]);
 		dequeue_tqueue(pqueue);
 
-		debug("SYS_RECEIVE: Task blocked. Removed from schedule.");
+		debug( DBG_CURR_LVL, DBG_KERN, "SYS_RECEIVE: Task blocked. Removed from schedule." );
 	}
 
 	return 0;
@@ -248,7 +248,7 @@ void sys_unblock_receive( Task_descriptor *receiver_td, Kern_Globals *GLOBALS ){
 
 	//The target task was waiting and there are SOME sends
 	if( receiver_td->state != RECEIVE_TASK || receive_queue->size == 0 ) {
-		debug( "sys_unblock_receive: got called for a non-RECEIVE_TASK or a task with no "
+		debug( DBG_CURR_LVL, DBG_KERN, "sys_unblock_receive: got called for a non-RECEIVE_TASK or a task with no "
 			"messages waiting to be received" );
 		return;
 	}

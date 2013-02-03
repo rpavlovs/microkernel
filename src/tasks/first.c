@@ -34,8 +34,9 @@ void sub() {
 }
 
 void first_task() {
-
-	start_timer();
+	debug( DBG_CURR_LVL, DBG_KERN, "FIRST_TASK: START %d\n", 1000 );
+	
+	// start_timer();
 	Create( 14, nameserver );
 
 	int tid;
@@ -65,7 +66,7 @@ void first_task() {
 	tid = Create( 10, client_that_gets_bored );
 	tid = Create( 10, client_always_play );
 
-	debug( "First exits" );
+	debug( DBG_CURR_LVL, DBG_KERN, "FIRST_TASK: EXIT" );
 	Exit();
 }
 

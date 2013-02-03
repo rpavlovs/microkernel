@@ -1,9 +1,6 @@
 /*
  * bwio.h
  */
-#ifndef ___BW_IO___
-#define ___BW_IO___
-
 
 typedef char *va_list;
 
@@ -41,4 +38,4 @@ void bwputw( int channel, int n, char fc, char *bf );
 
 void bwprintf( int channel, char *format, ... );
 
-#endif
+void debug( int curr_DBG_CURR_LVL, int threshhold_bgd_lvl, char *fmt, ... );

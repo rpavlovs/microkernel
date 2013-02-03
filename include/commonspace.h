@@ -11,6 +11,14 @@
 
 #include "kernel/syscall.h"
 
+// Current debug level
+#define DBG_CURR_LVL 	3
+
+// Debug levels
+#define DBG_USR		 	1
+#define DBG_SYS		 	2
+#define DBG_KERN 		3
+
 //
 // System tasks
 // 

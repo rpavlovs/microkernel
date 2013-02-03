@@ -15,7 +15,7 @@ void assert( int, char * );
 
 void panic( char * );
 
-void debug( char * );
+// void debug( DBG_CURR_LVL, DBG_KERN, char *, ... );
 
 void my_strcpy( const char * , char * );
 

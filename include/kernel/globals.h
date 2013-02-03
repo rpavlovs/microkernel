@@ -1,5 +1,5 @@
-#ifndef __KERNEL_GLOBALS__
-#define __KERNEL_GLOBALS__
+#ifndef __DBG_KERN_GLOBALS__
+#define __DBG_KERN_GLOBALS__
 
 #define SCHED_QUEUE_LENGTH 					100
 #define SCHED_NUM_PRIORITIES 				21

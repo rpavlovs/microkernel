@@ -4,6 +4,10 @@
 		"selected_items":
 		[
 			[
+				"SRC",
+				"SRC_DIRS"
+			],
+			[
 				"sende",
 				"sender_tid"
 			],
@@ -472,58 +476,69 @@
 	"buffers":
 	[
 		{
-			"file": "/Users/rpavlovs/Library/Application Support/Sublime Text 2/Packages/User/install-from-mac.sublime-build",
+			"file": "src/tasks/first.c",
 			"settings":
 			{
-				"buffer_size": 47,
+				"buffer_size": 2662,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "tasks/first.c",
+			"file": "src/tasks/RPS-game.c",
 			"settings":
 			{
-				"buffer_size": 2789,
+				"buffer_size": 10664,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "include/tasks/RPS-game.h",
+			"file": "src/kernel/context_switch.c",
 			"settings":
 			{
-				"buffer_size": 137,
+				"buffer_size": 8822,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "include/kernel/helpers.h",
+			"contents": "#include \"commonspace.h\"\n\nvoid assert( int statement, char * err_msg ) {\n	if( !statement ) bwprintf( COM2, \"Assertion failed: %s\\n\\r\", err_msg );\n}\n\nvoid panic( char * panic_reason ) {\n	bwprintf( COM2, \"Kernel panic: %s\\n\\r\", panic_reason );\n	for( ; ; );\n}\n\n// void debug( DBG_CURR_LVL, DBG_KERN, char * fmt, ... ) {\n// 	va_list va;\n\n//     va_start(va,fmt);\n// 	bwprintf( COM2, fmt, va );\n// 	va_end(va);\n// }\n\nvoid my_strcpy( const char * source, char * target ) {\n	int pos = -1;\n	while( source[++pos] != '\\0' ) {\n		target[pos] = source[pos];\n	}\n	target[pos] = '\\0';\n}\n\nvoid mem_cpy( const char * source, char * target, const unsigned int len ) {\n	int pos = -1;\n	while( ++pos < len ) {\n		target[pos] = source[pos];\n	}\n}\n\nint strcmp( const char *s1, const char *s2 ) {\n    while( (*s1 && *s2) && (*s1++ == *s2++) );\n    return *(--s1) - *(--s2);\n}\n\n",
+			"file": "src/helpers.c",
+			"file_size": 847,
+			"file_write_time": 1359883697000000,
 			"settings":
 			{
-				"buffer_size": 270,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "include/kernel/kernel_globals.h",
-			"settings":
-			{
-				"buffer_size": 2603,
+				"buffer_size": 826,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "include/config/ts7200.h",
+			"file": "/Users/rpavlovs/Dropbox/w13/cs452/io/io/src/bwio.c",
 			"settings":
 			{
-				"buffer_size": 2746,
+				"buffer_size": 4827,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "install-from-mac",
+			"file": "include/kernel/globals.h",
 			"settings":
 			{
-				"buffer_size": 250,
+				"buffer_size": 2080,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "include/commonspace.h",
+			"settings":
+			{
+				"buffer_size": 681,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "include/kernel/init.h",
+			"settings":
+			{
+				"buffer_size": 142,
 				"line_ending": "Unix"
 			}
 		},
@@ -531,15 +546,39 @@
 			"file": "include/kernel/sched.h",
 			"settings":
 			{
-				"buffer_size": 756,
+				"buffer_size": 772,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "include/kernelspace.h",
+			"file": "include/kernel/queues.h",
 			"settings":
 			{
-				"buffer_size": 214,
+				"buffer_size": 245,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "include/tasks/first.h",
+			"settings":
+			{
+				"buffer_size": 83,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "include/helpers.h",
+			"settings":
+			{
+				"buffer_size": 366,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "include/lib/bwio.h",
+			"settings":
+			{
+				"buffer_size": 818,
 				"line_ending": "Unix"
 			}
 		}
@@ -547,9 +586,65 @@
 	"build_system": "Packages/User/install-from-mac.sublime-build",
 	"command_palette":
 	{
-		"height": 147.0,
+		"height": 392.0,
 		"selected_items":
 		[
+			[
+				"git push",
+				"Git: Push"
+			],
+			[
+				"git ci ",
+				"Git: Commit"
+			],
+			[
+				"git ad",
+				"Git: Add..."
+			],
+			[
+				"git add",
+				"Git: Add..."
+			],
+			[
+				"git status",
+				"Git: Status"
+			],
+			[
+				"git st",
+				"Git: Show Tags"
+			],
+			[
+				"git cus",
+				"Git: Custom Command"
+			],
+			[
+				"GIT cus",
+				"Git: Custom Command"
+			],
+			[
+				"git ci",
+				"Git: Commit"
+			],
+			[
+				"git ",
+				"Git: Gitk"
+			],
+			[
+				"git add ..",
+				"Git: Add..."
+			],
+			[
+				"git pus",
+				"Git: Push"
+			],
+			[
+				"git add ",
+				"Git: Add..."
+			],
+			[
+				"jso",
+				"Set Syntax: JSON"
+			],
 			[
 				"up",
 				"Package Control: Upgrade Package"
@@ -583,20 +678,8 @@
 				"Git: Push"
 			],
 			[
-				"git push",
-				"Git: Push"
-			],
-			[
-				"git ci",
-				"Git: Commit"
-			],
-			[
 				"git co",
 				"Git: Commit"
-			],
-			[
-				"git add",
-				"Git: Add Current File"
 			],
 			[
 				"git pull",
@@ -680,32 +763,56 @@
 	},
 	"file_history":
 	[
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/lib/bwio.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/io/io/src/bwio.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/nameserver.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/config/ts7200.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/queues.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/sysfuncs.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/userspace.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/helpers.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/init.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/helpers.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/syscall.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/RPS-game.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/first.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernelspace.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/syscall.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/sysfuncs.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/sched.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/kernel.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/tasks/first.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/tasks/nameserver.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/tasks/RPS-game.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/install-from-mac",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/kernel/queues.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/kernel/context_switch.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/helpers.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/queues.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/commonspace.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/Makefile",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/.gitignore",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/kernel_globals.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/helpers.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/sched.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/tasks/RPS-game.h",
+		"/Users/rpavlovs/Library/Application Support/Sublime Text 2/Packages/User/install-from-mac.sublime-build",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/context_switch.h",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/kernel/init.c",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/tasks/RPS-game.c",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/kernel/helpers.c",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/kernel/sysfuncs.c",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/kernel/syscall.c",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernelspace.h",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/kernel/kernel_globals.c",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/kernel/interrupt_handlers.c",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/kernel/kernel.c",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/kernel/sched.c",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/config/mem_init.h",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/kernel/context_switch.c",
-		"/Users/rpavlovs/Library/Application Support/Sublime Text 2/Packages/User/install-from-mac.sublime-build",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/{\"release_name\":\"Weekly Natural Gas Storage Report",
 		"/Users/rpavlovs/Downloads/58869.user.js",
 		"/Users/rpavlovs/Downloads/F1 2012 [MULTI][MACOSX][MONEY][WwW.GamesTorrents.CoM]/Leeme.txt",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/tasks/nameserver.c",
 		"/Volumes/UNTITLED/RPS-game.c",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/config/ts7200.h",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/tasks/nameserver.h",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/tasks/RPS-game.h",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/helpers.h",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/syscall.h",
 		"/Users/rpavlovs/.ssh/config",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/kernel_globals.h",
 		"/Volumes/home/cs452/RTOS/kernel/interrupt_handlers.c",
 		"/Volumes/home/cs452/RTOS/tasks/first.c",
 		"/Volumes/home/cs452/RTOS/kernel/init.c",
@@ -783,31 +890,7 @@
 		"/Users/rpavlovs/Documents/rails/bazasos/app/views/people/index.html.haml",
 		"/Users/rpavlovs/Documents/rails/bazasos/app/assets/stylesheets/custom.css.scss",
 		"/Users/rpavlovs/Documents/rails/bazasos/config/database.yml",
-		"/Users/rpavlovs/Documents/rails/bazasos/README.rdoc",
-		"/Users/rpavlovs/Documents/rails/bazasos/spec/requests/user_pages_spec.rb",
-		"/Users/rpavlovs/Documents/rails/bazasos/app/controllers/users_controller.rb",
-		"/Users/rpavlovs/Documents/rails/bazasos/app/views/users/show.html.erb",
-		"/Users/rpavlovs/Documents/rails/bazasos/app/views/layouts/application.html.erb",
-		"/Users/rpavlovs/Documents/rails/bazasos/config/routes.rb",
-		"/Users/rpavlovs/Documents/rails/bazasos/app/models/location.rb",
-		"/Users/rpavlovs/Documents/rails/bazasos/spec/models/user_spec.rb",
-		"/Users/rpavlovs/Documents/rails/bazasos/db/migrate/20121214162152_add_password_digest_to_users.rb",
-		"/Users/rpavlovs/Documents/rails/bazasos/db/migrate/20121214155300_add_index_to_users_login.rb",
-		"/Users/rpavlovs/Documents/rails/bazasos/app/helpers/application_helper.rb",
-		"/Users/rpavlovs/Documents/rails/bazasos/app/views/users/new.html.erb",
-		"/Users/rpavlovs/Documents/rails/bazasos/spec/support/utilities.rb",
-		"/Users/rpavlovs/Documents/rails/bazasos/spec/requests/people_pages_spec.rb",
-		"/Users/rpavlovs/Documents/rails/bazasos/config/environments/development.rb",
-		"/Users/rpavlovs/Documents/rails/bazasos/app/assets/stylesheets/people.css.scss",
-		"/Users/rpavlovs/Documents/rails/bazasos/app/views/layouts/_footer.html.erb",
-		"/Users/rpavlovs/Documents/rails/bazasos/app/views/layouts/_shim.html.erb",
-		"/Users/rpavlovs/Documents/rails/bazasos/app/views/people/show.html.erb",
-		"/Users/rpavlovs/Documents/rails/bazasos/app/views/locations/index.html.erb",
-		"/Users/rpavlovs/Documents/rails/bazasos/Guardfile",
-		"/Users/rpavlovs/Documents/rails/bazasos/app/controllers/locations_controller.rb",
-		"/Users/rpavlovs/Documents/rails/bazasos/app/controllers/people_controller.rb",
-		"/Users/rpavlovs/Documents/rails/bazasos/spec/spec_helper.rb",
-		"/Users/rpavlovs/Library/Application Support/Sublime Text 2/Packages/Default/Preferences.sublime-settings"
+		"/Users/rpavlovs/Documents/rails/bazasos/README.rdoc"
 	],
 	"find":
 	{
@@ -815,7 +898,7 @@
 	},
 	"find_in_files":
 	{
-		"height": 93.0,
+		"height": 0.0,
 		"where_history":
 		[
 			"~/Dropbox/w13/cs452/microkernel",
@@ -827,6 +910,12 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"time",
+			"return",
+			"HELPERS",
+			"KERN_GLOBALS",
+			"handle_request",
+			"\"\n",
 			"context_switch",
 			"interrupt_handle",
 			"assert",
@@ -948,13 +1037,7 @@
 			"error_msg",
 			"print_info",
 			"parse_dom",
-			"num_links",
-			"links_found",
-			"links_found ",
-			"links_found",
-			"old_links_found",
-			"links_found",
-			"active_curl_handlers"
+			"num_links"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -985,55 +1068,23 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 3,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "/Users/rpavlovs/Library/Application Support/Sublime Text 2/Packages/User/install-from-mac.sublime-build",
+					"file": "src/tasks/first.c",
 					"settings":
 					{
-						"buffer_size": 47,
+						"buffer_size": 2662,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								13,
-								13
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JSON.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				}
-			]
-		},
-		{
-			"selected": 2,
-			"sheets":
-			[
-				{
-					"buffer": 1,
-					"file": "tasks/first.c",
-					"settings":
-					{
-						"buffer_size": 2789,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								842,
-								842
+								674,
+								674
 							]
 						],
 						"settings":
@@ -1048,24 +1099,53 @@
 					"type": "text"
 				},
 				{
-					"buffer": 2,
-					"file": "include/tasks/RPS-game.h",
+					"buffer": 1,
+					"file": "src/tasks/RPS-game.c",
 					"settings":
 					{
-						"buffer_size": 137,
+						"buffer_size": 10664,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								137,
-								137
+								912,
+								912
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/C++/C++.tmLanguage"
+							"syntax": "Packages/C++/C.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "src/kernel/context_switch.c",
+					"settings":
+					{
+						"buffer_size": 8822,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3122,
+								3122
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C.tmLanguage",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -1075,18 +1155,105 @@
 				},
 				{
 					"buffer": 3,
-					"file": "include/kernel/helpers.h",
+					"file": "src/helpers.c",
 					"settings":
 					{
-						"buffer_size": 270,
+						"buffer_size": 826,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								270,
-								270
+								309,
+								334
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "/Users/rpavlovs/Dropbox/w13/cs452/io/io/src/bwio.c",
+					"settings":
+					{
+						"buffer_size": 4827,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4825,
+								4813
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 2956.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		},
+		{
+			"selected": 6,
+			"sheets":
+			[
+				{
+					"buffer": 5,
+					"file": "include/kernel/globals.h",
+					"settings":
+					{
+						"buffer_size": 2080,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								756,
+								763
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "include/commonspace.h",
+					"settings":
+					{
+						"buffer_size": 681,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								261,
+								261
 							]
 						],
 						"settings":
@@ -1100,99 +1267,19 @@
 					"type": "text"
 				},
 				{
-					"buffer": 4,
-					"file": "include/kernel/kernel_globals.h",
-					"settings":
-					{
-						"buffer_size": 2603,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "include/config/ts7200.h",
-					"settings":
-					{
-						"buffer_size": 2746,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1881,
-								1923
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 442.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "install-from-mac",
-					"settings":
-					{
-						"buffer_size": 250,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								250,
-								250
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Text/Plain text.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
 					"buffer": 7,
-					"file": "include/kernel/sched.h",
+					"file": "include/kernel/init.h",
 					"settings":
 					{
-						"buffer_size": 756,
+						"buffer_size": 142,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								386,
-								386
+								98,
+								98
 							]
 						],
 						"settings":
@@ -1207,18 +1294,122 @@
 				},
 				{
 					"buffer": 8,
-					"file": "include/kernelspace.h",
+					"file": "include/kernel/sched.h",
 					"settings":
 					{
-						"buffer_size": 214,
+						"buffer_size": 772,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								213,
-								213
+								41,
+								41
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "include/kernel/queues.h",
+					"settings":
+					{
+						"buffer_size": 245,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								97,
+								97
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "include/tasks/first.h",
+					"settings":
+					{
+						"buffer_size": 83,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								36,
+								36
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "include/helpers.h",
+					"settings":
+					{
+						"buffer_size": 366,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								187,
+								187
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 12,
+					"file": "include/lib/bwio.h",
+					"settings":
+					{
+						"buffer_size": 818,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								420,
+								422
 							]
 						],
 						"settings":
@@ -1278,7 +1469,7 @@
 	},
 	"output.exec":
 	{
-		"height": 261.0
+		"height": 905.0
 	},
 	"output.git":
 	{
@@ -1294,6 +1485,14 @@
 		"height": 0.0,
 		"selected_items":
 		[
+			[
+				"helh",
+				"include/helpers.h"
+			],
+			[
+				"hel",
+				"src/helpers.c"
+			],
 			[
 				"init.c",
 				"kernel/init.c"

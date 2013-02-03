@@ -25,31 +25,31 @@ void swi_main_handler() {
 	// NOTE: The current SP is the SP_SVC, so the user SP is not affected.
 	//       
 	// Switch to system mode. 
-	"MSR	CPSR_c, #0x1F"												"\n\t"
+	"MSR	CPSR_c, #0x1F"													"\n\t"
 
 	// Leave space for SPSR. 	 
 	"SUB	sp, sp, #4"														"\n\t"
 
 	// Store all the registers (except 13-sp- and 15-pc-).		
-	"STMFD	sp!, { r0-r12, lr }"								"\n\t"
+	"STMFD	sp!, { r0-r12, lr }"											"\n\t"
 
 	// Store the task's SP so that it can be stored later into the TR.
-	"MOV	r0, sp"																"\n\t"
+	"MOV	r0, sp"															"\n\t"
 
 	// Return to supervisor mode. 
-	"MSR	cpsr_c, #0x13"												"\n\t"
+	"MSR	cpsr_c, #0x13"													"\n\t"
 
 	// Get the value of the system call
 	// 
 	// Store in the task's stack the spsr (the original CPSR of the task).
-	"MRS	r1, spsr"															"\n\t"			 
-	"STR	r1, [ r0, #14*4 ]"										"\n\t"
+	"MRS	r1, spsr"														"\n\t"			 
+	"STR	r1, [ r0, #14*4 ]"												"\n\t"
 
 	// Store the return value in the r1 so that it is stored later into the TR. 
-	"MOV	r1, lr"																"\n\t"		
+	"MOV	r1, lr"															"\n\t"		
 
 	// Restore the kernel state
-	"LDMFD	sp!, { r4-r11 }"										"\n\t"
+	"LDMFD	sp!, { r4-r11 }"												"\n\t"
 
 	/*// Execute the C system call handler
 	// Store the next instruction to run in the r1 so that it is stored later
@@ -62,34 +62,33 @@ void swi_main_handler() {
 
 	// Execute the C system call handler.
 	// The pointer to the active TD is loaded into register 2.
-	"LDR	r2, [ sp, #0 ]"												"\n\t"		
+	"LDR	r2, [ sp, #0 ]"													"\n\t"		
 
 	// Store the next instruction to run in the r1 so that it is stored later
 	// into the TR. 
-	"LDR	r3, [ lr, #-4 ]"											"\n\t"		
-	"BIC	r3, r3, #0xff000000"									"\n\t"
+	"LDR	r3, [ lr, #-4 ]"												"\n\t"		
+	"BIC	r3, r3, #0xff000000"											"\n\t"
 
 	// This variable is stored in local memory to prevent it from being deleted
 	// by the function call. 
-	"STR	r3, [ sp, #0 ]"												"\n\t"
+	"STR	r3, [ sp, #0 ]"													"\n\t"
 
 	// r0 - task stack pointer
 	// r1 - next address
 	// r2 - task descriptor pointer	
-	"BL	ExecuteCSWIHandler"											"\n\t"
+	"BL	ExecuteCSWIHandler"													"\n\t"
 
 	// Set the return value.
-	"LDR	r0, [ sp, #0 ]"												"\n\t"	
+	"LDR	r0, [ sp, #0 ]"													"\n\t"	
 	
 	// Return control to the kernel C code. 
 	"sub	sp, fp, #12"													"\n\t"
-	"LDMFD	sp, { fp, sp, pc }"									"\n\t"
+	"LDMFD	sp, { fp, sp, pc }"												"\n\t"
 	);
 }
 
-void ExecuteCSWIHandler( unsigned int taskSP, unsigned int lr,
-													unsigned int activeTD )
-{
+void
+ExecuteCSWIHandler( unsigned int taskSP, unsigned int lr, unsigned int activeTD ) {
 
 	//bwprintf( COM2, "kerxit.c: Updating Active Task   TaskSP: %d 
 	//				ReturnValue: %d    SWIValue: %d    activeTID: %d .\n\r",
@@ -243,7 +242,7 @@ void handle_request( int request, Kern_Globals *GLOBALS )
 			
 			SetSysCallReturn(returnValue, taskSP);
 			
-			debug( "CREATE_SYSCALL handled" );
+			debug( DBG_CURR_LVL, DBG_KERN, "CREATE_SYSCALL handled" );
 
 			break;
 
@@ -252,27 +251,27 @@ void handle_request( int request, Kern_Globals *GLOBALS )
 			
 			SetSysCallReturn(returnValue, taskSP);
 
-			debug( "MYTID_SYSCALL handled" );
+			debug( DBG_CURR_LVL, DBG_KERN, "MYTID_SYSCALL handled" );
 
 			break;
 		case MYPARENTTID_SYSCALL:
 			returnValue = sys_myparenttid(td, GLOBALS);
 			SetSysCallReturn(returnValue, taskSP);
 
-			debug( "MYPARENTTID_SYSCALL handled" );
+			debug( DBG_CURR_LVL, DBG_KERN, "MYPARENTTID_SYSCALL handled" );
 
 			break;
 		case PASS_SYSCALL:
 			sys_pass(td, GLOBALS);
 
-			debug( "PASS_SYSCALL handled" );
+			debug( DBG_CURR_LVL, DBG_KERN, "PASS_SYSCALL handled" );
 
 			break;
 		case EXIT_SYSCALL:
 
 			sys_exit(td, GLOBALS);
 
-			debug( "EXIT_SYSCALL handled" );
+			debug( DBG_CURR_LVL, DBG_KERN, "EXIT_SYSCALL handled" );
 			
 			break;
 

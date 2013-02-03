@@ -22,8 +22,7 @@ int find_entry( const char * name, const ns_table *table ) {
 }
 
 void nameserver() {
-
-	debug( "starting nameserver" );
+	debug( DBG_CURR_LVL, DBG_SYS, "NAMESERVER: start" );
 
 	char msg[ NS_NAME_MAX_LENGTH + 1 ];
 	char reply[2];
@@ -34,8 +33,7 @@ void nameserver() {
 	init_ns_table( &table );
 
 	FOREVER {
-
-		debug( "Nameserver: Recieving request" );
+		debug( DBG_CURR_LVL, DBG_SYS, "NAMESERVER: Block to recieve request" );
 		
 		msg_size = Receive( &sender_tid, msg, NS_NAME_MAX_LENGTH + 3 );
 
@@ -44,10 +42,10 @@ void nameserver() {
 
 		switch( msg[0] ) {
 		case NS_REQUEST_REGISTER_AS:
-			debug( "nameserver: RegisterAs request recived" );
+			debug( DBG_CURR_LVL, DBG_SYS, "NAMESERVER: RegisterAs request recived" );
 			pos = find_entry( msg + 1, &table );
 			if ( pos == -1 ) {
-				debug( "nameserver: new ns record required" );
+				debug( DBG_CURR_LVL, DBG_SYS, "NAMESERVER: new ns record required" );
 				pos = table.size++;
 				my_strcpy( msg + 1, table.entrie[pos].name );
 			}
@@ -56,7 +54,7 @@ void nameserver() {
 			break;
 		
 		case NS_REQUEST_WHO_IS:
-			debug( "nameserver: WhoIs request recived" );
+			debug( DBG_CURR_LVL, DBG_SYS, "NAMESERVER: WhoIs request recived" );
 			pos = find_entry( msg + 1, &table );
 			if( pos == -1 ) {
 				reply[0] = ( -NS_ERROR_TASK_NOT_FOUND );
@@ -66,9 +64,6 @@ void nameserver() {
 			}
 			break;
 		}
-
-		// bwprintf( COM2, "DEBUG: Nameserver: reply to TID: %d reply[0]: %d reply[1]: [%d]\n",
-		// 	sender_tid, reply[0], reply[1] );
 		
 		Reply( sender_tid, reply, 2 );
 	}

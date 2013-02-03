@@ -9,10 +9,6 @@ void panic( char * panic_reason ) {
 	for( ; ; );
 }
 
-void debug( char * msg ) {
-	// bwprintf( COM2, "DEBUG: %s\n", msg );
-}
-
 void my_strcpy( const char * source, char * target ) {
 	int pos = -1;
 	while( source[++pos] != '\0' ) {

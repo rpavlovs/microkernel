@@ -1,7 +1,11 @@
 #ifndef ___INIT___
 #define ___INIT___
 
-#include "kernel/kernel_globals.h"
+#include "kernelspace.h"
+
+
+// TODO: Description:
+//       
 
 void initialize( Kern_Globals * );
 

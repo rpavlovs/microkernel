@@ -8,14 +8,17 @@
 #ifndef ___TS7200___
 #define ___TS7200___
 
+
+#define SWI_ENRTY_ADDRESS 		0x8 		//Used for installation of SWI handler
+
 #define HALT_ADDR				0x80930008
 			
 #define	TIMER1_BASE				0x80810000
 #define	TIMER2_BASE				0x80810020
 #define	TIMER3_BASE				0x80810080
 
-#define Timer4ValueLow  0x80810060      // 32bit
-#define Timer4ValueHigh 0x80810064      // 9bit
+#define Timer4ValueLow  		0x80810060  // 32bit
+#define Timer4ValueHigh 		0x80810064  // 9bit
 			
 #define	LDR_OFFSET				0x00000000	// 16/32 bits, RW
 #define	VAL_OFFSET				0x00000004	// 16/32 bits, RO

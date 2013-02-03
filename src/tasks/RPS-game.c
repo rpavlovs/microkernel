@@ -1,5 +1,5 @@
-#include "commonspace.h"
-#include "kernel/kernel_globals.h"
+#include "userspace.h"
+
 
 // Operation numbers
 #define RPS_OP_SIGNUP                   0

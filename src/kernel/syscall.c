@@ -1,5 +1,4 @@
 #include "kernelspace.h"
-#include "lib/bwio.h"
 
 int Create( int priority, void (*code) ( ) ) {
  	

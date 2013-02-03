@@ -1,10 +1,4 @@
 #include "kernelspace.h"
-#include "config/ts7200.h"
-#include "config/mem_init.h"
-#include "lib/bwio.h"
-#include "tasks/first.h"
-
-#define SWI_VECTOR 0x8 //Used for installation of SWI handler
 
 //Executed once during initialization
 int installSwiHandler( unsigned int handlerLoc, unsigned int *vector )
@@ -33,14 +27,14 @@ void init_message_queues( Kern_Globals *GLOBALS ) {
 	}
 }
 
-// NOTE: Stacks grow downwards, with sp pointing to the empty spot;
-void init_task_descriptors( Kern_Globals *KERN_GLOBALS ) {
-	// Task ID
+// NOTE: Stacks grow downwards, with sp pointing to the empty spot.
+void init_task_descriptors( Kern_Globals *GLOBALS ) {
+
 	int tid;
 
 	for( tid = 0; tid < MAX_NUM_TASKS; tid++)
 	{
-		Task_descriptor *td = &( KERN_GLOBALS->tasks[tid] );
+		Task_descriptor *td = &( GLOBALS->tasks[tid] );
 		// Setting the Task ID
 		td->tid = tid;
 		// Setting stack pointer to give each task the same address space
@@ -57,9 +51,8 @@ void init_task_descriptors( Kern_Globals *KERN_GLOBALS ) {
 		
 		// Assigning random values to the registers
 		int i;
-		for(i=0; i <= 10 ; i++){
+		for( i=0; i <= 10 ; i++ ) {
 			*temp_sp = i;
-
 			temp_sp--;
 		}
 		
@@ -83,7 +76,7 @@ void init_task_descriptors( Kern_Globals *KERN_GLOBALS ) {
 
 void initialize( Kern_Globals *GLOBALS ) {
 
-	installSwiHandler((unsigned int) swi_main_handler, (unsigned int *) SWI_VECTOR);
+	installSwiHandler((unsigned int) swi_main_handler, (unsigned int *) SWI_ENRTY_ADDRESS);
 
 	init_message_queues( GLOBALS );
 

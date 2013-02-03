@@ -1,6 +1,4 @@
 #include "kernelspace.h"
-#include "config/mem_init.h"
-#include "lib/bwio.h"
 
 // Initialize Schedule struct
 void init_schedule( int first_task_priority, void (*first_task_code) ( ), Kern_Globals *GLOBALS )

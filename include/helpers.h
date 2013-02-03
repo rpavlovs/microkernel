@@ -1,5 +1,15 @@
-#ifndef __HELPERS__
-#define __HELPERS__
+#ifndef __HELPERS_H__
+#define __HELPERS_H__
+
+//
+// Helper defines
+// 
+
+#define FOREVER		for( ; ; )
+
+//
+// Helper funtions
+//
 
 void assert( int, char * );
 

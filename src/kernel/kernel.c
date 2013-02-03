@@ -1,6 +1,4 @@
 #include "kernelspace.h"
-#include "config/ts7200.h"
-#include "lib/bwio.h"
 
 int main( ) {
   

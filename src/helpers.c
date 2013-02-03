@@ -1,6 +1,4 @@
-#include "kernelspace.h"
-#include "lib/bwio.h"
-#include "config/ts7200.h"
+#include "commonspace.h"
 
 void assert( int statement, char * err_msg ) {
 	if( !statement ) bwprintf( COM2, "Assertion failed: %s\n\r", err_msg );

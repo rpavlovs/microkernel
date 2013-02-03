@@ -3,7 +3,7 @@
 
 #include "commonspace.h"
 
-#include "kernel/kernel_globals.h"
+#include "kernel/globals.h"
 
 #include "kernel/queues.h"
 

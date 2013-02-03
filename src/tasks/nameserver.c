@@ -1,7 +1,4 @@
-#include "commonspace.h"
-#include "kernel/kernel_globals.h"
-#include "lib/bwio.h"
-#include "config/ts7200.h"
+#include "userspace.h"
 
 
 typedef struct {

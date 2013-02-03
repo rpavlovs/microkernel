@@ -1,8 +1,6 @@
 #ifndef __KERNEL_GLOBALS__
 #define __KERNEL_GLOBALS__
 
-#define FOREVER 							for( ; ; )
-
 #define SCHED_QUEUE_LENGTH 					100
 #define SCHED_NUM_PRIORITIES 				21
 #define SCHED_TID_MAX_VAL 					2147483600
@@ -19,20 +17,6 @@
 
 #define MAX_NUM_ARGUMENTS 					10
 
-#define NS_TID 								1
-#define NS_NAME_MAX_LENGTH 					16	//TODO: Why length is not 10?
-#define NS_TABLE_MAX_SIZE					200
-
-#define NS_REQUEST_REGISTER_AS				0
-#define NS_REQUEST_WHO_IS					1
-
-#define SUCCESS								0
-
-#define NS_ERROR_TID_IS_NOT_A_TASK			-1
-#define NS_ERROR_TID_IS_NOT_A_NAMESERVER	-2
-#define NS_ERROR_NOT_LEGAL_NAME				-3
-#define NS_ERROR_TASK_NOT_FOUND				-4
-
 #define SEND_ERROR_TID_IMPOSSIBLE			-1
 #define SEND_ERROR_TID_HAS_NO_TASK			-2
 #define SEND_ERROR_TRANSACTION_FAILED		-3
@@ -41,7 +25,6 @@
 #define REPLY_ERROR_TID_HAS_NO_TASK			-2
 #define REPLY_ERROR_NO_ONE_WAITING			-3
 #define REPLY_ERROR_SEND_BUFFER_TOO_SHORT	-4
-
 
 
 typedef struct Kern_Globals GLOBALS;

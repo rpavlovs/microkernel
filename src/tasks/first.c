@@ -1,7 +1,4 @@
-#include "commonspace.h"
-#include "tasks/first.h"
-#include "tasks/nameserver.h"
-#include "tasks/RPS-game.h"
+#include "userspace.h"
 
 int
 start_timer() {
@@ -89,27 +86,6 @@ void first_task_aaa() {
 	bwprintf( COM2, "Exiting first\n" );
 	Exit();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 void other_task() {

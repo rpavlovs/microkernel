@@ -5,7 +5,7 @@
 
 
 // TODO: Description:
-//       
+// 
 
 void initialize( Kern_Globals * );
 

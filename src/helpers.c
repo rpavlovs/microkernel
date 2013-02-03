@@ -1,5 +1,5 @@
+#include "kernelspace.h"
 #include "lib/bwio.h"
-#include "kernel/helpers.h"
 #include "config/ts7200.h"
 
 void assert( int statement, char * err_msg ) {
@@ -34,3 +34,4 @@ int strcmp( const char *s1, const char *s2 ) {
     while( (*s1 && *s2) && (*s1++ == *s2++) );
     return *(--s1) - *(--s2);
 }
+

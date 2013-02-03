@@ -1,9 +1,6 @@
+#include "kernelspace.h"
 #include "config/ts7200.h"
 #include "config/mem_init.h"
-#include "kernel/context_switch.h"
-#include "kernel/init.h"
-#include "kernel/kernel_globals.h"
-#include "kernel/sched.h"
 #include "lib/bwio.h"
 #include "tasks/first.h"
 

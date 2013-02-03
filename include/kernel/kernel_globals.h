@@ -101,9 +101,6 @@ typedef struct {
 
 } Task_queue;
 
-void enqueue_tqueue(Task_descriptor *td, Task_queue *q);
-Task_descriptor *dequeue_tqueue(Task_queue *q);
-
 typedef struct {
 	Task_queue priority[SCHED_NUM_PRIORITIES];
 	

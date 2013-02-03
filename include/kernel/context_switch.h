@@ -1,7 +1,7 @@
 #ifndef __CONTEXT_SWITCH__
 #define __CONTEXT_SWITCH__
 
-#include "kernel/kernel_globals.h"
+#include "kernelspace.h"
 
 void swi_main_handler();
 

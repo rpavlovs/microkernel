@@ -1,7 +1,4 @@
-#include "config/ts7200.h"
-#include "lib/bwio.h"
-#include "kernel/syscall.h"
-#include "kernel/helpers.h"
+#include "commonspace.h"
 #include "kernel/kernel_globals.h"
 
 // Operation numbers

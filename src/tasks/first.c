@@ -1,10 +1,7 @@
-#include "kernel/syscall.h"
-#include "kernel/helpers.h"
+#include "commonspace.h"
 #include "tasks/first.h"
 #include "tasks/nameserver.h"
 #include "tasks/RPS-game.h"
-#include "lib/bwio.h"
-#include "config/ts7200.h"
 
 int
 start_timer() {
@@ -44,7 +41,8 @@ void first_task() {
 	start_timer();
 	Create( 14, nameserver );
 
-	int tid, sub_tid;
+	int tid;
+	// int sub_tid;
 	//long start_time, end_time;
 	//char buf64[64];
 	//char buf4[4];

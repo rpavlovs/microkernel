@@ -1,8 +1,5 @@
-#include "kernel/syscall.h"
-#include "kernel/helpers.h"
+#include "kernelspace.h"
 #include "lib/bwio.h"
-#include "kernel/kernel_globals.h"
-
 
 int Create( int priority, void (*code) ( ) ) {
  	

@@ -1,6 +1,5 @@
+#include "commonspace.h"
 #include "kernel/kernel_globals.h"
-#include "kernel/helpers.h"
-#include "kernel/syscall.h"
 #include "lib/bwio.h"
 #include "config/ts7200.h"
 

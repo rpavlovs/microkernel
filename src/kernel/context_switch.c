@@ -1,7 +1,4 @@
-#include "kernel/context_switch.h"
-#include "kernel/kernel_globals.h"
-#include "kernel/syscall.h"
-#include "kernel/sysfuncs.h"
+#include "kernelspace.h"
 
 
 void swi_main_handler() {

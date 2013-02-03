@@ -1,0 +1,1434 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"sende",
+				"sender_tid"
+			],
+			[
+				"pla",
+				"player_one"
+			],
+			[
+				"playr",
+				"players_queue"
+			],
+			[
+				"get",
+				"get_time"
+			],
+			[
+				"nex",
+				"next_move"
+			],
+			[
+				"star",
+				"start_timer"
+			],
+			[
+				"rec",
+				"receive_queue"
+			],
+			[
+				"Rece",
+				"receive_queue"
+			],
+			[
+				"msg_",
+				"msg_info"
+			],
+			[
+				"re",
+				"receive_info"
+			],
+			[
+				"Recei",
+				"receive_info"
+			],
+			[
+				"msg",
+				"msg"
+			],
+			[
+				"Me",
+				"Message_info"
+			],
+			[
+				"M",
+				"Message_info"
+			],
+			[
+				"ms",
+				"msg_infos"
+			],
+			[
+				"reply",
+				"reply_buf"
+			],
+			[
+				"Na",
+				"NAMESERVER_TABLE_MAX_SIZE"
+			],
+			[
+				"N",
+				"NAMESERVER_REGISTER_REQUEST"
+			],
+			[
+				"td",
+				"td_ptrs"
+			],
+			[
+				"init",
+				"init_schedule"
+			],
+			[
+				"Tas",
+				"Task_descriptor"
+			],
+			[
+				"sc",
+				"sched"
+			],
+			[
+				"st",
+				"status"
+			],
+			[
+				"new",
+				"new_tid"
+			],
+			[
+				"Ke",
+				"KERN_GLOBALS"
+			],
+			[
+				"sh",
+				"Schedule"
+			],
+			[
+				"tas",
+				"tasks"
+			],
+			[
+				"inc",
+				"include"
+			],
+			[
+				"ret",
+				"ret"
+			],
+			[
+				"pri",
+				"priority"
+			],
+			[
+				"swit",
+				"switch_states"
+			],
+			[
+				"swi",
+				"switch_states"
+			],
+			[
+				"tra",
+				"train_speeds"
+			],
+			[
+				"fir",
+				"first_byte_recieved"
+			],
+			[
+				"COM",
+				"COM1"
+			],
+			[
+				"D",
+				"SEND_DELAY"
+			],
+			[
+				"SE",
+				"SENSOR_CELAR_TIME"
+			],
+			[
+				"my",
+				"my_strcpy"
+			],
+			[
+				"ter",
+				"term_buf"
+			],
+			[
+				"cha",
+				"characters"
+			],
+			[
+				"train",
+				"train_buf"
+			],
+			[
+				"print",
+				"printf	printf …"
+			],
+			[
+				"str",
+				"strcpy"
+			],
+			[
+				"com",
+				"command"
+			],
+			[
+				"set",
+				"setwordsize"
+			],
+			[
+				"CLI",
+				"CLI_HISTORY_LEN"
+			],
+			[
+				"Cli",
+				"Cli_history"
+			],
+			[
+				"cli",
+				"Cli_history"
+			],
+			[
+				"char",
+				"char"
+			],
+			[
+				"Re",
+				"Recieve_buf"
+			],
+			[
+				"ch",
+				"ch"
+			],
+			[
+				"UAR",
+				"UART_BUF_SIZE"
+			],
+			[
+				"padding",
+				"padding-bottom"
+			],
+			[
+				"array_f",
+				"array_filter"
+			],
+			[
+				"input",
+				"input	input - password"
+			],
+			[
+				"jo",
+				"json_a"
+			],
+			[
+				"font",
+				"font-weight"
+			],
+			[
+				"b",
+				"block"
+			],
+			[
+				"border-bot",
+				"border-bottom-style"
+			],
+			[
+				"border-bo",
+				"border-bottom-color"
+			],
+			[
+				"di",
+				"display"
+			],
+			[
+				"bac",
+				"background"
+			],
+			[
+				"margin",
+				"margin-top"
+			],
+			[
+				"padd",
+				"padding"
+			],
+			[
+				"back",
+				"background"
+			],
+			[
+				"co",
+				"color"
+			],
+			[
+				"spa",
+				"span	Tag"
+			],
+			[
+				"pa",
+				"padding"
+			],
+			[
+				"pad",
+				"padding"
+			],
+			[
+				"la",
+				"last-child"
+			],
+			[
+				"inline",
+				"inline-block"
+			],
+			[
+				"list",
+				"list-style-type"
+			],
+			[
+				"ba",
+				"background"
+			],
+			[
+				"tex",
+				"text-align"
+			],
+			[
+				"s",
+				"super"
+			],
+			[
+				"bold",
+				"bold"
+			],
+			[
+				"marg",
+				"margin"
+			],
+			[
+				"li",
+				"list-style-type"
+			],
+			[
+				"im",
+				"images"
+			],
+			[
+				"no",
+				"no-repeat"
+			],
+			[
+				"he",
+				"header	Tag"
+			],
+			[
+				"link",
+				"link1"
+			],
+			[
+				"remove",
+				"remove_duplicates"
+			],
+			[
+				"href",
+				"href_target"
+			],
+			[
+				"curl_er",
+				"curl_error_msg"
+			],
+			[
+				"curl",
+				"curl_options"
+			],
+			[
+				"fou",
+				"links_found"
+			],
+			[
+				"fet",
+				"fetch_links"
+			],
+			[
+				"row",
+				"row_count"
+			],
+			[
+				"parse",
+				"parse_dom"
+			],
+			[
+				"cu",
+				"curl_error"
+			],
+			[
+				"reson",
+				"reason"
+			],
+			[
+				"cURL",
+				"cURL"
+			],
+			[
+				"getEle",
+				"getElementsByTagName"
+			],
+			[
+				"link_",
+				"links_found"
+			],
+			[
+				"num",
+				"num_links"
+			],
+			[
+				"con",
+				"contractor"
+			],
+			[
+				"print_",
+				"print_r"
+			],
+			[
+				"target",
+				"target_domain"
+			],
+			[
+				"el",
+				"elseif	elseif …"
+			],
+			[
+				"url",
+				"urlorlink"
+			],
+			[
+				"dom",
+				"target_domain"
+			],
+			[
+				"targ",
+				"target_domain"
+			],
+			[
+				"fe",
+				"fetch_links"
+			],
+			[
+				"par",
+				"parse_url"
+			],
+			[
+				"parse_",
+				"parse_dom"
+			],
+			[
+				"preg",
+				"preg_match"
+			],
+			[
+				"chek",
+				"check_curl_results"
+			],
+			[
+				"curl_ha",
+				"curl_handler"
+			],
+			[
+				"sta",
+				"status_code"
+			],
+			[
+				"tar",
+				"target_html"
+			],
+			[
+				"fun",
+				"function"
+			],
+			[
+				"for",
+				"foreach	foreach …"
+			],
+			[
+				"php",
+				"php"
+			],
+			[
+				"mysq",
+				"mysql_connect"
+			],
+			[
+				"erro",
+				"error_reporting"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "/Users/rpavlovs/Library/Application Support/Sublime Text 2/Packages/User/install-from-mac.sublime-build",
+			"settings":
+			{
+				"buffer_size": 47,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "tasks/first.c",
+			"settings":
+			{
+				"buffer_size": 2789,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "include/tasks/RPS-game.h",
+			"settings":
+			{
+				"buffer_size": 137,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "include/kernel/helpers.h",
+			"settings":
+			{
+				"buffer_size": 270,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "include/kernel/kernel_globals.h",
+			"settings":
+			{
+				"buffer_size": 2603,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "include/config/ts7200.h",
+			"settings":
+			{
+				"buffer_size": 2746,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "install-from-mac",
+			"settings":
+			{
+				"buffer_size": 250,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "include/kernel/sched.h",
+			"settings":
+			{
+				"buffer_size": 756,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "include/kernelspace.h",
+			"settings":
+			{
+				"buffer_size": 214,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "Packages/User/install-from-mac.sublime-build",
+	"command_palette":
+	{
+		"height": 147.0,
+		"selected_items":
+		[
+			[
+				"up",
+				"Package Control: Upgrade Package"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"isntall",
+				"Git: Reset (unstage) All"
+			],
+			[
+				"forman",
+				"Pretty JSON: Reformat (Pretty Print) JSON"
+			],
+			[
+				"inde",
+				"Indentation: Reindent Lines"
+			],
+			[
+				"indent",
+				"Indent XML"
+			],
+			[
+				"in",
+				"Indentation: Reindent Lines"
+			],
+			[
+				"git p",
+				"Git: Push"
+			],
+			[
+				"git push",
+				"Git: Push"
+			],
+			[
+				"git ci",
+				"Git: Commit"
+			],
+			[
+				"git co",
+				"Git: Commit"
+			],
+			[
+				"git add",
+				"Git: Add Current File"
+			],
+			[
+				"git pull",
+				"Git: Pull"
+			],
+			[
+				"clang",
+				"Preferences: SublimeClang Settings – User"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"git add .",
+				"Git: Add..."
+			],
+			[
+				":inde",
+				"Indentation: Reindent Lines"
+			],
+			[
+				":$",
+				":$ - EOF"
+			],
+			[
+				":instal",
+				"Package Control: Install Package"
+			],
+			[
+				":install",
+				"Package Control: Install Package"
+			],
+			[
+				":insta",
+				"Package Control: Install Package"
+			],
+			[
+				":INSTAL	",
+				"Package Control: Install Package"
+			],
+			[
+				":indent",
+				"Indentation: Reindent Lines"
+			],
+			[
+				":json",
+				"Pretty JSON: Reformat (Pretty Print) JSON"
+			],
+			[
+				":insat",
+				"Preferences: Settings - Default"
+			],
+			[
+				":pa",
+				"Package Control: Upgrade Package"
+			],
+			[
+				":pack",
+				"Preferences: Browse Packages"
+			],
+			[
+				":w",
+				":w - Save"
+			]
+		],
+		"width": 449.0
+	},
+	"console":
+	{
+		"height": 111.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/context_switch.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/kernel/init.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/tasks/RPS-game.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/kernel/helpers.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/kernel/sysfuncs.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/kernel/syscall.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernelspace.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/kernel/kernel_globals.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/kernel/interrupt_handlers.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/kernel/kernel.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/kernel/sched.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/config/mem_init.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/kernel/context_switch.c",
+		"/Users/rpavlovs/Library/Application Support/Sublime Text 2/Packages/User/install-from-mac.sublime-build",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/{\"release_name\":\"Weekly Natural Gas Storage Report",
+		"/Users/rpavlovs/Downloads/58869.user.js",
+		"/Users/rpavlovs/Downloads/F1 2012 [MULTI][MACOSX][MONEY][WwW.GamesTorrents.CoM]/Leeme.txt",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/tasks/nameserver.c",
+		"/Volumes/UNTITLED/RPS-game.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/config/ts7200.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/tasks/nameserver.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/tasks/RPS-game.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/helpers.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/syscall.h",
+		"/Users/rpavlovs/.ssh/config",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/kernel_globals.h",
+		"/Volumes/home/cs452/RTOS/kernel/interrupt_handlers.c",
+		"/Volumes/home/cs452/RTOS/tasks/first.c",
+		"/Volumes/home/cs452/RTOS/kernel/init.c",
+		"/Volumes/home/cs452/RTOS/kernel/sysfuncs.c",
+		"/Volumes/home/cs452/RTOS/kernel/syscall.c",
+		"/Volumes/home/cs452/RTOS/kernel/sched.c",
+		"/Volumes/home/cs452/RTOS/kernel/helpers.c",
+		"/Volumes/home/cs452/RTOS/kernel/kernel.c",
+		"/Volumes/home/cs452/RTOS/include/kernel/syscall.h",
+		"/Volumes/home/cs452/RTOS/include/kernel/sched.h",
+		"/Volumes/home/cs452/RTOS/include/kernel/init.h",
+		"/Volumes/home/cs452/RTOS/include/lib/bwio.h",
+		"/Volumes/home/cs452/RTOS/include/kernel/kernel_globals.h",
+		"/Volumes/home/cs452/RTOS/include/kernel/helpers.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/kernel/sysfunc.c",
+		"/Users/rpavlovs/Downloads/Movies/README.txt",
+		"/Volumes/home/cs452/RTOS/build/kernel.map",
+		"/Volumes/home/cs452/RTOS/kernel/contextsw.c",
+		"/Volumes/home/cs452/RTOS/include/kernel/sysfuncs.h",
+		"/Volumes/home/cs452/RTOS/include/config/mem_init.h",
+		"/Volumes/home/cs452/RTOS/include/tasks/first.h",
+		"/Volumes/home/cs452/RTOS/Makefile",
+		"/Volumes/home/cs452/io/src/bwio.c",
+		"/Volumes/home/cs452/io/include/bwio.h",
+		"/Volumes/home/cs452/RTOS/include/config/ts7200.h",
+		"/Volumes/home/cs452/RTOS/include/tasks.h",
+		"/Volumes/home/cs452/test/syscall_dispatch.c",
+		"/Volumes/home/cs452/test/Makefile",
+		"/Users/rpavlovs/Dropbox/f11/cs350/binutils-2.17+os161-2.0.1/include/elf/ChangeLog",
+		"/Volumes/home/cs452/test/syscall_dispatch.s",
+		"/Volumes/home/cs452/RTOS/kernel/syscall_handler.c",
+		"/Volumes/home/cs452/RTOS/kernel/sched.h",
+		"/Volumes/home/cs452/test/test.s",
+		"/Volumes/home/cs452/io/src/Makefile",
+		"/Volumes/home/cs452/A0/src/Makefile",
+		"/Volumes/home/cs452/test/0",
+		"/Users/rpavlovs/Library/Application Support/Sublime Text 2/Packages/User/SublimeClang.sublime-settings",
+		"/Volumes/home/cs452/A0/include/bwio.h",
+		"/Volumes/home/cs452/A0/src/a0.c",
+		"/Volumes/home/cs452/A0/src/io.c",
+		"/Volumes/home/cs452/A0/include/ts7200.h",
+		"/Volumes/home/cs452/A0/src/io.h",
+		"/Volumes/home/cs452/cstring/types.h",
+		"/Volumes/home/cs452/cstring/Makefile",
+		"/Volumes/home/cs452/cstring/string.h",
+		"/Volumes/home/cs452/cstring/string.c",
+		"/Volumes/home/cs452/cstring/os.h",
+		"/Volumes/home/cs452/cstring/sys/version.h",
+		"/Volumes/home/cs452/io/include/ts7200.h",
+		"/Volumes/home/cs452/io/test/iotest.c",
+		"/Volumes/home/cs452/A0/src/a0.h",
+		"/Volumes/home/cs452/io/Makefile",
+		"/Volumes/home/cs452/A0/Makefile",
+		"/Volumes/home/cs452/A0/io/Makefile",
+		"/Volumes/home/cs452/A0/io/src/Makefile",
+		"/Volumes/home/cs452",
+		"/Volumes/home/cs452/io/test/Makefile",
+		"/Users/rpavlovs/Library/Caches/Cleanup At Startup/Transmit/8B98C5B1-928A-4131-8A7D-7B9BD0B8B9D2/.cshrc",
+		"/Volumes/home/cs452/io/test/orex.ld",
+		"/Users/rpavlovs/Library/Caches/Cleanup At Startup/Transmit/057CD51C-5B3D-491E-A106-3E947E8DF41A/README",
+		"/Volumes/home/cs452/io/test/iotest.h",
+		"/Volumes/home/cs452/io/test/iotest.map",
+		"/Volumes/home/cs452/io/test/iotest.s",
+		"/Users/rpavlovs/Library/Caches/Cleanup At Startup/Transmit/4F8C5639-C642-45A2-97DF-1F06BB6D3A4A/iotest.s",
+		"/Users/rpavlovs/Library/Caches/Cleanup At Startup/Transmit/841A2196-5E82-428E-B12E-194A2C254B1F/.login",
+		"/Users/rpavlovs/Library/Caches/Cleanup At Startup/Transmit/7CCDC3AF-FB4C-451F-8AB0-1BEAE43C47D4/.bashrc",
+		"/private/etc/sshd_config",
+		"/Users/rpavlovs/.ssh/environment",
+		"/Users/rpavlovs/Documents/rails/bazasos/db/seeds.rb",
+		"/Users/rpavlovs/Documents/rails/bazasos/app/models/user.rb",
+		"/Users/rpavlovs/Documents/rails/bazasos/Gemfile",
+		"/Users/rpavlovs/Documents/rails/sample_app/app/views/static_pages/about.html.erb",
+		"/Users/rpavlovs/Documents/rails/sample_app/app/views/layouts/application.html.erb",
+		"/Users/rpavlovs/Documents/rails/bazasos/app/views/layouts/_header.html.erb",
+		"/Users/rpavlovs/Documents/rails/bazasos/app/views/people/index.html.haml",
+		"/Users/rpavlovs/Documents/rails/bazasos/app/assets/stylesheets/custom.css.scss",
+		"/Users/rpavlovs/Documents/rails/bazasos/config/database.yml",
+		"/Users/rpavlovs/Documents/rails/bazasos/README.rdoc",
+		"/Users/rpavlovs/Documents/rails/bazasos/spec/requests/user_pages_spec.rb",
+		"/Users/rpavlovs/Documents/rails/bazasos/app/controllers/users_controller.rb",
+		"/Users/rpavlovs/Documents/rails/bazasos/app/views/users/show.html.erb",
+		"/Users/rpavlovs/Documents/rails/bazasos/app/views/layouts/application.html.erb",
+		"/Users/rpavlovs/Documents/rails/bazasos/config/routes.rb",
+		"/Users/rpavlovs/Documents/rails/bazasos/app/models/location.rb",
+		"/Users/rpavlovs/Documents/rails/bazasos/spec/models/user_spec.rb",
+		"/Users/rpavlovs/Documents/rails/bazasos/db/migrate/20121214162152_add_password_digest_to_users.rb",
+		"/Users/rpavlovs/Documents/rails/bazasos/db/migrate/20121214155300_add_index_to_users_login.rb",
+		"/Users/rpavlovs/Documents/rails/bazasos/app/helpers/application_helper.rb",
+		"/Users/rpavlovs/Documents/rails/bazasos/app/views/users/new.html.erb",
+		"/Users/rpavlovs/Documents/rails/bazasos/spec/support/utilities.rb",
+		"/Users/rpavlovs/Documents/rails/bazasos/spec/requests/people_pages_spec.rb",
+		"/Users/rpavlovs/Documents/rails/bazasos/config/environments/development.rb",
+		"/Users/rpavlovs/Documents/rails/bazasos/app/assets/stylesheets/people.css.scss",
+		"/Users/rpavlovs/Documents/rails/bazasos/app/views/layouts/_footer.html.erb",
+		"/Users/rpavlovs/Documents/rails/bazasos/app/views/layouts/_shim.html.erb",
+		"/Users/rpavlovs/Documents/rails/bazasos/app/views/people/show.html.erb",
+		"/Users/rpavlovs/Documents/rails/bazasos/app/views/locations/index.html.erb",
+		"/Users/rpavlovs/Documents/rails/bazasos/Guardfile",
+		"/Users/rpavlovs/Documents/rails/bazasos/app/controllers/locations_controller.rb",
+		"/Users/rpavlovs/Documents/rails/bazasos/app/controllers/people_controller.rb",
+		"/Users/rpavlovs/Documents/rails/bazasos/spec/spec_helper.rb",
+		"/Users/rpavlovs/Library/Application Support/Sublime Text 2/Packages/Default/Preferences.sublime-settings"
+	],
+	"find":
+	{
+		"height": 35.0
+	},
+	"find_in_files":
+	{
+		"height": 93.0,
+		"where_history":
+		[
+			"~/Dropbox/w13/cs452/microkernel",
+			"/Volumes/home/cs452/test"
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"context_switch",
+			"interrupt_handle",
+			"assert",
+			"													",
+			"size",
+			"printf",
+			"DEBUG: RPS Server:",
+			"clien",
+			"print",
+			"printf",
+			"prinf",
+			"reply_client",
+			"server",
+			"ACTIVE_TASK",
+			"tid",
+			"reciever_tid",
+			"reciever_td",
+			"sending_td",
+			"td",
+			"tid",
+			"rmsg",
+			"smsg",
+			"sending_tid",
+			"td",
+			"Wait_queue",
+			"target_td",
+			"td",
+			"Tid",
+			"tid",
+			"It should only",
+			"memcpy",
+			"NAMESERVER_TID",
+			"tab ",
+			"tab",
+			"HEAD",
+			"			//",
+			"activ",
+			"ExecuteCSWIHandler",
+			"218D4C",
+			"td->tid",
+			"	unsigned int uini = (unsigned int) td->next_instruction;	//This is right, judging by the map file and arithmetic :)\n",
+			"\n",
+			"assert",
+			"helpers",
+			"pc",
+			"code",
+			"pc",
+			"status",
+			"SCHED_QUEUE_MAX_LENGTH",
+			"queue_size",
+			"i",
+			"tasks",
+			"(&",
+			"test",
+			"parse",
+			"print_sw",
+			"parse_command",
+			" \n",
+			"print_sw",
+			"sensor_his",
+			"SENSOR_CELAR_TIME",
+			"bwprintf",
+			"CLI",
+			"strcpy",
+			"mem",
+			"80",
+			"history",
+			"last_send_time",
+			"last_send_timestamp",
+			"time",
+			"Parsing",
+			"strcpy",
+			"memcpy",
+			"cstring",
+			"bwio",
+			"Print_buf_init",
+			"print_buf",
+			"iotest",
+			"per",
+			"%>\n",
+			"page-header",
+			"rman",
+			" <%=",
+			"vi",
+			"<br>",
+			"ubuntu-9.04-desktop-amd64.iso",
+			"CONNECTTIMEOUT",
+			"      #",
+			"echo",
+			"send_msg",
+			"debug",
+			"$screen_name",
+			"screen_name ",
+			"screen_name",
+			"twittero",
+			"рсс2чтмл",
+			"use",
+			";",
+			"nav",
+			"border",
+			"hover",
+			"margin",
+			"margin * auto",
+			"margin",
+			"entry-content",
+			"post-info",
+			"news",
+			"footer",
+			"41px",
+			"ul ",
+			"ul",
+			"social",
+			";",
+			"ignored",
+			"email",
+			"No link",
+			"backlink_found",
+			"curl_http_resp_code",
+			"error_msg",
+			"print_info",
+			"parse_dom",
+			"num_links",
+			"links_found",
+			"links_found ",
+			"links_found",
+			"old_links_found",
+			"links_found",
+			"active_curl_handlers"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"SCHED_QUEUE_LENGTH",
+			"busy_until_time",
+			"last_send_time",
+			"cstring",
+			"print_buf_init",
+			"Print_buf",
+			"a0",
+			"",
+			"ubuntu-12.10-desktop-i386.iso",
+			"resp_code",
+			"num_links_required",
+			"num_links_found",
+			"num_links_found_old"
+		],
+		"reverse": true,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "/Users/rpavlovs/Library/Application Support/Sublime Text 2/Packages/User/install-from-mac.sublime-build",
+					"settings":
+					{
+						"buffer_size": 47,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								13,
+								13
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		},
+		{
+			"selected": 2,
+			"sheets":
+			[
+				{
+					"buffer": 1,
+					"file": "tasks/first.c",
+					"settings":
+					{
+						"buffer_size": 2789,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								842,
+								842
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "include/tasks/RPS-game.h",
+					"settings":
+					{
+						"buffer_size": 137,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								137,
+								137
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "include/kernel/helpers.h",
+					"settings":
+					{
+						"buffer_size": 270,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								270,
+								270
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "include/kernel/kernel_globals.h",
+					"settings":
+					{
+						"buffer_size": 2603,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "include/config/ts7200.h",
+					"settings":
+					{
+						"buffer_size": 2746,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1881,
+								1923
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 442.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "install-from-mac",
+					"settings":
+					{
+						"buffer_size": 250,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								250,
+								250
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "include/kernel/sched.h",
+					"settings":
+					{
+						"buffer_size": 756,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								386,
+								386
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "include/kernelspace.h",
+					"settings":
+					{
+						"buffer_size": 214,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								213,
+								213
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 34.0
+	},
+	"input":
+	{
+		"height": 29.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			],
+			[
+				1,
+				0,
+				2,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			0.516243178718,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.clang":
+	{
+		"height": 88.0
+	},
+	"output.exec":
+	{
+		"height": 261.0
+	},
+	"output.git":
+	{
+		"height": 88.0
+	},
+	"replace":
+	{
+		"height": 64.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				"init.c",
+				"kernel/init.c"
+			],
+			[
+				"sdc",
+				"kernel/sched.c"
+			],
+			[
+				"sys",
+				"kernel/sysfuncs.c"
+			],
+			[
+				"nam",
+				"tasks/nameserver.c"
+			],
+			[
+				"ini",
+				"kernel/init.c"
+			],
+			[
+				"shed",
+				"kernel/sched.c"
+			],
+			[
+				"peoplw",
+				"app/views/people/show.html.haml"
+			],
+			[
+				"spect",
+				"spec/requests/static_pages_spec.rb"
+			],
+			[
+				"guar",
+				"Guardfile"
+			],
+			[
+				"rspec",
+				".rspec"
+			],
+			[
+				"spec",
+				"spec/spec_helper.rb"
+			],
+			[
+				"gem",
+				"Gemfile"
+			],
+			[
+				"gua",
+				"Guardfile"
+			],
+			[
+				"statcont",
+				"app/controllers/static_pages_controller.rb"
+			],
+			[
+				"contr",
+				"app/controllers/application_controller.rb"
+			],
+			[
+				"rout",
+				"config/routes.rb"
+			],
+			[
+				"application",
+				"app/views/layouts/application.html.erb"
+			],
+			[
+				"about",
+				"app/views/static_pages/about.html.erb"
+			],
+			[
+				"help",
+				"app/views/static_pages/help.html.erb"
+			],
+			[
+				"home",
+				"app/views/static_pages/home.html.erb"
+			],
+			[
+				"abou",
+				"app/views/static_pages/about.html.erb"
+			],
+			[
+				"helo",
+				"app/helpers/application_helper.rb"
+			],
+			[
+				"staticcont",
+				"app/controllers/static_pages_controller.rb"
+			],
+			[
+				"staticspec",
+				"spec/requests/static_pages_spec.rb"
+			],
+			[
+				"usercon",
+				"app/controllers/users_controller.rb"
+			],
+			[
+				"users_con",
+				"app/controllers/users_controller.rb"
+			],
+			[
+				"user",
+				"app/models/user.rb"
+			],
+			[
+				"micro",
+				"app/models/micropost.rb"
+			],
+			[
+				"",
+				"/Users/rpavlovs/.profile"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"selected_items":
+		[
+			[
+				"",
+				"/Users/rpavlovs/Documents/rails/sample_app.sublime-project"
+			]
+		],
+		"width": 380.0
+	},
+	"show_minimap": false,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 214.0,
+	"status_bar_visible": true
+}

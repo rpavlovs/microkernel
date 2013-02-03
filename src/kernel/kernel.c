@@ -1,8 +1,5 @@
+#include "kernelspace.h"
 #include "config/ts7200.h"
-#include "kernel/init.h"
-#include "kernel/kernel_globals.h"
-#include "kernel/sched.h"
-#include "kernel/syscall.h"
 #include "lib/bwio.h"
 
 int main( ) {

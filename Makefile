@@ -6,7 +6,8 @@ AS		= as
 LD      = ld
 
 USER:=$(shell whoami)
-$(shell mkdir -p build)
+SRC_DIRS:=$(shell find src/ -mindepth 1 -type d)
+.SECONDARY:
 
 CFLAGS  = -c -fPIC -Wall -Iinclude -mcpu=arm920t -msoft-float
 # -g: include hooks for gdb
@@ -18,41 +19,37 @@ CFLAGS  = -c -fPIC -Wall -Iinclude -mcpu=arm920t -msoft-float
 ASFLAGS	= -mcpu=arm920t -mapcs-32
 # -mapcs: always generate a complete stack frame
 
-LDFLAGS = -init main -Map build/kernel.map -N  -T orex.ld -L/u/wbcowan/gnuarm-4.0.2/lib/gcc/arm-elf/4.0.2 -Llib
+LDFLAGS = -init main -Map build/kernel.map -N -T orex.ld -L/u/wbcowan/gnuarm-4.0.2/lib/gcc/arm-elf/4.0.2 -Llib
 
-KERNEL_SRC = $(wildcard kernel/*.c)
-TASKS_SRC = $(wildcard tasks/*.c)
-ASM = $(wildcard kernel/*.s)
-OBJS = $(KERNEL_SRC:kernel/%.c=build/%.o) $(TASKS_SRC:tasks/%.c=build/%.o) $(ASM:kernel/%.s=build/%.o)
+SRC = $(wildcard src/**/*.c) $(wildcard src/*.c)
+ASM = $(wildcard src/**/*.S) $(wildcard src/*.S)
+OBJS = $(SRC:src/%.c=build/%.o) $(ASM:src/%.S=build/%.o)
 
-all: build/kernel.elf
+all: build/kernel.elf $(SRC)
 
 clean:
-	rm -f build/*
+	@rm -rf build/*
 
 install:
-	cp build/kernel.elf /u/cs452/tftp/ARM/$(USER)/kernel.elf
-	chmod a+r /u/cs452/tftp/ARM/$(USER)/kernel.elf
+	@cp build/kernel.elf /u/cs452/tftp/ARM/$(USER)/kernel.elf
+	@chmod a+r /u/cs452/tftp/ARM/$(USER)/kernel.elf
 
 ## Compile
 
-build/%.s: kernel/%.c
-	$(XCC) -S $(CFLAGS) -o $@ $<
+build/%.s: src/%.c
+	@mkdir -p $(SRC_DIRS:src/%=build/%)
+	@$(XCC) -S $(CFLAGS) -o $@ $<
 
-build/%.s: tasks/%.c
-	$(XCC) -S $(CFLAGS) -o $@ $<
-
-build/%.s: kernel/%.S
-	cp $< $@
-
+build/%.s: src/%.S
+	@mkdir -p $(SRC_DIRS:src/%=build/%)
+	@cp $< $@
 
 ## Assemble
 
 build/%.o: build/%.s
-	$(AS) $(ASFLAGS) -o $@ $<
-
+	@$(AS) $(ASFLAGS) -o $@ $<
 
 ## Link
 
-build/kernel.elf: $(OBJS)
-	$(LD) $(LDFLAGS) -o $@ $(OBJS) -lbwio -lgcc
+build/kernel.elf: $(OBJS) 
+	@$(LD) $(LDFLAGS) -o $@ $(OBJS) -lbwio -lgcc

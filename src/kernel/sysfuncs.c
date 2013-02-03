@@ -1,6 +1,4 @@
-#include "kernel/kernel_globals.h"
-#include "kernel/sysfuncs.h"
-#include "kernel/helpers.h"
+#include "kernelspace.h"
 #include "lib/bwio.h"
 
 int sys_create( int priority, void (*code) ( ), Task_descriptor *td, Kern_Globals *GLOBALS ) {

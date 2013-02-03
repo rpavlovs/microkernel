@@ -1,7 +1,5 @@
-#include "kernel/helpers.h"
-#include "kernel/kernel_globals.h"
+#include "kernelspace.h"
 #include "config/mem_init.h"
-#include "kernel/sched.h"
 #include "lib/bwio.h"
 
 // Initialize Schedule struct

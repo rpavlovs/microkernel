@@ -1,11 +1,8 @@
 #include "kernelspace.h"
 
 //Executed once during initialization
-int installSwiHandler( unsigned int handlerLoc, unsigned int *vector )
-{
-	unsigned int vec; 
-
-	vec = ( ( handlerLoc - ( unsigned int ) vector - 0x8 ) >> 2 );
+int installSwiHandler( unsigned int handlerLoc, unsigned int *vector ) {
+	unsigned int vec = ( ( handlerLoc - ( unsigned int ) vector - 0x8 ) >> 2 );
 	if ( vec & 0xFF000000 )
 	{
 		return 1; // There was a problem 
@@ -29,9 +26,7 @@ void init_message_queues( Kern_Globals *GLOBALS ) {
 
 // NOTE: Stacks grow downwards, with sp pointing to the empty spot.
 void init_task_descriptors( Kern_Globals *GLOBALS ) {
-
 	int tid;
-
 	for( tid = 0; tid < MAX_NUM_TASKS; tid++)
 	{
 		Task_descriptor *td = &( GLOBALS->tasks[tid] );
@@ -74,7 +69,16 @@ void init_task_descriptors( Kern_Globals *GLOBALS ) {
 	}
 }
 
+void init_hardware() {
+	
+	// Start Debug timer (Timer 4)
+    int *hi = (int *)Timer4ValueHigh;
+    *hi = (1 << 8);
+}
+
 void initialize( Kern_Globals *GLOBALS ) {
+
+	init_hardware();
 
 	installSwiHandler((unsigned int) swi_main_handler, (unsigned int *) SWI_ENRTY_ADDRESS);
 
@@ -84,20 +88,3 @@ void initialize( Kern_Globals *GLOBALS ) {
 
 	init_schedule( 8, first_task, GLOBALS );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

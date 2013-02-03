@@ -112,13 +112,22 @@ int Receive(int *tid, char *msg, int msglen);
 
 int Reply(int tid, char *reply, int replylen);
 
-// Description
+// RegisterAs registers the task id of the caller under the given name.
 // 
+// Returns:
+//  0	- success
+//  -1 	– if the nameserver task id inside the wrapper is invalid.
+//  -2 	- if the nameserver task id inside the wrapper is not the nameserver.
 
 int RegisterAs( char * );
 
-// Description
+// WhoIs asks the nameserver for the task id of the task that is registered
+// under the given name.
 // 
+// Returns:
+// tid 	– the task id of the registered task.
+// -1 	– if the nameserver task id inside the wrapper is invalid.
+// -2 	– if the nameserver task id inside the wrapper is not the nameserver.
 
 int WhoIs( char * );
 

@@ -1,23 +1,5 @@
 #include "userspace.h"
 
-int
-start_timer() {
-    int *hi;
-    hi = (int *)Timer4ValueHigh;
-    *hi = (1 << 8);
-    return 0;
-}
-
-long
-get_time_ms() {
-    int *timer_hi, *timer_lo;
-    long cur_time;
-    timer_hi = (int *)Timer4ValueHigh;
-    timer_lo = (int *)Timer4ValueLow;
-    cur_time = (*timer_lo + (*timer_hi << 8)) / 983;
-    //cur_time = (*timer_lo + (*timer_hi << 8));
-    return cur_time;
-}
 
 void sub() {
 	int sender_tid;
@@ -34,39 +16,13 @@ void sub() {
 }
 
 void first_task() {
-	debug( DBG_CURR_LVL, DBG_KERN, "FIRST_TASK: START %d\n", 1000 );
+	debug( DBG_CURR_LVL, DBG_SYS, "FIRST_TASK: START %d\n", 1000 );
 	
-	// start_timer();
-	Create( 14, nameserver );
-
 	int tid;
-	// int sub_tid;
-	//long start_time, end_time;
-	//char buf64[64];
-	//char buf4[4];
-	//char reply_buf64[64];
-	//char reply_buf4[4];
+	tid = Create( 14, nameserver );
+	assert( tid == 1, "Nameserver should have task id of 1" );
 
-	//sub_tid = Create( 9, sub );
-
-	//start_time = get_time_ms();
-	//Send( sub_tid, buf4, 4, reply_buf4, 4 );
-	//end_time = get_time_ms();
-
-	//bwprintf( COM2, "It took %dms to send 4byte message\n", end_time - start_time );
-
-	//start_time = get_time_ms();
-	//Send( sub_tid, buf64, 64, reply_buf64, 64 );
-	//end_time = get_time_ms();
-
-	//bwprintf( COM2, "It took %dms to send 64byte message\n", end_time - start_time );
-
-	tid = Create( 14, server_entry_point );
-
-	tid = Create( 10, client_that_gets_bored );
-	tid = Create( 10, client_always_play );
-
-	debug( DBG_CURR_LVL, DBG_KERN, "FIRST_TASK: EXIT" );
+	debug( DBG_CURR_LVL, DBG_SYS, "FIRST_TASK: EXIT" );
 	Exit();
 }
 

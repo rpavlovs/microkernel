@@ -1,20 +1,5 @@
 #include "userspace.h"
 
-
-typedef struct {
-	char name[NS_NAME_MAX_LENGTH];
-	char tid;
-} ns_entry;
-
-typedef struct {
-	ns_entry entrie[NS_TABLE_MAX_SIZE];
-	int size;
-} ns_table;
-
-void init_ns_table( ns_table * table ) {
-	table->size = 0;
-}
-
 int find_entry( const char * name, const ns_table *table ) {
 	int pos = -1;
 	while( strcmp( name, table->entrie[++pos].name ) != 0 && pos < table->size );
@@ -24,47 +9,42 @@ int find_entry( const char * name, const ns_table *table ) {
 void nameserver() {
 	debug( DBG_CURR_LVL, DBG_SYS, "NAMESERVER: start" );
 
-	char msg[ NS_NAME_MAX_LENGTH + 1 ];
-	char reply[2];
-	int sender_tid;
-	int msg_size, pos;
-	ns_table table;
+	Nameserver_request request;
+	Nameserver_reply reply;
 
-	init_ns_table( &table );
+	int sender_tid;
+	int pos;
+
+	ns_table table;
+	table.size = 0;
 
 	FOREVER {
 		debug( DBG_CURR_LVL, DBG_SYS, "NAMESERVER: Block to recieve request" );
-		
-		msg_size = Receive( &sender_tid, msg, NS_NAME_MAX_LENGTH + 3 );
+		Receive( &sender_tid, (char *) &request, sizeof(request) );
 
-		// bwprintf( COM2, "DEBUG: Nameserver: Recieved new request. TID: %d MSG: [%d][%s]\n",
-		// 	sender_tid, msg[0], msg + 1 );
-
-		switch( msg[0] ) {
-		case NS_REQUEST_REGISTER_AS:
+		switch( request.type ) {
+		case NAMESERVER_REGISTER_AS_REQUEST:
 			debug( DBG_CURR_LVL, DBG_SYS, "NAMESERVER: RegisterAs request recived" );
-			pos = find_entry( msg + 1, &table );
+			pos = find_entry( request.ns_name, &table );
 			if ( pos == -1 ) {
 				debug( DBG_CURR_LVL, DBG_SYS, "NAMESERVER: new ns record required" );
 				pos = table.size++;
-				my_strcpy( msg + 1, table.entrie[pos].name );
+				my_strcpy( request.ns_name, table.entrie[pos].name );
 			}
 			table.entrie[pos].tid = sender_tid;
-			reply[0] = SUCCESS;
+			reply.num = SUCCESS;
 			break;
-		
-		case NS_REQUEST_WHO_IS:
+		case NAMESERVER_WHO_IS_REQUEST:
 			debug( DBG_CURR_LVL, DBG_SYS, "NAMESERVER: WhoIs request recived" );
-			pos = find_entry( msg + 1, &table );
-			if( pos == -1 ) {
-				reply[0] = ( -NS_ERROR_TASK_NOT_FOUND );
-			} else {
-				reply[0] = SUCCESS;
-				reply[1] = table.entrie[pos].tid;
-			}
+			pos = find_entry( request.ns_name, &table );
+			reply.num = (pos >= 0 ? table.entrie[pos].tid : NS_ERROR_TASK_NOT_FOUND);
 			break;
+		default:
+			debug( DBG_CURR_LVL, DBG_SYS, "**FATAL** NAMESERVER: Nameserver received"
+				"message of type %d", request.type );
+			reply.num = ERROR_WRONG_MESSAGE_TYPE;
 		}
 		
-		Reply( sender_tid, reply, 2 );
+		Reply( sender_tid, (char *) &reply, sizeof(reply) );
 	}
 }

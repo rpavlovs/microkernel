@@ -1,24 +1,22 @@
 #include "kernelspace.h"
 
+ /*
+	This handler is executed whenever there's a software interrupt. 
+	The processor automatically leaves the system in the following state. 
+	1- Copies the current CPSR (Current Program Status Register) into 
+	   the SPSR_SVC (Saved Program Status Register->Supervisor)
+	2- Sets the CPSR mode bits to supervisor mode (takes the processor into SVC 
+	   mode). 
+	3- Sets the CPSR IRQ to disable -> disables the interrupts. 
+	4- Stores the value (PC + 4) into LR_SVC. This means that the LR that the 
+	   supervisor receives is pointing to the next address in the user program. 
+	5- Forces the PC to 0x08 (the default SWI handler). This address is in the
+	   vector table (spring board).
+ */
+void
+swi_main_handler() {
 
-void swi_main_handler() {
-
-	asm (
-	/*
-		This handler is executed whenever there's a software interrupt. 
-		The processor automatically leaves the system in the following state. 
-		1- Copies the current CPSR (Current Program Status Register) into 
-		   the SPSR_SVC (Saved Program Status Register->Supervisor)
-		2- Sets the CPSR mode bits to supervisor mode (takes the processor into SVC 
-		   mode). 
-		3- Sets the CPSR IRQ to disable -> disables the interrupts. 
-		4- Stores the value (PC + 4) into LR_SVC. This means that the LR that the 
-		   supervisor receives is pointing to the next address in the user program. 
-		5- Forces the PC to 0x08 (the default SWI handler). This address is in the
-		   vector table (spring board).
-	*/
-
-	"\n"
+	asm (																	"\n"
 
 	// Save in the stack the arguments (in the registers) since they might get
 	// erased. 
@@ -90,31 +88,27 @@ void swi_main_handler() {
 void
 ExecuteCSWIHandler( unsigned int taskSP, unsigned int lr, unsigned int activeTD ) {
 
-	//bwprintf( COM2, "kerxit.c: Updating Active Task   TaskSP: %d 
-	//				ReturnValue: %d    SWIValue: %d    activeTID: %d .\n\r",
-	//   		taskSP, nextAddress, activeTD );
-
 	// Update the task descriptor
-	Task_descriptor *td = ( Task_descriptor * ) activeTD;
+	Task_descriptor *td = (Task_descriptor *) activeTD;
 	td->sp = (int *) taskSP;
 	td->lr = (int *) lr;
 
 }
 
-int execute_user_task( unsigned int a, unsigned int b, unsigned int c ) {
-	
-	asm (
-	/*
-		execute_user_task: 
-		This method should be executed whenever the kernel wants to return control
-		to an user task. It performs the opposite task to the swi_main_handler. 
-		Parameters:
-		- The SP of the user task.  
-		- The next instruction to execute in the user task.
-		- The TID of the current ( active ) user task. 
-	*/
+/*
+	execute_user_task: 
+	This method should be executed whenever the kernel wants to return control
+	to an user task. It performs the opposite task to the swi_main_handler. 
+	Parameters:
+	- The SP of the user task.  
+	- The next instruction to execute in the user task.
+	- The TID of the current ( active ) user task. 
+*/
 
-	"\n"
+int
+execute_user_task( unsigned int a, unsigned int b, unsigned int c ) {
+	
+	asm (																"\n"
 
 	// Store the information about the kernel as would happen in a normal task. 
 	"MOV	ip, sp"														"\n\t"
@@ -173,24 +167,15 @@ int execute_user_task( unsigned int a, unsigned int b, unsigned int c ) {
 
 	// Jump to the next instruction in the user task.
 	"LDR	PC, [ sp, #-4 ]"											"\n\t"
-
 	);
 }
 
-void RetrieveSysCallArgs( int *sysCallArguments, int numArguments, unsigned int taskSP )
-{
-	// TODO: Add an assertion here.
+void
+RetrieveSysCallArgs( int *sysCallArguments, int numArguments, unsigned int taskSP ) {
 
 	// The arguments are stored in the memory addresses that hold R0-R3 of the user task.
 	// If there are more arguments they are stored in the user task's stack. 	
 	int *ptr = ( int * ) taskSP; 
-
-	/*// DEBUGGING
-	int j; 
-	for ( j = -1; j < 30; j++ )
-	{
-	 	bwprintf( COM2, "DEB VALUES. Index:%d Stack value: %d\n", j, *(ptr + j) );
-	}*/
 	
 	int i; 
 	for ( i = 0; i < numArguments && i < MAX_NUM_ARGUMENTS ; i++ )
@@ -208,10 +193,9 @@ void RetrieveSysCallArgs( int *sysCallArguments, int numArguments, unsigned int 
 	}
 }
 
-void SetSysCallReturn( int returnValue, unsigned int taskSP )
-{
-	// bwprintf( COM2, "SetSysCallReturn: ENTERED\n");
-
+void
+SetSysCallReturn( int returnValue, unsigned int taskSP ) {
+	
 	// The return value is in the address that currently holds R0 for the task. 
 	int *ptr = ( int * ) taskSP; 
 	//ptr += 13; 	// Position the pointer at the R0 address.
@@ -220,108 +204,85 @@ void SetSysCallReturn( int returnValue, unsigned int taskSP )
 	*( ptr ) = returnValue; 
 }
 
-void handle_request( int request, Kern_Globals *GLOBALS ) 
-{
+void
+handle_request( int request, Kern_Globals *GLOBALS ) {
+	
 	// Create a placeholder for the arguments.
-	int sysCallArguments[ MAX_NUM_ARGUMENTS ];
+	int sysCallArguments[MAX_NUM_ARGUMENTS];
 
-	Task_descriptor *td = &( GLOBALS->tasks[ GLOBALS->schedule.last_active_tid ]);
+	Task_descriptor *td = &( GLOBALS->tasks[GLOBALS->schedule.last_active_tid] );
 	
 	int returnValue;
-	unsigned int taskSP = ( unsigned int ) td->sp;
+	unsigned int taskSP = (unsigned int) td->sp;
 
-	switch ( request )
-	{
-		case CREATE_SYSCALL:
-			RetrieveSysCallArgs( sysCallArguments, CREATE_ARGS, taskSP);
-			
-			returnValue = sys_create(
-								sysCallArguments[0],
-								(void *) sysCallArguments[1],
-								td, GLOBALS);
-			
-			SetSysCallReturn(returnValue, taskSP);
-			
-			debug( DBG_CURR_LVL, DBG_KERN, "CREATE_SYSCALL handled" );
-
-			break;
-
-		case MYTID_SYSCALL:
-			returnValue = sys_mytid(td, GLOBALS);
-			
-			SetSysCallReturn(returnValue, taskSP);
-
-			debug( DBG_CURR_LVL, DBG_KERN, "MYTID_SYSCALL handled" );
-
-			break;
-		case MYPARENTTID_SYSCALL:
-			returnValue = sys_myparenttid(td, GLOBALS);
-			SetSysCallReturn(returnValue, taskSP);
-
-			debug( DBG_CURR_LVL, DBG_KERN, "MYPARENTTID_SYSCALL handled" );
-
-			break;
-		case PASS_SYSCALL:
-			sys_pass(td, GLOBALS);
-
-			debug( DBG_CURR_LVL, DBG_KERN, "PASS_SYSCALL handled" );
-
-			break;
-		case EXIT_SYSCALL:
-
-			sys_exit(td, GLOBALS);
-
-			debug( DBG_CURR_LVL, DBG_KERN, "EXIT_SYSCALL handled" );
-			
-			break;
-
-		case TESTCALL_SYSCALL:
-			RetrieveSysCallArgs( sysCallArguments, TESTCALL_ARGS, taskSP);
-			returnValue = sys_testcall(
-							sysCallArguments[0], 
-							sysCallArguments[1], 
-							sysCallArguments[2], 
-							sysCallArguments[3], 
-							sysCallArguments[4], 
-							sysCallArguments[5]);
-			SetSysCallReturn(returnValue, taskSP);
-	
-			break;
-
-		case SEND_SYSCALL:
-			RetrieveSysCallArgs( sysCallArguments, SEND_ARGS, taskSP);
-			returnValue = sys_send(
-							sysCallArguments[0], 
-							sysCallArguments[1], 
-							sysCallArguments[2],
-						   	sysCallArguments[3], 
-						   	sysCallArguments[4],
-						   	td, GLOBALS);
-			SetSysCallReturn(returnValue, taskSP);
-
-			break;
-
-		case RECEIVE_SYSCALL:
-			RetrieveSysCallArgs( sysCallArguments, RECEIVE_ARGS, taskSP);
-			returnValue = sys_receive(
-							sysCallArguments[0], 
-							sysCallArguments[1], 
-							sysCallArguments[2],
-							td, GLOBALS);
-			SetSysCallReturn(returnValue, taskSP);
-
-			break;
-
-		case REPLY_SYSCALL:
-			RetrieveSysCallArgs( sysCallArguments, REPLY_ARGS, taskSP);
-			returnValue = sys_reply(
-							sysCallArguments[0], 
-							sysCallArguments[1], 
-							sysCallArguments[2],
-							td, GLOBALS);
-			SetSysCallReturn(returnValue, taskSP);
-
-			break;
+	switch( request ) {
+	case CREATE_SYSCALL:
+		RetrieveSysCallArgs( sysCallArguments, CREATE_ARGS, taskSP );
+		returnValue = sys_create(
+							sysCallArguments[0],
+							(void *) sysCallArguments[1],
+							td, GLOBALS );
+		
+		SetSysCallReturn( returnValue, taskSP );
+		debug( DBG_CURR_LVL, DBG_KERN, "CREATE_SYSCALL handled" );
+		break;
+	case MYTID_SYSCALL:
+		returnValue = sys_mytid( td, GLOBALS );
+		SetSysCallReturn( returnValue, taskSP );
+		debug( DBG_CURR_LVL, DBG_KERN, "MYTID_SYSCALL handled" );
+		break;
+	case MYPARENTTID_SYSCALL:
+		returnValue = sys_myparenttid( td, GLOBALS );
+		SetSysCallReturn( returnValue, taskSP );
+		debug( DBG_CURR_LVL, DBG_KERN, "MYPARENTTID_SYSCALL handled" );
+		break;
+	case PASS_SYSCALL:
+		sys_pass( td, GLOBALS );
+		debug( DBG_CURR_LVL, DBG_KERN, "PASS_SYSCALL handled" );
+		break;
+	case EXIT_SYSCALL:
+		sys_exit( td, GLOBALS );
+		debug( DBG_CURR_LVL, DBG_KERN, "EXIT_SYSCALL handled" );
+		break;
+	case TESTCALL_SYSCALL:
+		RetrieveSysCallArgs( sysCallArguments, TESTCALL_ARGS, taskSP );
+		returnValue = sys_testcall(
+						sysCallArguments[0], 
+						sysCallArguments[1], 
+						sysCallArguments[2], 
+						sysCallArguments[3], 
+						sysCallArguments[4], 
+						sysCallArguments[5] );
+		SetSysCallReturn( returnValue, taskSP );
+		break;
+	case SEND_SYSCALL:
+		RetrieveSysCallArgs( sysCallArguments, SEND_ARGS, taskSP );
+		returnValue = sys_send(
+						sysCallArguments[0], 
+						sysCallArguments[1], 
+						sysCallArguments[2],
+					   	sysCallArguments[3], 
+					   	sysCallArguments[4],
+					   	td, GLOBALS );
+		SetSysCallReturn( returnValue, taskSP );
+		break;
+	case RECEIVE_SYSCALL:
+		RetrieveSysCallArgs( sysCallArguments, RECEIVE_ARGS, taskSP );
+		returnValue = sys_receive(
+						sysCallArguments[0], 
+						sysCallArguments[1], 
+						sysCallArguments[2],
+						td, GLOBALS);
+		SetSysCallReturn( returnValue, taskSP );
+		break;
+	case REPLY_SYSCALL:
+		RetrieveSysCallArgs( sysCallArguments, REPLY_ARGS, taskSP );
+		returnValue = sys_reply(
+						sysCallArguments[0], 
+						sysCallArguments[1], 
+						sysCallArguments[2],
+						td, GLOBALS );
+		SetSysCallReturn( returnValue, taskSP );
+		break;
 	}
 }
-

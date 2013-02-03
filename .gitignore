@@ -6,3 +6,6 @@
 
 # build files #
 build/*
+/instLinuxTemp
+/instLinux
+/instLinux.sh

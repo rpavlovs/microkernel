@@ -1,7 +1,7 @@
 #include "kernelspace.h"
 
 //Executed once during initialization
-int installSwiHandler( unsigned int handlerLoc, unsigned int *vector ) {
+/*int installSwiHandler( unsigned int handlerLoc, unsigned int *vector ) {
 	unsigned int vec = ( ( handlerLoc - ( unsigned int ) vector - 0x8 ) >> 2 );
 	if ( vec & 0xFF000000 )
 	{
@@ -12,7 +12,7 @@ int installSwiHandler( unsigned int handlerLoc, unsigned int *vector ) {
 	*vector = vec; 
 
 	return 0; 
-}
+}*/
 
 void init_message_queues( Kern_Globals *GLOBALS ) {
 	int tid ;
@@ -80,7 +80,8 @@ void initialize( Kern_Globals *GLOBALS ) {
 
 	init_hardware();
 
-	installSwiHandler((unsigned int) swi_main_handler, (unsigned int *) SWI_ENRTY_ADDRESS);
+	//installSwiHandler((unsigned int) swi_main_handler, (unsigned int *) SWI_ENRTY_ADDRESS);
+    initialize_context_switching(); 
 
 	init_message_queues( GLOBALS );
 

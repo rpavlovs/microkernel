@@ -1,5 +1,7 @@
 #include "kernelspace.h"
 
+extern void swi_main_handler();
+
  /*
 	This handler is executed whenever there's a software interrupt. 
 	The processor automatically leaves the system in the following state. 
@@ -13,77 +15,74 @@
 	5- Forces the PC to 0x08 (the default SWI handler). This address is in the
 	   vector table (spring board).
  */
-void
-swi_main_handler() {
+    asm (																	"\n"
 
-	asm (																	"\n"
+    "swi_main_handler:"                                                     "\n\t"
+    // Save in the stack the arguments (in the registers) since they might get
+    // erased. 
+    // NOTE: The current SP is the SP_SVC, so the user SP is not affected.
+    //       
+    // Switch to system mode. 
+    "MSR	CPSR_c, #0x1F"													"\n\t"
 
-	// Save in the stack the arguments (in the registers) since they might get
-	// erased. 
-	// NOTE: The current SP is the SP_SVC, so the user SP is not affected.
-	//       
-	// Switch to system mode. 
-	"MSR	CPSR_c, #0x1F"													"\n\t"
+    // Leave space for SPSR. 	 
+    "SUB	sp, sp, #4"														"\n\t"
 
-	// Leave space for SPSR. 	 
-	"SUB	sp, sp, #4"														"\n\t"
+    // Store all the registers (except 13-sp- and 15-pc-).		
+    "STMFD	sp!, { r0-r12, lr }"											"\n\t"
 
-	// Store all the registers (except 13-sp- and 15-pc-).		
-	"STMFD	sp!, { r0-r12, lr }"											"\n\t"
+    // Store the task's SP so that it can be stored later into the TR.
+    "MOV	r0, sp"															"\n\t"
 
-	// Store the task's SP so that it can be stored later into the TR.
-	"MOV	r0, sp"															"\n\t"
+    // Return to supervisor mode. 
+    "MSR	cpsr_c, #0x13"													"\n\t"
 
-	// Return to supervisor mode. 
-	"MSR	cpsr_c, #0x13"													"\n\t"
+    // Get the value of the system call
+    // 
+    // Store in the task's stack the spsr (the original CPSR of the task).
+    "MRS	r1, spsr"														"\n\t"			 
+    "STR	r1, [ r0, #14*4 ]"												"\n\t"
 
-	// Get the value of the system call
-	// 
-	// Store in the task's stack the spsr (the original CPSR of the task).
-	"MRS	r1, spsr"														"\n\t"			 
-	"STR	r1, [ r0, #14*4 ]"												"\n\t"
+    // Store the return value in the r1 so that it is stored later into the TR. 
+    "MOV	r1, lr"															"\n\t"		
 
-	// Store the return value in the r1 so that it is stored later into the TR. 
-	"MOV	r1, lr"															"\n\t"		
+    // Restore the kernel state
+    "LDMFD	sp!, { r4-r11 }"												"\n\t"
 
-	// Restore the kernel state
-	"LDMFD	sp!, { r4-r11 }"												"\n\t"
+    /*// Execute the C system call handler
+    // Store the next instruction to run in the r1 so that it is stored later
+    // into the TR. 
+    "LDR	r2, [ lr, #-4 ]\n\t"		
+    "BIC	r2, r2, #0xff000000\n\t"	
+    "LDR	r3, [ sp, #0 ]\n\t"		// The pointer to the active TD is loaded into
+    register 3.
+    "BL	ExecuteCSWIHandler\n\t"*/
 
-	/*// Execute the C system call handler
-	// Store the next instruction to run in the r1 so that it is stored later
-	// into the TR. 
-	"LDR	r2, [ lr, #-4 ]\n\t"		
-	"BIC	r2, r2, #0xff000000\n\t"	
-	"LDR	r3, [ sp, #0 ]\n\t"		// The pointer to the active TD is loaded into
-	register 3.
-	"BL	ExecuteCSWIHandler\n\t"*/
+    // Execute the C system call handler.
+    // The pointer to the active TD is loaded into register 2.
+    "LDR	r2, [ sp, #0 ]"													"\n\t"		
 
-	// Execute the C system call handler.
-	// The pointer to the active TD is loaded into register 2.
-	"LDR	r2, [ sp, #0 ]"													"\n\t"		
+    // Store the next instruction to run in the r1 so that it is stored later
+    // into the TR. 
+    "LDR	r3, [ lr, #-4 ]"												"\n\t"		
+    "BIC	r3, r3, #0xff000000"											"\n\t"
 
-	// Store the next instruction to run in the r1 so that it is stored later
-	// into the TR. 
-	"LDR	r3, [ lr, #-4 ]"												"\n\t"		
-	"BIC	r3, r3, #0xff000000"											"\n\t"
+    // This variable is stored in local memory to prevent it from being deleted
+    // by the function call. 
+    "STR	r3, [ sp, #0 ]"													"\n\t"
 
-	// This variable is stored in local memory to prevent it from being deleted
-	// by the function call. 
-	"STR	r3, [ sp, #0 ]"													"\n\t"
+    // r0 - task stack pointer
+    // r1 - next address
+    // r2 - task descriptor pointer	
+    "BL	ExecuteCSWIHandler"													"\n\t"
 
-	// r0 - task stack pointer
-	// r1 - next address
-	// r2 - task descriptor pointer	
-	"BL	ExecuteCSWIHandler"													"\n\t"
+    // Set the return value.
+    "LDR	r0, [ sp, #0 ]"													"\n\t"	
 
-	// Set the return value.
-	"LDR	r0, [ sp, #0 ]"													"\n\t"	
-	
-	// Return control to the kernel C code. 
-	"sub	sp, fp, #12"													"\n\t"
-	"LDMFD	sp, { fp, sp, pc }"												"\n\t"
-	);
-}
+    // Return control to the kernel C code. 
+    "sub	sp, fp, #12"													"\n\t"
+    "LDMFD	sp, { fp, sp, pc }"												"\n\t"
+    );
 
 void
 ExecuteCSWIHandler( unsigned int taskSP, unsigned int lr, unsigned int activeTD ) {
@@ -93,6 +92,24 @@ ExecuteCSWIHandler( unsigned int taskSP, unsigned int lr, unsigned int activeTD 
 	td->sp = (int *) taskSP;
 	td->lr = (int *) lr;
 
+}
+
+int 
+initialize_context_switching() {
+    install_interrupt_handler((unsigned int) swi_main_handler, (unsigned int *) SWI_ENRTY_ADDRESS);
+}
+
+int install_interrupt_handler( unsigned int handlerLoc, unsigned int *vector ) {
+    unsigned int vec = ( ( handlerLoc - ( unsigned int ) vector - 0x8 ) >> 2 );
+    if ( vec & 0xFF000000 )
+    {
+		return 1; // There was a problem 
+    }
+    
+    vec = 0xEA000000 | vec;
+    *vector = vec; 
+
+    return 0; 
 }
 
 /*

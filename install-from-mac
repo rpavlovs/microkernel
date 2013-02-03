@@ -1,4 +1,11 @@
-cp -R . /Volumes/home/cs452/microkernel 2>/dev/null
+echo "=== COPY ==="
+
+find . ! -name ".git" -mindepth 1 -maxdepth 1 \
+	-exec cp -rv {} /Volumes/home/cs452/microkernel/ \;
+
+echo "=== COMPILE ==="
+
+ssh uw "cd ~/cs452/microkernel && make clean >/dev/null && make && echo && make install >/dev/null"
 
 
-ssh uw "cd cs452/microkernel && make clean >/dev/null && make && make install >/dev/null"
+

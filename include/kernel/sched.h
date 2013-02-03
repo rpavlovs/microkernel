@@ -13,7 +13,7 @@ void init_schedule( int, void (*) ( ), Kern_Globals * );
 // Find an unused task descriptor
 // Set it up for a new task
 // Add it to the specific scheduler queue 
-// 
+
 // Return:
 // task id of the new process
 // -1 if wrong task priority was given

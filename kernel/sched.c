@@ -99,30 +99,3 @@ int getNextRequest( Kern_Globals *GLOBALS )
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

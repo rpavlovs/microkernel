@@ -50,7 +50,7 @@ void other_task() {
 	int myparenttid = MyParentTid();
 	bwprintf( COM2, "My tid: %d\tMy parent tid:%d\n\r", mytid, myparenttid);
 	Pass();
-	bwprintf( COM2, "My tid: %d\tMy parent tid:%d\n\r", mytid, myparenttid);	
+	bwprintf( COM2, "My tid: %d\tMy parent tid:%d\n\r", mytid, myparenttid);
 	Exit();
 }
 
@@ -75,6 +75,7 @@ void a1_first_task() {
 	Exit();
 }
 
+//Testing first function
 void test_task(){
 
 	int sum;
@@ -84,3 +85,16 @@ void test_task(){
 
 	Exit();
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -94,11 +94,6 @@ ExecuteCSWIHandler( unsigned int taskSP, unsigned int lr, unsigned int activeTD 
 
 }
 
-int 
-initialize_context_switching() {
-    install_interrupt_handler((unsigned int) swi_main_handler, (unsigned int *) SWI_ENRTY_ADDRESS);
-}
-
 int install_interrupt_handler( unsigned int handlerLoc, unsigned int *vector ) {
     unsigned int vec = ( ( handlerLoc - ( unsigned int ) vector - 0x8 ) >> 2 );
     if ( vec & 0xFF000000 )
@@ -110,6 +105,11 @@ int install_interrupt_handler( unsigned int handlerLoc, unsigned int *vector ) {
     *vector = vec; 
 
     return 0; 
+}
+
+void
+initialize_context_switching() {
+    install_interrupt_handler((unsigned int) swi_main_handler, (unsigned int *) SWI_ENRTY_ADDRESS);
 }
 
 /*
@@ -124,7 +124,9 @@ int install_interrupt_handler( unsigned int handlerLoc, unsigned int *vector ) {
 
 int
 execute_user_task( unsigned int a, unsigned int b, unsigned int c ) {
-	
+
+	int ret;
+
 	asm (																"\n"
 
 	// Store the information about the kernel as would happen in a normal task. 
@@ -184,7 +186,12 @@ execute_user_task( unsigned int a, unsigned int b, unsigned int c ) {
 
 	// Jump to the next instruction in the user task.
 	"LDR	PC, [ sp, #-4 ]"											"\n\t"
+	
+	// return here after interrupt is handled
+	
+	"MOV	%0, r0" "\n\r" : "=r" (ret)
 	);
+	return ret;	
 }
 
 void
@@ -275,29 +282,29 @@ handle_request( int request, Kern_Globals *GLOBALS ) {
 	case SEND_SYSCALL:
 		RetrieveSysCallArgs( sysCallArguments, SEND_ARGS, taskSP );
 		returnValue = sys_send(
-						sysCallArguments[0], 
-						sysCallArguments[1], 
-						sysCallArguments[2],
-					   	sysCallArguments[3], 
-					   	sysCallArguments[4],
+						(int) 		sysCallArguments[0], 
+						(char *) 	sysCallArguments[1], 
+						(int) 		sysCallArguments[2],
+					   	(char *) 	sysCallArguments[3], 
+					   	(int) 		sysCallArguments[4],
 					   	td, GLOBALS );
 		SetSysCallReturn( returnValue, taskSP );
 		break;
 	case RECEIVE_SYSCALL:
 		RetrieveSysCallArgs( sysCallArguments, RECEIVE_ARGS, taskSP );
 		returnValue = sys_receive(
-						sysCallArguments[0], 
-						sysCallArguments[1], 
-						sysCallArguments[2],
+						(int *)		sysCallArguments[0], 
+						(char *) 	sysCallArguments[1], 
+						(int) 		sysCallArguments[2],
 						td, GLOBALS);
 		SetSysCallReturn( returnValue, taskSP );
 		break;
 	case REPLY_SYSCALL:
 		RetrieveSysCallArgs( sysCallArguments, REPLY_ARGS, taskSP );
 		returnValue = sys_reply(
-						sysCallArguments[0], 
-						sysCallArguments[1], 
-						sysCallArguments[2],
+						(int)		sysCallArguments[0], 
+						(char *)	sysCallArguments[1], 
+						(int)		sysCallArguments[2],
 						td, GLOBALS );
 		SetSysCallReturn( returnValue, taskSP );
 		break;

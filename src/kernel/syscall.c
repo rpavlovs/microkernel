@@ -1,35 +1,77 @@
 #include "kernelspace.h"
 
-int Create( int priority, void (*code) ( ) ) {	
-	asm ( "swi\t%0"	"\n\t" :: "J" (CREATE_SYSCALL) );
+int Create( int priority, void (*code) ( ) ) {
+	int ret;
+	asm(
+		"SWI	%[call_id]"									"\n\t"
+		"MOV	%[ret], r0" 								"\n\t"
+		: [ret] "=r"	(ret)
+		: [call_id] "J" (CREATE_SYSCALL)
+	);
+	return ret;  
 }
 
 int MyTid( ) {
-	asm ( "swi\t%0"	"\n\t" :: "J" (MYTID_SYSCALL) );
+	int ret;
+	asm(
+		"SWI	%[call_id]"									"\n\t"
+		"MOV	%[ret], r0" 								"\n\t"
+		: [ret] "=r"	(ret)
+		: [call_id] "J" (MYTID_SYSCALL)
+	);
+	return ret;  
 }
 
 int MyParentTid( ) {
-	asm ( "swi\t%0"	"\n\t" :: "J" (MYPARENTTID_SYSCALL) );
+	int ret;
+	asm(
+		"SWI	%[call_id]"									"\n\t"
+		"MOV	%[ret], r0" 								"\n\t"
+		: [ret] "=r"	(ret)
+		: [call_id] "J" (MYPARENTTID_SYSCALL)
+	);
+	return ret;  
 }
 
 void Pass( ) {
-	asm ( "swi\t%0"	"\n\t" :: "J" (PASS_SYSCALL) );
+	asm( "SWI	%0"	"\n\t" :: "J" (PASS_SYSCALL) );
 }
 
 void Exit( ) {
-	asm ( "swi\t%0"	"\n\t" :: "J" (EXIT_SYSCALL) );
+	asm( "SWI	%0"	"\n\t" :: "J" (EXIT_SYSCALL) );
 }
 
-int Send(int Tid, char *msg, int msglen, char *reply, int replylen){
-	asm ( "swi\t%0"	"\n\t" :: "J" (SEND_SYSCALL) );
+int Send( int Tid, char *msg, int msglen, char *reply, int replylen ) {
+	int ret;
+	asm(
+		"SWI	%[call_id]"									"\n\t"
+		"MOV	%[ret], r0" 								"\n\t"
+		: [ret] "=r"	(ret)
+		: [call_id] "J" (SEND_SYSCALL)
+	);
+	return ret;
 }
 
-int Receive(int *tid, char *msg, int msglen){
-	asm ( "swi\t%0"	"\n\t" :: "J" (RECEIVE_SYSCALL) );
+int Receive( int *tid, char *msg, int msglen ) {
+	int ret;
+	asm(
+		"SWI	%[call_id]"									"\n\t"
+		"MOV	%[ret], r0" 								"\n\t"
+		: [ret] "=r"	(ret)
+		: [call_id] "J" (RECEIVE_SYSCALL)
+	);
+	return ret;
 }
 
-int Reply( int tid, char *reply, int replylen ){
-	asm ( "swi\t%0"	"\n\t" :: "J" (REPLY_SYSCALL) );
+int Reply( int tid, char *reply, int replylen ) {
+	int ret;
+	asm(
+		"SWI	%[call_id]"									"\n\t"
+		"MOV	%[ret], r0" 								"\n\t"
+		: [ret] "=r"	(ret)
+		: [call_id] "J" (REPLY_SYSCALL)
+	);
+	return ret;
 }
 
 ////////////////////
@@ -109,5 +151,12 @@ int WhoIs( char *name ) {
 int TestCall(int a, int b, int c, int d, int e, int f) {
 //int TestCall(int a, int b, int c, int d, int e){ //, int f){
 //int TestCall(int a, int b, int c, int d){
-	asm ( "swi\t%0"	"\n\t" :: "J" (TESTCALL_SYSCALL) );
+	int ret;
+	asm(
+		"SWI	%[call_id]"									"\n\t"
+		"MOV	%[ret], r0" 								"\n\t"
+		: [ret] "=r"	(ret)
+		: [call_id] "J" (TESTCALL_SYSCALL)
+	);
+	return ret; 
 }

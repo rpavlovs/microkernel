@@ -15,4 +15,6 @@ void SetSysCallReturn( int, unsigned int);
 
 void handle_request( int, Kern_Globals *);
 
+void initialize_context_switching();
+
 #endif

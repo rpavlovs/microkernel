@@ -1,7 +1,7 @@
 #include "kernelspace.h"
 
-int sys_create( int priority, void (*code) ( ), Task_descriptor *td, Kern_Globals *GLOBALS ) {
-	
+int
+sys_create( int priority, void (*code) ( ), Task_descriptor *td, Kern_Globals *GLOBALS ) {	
 	debug( DBG_CURR_LVL, DBG_KERN, "sys_create: ENTERED" );
 
 	// ERROR: Scheduler was given a wrong task priority.
@@ -49,36 +49,33 @@ int sys_create( int priority, void (*code) ( ), Task_descriptor *td, Kern_Global
 	queue->td_ptrs[queue->newest] = new_td;
 
 	// Rescheduling the task
-	sys_reschedule(td, GLOBALS);
+	sys_reschedule( td, GLOBALS );
 
 	return new_tid;
 }
 
-int sys_mytid(Task_descriptor *td, Kern_Globals *GLOBALS )
-{
+int
+sys_mytid( Task_descriptor *td, Kern_Globals *GLOBALS ) {
 	debug( DBG_CURR_LVL, DBG_KERN, "sys_mytid: ENTERED" );
-
-	sys_reschedule(td, GLOBALS);
+	sys_reschedule( td, GLOBALS );
 	return td->tid;
 }
 
-int sys_myparenttid(Task_descriptor *td, Kern_Globals *GLOBALS )
-{
+int
+sys_myparenttid( Task_descriptor *td, Kern_Globals *GLOBALS ) {
 	debug( DBG_CURR_LVL, DBG_KERN, "sys_myparenttid: ENTERED");
-
-	sys_reschedule(td, GLOBALS);
+	sys_reschedule( td, GLOBALS );
 	return td->parent_tid;
 }
 
-void sys_pass(Task_descriptor *td, Kern_Globals *GLOBALS )
-{
+void
+sys_pass(Task_descriptor *td, Kern_Globals *GLOBALS ) {
 	debug( DBG_CURR_LVL, DBG_KERN, "sys_pass: ENTERED" );
-
-	sys_reschedule(td, GLOBALS);
+	sys_reschedule( td, GLOBALS );
 }
 
-void sys_exit(Task_descriptor *td, Kern_Globals *GLOBALS ) 
-{
+void
+sys_exit( Task_descriptor *td, Kern_Globals *GLOBALS ) {
 	debug( DBG_CURR_LVL, DBG_KERN, "sys_exit: ENTERED" );
 
 	// Getting task properties
@@ -101,7 +98,8 @@ void sys_exit(Task_descriptor *td, Kern_Globals *GLOBALS )
 	sched->tasks_alive--;
 }
 
-void sys_reschedule(Task_descriptor *td, Kern_Globals *GLOBALS ) {
+void
+sys_reschedule( Task_descriptor *td, Kern_Globals *GLOBALS ) {
 	debug( DBG_CURR_LVL, DBG_KERN, "sys_reschedule: ENTERED" );
 
 	// Getting task properties
@@ -127,8 +125,9 @@ void sys_reschedule(Task_descriptor *td, Kern_Globals *GLOBALS ) {
 	td->state = READY_TASK;
 }
 
-int sys_send( int receiver_tid, char *msg, int msglen, char *reply, int replylen,
-	Task_descriptor *sender_td, Kern_Globals *GLOBALS ) {
+int
+sys_send( int receiver_tid, char *msg, int msglen, char *reply, int replylen,
+		Task_descriptor *sender_td, Kern_Globals *GLOBALS ) {
 
 	//Getting TD of the target task
 	Task_descriptor *receiver_td = &(GLOBALS->tasks[receiver_tid]);
@@ -168,8 +167,9 @@ int sys_send( int receiver_tid, char *msg, int msglen, char *reply, int replylen
 	return 0;
 }
 
-int sys_receive(int *sender_tid, char *msg, int msglen,
-	Task_descriptor *receiver_td, Kern_Globals *GLOBALS ) {
+int
+sys_receive( int *sender_tid, char *msg, int msglen, Task_descriptor *receiver_td,
+		Kern_Globals *GLOBALS ) {
 
 	Message_queue *receive_queue = &(receiver_td->receive_queue);
 	//If there are SOME sends from other tasks to the current task
@@ -222,8 +222,9 @@ int sys_receive(int *sender_tid, char *msg, int msglen,
 	return 0;
 }
 
-int sys_reply( int sender_tid, char *reply, int replylen,
-	Task_descriptor *receiver_td, Kern_Globals *GLOBALS ) {
+int
+sys_reply( int sender_tid, char *reply, int replylen, Task_descriptor *receiver_td,
+		Kern_Globals *GLOBALS ) {
 
 	Reply_info *reply_info = &(receiver_td->reply_infos[sender_tid]);
 
@@ -242,7 +243,8 @@ int sys_reply( int sender_tid, char *reply, int replylen,
 	return 0;
 }
 
-void sys_unblock_receive( Task_descriptor *receiver_td, Kern_Globals *GLOBALS ){
+void
+sys_unblock_receive( Task_descriptor *receiver_td, Kern_Globals *GLOBALS ) {
 
 	Message_queue *receive_queue = &(receiver_td->receive_queue);
 
@@ -284,10 +286,10 @@ void sys_unblock_receive( Task_descriptor *receiver_td, Kern_Globals *GLOBALS ){
 	enqueue_tqueue(receiver_td, pqueue);
 }
 
-int sys_testcall(int a, int b, int c, int d, int e, int f){
+int
+sys_testcall( int a, int b, int c, int d, int e, int f ) {
 //int sys_testcall(int a, int b, int c, int d, int e){ //, int f){
 //int sys_testcall(int a, int b, int c, int d){
 
 	return a + b + c + d + e + f;
-
 }

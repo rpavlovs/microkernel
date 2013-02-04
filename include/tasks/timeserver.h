@@ -12,9 +12,11 @@ typedef struct {
 	/* data */
 } Msg_timeserver_request;
 
-#define TIME_REQUEST_MESSAGE	0
+#define TIME_REQUEST				0
+#define DELAY_REQUEST				1
+#define DELAY_UNTIL_REQUEST			2
 
-#define TIME_REPLY_MESSAGE		1
+#define TIME_REPLY					1
 
 typedef struct {
 	int type;

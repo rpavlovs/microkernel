@@ -151,12 +151,34 @@ int WhoIs( char *name ) {
 int Time() {
 	Msg_timeserver_request request_msg;
 	Msg_timeserver_reply reply_msg;
-	request_msg.type = TIME_REQUEST_MESSAGE;
+	request_msg.type = TIME_REQUEST;
 
 	int status = Send( WhoIs("timeserver"), (char *) &request_msg, sizeof(request_msg),
 						(char *) &reply_msg, sizeof(reply_msg) );
 
+	assert( reply_msg.type == TIME_REPLY, "Time: Should get proper reply message" );
+
 	return (status < 0 ? status : reply_msg.num);
+}
+
+int Delay( int ticks ) {
+	Msg_timeserver_request request_msg;
+	Msg_timeserver_reply reply_msg;
+	request_msg.type = DELAY_REQUEST;
+	request_msg.num = ticks;
+
+	return Send( WhoIs("timeserver"), (char *) &request_msg, sizeof(request_msg),
+						(char *) &reply_msg, sizeof(reply_msg) );
+}
+
+int DelayUntil( int ticks ) {
+	Msg_timeserver_request request_msg;
+	Msg_timeserver_reply reply_msg;
+	request_msg.type = DELAY_UNTIL_REQUEST;
+	request_msg.num = ticks;
+
+	return Send( WhoIs("timeserver"), (char *) &request_msg, sizeof(request_msg),
+						(char *) &reply_msg, sizeof(reply_msg) );
 }
 
 int TestCall(int a, int b, int c, int d, int e, int f) {

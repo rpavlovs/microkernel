@@ -148,6 +148,17 @@ int WhoIs( char *name ) {
 	return reply.num;
 }
 
+int Time() {
+	Msg_timeserver_request request_msg;
+	Msg_timeserver_reply reply_msg;
+	request_msg.type = TIME_REQUEST_MESSAGE;
+
+	int status = Send( WhoIs("timeserver"), (char *) &request_msg, sizeof(request_msg),
+						(char *) &reply_msg, sizeof(reply_msg) );
+
+	return (status < 0 ? status : reply_msg.num);
+}
+
 int TestCall(int a, int b, int c, int d, int e, int f) {
 //int TestCall(int a, int b, int c, int d, int e){ //, int f){
 //int TestCall(int a, int b, int c, int d){

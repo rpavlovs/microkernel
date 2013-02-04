@@ -8,6 +8,7 @@
 
 #include "tasks/first.h"
 #include "tasks/nameserver.h"
+#include "tasks/timeserver.h"
 
 #ifndef __COMMONSPACE__
 #define __COMMONSPACE__

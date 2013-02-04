@@ -22,6 +22,10 @@ void first_task() {
 	tid = Create( 14, nameserver );
 	assert( tid == 1, "Nameserver should have task id of 1" );
 
+	tid = Create( 14, timeserver );
+
+	bwprintf( COM2, "It's %d ticks since timeserver was initialized.\n", Time() );
+
 	debug( DBG_CURR_LVL, DBG_SYS, "FIRST_TASK: EXIT" );
 	Exit();
 }

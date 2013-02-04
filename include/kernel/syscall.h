@@ -105,7 +105,7 @@ void Exit( );
 // • -2 – if the task id is not an existing task.
 // • -3 – if the send-receive-reply transaction is incomplete.
 
-int Send(int Tid, char *msg, int msglen, char *reply, int replylen);
+int Send( int tid, char *msg, int msglen, char *reply, int replylen );
 
 //  Receive blocks until a message is sent to the caller, then returns with the
 //  message in its message buffer and tid set to the task id of the task that 
@@ -114,7 +114,7 @@ int Send(int Tid, char *msg, int msglen, char *reply, int replylen);
 // Returns:
 // • The size of the message sent.
 
-int Receive(int *tid, char *msg, int msglen);
+int Receive( int *tid, char *msg, int msglen );
 
 // Reply sends a reply to a task that previously sent a message.
 // 
@@ -124,7 +124,7 @@ int Receive(int *tid, char *msg, int msglen);
 // • -2 – if the task id is not an existing task.
 // • -3 – if the task is not reply blocked.
 
-int Reply(int tid, char *reply, int replylen);
+int Reply( int tid, char *reply, int replylen );
 
 // RegisterAs registers the task id of the caller under the given name.
 // 
@@ -145,7 +145,16 @@ int RegisterAs( char * );
 
 int WhoIs( char * );
 
+// Time returns the number of ticks since the clock server was created and
+// initialized.
+// 
+// Returns.
+// • non-negative integer – time in ticks since the clock server initialized.
+// • -1 – if the clock server task id inside the wrapper is invalid.
+// • -2 – if the clock server task id inside the wrapper is not the task id of
+// 		  the clock server.
+ int Time();
 
-int TestCall(int a, int b, int c, int d, int e, int f);
+int TestCall( int a, int b, int c, int d, int e, int f );
 
 #endif

@@ -114,7 +114,7 @@ int RegisterAs( char *name ) {
 }
 
 int WhoIs( char *name ) {
-	debug( DBG_CURR_LVL, DBG_KERN, "WhoIs: request for [%s] recieved.", *name );
+	debug( DBG_CURR_LVL, DBG_KERN, "WhoIs: request for [%s] recieved.", name );
 
 	Nameserver_request request;
 	Nameserver_reply reply;

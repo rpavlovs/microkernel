@@ -9,6 +9,7 @@ void timeserver() {
 	Msg_timeserver_request incoming_msg;
 	Msg_timeserver_reply reply_msg;
 
+	RegisterAs( "timeserver" );
 
 	FOREVER {
 		Receive( &sender_tid, (char *) &incoming_msg, sizeof(incoming_msg) );

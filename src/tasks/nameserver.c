@@ -37,13 +37,17 @@ void nameserver() {
 		case NAMESERVER_WHO_IS_REQUEST:
 			debug( DBG_CURR_LVL, DBG_SYS, "NAMESERVER: WhoIs request recived" );
 			pos = find_entry( request.ns_name, &table );
-			reply.num = (pos >= 0 ? table.entrie[pos].tid : NS_ERROR_TASK_NOT_FOUND);
+			reply.num = (pos < 0 ? NS_ERROR_TASK_NOT_FOUND : table.entrie[pos].tid);
 			break;
 		default:
-			debug( DBG_CURR_LVL, DBG_SYS, "**FATAL** NAMESERVER: Nameserver received"
-				"message of type %d", request.type );
+			debug( DBG_CURR_LVL, DBG_SYS, "NAMESERVER: Nameserver received unexpected message"
+				"[type: %d from: %d]", request.type, sender_tid );
 			reply.num = ERROR_WRONG_MESSAGE_TYPE;
 		}
+
+		if( reply.num < 0 )
+			debug( DBG_CURR_LVL, DBG_SYS, "nameserver could not find [%s] requested by task %d",
+				request.ns_name, sender_tid );
 		
 		Reply( sender_tid, (char *) &reply, sizeof(reply) );
 	}

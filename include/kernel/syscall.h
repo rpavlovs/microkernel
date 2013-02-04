@@ -148,12 +148,35 @@ int WhoIs( char * );
 // Time returns the number of ticks since the clock server was created and
 // initialized.
 // 
-// Returns.
+// Returns:
 // • non-negative integer – time in ticks since the clock server initialized.
 // • -1 – if the clock server task id inside the wrapper is invalid.
 // • -2 – if the clock server task id inside the wrapper is not the task id of
 // 		  the clock server.
- int Time();
+
+int Time();
+
+// Delay returns after the given number of ticks has elapsed.
+// 
+// Returns:
+// • 0 – success.
+// • -1 – if the clock server task id inside the wrapper is invalid.
+// • -2 – if the clock server task id inside the wrapper is not the id of the
+// 		  clock server.
+
+int Delay( int ticks );
+
+// DelayUntil returns when the time since clock server initialization is greater
+// than the given number of ticks.
+// 
+// Returns:
+// • 0 – success.
+// • -1 – if the clock server task id inside the wrapper is invalid.
+// • -2 – if the clock server task id inside the wrapper is not the clock
+// 		  server.
+
+int DelayUntil( int ticks );
+
 
 int TestCall( int a, int b, int c, int d, int e, int f );
 

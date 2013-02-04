@@ -97,18 +97,32 @@ void Pass( );
 
 void Exit( );
 
-// Description
+// Send sends a message to another task and receives a reply.
 // 
+// Returns:
+// • The size of the message supplied by the replying task.
+// • -1 – if the task id is impossible.
+// • -2 – if the task id is not an existing task.
+// • -3 – if the send-receive-reply transaction is incomplete.
 
 int Send(int Tid, char *msg, int msglen, char *reply, int replylen);
 
-// Description
+//  Receive blocks until a message is sent to the caller, then returns with the
+//  message in its message buffer and tid set to the task id of the task that 
+//  sent the message.
 // 
+// Returns:
+// • The size of the message sent.
 
 int Receive(int *tid, char *msg, int msglen);
 
-// Description
+// Reply sends a reply to a task that previously sent a message.
 // 
+// Returns:
+// • 0 – if the reply succeeds.
+// • -1 – if the task id is not a possible task id.
+// • -2 – if the task id is not an existing task.
+// • -3 – if the task is not reply blocked.
 
 int Reply(int tid, char *reply, int replylen);
 

@@ -1,19 +1,14 @@
 #include "kernelspace.h"
 
-int sys_create( int priority, void (*code) ( ), Task_descriptor *td, Kern_Globals *GLOBALS ) {
-	
+int
+sys_create( int priority, void (*code) ( ), Task_descriptor *td, Kern_Globals *GLOBALS ) {
 	debug( DBG_CURR_LVL, DBG_KERN, "sys_create: ENTERED" );
-
-	// ERROR: Scheduler was given a wrong task priority.
 	if( priority < 0 || priority >= SCHED_NUM_PRIORITIES ) return -1;
 	
-	// Getting the schedule
 	Schedule *sched = &(GLOBALS->schedule);
-	int new_tid;
-	Task_descriptor *new_td;
 
 	// Find a free task descriptor for a new task.
-	new_tid = sched->last_issued_tid + 1;
+	int new_tid = sched->last_issued_tid + 1;
 	if( new_tid >= MAX_NUM_TASKS ) new_tid = 0;
 	while( GLOBALS->tasks[new_tid].state != FREE_TASK ) {
 		// ERROR: Scheduler is out of task descriptors. 
@@ -25,7 +20,7 @@ int sys_create( int priority, void (*code) ( ), Task_descriptor *td, Kern_Global
 	sched->tasks_alive++;
 	
 	// Setup new task descriptor
-	new_td = &(GLOBALS->tasks[new_tid]);
+	Task_descriptor *new_td = &(GLOBALS->tasks[new_tid]);
 	new_td->state = READY_TASK;
 	new_td->priority = priority;
 	new_td->lr = (int *)code;
@@ -33,7 +28,6 @@ int sys_create( int priority, void (*code) ( ), Task_descriptor *td, Kern_Global
 	// Add new task descriptor to a proper scheduler queue
 	Task_queue *queue = &(sched->priority[priority]);
 
-	// ASSERT: Verifying the size of the queue
 	assert( queue->size < SCHED_QUEUE_LENGTH, "Scheduler queue must not be full" );
 
 	// If the queue is empty or the newest pointer is at the end of the td_ptrs buffer
@@ -54,31 +48,28 @@ int sys_create( int priority, void (*code) ( ), Task_descriptor *td, Kern_Global
 	return new_tid;
 }
 
-int sys_mytid(Task_descriptor *td, Kern_Globals *GLOBALS )
-{
+int
+sys_mytid( Task_descriptor *td, Kern_Globals *GLOBALS ) {
 	debug( DBG_CURR_LVL, DBG_KERN, "sys_mytid: ENTERED" );
-
 	sys_reschedule(td, GLOBALS);
 	return td->tid;
 }
 
-int sys_myparenttid(Task_descriptor *td, Kern_Globals *GLOBALS )
-{
+int
+sys_myparenttid(Task_descriptor *td, Kern_Globals *GLOBALS ) {
 	debug( DBG_CURR_LVL, DBG_KERN, "sys_myparenttid: ENTERED");
-
 	sys_reschedule(td, GLOBALS);
 	return td->parent_tid;
 }
 
-void sys_pass(Task_descriptor *td, Kern_Globals *GLOBALS )
-{
+void
+sys_pass( Task_descriptor *td, Kern_Globals *GLOBALS ) {
 	debug( DBG_CURR_LVL, DBG_KERN, "sys_pass: ENTERED" );
-
 	sys_reschedule(td, GLOBALS);
 }
 
-void sys_exit(Task_descriptor *td, Kern_Globals *GLOBALS ) 
-{
+void
+sys_exit( Task_descriptor *td, Kern_Globals *GLOBALS ) {
 	debug( DBG_CURR_LVL, DBG_KERN, "sys_exit: ENTERED" );
 
 	// Getting task properties
@@ -101,7 +92,8 @@ void sys_exit(Task_descriptor *td, Kern_Globals *GLOBALS )
 	sched->tasks_alive--;
 }
 
-void sys_reschedule(Task_descriptor *td, Kern_Globals *GLOBALS ) {
+void
+sys_reschedule( Task_descriptor *td, Kern_Globals *GLOBALS ) {
 	debug( DBG_CURR_LVL, DBG_KERN, "sys_reschedule: ENTERED" );
 
 	// Getting task properties
@@ -113,8 +105,7 @@ void sys_reschedule(Task_descriptor *td, Kern_Globals *GLOBALS ) {
 	Task_queue *pqueue = &(sched->priority[priority]);
 
 	//If there are more than one task in the queue
-	if(pqueue->size > 1)
-	{
+	if(pqueue->size > 1) {
 		// Removing the first task from the queue
 		if (++(pqueue->oldest) >= SCHED_QUEUE_LENGTH) pqueue->oldest = 0;
 
@@ -127,7 +118,8 @@ void sys_reschedule(Task_descriptor *td, Kern_Globals *GLOBALS ) {
 	td->state = READY_TASK;
 }
 
-int sys_send( int receiver_tid, char *msg, int msglen, char *reply, int replylen,
+int
+sys_send( int receiver_tid, char *msg, int msglen, char *reply, int replylen,
 	Task_descriptor *sender_td, Kern_Globals *GLOBALS ) {
 
 	//Getting TD of the target task
@@ -168,7 +160,8 @@ int sys_send( int receiver_tid, char *msg, int msglen, char *reply, int replylen
 	return 0;
 }
 
-int sys_receive(int *sender_tid, char *msg, int msglen,
+int
+sys_receive( int *sender_tid, char *msg, int msglen,
 	Task_descriptor *receiver_td, Kern_Globals *GLOBALS ) {
 
 	Message_queue *receive_queue = &(receiver_td->receive_queue);
@@ -222,7 +215,8 @@ int sys_receive(int *sender_tid, char *msg, int msglen,
 	return 0;
 }
 
-int sys_reply( int sender_tid, char *reply, int replylen,
+int
+sys_reply( int sender_tid, char *reply, int replylen,
 	Task_descriptor *receiver_td, Kern_Globals *GLOBALS ) {
 
 	Reply_info *reply_info = &(receiver_td->reply_infos[sender_tid]);
@@ -242,7 +236,8 @@ int sys_reply( int sender_tid, char *reply, int replylen,
 	return 0;
 }
 
-void sys_unblock_receive( Task_descriptor *receiver_td, Kern_Globals *GLOBALS ){
+void
+sys_unblock_receive( Task_descriptor *receiver_td, Kern_Globals *GLOBALS ){
 
 	Message_queue *receive_queue = &(receiver_td->receive_queue);
 
@@ -284,10 +279,9 @@ void sys_unblock_receive( Task_descriptor *receiver_td, Kern_Globals *GLOBALS ){
 	enqueue_tqueue(receiver_td, pqueue);
 }
 
-int sys_testcall(int a, int b, int c, int d, int e, int f){
-//int sys_testcall(int a, int b, int c, int d, int e){ //, int f){
-//int sys_testcall(int a, int b, int c, int d){
-
+int
+sys_testcall( int a, int b, int c, int d, int e, int f ) {
+	//int sys_testcall(int a, int b, int c, int d, int e){ //, int f){
+	//int sys_testcall(int a, int b, int c, int d){
 	return a + b + c + d + e + f;
-
 }

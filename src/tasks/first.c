@@ -16,7 +16,7 @@ void sub() {
 }
 
 void first_task() {
-	debug( DBG_CURR_LVL, DBG_SYS, "FIRST_TASK: START %d\n", 1000 );
+	debug( DBG_CURR_LVL, DBG_SYS, "FIRST_TASK: START" );
 	
 	int tid;
 	tid = Create( 14, nameserver );

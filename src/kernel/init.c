@@ -80,7 +80,7 @@ void initialize( Kern_Globals *GLOBALS ) {
 
 	init_hardware();
 
-	installSwiHandler((unsigned int) swi_main_handler, (unsigned int *) SWI_ENRTY_ADDRESS);
+	installSwiHandler( (unsigned int) handle_swi, (unsigned int *) SWI_ENRTY_ADDRESS );
 
 	init_message_queues( GLOBALS );
 

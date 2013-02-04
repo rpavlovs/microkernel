@@ -13,19 +13,18 @@
 	5- Forces the PC to 0x08 (the default SWI handler). This address is in the
 	   vector table (spring board).
  */
+
 void
-swi_main_handler() {
-
-	asm (																	"\n"
-
+handle_swi() {
+	asm(																	"\n"
 	// Save in the stack the arguments (in the registers) since they might get
 	// erased. 
 	// NOTE: The current SP is the SP_SVC, so the user SP is not affected.
 	//       
-	// Switch to system mode. 
+	// Switch to system mode.
 	"MSR	CPSR_c, #0x1F"													"\n\t"
 
-	// Leave space for SPSR. 	 
+	// Leave space for SPSR. 
 	"SUB	sp, sp, #4"														"\n\t"
 
 	// Store all the registers (except 13-sp- and 15-pc-).		
@@ -37,33 +36,20 @@ swi_main_handler() {
 	// Return to supervisor mode. 
 	"MSR	cpsr_c, #0x13"													"\n\t"
 
-	// Get the value of the system call
-	// 
-	// Store in the task's stack the spsr (the original CPSR of the task).
+	// Store spsr to the task's stack (the original CPSR of the task).
 	"MRS	r1, spsr"														"\n\t"			 
 	"STR	r1, [ r0, #14*4 ]"												"\n\t"
 
-	// Store the return value in the r1 so that it is stored later into the TR. 
+	// Store the lr in the r1 to pass it to ExecuteCSWIHandler. 
 	"MOV	r1, lr"															"\n\t"		
 
-	// Restore the kernel state
+	// Restore the kernel state.
 	"LDMFD	sp!, { r4-r11 }"												"\n\t"
 
-	/*// Execute the C system call handler
-	// Store the next instruction to run in the r1 so that it is stored later
-	// into the TR. 
-	"LDR	r2, [ lr, #-4 ]\n\t"		
-	"BIC	r2, r2, #0xff000000\n\t"	
-	"LDR	r3, [ sp, #0 ]\n\t"		// The pointer to the active TD is loaded into
-	register 3.
-	"BL	ExecuteCSWIHandler\n\t"*/
-
-	// Execute the C system call handler.
+	// Execute the CSWIHandler.
 	// The pointer to the active TD is loaded into register 2.
 	"LDR	r2, [ sp, #0 ]"													"\n\t"		
 
-	// Store the next instruction to run in the r1 so that it is stored later
-	// into the TR. 
 	"LDR	r3, [ lr, #-4 ]"												"\n\t"		
 	"BIC	r3, r3, #0xff000000"											"\n\t"
 
@@ -73,7 +59,7 @@ swi_main_handler() {
 
 	// r0 - task stack pointer
 	// r1 - next address
-	// r2 - task descriptor pointer	
+	// r2 - task descriptor pointer
 	"BL	ExecuteCSWIHandler"													"\n\t"
 
 	// Set the return value.
@@ -87,12 +73,10 @@ swi_main_handler() {
 
 void
 ExecuteCSWIHandler( unsigned int taskSP, unsigned int lr, unsigned int activeTD ) {
-
 	// Update the task descriptor
 	Task_descriptor *td = (Task_descriptor *) activeTD;
 	td->sp = (int *) taskSP;
 	td->lr = (int *) lr;
-
 }
 
 /*
@@ -106,10 +90,13 @@ ExecuteCSWIHandler( unsigned int taskSP, unsigned int lr, unsigned int activeTD 
 */
 
 int
-execute_user_task( unsigned int a, unsigned int b, unsigned int c ) {
-	
-	asm (																"\n"
+execute_user_task( Task_descriptor td, Interrupt_info info ) {
 
+	unsigned int uisp = (unsigned int) td->sp;	//r0
+	unsigned int uilr = (unsigned int) td->lr;	//r1
+	unsigned int uitd = (unsigned int) td->tid;	//r2
+
+	asm(																"\n"
 	// Store the information about the kernel as would happen in a normal task. 
 	"MOV	ip, sp"														"\n\t"
 	"STMFD	sp!, { fp, ip, lr, pc }"									"\n\t"
@@ -119,17 +106,17 @@ execute_user_task( unsigned int a, unsigned int b, unsigned int c ) {
 	"SUB	sp, sp, #4"													"\n\t"
 
 	// Store the TID
-	"STR	r2, [ sp, #0 ]"												"\n\t"
+	"STR	%[TID], [ sp, #0 ]"											"\n\t"
 	"STMFD	sp!, { r4-r11 }"											"\n\t"
 
 	// Store information temporarily
 	"SUB	sp, sp, #4"													"\n\t"
 
 	// The task's SPSR is loaded.
-	"LDR	r3, [ r0, #14*4 ]"											"\n\t"
+	"LDR	r3, [ %[TASK_SP], #14*4 ]"									"\n\t"
 
 	// The next instruction to execute in the user task.
-	"STR	r1, [ r0, #14*4 ]"											"\n\t"
+	"STR	%[TASK_LR], [ %[TASK_SP], #14*4 ]"							"\n\t"
 
 	// The task's SPSR		
 	"STR	r3, [ sp, #0 ]"												"\n\t"
@@ -138,7 +125,7 @@ execute_user_task( unsigned int a, unsigned int b, unsigned int c ) {
 	// 
 	// Switch to system mode.
 	"MSR	cpsr_c, #0x1F"												"\n\t" 
-	"MOV	sp, r0"														"\n\t"			
+	"MOV	sp, %[TASK_SP]"												"\n\t"			
 	"LDMFD	sp!, { r0-r12, lr }"										"\n\t"
 	
 	// Temporarily store the r0 (to be able to use this registry).
@@ -166,27 +153,26 @@ execute_user_task( unsigned int a, unsigned int b, unsigned int c ) {
 	"ADD	sp, sp, #4"													"\n\t"
 
 	// Jump to the next instruction in the user task.
-	"LDR	PC, [ sp, #-4 ]"											"\n\t"
+	"LDR	pc, [ sp, #-4 ]"											"\n\t"
+	:: [TASK_SP] "r" td->sp, [TASK_LR] "r" td->lr, [TID] "r" td->tid
 	);
 }
 
 void
 RetrieveSysCallArgs( int *sysCallArguments, int numArguments, unsigned int taskSP ) {
-
+	debug( DBG_CURR_LVL, DBG_KERN, "RetrieveSysCallArgs: ENTER" );
 	// The arguments are stored in the memory addresses that hold R0-R3 of the user task.
 	// If there are more arguments they are stored in the user task's stack. 	
 	int *ptr = ( int * ) taskSP; 
 	
 	int i; 
-	for ( i = 0; i < numArguments && i < MAX_NUM_ARGUMENTS ; i++ )
-	{
+	for( i = 0; i < numArguments && i < MAX_NUM_ARGUMENTS; i++ ) {
 		// Copy the arguments.
 		*( sysCallArguments++ ) = *( ptr++ );
 
 		// The last register that holds arguments. 
 		//The next place to look arguments is the normal user task stack.
-		if ( i == 3 )
-		{
+		if( i == 3 ) {
 			//WHITE MAGIC
 			ptr += 20;
 		}
@@ -195,18 +181,15 @@ RetrieveSysCallArgs( int *sysCallArguments, int numArguments, unsigned int taskS
 
 void
 SetSysCallReturn( int returnValue, unsigned int taskSP ) {
-	
+	debug( DBG_CURR_LVL, DBG_KERN, "SetSysCallReturn: ENTER" );
 	// The return value is in the address that currently holds R0 for the task. 
-	int *ptr = ( int * ) taskSP; 
-	//ptr += 13; 	// Position the pointer at the R0 address.
-	// TODO: Set this as a constant. 
-
-	*( ptr ) = returnValue; 
+	int *ptr = (int *) taskSP; 
+	*ptr = returnValue; 
 }
 
 void
-handle_request( int request, Kern_Globals *GLOBALS ) {
-	
+handle_request( const int request, Kern_Globals *GLOBALS ) {
+	debug( DBG_CURR_LVL, DBG_KERN, "HANDLE_REQUEST: syscall id: %d", request );
 	// Create a placeholder for the arguments.
 	int sysCallArguments[MAX_NUM_ARGUMENTS];
 
@@ -222,7 +205,6 @@ handle_request( int request, Kern_Globals *GLOBALS ) {
 							sysCallArguments[0],
 							(void *) sysCallArguments[1],
 							td, GLOBALS );
-		
 		SetSysCallReturn( returnValue, taskSP );
 		debug( DBG_CURR_LVL, DBG_KERN, "CREATE_SYSCALL handled" );
 		break;

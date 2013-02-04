@@ -3,7 +3,7 @@
 
 #include "kernelspace.h"
 
-void swi_main_handler();
+void handle_swi();
 
 void ExecuteCSWIHandler( unsigned int, unsigned int, unsigned int );
 

@@ -68,30 +68,19 @@ int schedule( Kern_Globals * GLOBALS) {
 }
 
 // Start running the task with specified tid
-// Return:
-// interrupt ID of the first recieved interrupt
-int activate( const int tid, Kern_Globals *GLOBALS ) {
-	
+// Modifies:
+// Starts running task with specified tid. Task is being run until an interrupt is recieved.
+// Information about interrupt is storred in info.
+void activate( const int tid, Interrupt_info *info, Kern_Globals *GLOBALS ) {
+	debug( DBG_CURR_LVL, DBG_KERN, "ACTIVATE: tid %d", tid );
 	Task_descriptor *td = &(GLOBALS->tasks[tid]);
-
-	// bwprintf( COM2, "DEBUG: activate: activating %d with state %d\n", tid, td->state );
-
 	assert( td->state == READY_TASK, "It should only be possible to activate a READY task" );
 	td->state = ACTIVE_TASK;
-
-	unsigned int uisp = (unsigned int) td->sp;
-	unsigned int uilr = (unsigned int) td->lr;
-	unsigned int uitd = (unsigned int) td;
-
-	//Executing using link register
-	int request = execute_user_task(uisp, uilr, uitd);
-
-	return request;
+	execute_user_task( td, info );
 }
 
-int getNextRequest( Kern_Globals *GLOBALS )
-{
-	return activate( schedule( GLOBALS ), GLOBALS );
+void getNextRequest( Interrupt_info *info, Kern_Globals *GLOBALS ) {
+	activate( schedule( GLOBALS ), info, GLOBALS );
 }
 
 

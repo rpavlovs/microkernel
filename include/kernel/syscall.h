@@ -32,16 +32,10 @@
 #define TESTCALL_RETURN			1
 
 typedef struct {
-
-	// Additional args for create syscall
-	int priority;					// fp - 24
-	void (*code) ( );			// fp - 20
- 
-	// Place to put syscall return value (let's hope it's always integer)
-	int ret; 							// fp - 16     		
-
-} Syscall_args;
-
+	unsigned int type;
+	unsigned int ret;
+	unsigned int args[5];
+} Request_info;
 
 // Description:
 // Create allocates and initializes a task descriptor, using the given priority,

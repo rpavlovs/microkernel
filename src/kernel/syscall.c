@@ -1,35 +1,87 @@
 #include "kernelspace.h"
 
-int Create( int priority, void (*code) ( ) ) {	
-	asm ( "swi\t%0"	"\n\t" :: "J" (CREATE_SYSCALL) );
+void swi_jump( Interrupt_info *request_info, const unsigned int request_id ) {
+	asm( "MOV	r9 %0"												"\n\t"
+		:: "r" (request_info) );
+	asm( "SWI	%0"													"\n\t"
+		:: "J" (request_id) );
 }
 
-int MyTid( ) {
-	asm ( "swi\t%0"	"\n\t" :: "J" (MYTID_SYSCALL) );
+int Create( const unsigned int priority, void (const *code) ( ) ) {
+	debug( DBG_CURR_LVL, DBG_SYS, "CREATE: Interrupt issued. [priority: %d]", priority );
+	Request_info req;
+	req.type = CREATE_SYSCALL;
+	req.args[0] = (unsigned int) priority;
+	req.args[1] = (unsigned int) code;
+	swi_jump( &req );
+	return (int) req.ret;
 }
 
-int MyParentTid( ) {
-	asm ( "swi\t%0"	"\n\t" :: "J" (MYPARENTTID_SYSCALL) );
+int MyTid() {
+	debug( DBG_CURR_LVL, DBG_SYS, "MYTID: Interrupt issued." );
+	Request_info req;
+	req.type = MYTID_SYSCALL;
+	swi_jump( &req );
+	return req.ret;
 }
 
-void Pass( ) {
-	asm ( "swi\t%0"	"\n\t" :: "J" (PASS_SYSCALL) );
+int MyParentTid() {
+	debug( DBG_CURR_LVL, DBG_SYS, "MYPARENTTID: Interrupt issued." );
+	Request_info req;
+	req.type = MYPARENTTID_SYSCALL;
+	swi_jump( &req );
+	return req.ret;
 }
 
-void Exit( ) {
-	asm ( "swi\t%0"	"\n\t" :: "J" (EXIT_SYSCALL) );
+void Pass() {
+	debug( DBG_CURR_LVL, DBG_SYS, "PASS: Interrupt issued." );
+	Request_info req;
+	req.type = PASS_SYSCALL;
+	swi_jump( &req );
 }
 
-int Send(int Tid, char *msg, int msglen, char *reply, int replylen){
-	asm ( "swi\t%0"	"\n\t" :: "J" (SEND_SYSCALL) );
+void Exit() {
+	debug( DBG_CURR_LVL, DBG_SYS, "EXIT: Interrupt issued." );
+	Request_info req;
+	req.type = EXIT_SYSCALL;
+	swi_jump( &req );
 }
 
-int Receive(int *tid, char *msg, int msglen){
-	asm ( "swi\t%0"	"\n\t" :: "J" (RECEIVE_SYSCALL) );
+int Send( int recipient_tid, char *msg, int msglen, char *reply, int replylen ) {
+	debug( DBG_CURR_LVL, DBG_SYS,
+		"SEND: Interrupt issued. [recipient_tid: %d]", recipient_tid );
+	Request_info req;
+	req.type = SEND_SYSCALL;
+	ret.args[0] = (unsigned int) recipient_tid;
+	ret.args[1] = (unsigned int) msg;
+	ret.args[2] = (unsigned int) msglen;
+	ret.args[3] = (unsigned int) reply;
+	ret.args[4] = (unsigned int) replylen;
+	swi_jump( &req );
+	return (int) req.ret;
 }
 
-int Reply( int tid, char *reply, int replylen ){
-	asm ( "swi\t%0"	"\n\t" :: "J" (REPLY_SYSCALL) );
+int Receive( int *sender_tid, char *msg, int msglen ) {
+	debug( DBG_CURR_LVL, DBG_SYS, "RECEIVE: Interrupt issued." );
+	Request_info req;
+	req.type = RECEIVE_SYSCALL;
+	ret.args[0] = (unsigned int) sender_tid;
+	ret.args[1] = (unsigned int) msg;
+	ret.args[2] = (unsigned int) msglen;
+	swi_jump( &req );
+	return (int) req.ret;
+}
+
+int Reply( int sender_tid, char *reply, int replylen ) {
+	debug( DBG_CURR_LVL, DBG_SYS,
+		"REPLY: Interrupt issued. [sender_tid: %d]", sender_tid );
+	Request_info req;
+	req.type = REPLY_SYSCALL;
+	ret.args[0] = (unsigned int) sender_tid;
+	ret.args[1] = (unsigned int) reply;
+	ret.args[2] = (unsigned int) replylen;
+	swi_jump( &req );
+	return req.ret;
 }
 
 ////////////////////

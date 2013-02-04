@@ -1,7 +1,7 @@
 #include "kernelspace.h"
 
 // Initialize Schedule struct
-void init_schedule( int first_task_priority, void (*first_task_code) ( ), Kern_Globals *GLOBALS )
+void init_schedule2( int first_task_priority, void (*first_task_code) ( ), Kern_Globals *GLOBALS )
 {	
 	//Verifying that the task priority is correct
 	assert(first_task_priority < SCHED_NUM_PRIORITIES && first_task_priority >= 0,
@@ -45,7 +45,7 @@ void init_schedule( int first_task_priority, void (*first_task_code) ( ), Kern_G
 
 // Return:
 // tid of the next task to run
-int schedule( Kern_Globals * GLOBALS) {
+int schedule2( Kern_Globals * GLOBALS) {
 
 	int p = SCHED_NUM_PRIORITIES - 1;
 
@@ -70,7 +70,7 @@ int schedule( Kern_Globals * GLOBALS) {
 // Start running the task with specified tid
 // Return:
 // interrupt ID of the first recieved interrupt
-int activate( const int tid, Kern_Globals *GLOBALS ) {
+int activate2( const int tid, Kern_Globals *GLOBALS ) {
 	
 	Task_descriptor *td = &(GLOBALS->tasks[tid]);
 
@@ -89,7 +89,7 @@ int activate( const int tid, Kern_Globals *GLOBALS ) {
 	return request;
 }
 
-int getNextRequest( Kern_Globals *GLOBALS )
+int getNextRequest2( Kern_Globals *GLOBALS )
 {
 	return activate( schedule( GLOBALS ), GLOBALS );
 }

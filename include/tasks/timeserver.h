@@ -9,12 +9,13 @@ void timeserver();
 
 typedef struct {
 	int type;
-	/* data */
+	int num;
 } Msg_timeserver_request;
 
 #define TIME_REQUEST				0
 #define DELAY_REQUEST				1
 #define DELAY_UNTIL_REQUEST			2
+#define TICK_NOTIFICATION			3
 
 #define TIME_REPLY					1
 

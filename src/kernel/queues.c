@@ -1,6 +1,9 @@
 #include "kernelspace.h"
 
-void enqueue_task(Task_descriptor *td, Task_queue *q){
+void enqueue_task(Task_descriptor *td, Schedule *sched){
+	//Getting the priority queue
+	Task_queue *q = &(sched->priority[td->priority]);
+
 	// ASSERT: Verifying the size of the queue
 	assert( q->size < SCHED_QUEUE_LENGTH, "Task queue should not overflow :)" );
 
@@ -16,9 +19,12 @@ void enqueue_task(Task_descriptor *td, Task_queue *q){
 		q->newest = 0;
 	}
 
-	// Updating the queue
+	//Enqueueing the task
 	q->size++;
 	q->td_ptrs[q->newest] = td;
+
+	//Updating current_queue value
+	
 }
 
 Task_descriptor *dequeue_task(Task_queue *q){

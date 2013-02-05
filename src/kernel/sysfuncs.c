@@ -31,9 +31,7 @@ sys_create( int priority, void (*code) ( ), Task_descriptor *td, Kern_Globals *G
 	new_td->lr = (int *)code;
 
 	// Add new task descriptor to a proper scheduler queue
-	Task_queue *queue = &(sched->priority[priority]);
-
-	enqueue_task(new_td, queue);
+	enqueue_task(new_td, sched);
 
 	// Rescheduling the task
 	sys_reschedule( td, GLOBALS );
@@ -222,9 +220,7 @@ sys_reply( int sender_tid, char *reply, int replylen, Task_descriptor *receiver_
 	//Rescheduling the task
 	sender_td->state = READY_TASK;
 	GLOBALS->schedule.tasks_alive++;
-
-	Task_queue *pqueue = &(GLOBALS->schedule.priority[sender_td->priority]);
-	enqueue_task( sender_td, pqueue );
+	enqueue_task( sender_td, &(GLOBALS->schedule) );
 
 	sys_reschedule( receiver_td, GLOBALS );
 	return 0;
@@ -269,8 +265,7 @@ sys_unblock_receive( Task_descriptor *receiver_td, Kern_Globals *GLOBALS ) {
 	GLOBALS->schedule.tasks_alive++;
 
 	//Rescheduling the task
-	Task_queue *pqueue = &(GLOBALS->schedule.priority[receiver_td->priority]);
-	enqueue_task(receiver_td, pqueue);
+	enqueue_task(receiver_td, &(GLOBALS->schedule));
 }
 
 int

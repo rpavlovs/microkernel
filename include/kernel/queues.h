@@ -6,7 +6,7 @@
 // TODO: Description:
 //       
 
-void enqueue_task(Task_descriptor *td, Task_queue *q);
+void enqueue_task(Task_descriptor *td, Schedule *sched);
 
 // TODO: Description:
 //       

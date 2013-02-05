@@ -17,7 +17,7 @@
 
 // DEBUG PRINT
 
-#define DBG_CURR_LVL 	4
+#define DBG_CURR_LVL 	3
 
 #define DBG_FATAL	 	0	// panic and assert only
 #define DBG_USR		 	1	// user tasks 

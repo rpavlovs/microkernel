@@ -35,9 +35,17 @@ Task_descriptor *dequeue_task(Task_queue *q){
 	assert( q->size > 0, "Task queue should have items to dequeue" );
 
 	// Dequeueing the task from the queue
-	q->size--;
 	Task_descriptor *td = q->td_ptrs[q->oldest];
 	if(++(q->oldest) >= SCHED_QUEUE_LENGTH) q->oldest = 0;
+
+	// Updating the queue
+	q->size--;
+
+	// Updating current_queue value
+	// TODO: Initialize current_queue in initializer
+	// TODO: Check the current queue for more tasks
+	// TODO: If empty, search lower priority queues for more tasks
+	// TODO: If all queues are empty set current_queue = -1
 
 	return td;
 }

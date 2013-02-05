@@ -113,7 +113,7 @@ sys_send( int receiver_tid, char *msg, int msglen, char *reply, int replylen,
 
 	//Modifying the queue
 	receive_queue->size++;
-	if( ++(receive_queue->newest) == MAX_NUM_TASKS ) {
+	if( ++(receive_queue->newest) >= MAX_NUM_TASKS ) {
 		receive_queue->newest = 0;
 	}
 
@@ -152,7 +152,7 @@ sys_receive( int *sender_tid, char *msg, int msglen, Task_descriptor *receiver_t
 		//Modifying the queue
 		receive_queue->size--;
 		Message_info *msg_info = &(receive_queue->msg_infos[receive_queue->oldest]);
-		if(++(receive_queue->oldest) == MAX_NUM_TASKS) receive_queue->oldest = 0;
+		if(++(receive_queue->oldest) >= MAX_NUM_TASKS) receive_queue->oldest = 0;
 
 		mem_cpy( msg_info->msg, msg, msg_info->msglen );
 		*sender_tid = msg_info->sender_tid;

@@ -80,13 +80,8 @@ void
 sys_reschedule( Task_descriptor *td, Kern_Globals *GLOBALS ) {
 	debug( DBG_CURR_LVL, DBG_KERN, "sys_reschedule: ENTERED" );
 
-	// Getting task properties
-	int priority = td->priority;
-	
-	// Getting the schedule
-	Schedule *sched = &(GLOBALS->schedule);
 	// Getting the priority queue
-	Task_queue *pqueue = &(sched->priority[priority]);
+	Task_queue *pqueue = &(GLOBALS->schedule.priority[td->priority]);
 
 	//If there are more than one task in the queue
 	if(pqueue->size > 1)

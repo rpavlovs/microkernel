@@ -1,6 +1,6 @@
 #include "kernelspace.h"
 
-void enqueue_tqueue(Task_descriptor *td, Task_queue *q){
+void enqueue_task(Task_descriptor *td, Task_queue *q){
 	// ASSERT: Verifying the size of the queue
 	assert( q->size < SCHED_QUEUE_LENGTH, "Task queue should not overflow :)" );
 
@@ -22,6 +22,7 @@ void enqueue_tqueue(Task_descriptor *td, Task_queue *q){
 }
 
 Task_descriptor *dequeue_tqueue(Task_queue *q){
+	// ASSERT: Verifying the size of the queue
 	assert( q->size > 0, "Task queue should have items to dequeue" );
 
 	//Modifying the queue

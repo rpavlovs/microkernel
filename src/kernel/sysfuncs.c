@@ -33,23 +33,7 @@ sys_create( int priority, void (*code) ( ), Task_descriptor *td, Kern_Globals *G
 	// Add new task descriptor to a proper scheduler queue
 	Task_queue *queue = &(sched->priority[priority]);
 
-	enqueue_tqueue(new_td, queue);
-
-	/*
-	// ASSERT: Verifying the size of the queue
-	assert( queue->size < SCHED_QUEUE_LENGTH, "Scheduler queue must not be full" );
-
-	// If the queue is empty or the newest pointer is at the end of the td_ptrs buffer
-	// put the next td_ptr at the beginning on the buffer  
-	if (queue->size == 0 || ++(queue->newest) >= SCHED_QUEUE_LENGTH) queue->newest = 0;
-	
-	// If the queue was empty then newest and oldest elements are the same 
-	// and are at the beginning of the buffer
-	if (queue->size == 0) queue->oldest = 0;
-
-	// Updating the queue
-	queue->size++;
-	queue->td_ptrs[queue->newest] = new_td;*/
+	enqueue_task(new_td, queue);
 
 	// Rescheduling the task
 	sys_reschedule( td, GLOBALS );
@@ -240,7 +224,7 @@ sys_reply( int sender_tid, char *reply, int replylen, Task_descriptor *receiver_
 	GLOBALS->schedule.tasks_alive++;
 
 	Task_queue *pqueue = &(GLOBALS->schedule.priority[sender_td->priority]);
-	enqueue_tqueue( sender_td, pqueue );
+	enqueue_task( sender_td, pqueue );
 
 	sys_reschedule( receiver_td, GLOBALS );
 	return 0;
@@ -286,7 +270,7 @@ sys_unblock_receive( Task_descriptor *receiver_td, Kern_Globals *GLOBALS ) {
 
 	//Rescheduling the task
 	Task_queue *pqueue = &(GLOBALS->schedule.priority[receiver_td->priority]);
-	enqueue_tqueue(receiver_td, pqueue);
+	enqueue_task(receiver_td, pqueue);
 }
 
 int

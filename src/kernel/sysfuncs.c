@@ -2,7 +2,7 @@
 
 int
 sys_create( int priority, void (*code) ( ), Task_descriptor *td, Kern_Globals *GLOBALS ) {	
-	debug( DBG_CURR_LVL, DBG_KERN, "sys_create: ENTERED" );
+	debug( DBG_CURR_LVL, DBG_KERN, "SYS_CREATE: entered" );
 
 	// ERROR: Scheduler was given a wrong task priority.
 	if( priority < 0 || priority >= SCHED_NUM_PRIORITIES ) return -1;
@@ -33,8 +33,7 @@ sys_create( int priority, void (*code) ( ), Task_descriptor *td, Kern_Globals *G
 	// Add new task descriptor to a proper scheduler queue
 	Task_queue *queue = &(sched->priority[priority]);
 
-	// ASSERT: Verifying the size of the queue
-	assert( queue->size < SCHED_QUEUE_LENGTH, "Scheduler queue must not be full" );
+	assert( queue->size < SCHED_QUEUE_LENGTH, "SYS_CREATE: Scheduler queue must not be full" );
 
 	// If the queue is empty or the newest pointer is at the end of the td_ptrs buffer
 	// put the next td_ptr at the beginning on the buffer  
@@ -56,27 +55,27 @@ sys_create( int priority, void (*code) ( ), Task_descriptor *td, Kern_Globals *G
 
 int
 sys_mytid( Task_descriptor *td, Kern_Globals *GLOBALS ) {
-	debug( DBG_CURR_LVL, DBG_KERN, "sys_mytid: ENTERED" );
+	debug( DBG_CURR_LVL, DBG_KERN, "SYS_MYTID: entered" );
 	sys_reschedule( td, GLOBALS );
 	return td->tid;
 }
 
 int
 sys_myparenttid( Task_descriptor *td, Kern_Globals *GLOBALS ) {
-	debug( DBG_CURR_LVL, DBG_KERN, "sys_myparenttid: ENTERED");
+	debug( DBG_CURR_LVL, DBG_KERN, "SYS_MYPARENTTID: entered");
 	sys_reschedule( td, GLOBALS );
 	return td->parent_tid;
 }
 
 void
 sys_pass(Task_descriptor *td, Kern_Globals *GLOBALS ) {
-	debug( DBG_CURR_LVL, DBG_KERN, "sys_pass: ENTERED" );
+	debug( DBG_CURR_LVL, DBG_KERN, "SYS_PASS: entered" );
 	sys_reschedule( td, GLOBALS );
 }
 
 void
 sys_exit( Task_descriptor *td, Kern_Globals *GLOBALS ) {
-	debug( DBG_CURR_LVL, DBG_KERN, "sys_exit: ENTERED" );
+	debug( DBG_CURR_LVL, DBG_KERN, "SYS_EXIT: entered" );
 
 	// Getting task properties
 	int priority = td->priority;
@@ -100,7 +99,7 @@ sys_exit( Task_descriptor *td, Kern_Globals *GLOBALS ) {
 
 void
 sys_reschedule( Task_descriptor *td, Kern_Globals *GLOBALS ) {
-	debug( DBG_CURR_LVL, DBG_KERN, "sys_reschedule: ENTERED" );
+	debug( DBG_CURR_LVL, DBG_KERN, "SYS_RESCHEDULE: entered" );
 
 	// Getting task properties
 	int priority = td->priority;

@@ -16,7 +16,7 @@ void sub() {
 }
 
 void first_task() {
-	debug( DBG_CURR_LVL, DBG_SYS, "FIRST_TASK: START" );
+	debug( DBG_CURR_LVL, DBG_SYS, "> FIRST_TASK: start with tid %d", MyTid() );
 	
 	int tid;
 	tid = Create( 14, nameserver );
@@ -26,7 +26,9 @@ void first_task() {
 
 	bwprintf( COM2, "It's %d ticks since timeserver was initialized.\n", Time() );
 
-	debug( DBG_CURR_LVL, DBG_SYS, "FIRST_TASK: EXIT" );
+	bwprintf( COM2, "It's %d ticks since timeserver was initialized.\n", Delay( 10 ) );
+
+	debug( DBG_CURR_LVL, DBG_SYS, "> FIRST_TASK: exit" );
 	Exit();
 }
 
@@ -89,16 +91,3 @@ void test_task(){
 
 	Exit();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

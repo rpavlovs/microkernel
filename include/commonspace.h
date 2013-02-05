@@ -17,12 +17,13 @@
 
 // DEBUG PRINT
 
-#define DBG_CURR_LVL 	3
+#define DBG_CURR_LVL 	4
 
-#define DBG_FATAL	 	0
-#define DBG_USR		 	1
-#define DBG_SYS		 	2
-#define DBG_KERN 		3
+#define DBG_FATAL	 	0	// panic and assert only
+#define DBG_USR		 	1	// user tasks 
+#define DBG_SYS		 	2	// sytem/user tasks
+#define DBG_REQ		 	3	// kernel requests + sytem/user tasks
+#define DBG_KERN 		4	// all
 
 // Nameserver config
 

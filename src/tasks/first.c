@@ -20,13 +20,15 @@ void first_task() {
 	
 	int tid;
 	tid = Create( 14, nameserver );
-	assert( tid == 1, "Nameserver should have task id of 1" );
+	assert( tid == 1, "FIRST_TASK: Nameserver should have task id of 1" );
 
 	tid = Create( 14, timeserver );
 
-	bwprintf( COM2, "It's %d ticks since timeserver was initialized.\n", Time() );
+	debug( DBG_CURR_LVL, DBG_SYS, "> FIRST_TASK: It's %d ticks since timeserver was initialized.\n\n", Time() );
 
-	bwprintf( COM2, "It's %d ticks since timeserver was initialized.\n", Delay( 10 ) );
+	Delay( 10 );
+
+	debug( DBG_CURR_LVL, DBG_SYS, "> FIRST_TASK: It's %d ticks since timeserver was initialized.\n", Time() );
 
 	debug( DBG_CURR_LVL, DBG_SYS, "> FIRST_TASK: exit" );
 	Exit();

@@ -21,7 +21,7 @@ void enqueue_task(Task_descriptor *td, Task_queue *q){
 	q->td_ptrs[q->newest] = td;
 }
 
-Task_descriptor *dequeue_tqueue(Task_queue *q){
+Task_descriptor *dequeue_task(Task_queue *q){
 	// ASSERT: Verifying the size of the queue
 	assert( q->size > 0, "Task queue should have items to dequeue" );
 

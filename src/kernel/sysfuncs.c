@@ -149,7 +149,7 @@ sys_send( int receiver_tid, char *msg, int msglen, char *reply, int replylen,
 	
 	//Remove the task from the READY queue
 	Task_queue *pqueue = &(GLOBALS->schedule.priority[sender_td->priority]);
-	dequeue_tqueue(pqueue);
+	dequeue_task(pqueue);
 
 	return 0;
 }
@@ -201,7 +201,7 @@ sys_receive( int *sender_tid, char *msg, int msglen, Task_descriptor *receiver_t
 		//Remove the task from the READY queue
 		Schedule *sched = &(GLOBALS->schedule);
 		Task_queue *pqueue = &(sched->priority[receiver_td->priority]);
-		dequeue_tqueue(pqueue);
+		dequeue_task(pqueue);
 
 		debug( DBG_CURR_LVL, DBG_KERN, "SYS_RECEIVE: Task blocked. Removed from schedule." );
 	}

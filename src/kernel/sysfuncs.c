@@ -33,6 +33,9 @@ sys_create( int priority, void (*code) ( ), Task_descriptor *td, Kern_Globals *G
 	// Add new task descriptor to a proper scheduler queue
 	Task_queue *queue = &(sched->priority[priority]);
 
+	enqueue_tqueue(new_td, queue);
+
+	/*
 	// ASSERT: Verifying the size of the queue
 	assert( queue->size < SCHED_QUEUE_LENGTH, "Scheduler queue must not be full" );
 
@@ -46,7 +49,7 @@ sys_create( int priority, void (*code) ( ), Task_descriptor *td, Kern_Globals *G
 
 	// Updating the queue
 	queue->size++;
-	queue->td_ptrs[queue->newest] = new_td;
+	queue->td_ptrs[queue->newest] = new_td;*/
 
 	// Rescheduling the task
 	sys_reschedule( td, GLOBALS );

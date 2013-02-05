@@ -24,16 +24,20 @@ void enqueue_task(Task_descriptor *td, Schedule *sched){
 	q->td_ptrs[q->newest] = td;
 
 	//Updating current_queue value
-	
+	if(sched->current_queue < td->priority)
+	{
+		sched->current_queue = td->priority;
+	}
 }
 
 Task_descriptor *dequeue_task(Task_queue *q){
 	// ASSERT: Verifying the size of the queue
 	assert( q->size > 0, "Task queue should have items to dequeue" );
 
-	//Modifying the queue
+	// Dequeueing the task from the queue
 	q->size--;
 	Task_descriptor *td = q->td_ptrs[q->oldest];
-	if(++(q->oldest) == MAX_NUM_TASKS) q->oldest = 0;
+	if(++(q->oldest) >= SCHED_QUEUE_LENGTH) q->oldest = 0;
+
 	return td;
 }

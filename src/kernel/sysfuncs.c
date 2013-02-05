@@ -63,24 +63,17 @@ void
 sys_exit( Task_descriptor *td, Kern_Globals *GLOBALS ) {
 	debug( DBG_CURR_LVL, DBG_KERN, "sys_exit: ENTERED" );
 
-	// Getting task properties
-	int priority = td->priority;
-	
-	// Getting the schedule
-	Schedule *sched = &(GLOBALS->schedule);
-	Task_queue *pqueue = &(sched->priority[priority]);
+	// Getting priority queue
+	Task_queue *pqueue = &(GLOBALS->schedule.priority[td->priority]);
 
-	// Removing the first task from the queue
-	if (++(pqueue->oldest) >= SCHED_QUEUE_LENGTH) pqueue->oldest = 0;
+	// Dequeueing the first task
+	dequeue_task(pqueue);
 
 	// Updating the task's state
 	td->state = ZOMBIE_TASK;
 
-	// Updating the queue
-	pqueue->size--;
-
 	// Updating the schedule
-	sched->tasks_alive--;
+	(GLOBALS->schedule.tasks_alive)--;
 }
 
 void

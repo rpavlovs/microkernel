@@ -92,6 +92,9 @@ typedef struct {
 
 	// The last activated tid
 	int last_active_tid;
+
+	// Non-empty queue with highest priority
+	int current_highest_priority;
 	
 	int tasks_alive;
 } Schedule;

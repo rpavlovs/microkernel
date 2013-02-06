@@ -109,6 +109,6 @@ void test_timeserver() {
 		end_time, end_time - start_time );
 	
 	bwprintf( COM2, "test_timeserver exits\n" );
-	while(1);
+	// while(1);
 	Exit();
 }

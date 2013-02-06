@@ -1,31 +1,22 @@
 #include "kernelspace.h"
 
-// Initialize Schedule struct
-void init_schedule( int first_task_priority, void (*first_task_code) ( ), Kern_Globals *GLOBALS )
-{	
-	//Verifying that the task priority is correct
-	assert( first_task_priority < SCHED_NUM_PRIORITIES && first_task_priority >= 0,
-		"first task should have priority between 0 and 16" );
-
+void
+init_schedule( int first_task_priority, void (*first_task_code) ( ), Kern_Globals *GLOBALS ) {	
 	debug( DBG_KERN, "INIT_SCHEDULE: first task priority %d, address %d",
 		first_task_priority, (int) first_task_code );
+	
+	assert( first_task_priority < SCHED_NUM_PRIORITIES && first_task_priority >= 0,
+		"first task should have priority between 0 and %d", SCHED_NUM_PRIORITIES - 1 );
 
-	//Getting the schedule
 	Schedule *sched = &(GLOBALS->schedule);
-
-	//Initializing all priority queues
 	int p;
-	for (p = 0; p < SCHED_NUM_PRIORITIES; ++p)
-	{
+	for( p = 0; p < SCHED_NUM_PRIORITIES; ++p )	{
 		sched->priority[p].oldest = 0;
 		sched->priority[p].newest = 0;
 		sched->priority[p].size = 0;
 	}
 
-	//Adding the first task to the queue//////////////////////
-	//Getting task descriptor
 	Task_descriptor *first_td = &(GLOBALS->tasks[0]);
-	//Setting task state to READY
 	first_td->state = READY_TASK;
 
 	//Setting priority of the task
@@ -54,9 +45,8 @@ int schedule( Kern_Globals * GLOBALS) {
 	int p = SCHED_NUM_PRIORITIES - 1;
 
 	// If there are no tasks in all priority queues - PANIC
-	while( GLOBALS->schedule.priority[p].size == 0 ) {
-		--p;
-		if( p < 0 ) panic( "Scheduler has nothing in it's queues." );
+	for( ; GLOBALS->schedule.priority[p].size == 0; --p ) {
+		if( p < 0 ) panic( "SCHEDULE: pririty queues are all empty." );
 	}
 
 	// Get the non-empty queue with the highest priority

@@ -11,7 +11,7 @@
 // Note: requests with non-zero nubmer of arguments
 //  do not have debug printouts
 
-#define DEBUG_LEVEL 				4
+#define DEBUG_LEVEL 				1
 
 #define NAMESERVER_TASK_PRIORITY	14
 #define TIMESERVER_TASK_PRIORITY	14

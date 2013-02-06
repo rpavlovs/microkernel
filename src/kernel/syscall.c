@@ -183,7 +183,7 @@ int Time() {
 }
 
 int Delay( int ticks ) {
-	debug( DBG_REQ, "DELAY: request recieved. Waiting for %d ticks", ticks );
+	debug( DBG_REQ, "DELAY: request recieved. Wait for %d ticks", ticks );
 	Msg_timeserver_request request_msg;
 	Msg_timeserver_reply reply_msg;
 	request_msg.type = DELAY_REQUEST;
@@ -194,7 +194,7 @@ int Delay( int ticks ) {
 }
 
 int DelayUntil( int ticks ) {
-	debug( DBG_REQ, "DELAY_UNTIL: request recieved. Waiting till %d'th "
+	debug( DBG_REQ, "DELAY_UNTIL: request recieved. Wait till %d'th "
 		"tick from start", ticks );
 	Msg_timeserver_request request_msg;
 	Msg_timeserver_reply reply_msg;

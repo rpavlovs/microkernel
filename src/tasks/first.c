@@ -2,8 +2,11 @@
 
 #define INT_CONTROL_BASE_1		0x800B0000		// VIC 1
 
+// ----------------------------------------------------------------------------
+// Debugging ( TODO: Delete this after making sure HWIs work )
+// ----------------------------------------------------------------------------
 void 
-print_hwi_registers2(){
+print_hwi_registers(){
 	int *ptr = ( int * ) INT_CONTROL_BASE_1; 
 	
 	int i; 
@@ -13,36 +16,12 @@ print_hwi_registers2(){
 	}
 }
 
-#define INITIAL_TIMER_LOAD 200
-#define TIMER_ENABLE_FLAG 0x80 // 10000000
-#define TIMER_MODE 0x40 // 1000000
-#define MAX_SECONDS 59
-#define MAX_MINUTES 59
-#define MAX_DECI_SECONDS 9
-#define TIMER_ROW_POS 2
-#define TIMER_COL_POS 10
-
-void start_timer2(){
-	int timerControlValue; 
-	int *timerLoad = ( int * ) TIMER1_BASE;
-	//int *timerValue = ( int * ) ( TIMER1_BASE + VAL_OFFSET ); 
-	int *timerControl = ( int * ) ( TIMER1_BASE + CRTL_OFFSET ); 
-
-	// First the load is added. 
-	*timerLoad = INITIAL_TIMER_LOAD;
-
-	// The timer is enabled and configured.
-	timerControlValue = *timerControl;
-	timerControlValue = timerControlValue | TIMER_ENABLE_FLAG | TIMER_MODE;
-	*timerControl = timerControlValue;
-}
-
 /**/
 void first_task() {
 	// Before:
 	bwprintf( COM2, "Before:\n" ); 
-	print_hwi_registers2(); 
-	start_timer2(); 
+	print_hwi_registers(); 
+	start_timer(); 
 	bwprintf( COM2, "After:\n" ); 
 	//print_hwi_registers();
 	bwprintf( COM2, "Bla1\n" ); 
@@ -54,7 +33,14 @@ void first_task() {
 		bwprintf( COM2, "Bla\n" ); 	
 	}
 }
+ /**/ 
+// ----------------------------------------------------------------------------
+// Debugging END 
+// ----------------------------------------------------------------------------
 
+// ----------------------------------------------------------------------------
+// First Task
+// ----------------------------------------------------------------------------
 /**
 void first_task() {
 	debug( DBG_SYS, "FIRST_TASK: start" );
@@ -82,4 +68,4 @@ void first_task() {
 	Exit();
 	panic( "FIRST_TASK: Shoot the zombie!" );
 }
-*/
+* */ 

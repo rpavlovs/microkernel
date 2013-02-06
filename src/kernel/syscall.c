@@ -95,7 +95,7 @@ int Reply( int tid, char *reply, int replylen ) {
 
 int AwaitEvent( int eventid )
 {
-	
+	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (AWAIT_EVENT_SYSCALL) );	
 }
 
 ////////////////////

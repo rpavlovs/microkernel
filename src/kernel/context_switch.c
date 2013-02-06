@@ -112,9 +112,6 @@ asm(
 
 void
 StoreTaskInformation( unsigned int taskSP, unsigned int lr, unsigned int activeTD ) {
-
-	// TODO: Add a debug statement with a very verbose level. 
-	// bwprintf( COM2, "Task Information. SP: %x LR: %x TD: %x\n\r", taskSP, lr, activeTD ); 
 	
 	// Update the task descriptor
 	Task_descriptor *td = (Task_descriptor *) activeTD;
@@ -169,30 +166,6 @@ initialize_interrupts(){
 	*vic2EnablePointer = initialInterruptsVIC2;
 }
 
-#define INITIAL_TIMER_LOAD 200
-#define TIMER_ENABLE_FLAG 0x80 // 10000000
-#define TIMER_MODE 0x40 // 1000000
-#define MAX_SECONDS 59
-#define MAX_MINUTES 59
-#define MAX_DECI_SECONDS 9
-#define TIMER_ROW_POS 2
-#define TIMER_COL_POS 10
-
-void start_timer(){
-	int timerControlValue; 
-	int *timerLoad = ( int * ) TIMER1_BASE;
-	//int *timerValue = ( int * ) ( TIMER1_BASE + VAL_OFFSET ); 
-	int *timerControl = ( int * ) ( TIMER1_BASE + CRTL_OFFSET ); 
-
-	// First the load is added. 
-	*timerLoad = INITIAL_TIMER_LOAD;
-
-	// The timer is enabled and configured.
-	timerControlValue = *timerControl;
-	timerControlValue = timerControlValue | TIMER_ENABLE_FLAG | TIMER_MODE;
-	*timerControl = timerControlValue;
-}
-
 int 
 initialize_context_switching() {
 	
@@ -222,11 +195,6 @@ int install_interrupt_handler( unsigned int handlerLoc, unsigned int *vector ) {
     *vector = vec; 
 
     return 0; 
-}
-
-void
-initialize_context_switching() {
-    install_interrupt_handler((unsigned int) swi_main_handler, (unsigned int *) SWI_ENRTY_ADDRESS);
 }
 
 /*
@@ -353,7 +321,7 @@ SetSysCallReturn( int returnValue, unsigned int taskSP ) {
 void
 handle_request( int request, Kern_Globals *GLOBALS ) {
 	
-	bwprintf( COM2, "Handle Request. Request Value: %d", request ); 
+	debug( DBG_KERN, "HANDLE_Request: entered [request id: %d]", request );
 	if ( request < 0 ) {
 		handle_hwi( GLOBALS ); 
 	}
@@ -368,15 +336,14 @@ handle_hwi( Kern_Globals *GLOBALS ){
 	int hwInterrupt = *( ( int * ) INT_CONTROL_BASE_1 + IRQ_STATUS_OFFSET );
 	
 	// Debug. 
-	debug( DBG_KERN, "HANDLE_hWI: entered [interrupt id: %d]", hwInterrupt );
+	debug( DBG_KERN, "HANDLE_HWI: entered [interrupt id: %d]", hwInterrupt );
 	
 	// NOTE: The cases inside the handler must be organized by the priority
 	// of the hardware interrupt
 	switch( hwInterrupt ){
 		case TIMER1_INT:
-			bwprintf( COM2, "ENTRAAAAA!!! Type: %d\n", hwInterrupt );
 			timer_hwi_handler( GLOBALS );
-			debug( DBG_CURR_LVL, DBG_KERN, "TIMER_HW_INTERRUPT handled" );
+			debug( DBG_KERN, "TIMER_HW_INTERRUPT handled" );
 			break; 
 	}
 }
@@ -454,6 +421,13 @@ handle_swi( int request, Kern_Globals *GLOBALS ){
 						(int)		sysCallArguments[0], 
 						(char *)	sysCallArguments[1], 
 						(int)		sysCallArguments[2],
+						td, GLOBALS );
+		SetSysCallReturn( returnValue, taskSP );
+		break;
+	case AWAIT_EVENT_SYSCALL:
+		RetrieveSysCallArgs( sysCallArguments, AWAIT_EVENT_ARGS, taskSP );
+		returnValue = sys_await_event(
+						(int)		sysCallArguments[0],
 						td, GLOBALS );
 		SetSysCallReturn( returnValue, taskSP );
 		break;

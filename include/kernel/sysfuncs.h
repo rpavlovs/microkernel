@@ -53,6 +53,11 @@ int sys_reply(int tid, char *reply, int replylen, Task_descriptor *, Kern_Global
 
 void sys_unblock_receive(Task_descriptor *td, Kern_Globals *GLOBALS );
 
+// TODO: Description
+//
+
+int sys_await_event (int eventid, Task_descriptor *, Kern_Globals *);
+
 
 int sys_testcall(int a, int b, int c, int d, int e, int f);
 

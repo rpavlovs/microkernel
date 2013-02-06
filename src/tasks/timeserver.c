@@ -2,6 +2,26 @@
 
 #define TIMESERVER_WAKEUP_QUEUE_SIZE 100
 
+// ----------------------------------------------------------------------------
+// Timer
+// ----------------------------------------------------------------------------
+void start_timer(){
+	int timerControlValue; 
+	int *timerLoad = ( int * ) TIMER1_BASE;
+	int *timerControl = ( int * ) ( TIMER1_BASE + CRTL_OFFSET ); 
+
+	// First the load is added. 
+	*timerLoad = INITIAL_TIMER_LOAD;
+
+	// The timer is enabled and configured.
+	timerControlValue = *timerControl;
+	timerControlValue = timerControlValue | TIMER_ENABLE_FLAG | TIMER_MODE;
+	*timerControl = timerControlValue;
+}
+
+// ----------------------------------------------------------------------------
+// Time Server
+// ----------------------------------------------------------------------------
 typedef struct Wakeup_record Wakeup_record;
 
 struct Wakeup_record {
@@ -83,6 +103,8 @@ void clock_tick_notifier() {
 
 void timeserver() {
 	debug( DBG_SYS, "TIMESERVER: start with tid %d", MyTid() );
+	
+	start_timer(); 
 	
 	RegisterAs( "timeserver" );
 	long current_time = 0;

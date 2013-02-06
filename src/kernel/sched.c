@@ -44,6 +44,13 @@ void init_schedule( int first_task_priority, void (*first_task_code) ( ), Kern_G
 	//Updating the schedule appropriately
 	sched->last_issued_tid = 0;
 	sched->tasks_alive = 1;
+	
+	//Initializing hwi_events_waiting_table
+	int i;
+	for(i=0; i<HWI_NUM_EVENTS; i++)
+	{
+		sched->hwi_events_waiting_table[i] = 0;
+	}
 }
 
 // Return:

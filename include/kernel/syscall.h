@@ -9,6 +9,7 @@
 #define SEND_SYSCALL 			5
 #define RECEIVE_SYSCALL 		6
 #define REPLY_SYSCALL 			7
+#define AWAIT_EVENT_SYSCALL		8
 #define TESTCALL_SYSCALL		99
 
 #define CREATE_ARGS 			2
@@ -19,6 +20,7 @@
 #define SEND_ARGS 				5
 #define RECEIVE_ARGS	 		3
 #define REPLY_ARGS 				3
+#define AWAIT_EVENT_ARGS		1
 #define TESTCALL_ARGS 			6
 
 #define CREATE_RETURN 			1
@@ -29,6 +31,7 @@
 #define SEND_RETURN 			1
 #define RECEIVE_RETURN  		1
 #define REPLY_RETURN 			1
+#define AWAIT_EVENT_RETURN		1
 #define TESTCALL_RETURN			1
 
 typedef struct {

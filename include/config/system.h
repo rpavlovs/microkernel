@@ -10,4 +10,10 @@
 
 #define DEBUG_LEVEL 				4
 
+#define NAMESERVER_TASK_PRIORITY	14
+#define TIMESERVER_TASK_PRIORITY	14
+
+#define FIRST_USER_TASK_NAME		test_timeserver
+#define FIRST_USER_TASK_PRIORITY	8
+
 #endif

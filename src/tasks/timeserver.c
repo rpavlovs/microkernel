@@ -48,9 +48,7 @@ void schedule_for_wakeup( Wakeup_list *list, int new_tid, int wakeup_time ) {
 			new_tid, new_wakeup->wakeup_time );
 }
 
-// Returns:
-// 	tid of the process to be waked up
-//  -1 - if there is no task to wakeup at the moment
+// Note: Returns -1 if there is no task to wakeup at the moment
 int get_tid_to_wakeup( Wakeup_list *list, int current_time ) {
 	if( list->size == 0 || list->first_to_wakeup->wakeup_time > current_time )
 		return -1;

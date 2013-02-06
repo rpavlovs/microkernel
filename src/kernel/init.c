@@ -86,5 +86,5 @@ void initialize( Kern_Globals *GLOBALS ) {
 
 	init_task_descriptors( GLOBALS );
 
-	init_schedule( 8, first_task, GLOBALS );
+	init_schedule( 15, first_task, GLOBALS );
 }

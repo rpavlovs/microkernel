@@ -6,6 +6,7 @@
  */
 
 #include <config/ts7200.h>
+#include <config/system.h>
 #include <lib/bwio.h>
 
 /*

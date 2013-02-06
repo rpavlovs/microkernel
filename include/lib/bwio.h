@@ -1,8 +1,6 @@
 #ifndef __BWIO_H__
 #define __BWIO_H__
 
-#include <config/build.h>
-
 #define DBG_FATAL	 	0	// panic and assert only
 #define DBG_USR		 	1	// user tasks 
 #define DBG_SYS		 	2	// sytem/user tasks

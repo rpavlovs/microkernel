@@ -1,5 +1,12 @@
+
+// Config
+
 #include <config/memory.h>
 #include <config/ts7200.h>
+#include <config/system.h>
+
+// System calls
+
 #include <kernel/syscall.h>
 
 // Libraries

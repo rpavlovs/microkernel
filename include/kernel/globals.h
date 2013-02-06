@@ -14,6 +14,7 @@
 #define SEND_TASK 							4
 #define RECEIVE_TASK 						5
 #define REPLY_TASK 							6
+#define AWAIT_TASK 							7
 
 #define MAX_NUM_ARGUMENTS 					10
 

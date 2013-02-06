@@ -131,6 +131,15 @@ execute_user_task( unsigned int a, unsigned int b, unsigned int c ) {
 
 	asm (																"\n"
 
+
+	// // -- DEBUG ----------------------------------------------------------------
+	// "STMFD	sp!, { r0, r1, ip, lr }"									"\n\t"
+	// "MOV	r1, r0"														"\n\t"
+	// "MOV	r0, #1"														"\n\t"
+	// "BL		bwputr"														"\n\t"
+	// "LDMFD	sp!, { r0, r1, ip, lr }"									"\n\t"
+	// // -- DEBUG ----------------------------------------------------------------
+
 	// Store the information about the kernel as would happen in a normal task. 
 	"MOV	ip, sp"														"\n\t"
 	"STMFD	sp!, { fp, ip, lr, pc }"									"\n\t"
@@ -188,7 +197,7 @@ execute_user_task( unsigned int a, unsigned int b, unsigned int c ) {
 
 	// Jump to the next instruction in the user task.
 	"LDR	PC, [ sp, #-4 ]"											"\n\t"
-	
+
 	// return here after interrupt is handled
 	
 	"MOV	%0, r0" "\n\r" : "=r" (ret)

@@ -1,8 +1,12 @@
-#include "helpers.h"
-#include "config/mem_init.h"
-#include "config/ts7200.h"
-#include "lib/bwio.h"
-#include "kernel/syscall.h"
+#include <config/memory.h>
+#include <config/ts7200.h>
+#include <kernel/syscall.h>
+
+// Libraries
+
+#include <lib/bwio.h>
+#include <lib/stdlib.h>
+#include <lib/string.h>
 
 // System tasks 
 
@@ -14,16 +18,7 @@
 #define __COMMONSPACE__
 
 #define SUCCESS								0
-
-// DEBUG PRINT
-
-#define DBG_CURR_LVL 	4
-
-#define DBG_FATAL	 	0	// panic and assert only
-#define DBG_USR		 	1	// user tasks 
-#define DBG_SYS		 	2	// sytem/user tasks
-#define DBG_REQ		 	3	// kernel requests + sytem/user tasks
-#define DBG_KERN 		4	// all
+#define FOREVER								for( ; ; )
 
 // Nameserver config
 

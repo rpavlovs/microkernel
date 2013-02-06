@@ -7,7 +7,7 @@ void init_schedule( int first_task_priority, void (*first_task_code) ( ), Kern_G
 	assert( first_task_priority < SCHED_NUM_PRIORITIES && first_task_priority >= 0,
 		"first task should have priority between 0 and 16" );
 
-	debug( DBG_CURR_LVL, DBG_KERN, "INIT_SCHEDULE: first task priority %d, address %d",
+	debug( DBG_KERN, "INIT_SCHEDULE: first task priority %d, address %d",
 		first_task_priority, (int) first_task_code );
 
 	//Getting the schedule

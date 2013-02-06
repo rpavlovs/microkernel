@@ -1,7 +1,7 @@
 #include "kernelspace.h"
 
 int Create( int priority, void (*code) ( ) ) {
-	debug( DBG_CURR_LVL, DBG_REQ, "CREATE: request recieved. Priority %d, address %d",
+	debug( DBG_REQ, "CREATE: request recieved. Priority %d, address %d",
 			priority, (int) code );
 
 	int ret;
@@ -15,7 +15,7 @@ int Create( int priority, void (*code) ( ) ) {
 }
 
 int MyTid( ) {
-	debug( DBG_CURR_LVL, DBG_REQ, "MY_TID: request recieved." );
+	debug( DBG_REQ, "MY_TID: request recieved." );
 
 	int ret;
 	asm(
@@ -28,7 +28,7 @@ int MyTid( ) {
 }
 
 int MyParentTid( ) {
-	debug( DBG_CURR_LVL, DBG_REQ, "MY_PARENT_TID: request recieved." );
+	debug( DBG_REQ, "MY_PARENT_TID: request recieved." );
 
 	int ret;
 	asm(
@@ -41,19 +41,19 @@ int MyParentTid( ) {
 }
 
 void Pass( ) {
-	debug( DBG_CURR_LVL, DBG_REQ, "PASS: request recieved." );
+	debug( DBG_REQ, "PASS: request recieved." );
 
 	asm( "SWI	%0"	"\n\t" :: "J" (PASS_SYSCALL) );
 }
 
 void Exit( ) {
-	debug( DBG_CURR_LVL, DBG_REQ, "EXIT: request recieved." );
+	debug( DBG_REQ, "EXIT: request recieved." );
 
 	asm( "SWI	%0"	"\n\t" :: "J" (EXIT_SYSCALL) );
 }
 
 int Send( int tid, char *msg, int msglen, char *reply, int replylen ) {
-	debug( DBG_CURR_LVL, DBG_REQ, "SEND: request recieved. Recipient tid is %d", tid );
+	debug( DBG_REQ, "SEND: request recieved. Recipient tid is %d", tid );
 	int ret;
 	asm(
 		"SWI	%[call_id]"									"\n\t"
@@ -65,7 +65,7 @@ int Send( int tid, char *msg, int msglen, char *reply, int replylen ) {
 }
 
 int Receive( int *tid, char *msg, int msglen ) {
-	debug( DBG_CURR_LVL, DBG_REQ, "RECEIVE: request recieved." );
+	debug( DBG_REQ, "RECEIVE: request recieved." );
 	int ret;
 	asm(
 		"SWI	%[call_id]"									"\n\t"
@@ -77,7 +77,7 @@ int Receive( int *tid, char *msg, int msglen ) {
 }
 
 int Reply( int tid, char *reply, int replylen ) {
-	debug( DBG_CURR_LVL, DBG_REQ, "REPLY: request recieved. Recipient tid is %d", tid );
+	debug( DBG_REQ, "REPLY: request recieved. Recipient tid is %d", tid );
 
 	int ret;
 	asm(
@@ -94,7 +94,7 @@ int Reply( int tid, char *reply, int replylen ) {
 ////////////////////
  
 int RegisterAs( char *name ) {
-	debug( DBG_CURR_LVL, DBG_REQ, "REGISTER_AS: request recieved. Register [%s]", name );
+	debug( DBG_REQ, "REGISTER_AS: request recieved. Register [%s]", name );
 
 	Nameserver_request request;
 	Nameserver_reply reply;
@@ -110,18 +110,18 @@ int RegisterAs( char *name ) {
 	if( msg_length >= NAMESERVER_RECORD_NAME_MAX_LENGTH ) return NS_ERROR_NOT_LEGAL_NAME;
 
 	request.type = NAMESERVER_REGISTER_AS_REQUEST;
-	my_strcpy( name, request.ns_name );
+	strcpy( name, request.ns_name );
 
 	status = Send( NAMESERVER_TID, (char *) &request, sizeof(request),
 			(char *) &reply, sizeof(reply) );
 
 	if( status == SEND_ERROR_TID_IMPOSSIBLE || status == SEND_ERROR_TID_HAS_NO_TASK ) {
-		debug( DBG_CURR_LVL, DBG_REQ,
+		debug( DBG_REQ,
 			"WhoIs: *ERROR* can't get rich of nameserver. Invalid task ID." );
 		return NS_ERROR_TID_IS_NOT_A_TASK;
 	}
 	if( status == SEND_ERROR_TRANSACTION_FAILED || status == ERROR_WRONG_MESSAGE_TYPE ) {
-		debug( DBG_CURR_LVL, DBG_REQ,
+		debug( DBG_REQ,
 			"WhoIs: *ERROR* communication with nameserver failed." );
 		return NS_ERROR_TID_IS_NOT_A_NAMESERVER;
 	}
@@ -130,7 +130,7 @@ int RegisterAs( char *name ) {
 }
 
 int WhoIs( char *name ) {
-	debug( DBG_CURR_LVL, DBG_REQ, "WHOIS: request recieved. Lookup [%s]", name );
+	debug( DBG_REQ, "WHOIS: request recieved. Lookup [%s]", name );
 
 	Nameserver_request request;
 	Nameserver_reply reply;
@@ -146,18 +146,18 @@ int WhoIs( char *name ) {
 	if( msg_length >= NAMESERVER_RECORD_NAME_MAX_LENGTH ) return NS_ERROR_NOT_LEGAL_NAME;
 	
 	request.type = NAMESERVER_WHO_IS_REQUEST;
-	my_strcpy( name, request.ns_name );
+	strcpy( name, request.ns_name );
 
 	status = Send( NAMESERVER_TID, (char *) &request, sizeof(request),
 					(char *) &reply, sizeof(reply) );
 
 	if( status == SEND_ERROR_TID_IMPOSSIBLE || status == SEND_ERROR_TID_HAS_NO_TASK ) {
-		debug( DBG_CURR_LVL, DBG_REQ,
+		debug( DBG_REQ,
 			"WhoIs: *ERROR* can't get rich of nameserver." );
 		return NS_ERROR_TID_IS_NOT_A_TASK;
 	}
 	if( status == SEND_ERROR_TRANSACTION_FAILED || status == ERROR_WRONG_MESSAGE_TYPE ) {
-		debug( DBG_CURR_LVL, DBG_REQ,
+		debug( DBG_REQ,
 			"WhoIs: *ERROR* communication with nameserver failed." );
 		return NS_ERROR_TID_IS_NOT_A_NAMESERVER;
 	}
@@ -165,7 +165,7 @@ int WhoIs( char *name ) {
 }
 
 int Time() {
-	debug( DBG_CURR_LVL, DBG_REQ, "TIME: request recieved." );
+	debug( DBG_REQ, "TIME: request recieved." );
 	Msg_timeserver_request request_msg;
 	Msg_timeserver_reply reply_msg;
 	request_msg.type = TIME_REQUEST;
@@ -179,7 +179,7 @@ int Time() {
 }
 
 int Delay( int ticks ) {
-	debug( DBG_CURR_LVL, DBG_REQ, "DELAY: request recieved. Waiting for %d ticks", ticks );
+	debug( DBG_REQ, "DELAY: request recieved. Waiting for %d ticks", ticks );
 	Msg_timeserver_request request_msg;
 	Msg_timeserver_reply reply_msg;
 	request_msg.type = DELAY_REQUEST;
@@ -190,7 +190,7 @@ int Delay( int ticks ) {
 }
 
 int DelayUntil( int ticks ) {
-	debug( DBG_CURR_LVL, DBG_REQ, "DELAY_UNTIL: request recieved. Waiting till %d'th "
+	debug( DBG_REQ, "DELAY_UNTIL: request recieved. Waiting till %d'th "
 		"tick from start", ticks );
 	Msg_timeserver_request request_msg;
 	Msg_timeserver_reply reply_msg;

@@ -159,7 +159,7 @@ void server_entry_point()
     playersQueue->newest = -1;
     playersQueue->oldest = 0;
     
-    debug( DBG_CURR_LVL, DBG_USR, "STARTING RPS Server. " ); 
+    debug( DBG_USR, "STARTING RPS Server. " ); 
     FOREVER{
         
         char msg[RPS_MAX_RECEIVE_BUFFER_SIZE];
@@ -169,10 +169,10 @@ void server_entry_point()
         
         int operation_id = msg[0]; 
         int operation_param = msg[1]; 
-        debug( DBG_CURR_LVL, DBG_USR, "entering switch." );
+        debug( DBG_USR, "entering switch." );
         switch ( operation_id ) {
         case RPS_OP_SIGNUP:
-            debug( DBG_CURR_LVL, DBG_USR, "Signup. " );
+            debug( DBG_USR, "Signup. " );
             if( server_data.numPlayers == 0 )
             {             
                // There's no player registered, so add it as the first player. 
@@ -197,7 +197,7 @@ void server_entry_point()
             }
             break;
         case RPS_OP_PLAY:
-            debug( DBG_CURR_LVL, DBG_USR, "Playss. " );
+            debug( DBG_USR, "Playss. " );
             // Check if the sender is one of the clients currently playing. 
             if( !( sender_tid == server_data.player_one.tid || sender_tid == server_data.player_two.tid ) ) {
                     reply_client( sender_tid, RPS_ERROR ); 
@@ -218,7 +218,7 @@ void server_entry_point()
             
             break;
         case RPS_OP_QUIT:
-            debug( DBG_CURR_LVL, DBG_USR, "Quit. " );
+            debug( DBG_USR, "Quit. " );
             // Check if the sender is one of the clients currently playing. 
             if ( !( sender_tid == server_data.player_one.tid || sender_tid == server_data.player_two.tid ) )
             {
@@ -256,18 +256,18 @@ void server_entry_point()
             }
             else
             {
-                debug( DBG_CURR_LVL, DBG_USR, "Exiting game server");
+                debug( DBG_USR, "Exiting game server");
                 Exit(); 
             }
             
             break;
         default:
-            debug( DBG_CURR_LVL, DBG_USR, "RPS ERROR: Invalid Operation ID. " ); 
+            debug( DBG_USR, "RPS ERROR: Invalid Operation ID. " ); 
             break;
         }
     }
     
-    debug( DBG_CURR_LVL, DBG_USR, "EXITING RPS Server. " ); 
+    debug( DBG_USR, "EXITING RPS Server. " ); 
 }
 
 void client_always_play() {

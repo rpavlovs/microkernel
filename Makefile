@@ -9,7 +9,7 @@ USER:=$(shell whoami)
 SRC_DIRS:=$(shell find src/ -mindepth 1 -type d)
 .SECONDARY:
 
-CFLAGS  = -c -fPIC -Wall -Iinclude -mcpu=arm920t -msoft-float
+CFLAGS  = -c -fPIC -Wall -Iinclude -mcpu=arm920t -msoft-float -fno-builtin
 # -g: include hooks for gdb
 # -c: only compile
 # -mcpu=arm920t: generate code for the 920t architecture
@@ -19,7 +19,7 @@ CFLAGS  = -c -fPIC -Wall -Iinclude -mcpu=arm920t -msoft-float
 ASFLAGS	= -mcpu=arm920t -mapcs-32
 # -mapcs: always generate a complete stack frame
 
-LDFLAGS = -init main -Map build/kernel.map -N -T orex.ld -L/u/wbcowan/gnuarm-4.0.2/lib/gcc/arm-elf/4.0.2 -Llib
+LDFLAGS = -init main -Map build/kernel.map -N -T orex.ld -L/u/wbcowan/gnuarm-4.0.2/lib/gcc/arm-elf/4.0.2
 
 SRC = $(wildcard src/**/*.c) $(wildcard src/*.c)
 ASM = $(wildcard src/**/*.S) $(wildcard src/*.S)
@@ -52,4 +52,4 @@ build/%.o: build/%.s
 ## Link
 
 build/kernel.elf: $(OBJS) 
-	@$(LD) $(LDFLAGS) -o $@ $(OBJS) -lbwio -lgcc
+	@$(LD) $(LDFLAGS) -o $@ $(OBJS) -lgcc

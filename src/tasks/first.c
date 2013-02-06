@@ -72,85 +72,28 @@ void first_task() {
 
 /**
 void first_task() {
-	debug( DBG_CURR_LVL, DBG_SYS, "FIRST_TASK: START %d\n", 1000 );
+	debug( DBG_SYS, "FIRST_TASK: start" );
+
+	debug( DBG_SYS, "FIRST_TASK: creating Nameserver" );
+	int ns_tid = Create( NAMESERVER_TASK_PRIORITY, nameserver );
+	assert( ns_tid == 1, "FIRST_TASK: Nameserver should have task id of 1" );
+
+	debug( DBG_SYS, "FIRST_TASK: creating Timeserver" );
+	int ts_tid = Create( TIMESERVER_TASK_PRIORITY, timeserver );
+
+	debug( DBG_SYS, "FIRST_TASK: creating first user task" );
+	int first_user_task_tid = Create( FIRST_USER_TASK_PRIORITY, FIRST_USER_TASK_NAME );
 	
-	int tid;
-	tid = Create( 14, nameserver );
-	assert( tid == 1, "Nameserver should have task id of 1" );
+	debug( DBG_SYS, "FIRST_TASK: setup is done." );
+	debug( DBG_SYS, "FIRST_TASK: system debug level: %d ", DEBUG_LEVEL );
+	debug( DBG_SYS, "FIRST_TASK: nameserver task id: %d, priority: %d, address: %d",
+		ns_tid, NAMESERVER_TASK_PRIORITY, nameserver );
+	debug( DBG_SYS, "FIRST_TASK: timeserver task id: %d, priority: %d, address: %d",
+		ts_tid, TIMESERVER_TASK_PRIORITY, timeserver );
+	debug( DBG_SYS, "FIRST_TASK: first user task id: %d, priority: %d, address: %d",
+		first_user_task_tid, FIRST_USER_TASK_PRIORITY, FIRST_USER_TASK_NAME );
 
-	debug( DBG_CURR_LVL, DBG_SYS, "FIRST_TASK: EXIT" );
+	debug( DBG_SYS, "FIRST_TASK: exit" );
 	Exit();
+	panic( "FIRST_TASK: Shoot the zombie!" );
 }
-*/
-
-void first_task_aaa() {
-	bwprintf( COM2, "First is entered\n" );
-	int tid, status;
-
-	tid = Create( 14, nameserver );
-	bwprintf( COM2, "Nameserver true TID: %d\n", tid);
-
-	status = RegisterAs( "the_first" );
-	bwprintf( COM2, "First registered with status: %d\n", status);
-
-	tid = Create( 4, sub );
-	bwprintf( COM2, "Sub() is created. TID: %d\n", tid );
-
-	bwprintf( COM2, "Exiting first\n" );
-	Exit();
-}
-
-
-void other_task() {
-	int mytid = MyTid();
-	int myparenttid = MyParentTid();
-	bwprintf( COM2, "My tid: %d\tMy parent tid:%d\n\r", mytid, myparenttid);
-	Pass();
-	bwprintf( COM2, "My tid: %d\tMy parent tid:%d\n\r", mytid, myparenttid);
-	Exit();
-}
-
-// first user task gets launched with priority 8
-void a1_first_task() {
-
-	int tid;
-	
-	tid = Create( 5, other_task);
-	bwprintf( COM2, "Created: %d.\n\r", tid);
-	
-	tid = Create( 5, other_task);
-	bwprintf( COM2, "Created: %d.\n\r", tid);
-
-	tid = Create( 12, other_task);
-	bwprintf( COM2, "Created: %d.\n\r", tid);
-
-	tid = Create( 15, other_task);
-	bwprintf( COM2, "Created: %d.\n\r", tid);
-
-	bwprintf( COM2, "First: exiting.\n\r");
-	Exit();
-}
-
-//Testing first function
-void test_task(){
-
-	int sum;
-
-	sum = TestCall(11,22,33,44,55,66);
-	bwprintf( COM2, "The sum is:%d", sum);
-
-	Exit();
-}
-
-
-
-
-
-
-
-
-
-
-
-
-

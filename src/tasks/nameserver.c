@@ -7,7 +7,7 @@ int find_entry( const char * name, const ns_table *table ) {
 }
 
 void nameserver() {
-	debug( DBG_CURR_LVL, DBG_SYS, "NAMESERVER: start" );
+	debug( DBG_SYS, "NAMESERVER: enters" );
 
 	Nameserver_request request;
 	Nameserver_reply reply;
@@ -19,32 +19,38 @@ void nameserver() {
 	table.size = 0;
 
 	FOREVER {
-		debug( DBG_CURR_LVL, DBG_SYS, "NAMESERVER: Block to recieve request" );
+		debug( DBG_SYS, "NAMESERVER: listening for a request" );
 		Receive( &sender_tid, (char *) &request, sizeof(request) );
 
 		switch( request.type ) {
 		case NAMESERVER_REGISTER_AS_REQUEST:
-			debug( DBG_CURR_LVL, DBG_SYS, "NAMESERVER: RegisterAs request recived" );
+			debug( DBG_SYS, "NAMESERVER: RegisterAs request recived from %d", sender_tid );
 			pos = find_entry( request.ns_name, &table );
 			if ( pos == -1 ) {
-				debug( DBG_CURR_LVL, DBG_SYS, "NAMESERVER: new ns record required" );
+				debug( DBG_SYS, "NAMESERVER: new ns record required" );
 				pos = table.size++;
-				my_strcpy( request.ns_name, table.entrie[pos].name );
+				strcpy( request.ns_name, table.entrie[pos].name );
 			}
 			table.entrie[pos].tid = sender_tid;
 			reply.num = SUCCESS;
 			break;
 		case NAMESERVER_WHO_IS_REQUEST:
-			debug( DBG_CURR_LVL, DBG_SYS, "NAMESERVER: WhoIs request recived" );
+			debug( DBG_SYS, "NAMESERVER: WhoIs request recived from %d", sender_tid );
 			pos = find_entry( request.ns_name, &table );
-			reply.num = (pos >= 0 ? table.entrie[pos].tid : NS_ERROR_TASK_NOT_FOUND);
+			reply.num = (pos < 0 ? NS_ERROR_TASK_NOT_FOUND : table.entrie[pos].tid);
 			break;
 		default:
-			debug( DBG_CURR_LVL, DBG_SYS, "**FATAL** NAMESERVER: Nameserver received"
-				"message of type %d", request.type );
+			debug( DBG_SYS, "NAMESERVER: Nameserver received unexpected "
+				"message [type: %d from: %d]", request.type, sender_tid );
 			reply.num = ERROR_WRONG_MESSAGE_TYPE;
 		}
+
+		if( reply.num < 0 )
+			debug( DBG_SYS, "NAMESERVER: Could not find [%s] requested "
+				"by task %d", request.ns_name, sender_tid );
 		
+		debug( DBG_SYS, "NAMESERVER: replying to: %d [msg: %d]",
+			sender_tid, reply.num );
 		Reply( sender_tid, (char *) &reply, sizeof(reply) );
 	}
 }

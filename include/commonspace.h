@@ -1,27 +1,31 @@
-#include "helpers.h"
-#include "config/mem_init.h"
-#include "config/ts7200.h"
-#include "lib/bwio.h"
-#include "kernel/syscall.h"
+
+// Config
+
+#include <config/memory.h>
+#include <config/ts7200.h>
+#include <config/system.h>
+
+// System calls
+
+#include <kernel/syscall.h>
+
+// Libraries
+
+#include <lib/bwio.h>
+#include <lib/stdlib.h>
+#include <lib/string.h>
 
 // System tasks 
 
 #include "tasks/first.h"
 #include "tasks/nameserver.h"
+#include "tasks/timeserver.h"
 
 #ifndef __COMMONSPACE__
 #define __COMMONSPACE__
 
 #define SUCCESS								0
-
-// DEBUG PRINT
-
-#define DBG_CURR_LVL 	3
-
-#define DBG_FATAL	 	0
-#define DBG_USR		 	1
-#define DBG_SYS		 	2
-#define DBG_KERN 		3
+#define FOREVER								for( ; ; )
 
 // Nameserver config
 

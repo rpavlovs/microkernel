@@ -4,8 +4,11 @@
 void init_schedule( int first_task_priority, void (*first_task_code) ( ), Kern_Globals *GLOBALS )
 {	
 	//Verifying that the task priority is correct
-	assert(first_task_priority < SCHED_NUM_PRIORITIES && first_task_priority >= 0,
+	assert( first_task_priority < SCHED_NUM_PRIORITIES && first_task_priority >= 0,
 		"first task should have priority between 0 and 16" );
+
+	debug( DBG_KERN, "INIT_SCHEDULE: first task priority %d, address %d",
+		first_task_priority, (int) first_task_code );
 
 	//Getting the schedule
 	Schedule *sched = &(GLOBALS->schedule);
@@ -46,6 +49,7 @@ void init_schedule( int first_task_priority, void (*first_task_code) ( ), Kern_G
 // Return:
 // tid of the next task to run
 int schedule( Kern_Globals * GLOBALS) {
+	debug( DBG_KERN, "SCHEDULE: entered" );
 
 	int p = SCHED_NUM_PRIORITIES - 1;
 
@@ -71,10 +75,9 @@ int schedule( Kern_Globals * GLOBALS) {
 // Return:
 // interrupt ID of the first recieved interrupt
 int activate( const int tid, Kern_Globals *GLOBALS ) {
-	
-	Task_descriptor *td = &(GLOBALS->tasks[tid]);
+	debug( DBG_KERN, "ACTIVATE: entered [activating task %d]", tid );
 
-	// bwprintf( COM2, "DEBUG: activate: activating %d with state %d\n", tid, td->state );
+	Task_descriptor *td = &(GLOBALS->tasks[tid]);
 
 	assert( td->state == READY_TASK, "It should only be possible to activate a READY task" );
 	td->state = ACTIVE_TASK;
@@ -91,6 +94,7 @@ int activate( const int tid, Kern_Globals *GLOBALS ) {
 
 int getNextRequest( Kern_Globals *GLOBALS )
 {
+	debug( DBG_KERN, "GET_NEXT_REQUEST: entered" );
 	return activate( schedule( GLOBALS ), GLOBALS );
 }
 

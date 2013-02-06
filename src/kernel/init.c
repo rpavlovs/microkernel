@@ -82,9 +82,11 @@ void initialize( Kern_Globals *GLOBALS ) {
 	
 	init_hardware();
 
+    initialize_context_switching(); 
+
 	init_message_queues( GLOBALS );
 
 	init_task_descriptors( GLOBALS );
 
-	init_schedule( 8, first_task, GLOBALS );
+	init_schedule( 15, first_task, GLOBALS );
 }

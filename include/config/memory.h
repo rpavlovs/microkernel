@@ -1,3 +1,8 @@
+#ifndef __MEMORY_CONFIG__
+#define __MEMORY_CONFIG__
+
+// Memory configuration
+
 //First byte of RAM memory
 #define RAM_START					0x00000000
 
@@ -25,3 +30,5 @@
 //Tasks' data structures sizes
 #define MAX_TASKS_COUNT				100
 #define TASK_DESCRIPTOR_SIZE		128		//128 B
+
+#endif

@@ -157,7 +157,7 @@
 			],
 			[
 				"my",
-				"my_strcpy"
+				"strcpy"
 			],
 			[
 				"ter",
@@ -500,7 +500,7 @@
 			}
 		},
 		{
-			"contents": "#include \"commonspace.h\"\n\nvoid assert( int statement, char * err_msg ) {\n	if( !statement ) bwprintf( COM2, \"Assertion failed: %s\\n\\r\", err_msg );\n}\n\nvoid panic( char * panic_reason ) {\n	bwprintf( COM2, \"Kernel panic: %s\\n\\r\", panic_reason );\n	for( ; ; );\n}\n\n// void debug( DBG_CURR_LVL, DBG_KERN, char * fmt, ... ) {\n// 	va_list va;\n\n//     va_start(va,fmt);\n// 	bwprintf( COM2, fmt, va );\n// 	va_end(va);\n// }\n\nvoid my_strcpy( const char * source, char * target ) {\n	int pos = -1;\n	while( source[++pos] != '\\0' ) {\n		target[pos] = source[pos];\n	}\n	target[pos] = '\\0';\n}\n\nvoid mem_cpy( const char * source, char * target, const unsigned int len ) {\n	int pos = -1;\n	while( ++pos < len ) {\n		target[pos] = source[pos];\n	}\n}\n\nint strcmp( const char *s1, const char *s2 ) {\n    while( (*s1 && *s2) && (*s1++ == *s2++) );\n    return *(--s1) - *(--s2);\n}\n\n",
+			"contents": "#include \"commonspace.h\"\n\nvoid assert( int statement, char * err_msg ) {\n	if( !statement ) bwprintf( COM2, \"Assertion failed: %s\\n\\r\", err_msg );\n}\n\nvoid panic( char * panic_reason ) {\n	bwprintf( COM2, \"Kernel panic: %s\\n\\r\", panic_reason );\n	for( ; ; );\n}\n\n// void debug( DBG_KERN, char * fmt, ... ) {\n// 	va_list va;\n\n//     va_start(va,fmt);\n// 	bwprintf( COM2, fmt, va );\n// 	va_end(va);\n// }\n\nvoid strcpy( const char * source, char * target ) {\n	int pos = -1;\n	while( source[++pos] != '\\0' ) {\n		target[pos] = source[pos];\n	}\n	target[pos] = '\\0';\n}\n\nvoid mem_cpy( const char * source, char * target, const unsigned int len ) {\n	int pos = -1;\n	while( ++pos < len ) {\n		target[pos] = source[pos];\n	}\n}\n\nint strcmp( const char *s1, const char *s2 ) {\n    while( (*s1 && *s2) && (*s1++ == *s2++) );\n    return *(--s1) - *(--s2);\n}\n\n",
 			"file": "src/helpers.c",
 			"file_size": 847,
 			"file_write_time": 1359883697000000,

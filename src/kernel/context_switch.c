@@ -321,6 +321,9 @@ SetSysCallReturn( int returnValue, unsigned int taskSP ) {
 void
 handle_request( int request, Kern_Globals *GLOBALS ) {
 	
+	//int *ptr = ( int * ) INT_CONTROL_BASE_1 + INT_RAW_OFFSET; 
+	//bwprintf( COM2, "HANDLE_Request: entered [request id: %x]\n", *ptr );
+	//bwprintf( COM2, "HANDLE_Request: entered [request id: %d]\n", request );
 	debug( DBG_KERN, "HANDLE_Request: entered [request id: %d]", request );
 	if ( request < 0 ) {
 		handle_hwi( GLOBALS ); 
@@ -346,6 +349,10 @@ handle_hwi( Kern_Globals *GLOBALS ){
 			debug( DBG_KERN, "TIMER_HW_INTERRUPT handled" );
 			break; 
 	}
+	
+	//Rescheduling the interrupted task
+	Task_descriptor *td = &(GLOBALS->tasks[GLOBALS->schedule.last_active_tid]);
+	sys_reschedule( td, GLOBALS );
 }
 
 void 

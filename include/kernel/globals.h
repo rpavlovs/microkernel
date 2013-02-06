@@ -32,6 +32,8 @@
 
 typedef struct Kern_Globals GLOBALS;
 
+// Send/Receive/Reply structs
+
 typedef struct {
 	int sender_tid;
 	char *msg;
@@ -58,6 +60,8 @@ typedef struct {
 	int size;
 } Message_queue;
 
+// Task descriptor
+
 typedef struct {
 	int tid;
 	int parent_tid;
@@ -75,32 +79,23 @@ typedef struct {
 } Task_descriptor;
 
 // Schedule structures
+
 typedef struct {
-
 	Task_descriptor *td_ptrs[SCHED_QUEUE_LENGTH];
-
-	// position of the newest and oldest td pointers in the queue
 	int newest, oldest;
-
-	// Number of tasks are in the queue right now
 	int size;
-
 } Task_queue;
 
 typedef struct {
 	Task_queue priority[SCHED_NUM_PRIORITIES];
-	
-	// The latest tid scheduled to run
 	int last_issued_tid;
-
-	// The last activated tid
 	int last_active_tid;
-	
 	int tasks_alive;
 	
 	Task_descriptor *hwi_events_waiting_table[HWI_NUM_EVENTS];
 } Schedule;
 
+// Globals
 
 typedef struct {
 	Task_descriptor tasks[MAX_NUM_TASKS];

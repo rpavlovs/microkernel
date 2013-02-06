@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="84">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <df name="microkernel" root=".">
+      <df name="build">
+        <df name="kernel">
+        </df>
+        <df name="tasks">
+        </df>
+      </df>
+      <df name="include">
+        <df name="config">
+          <in>memory.h</in>
+          <in>system.h</in>
+          <in>ts7200.h</in>
+        </df>
+        <df name="kernel">
+          <in>context_switch.h</in>
+          <in>globals.h</in>
+          <in>hw_interrupt_handlers.h</in>
+          <in>init.h</in>
+          <in>queues.h</in>
+          <in>sched.h</in>
+          <in>scheduler.h</in>
+          <in>syscall.h</in>
+          <in>sysfuncs.h</in>
+        </df>
+        <df name="lib">
+          <in>bwio.h</in>
+          <in>stdlib.h</in>
+          <in>string.h</in>
+        </df>
+        <df name="tasks">
+          <in>RPS-game.h</in>
+          <in>a1.h</in>
+          <in>first.h</in>
+          <in>nameserver.h</in>
+          <in>tests.h</in>
+          <in>timeserver.h</in>
+        </df>
+        <in>commonspace.h</in>
+        <in>kernelspace.h</in>
+        <in>userspace.h</in>
+      </df>
+      <df name="src">
+        <df name="kernel">
+          <in>context_switch.c</in>
+          <in>hw_interrupt_handlers.c</in>
+          <in>init.c</in>
+          <in>kernel.c</in>
+          <in>queues.c</in>
+          <in>sched.c</in>
+          <in>scheduler.c</in>
+          <in>syscall.c</in>
+          <in>sysfuncs.c</in>
+        </df>
+        <df name="lib">
+          <in>bwio.c</in>
+          <in>stdlib.c</in>
+          <in>string.c</in>
+        </df>
+        <df name="tasks">
+          <in>RPS-game.c</in>
+          <in>a1.c</in>
+          <in>first.c</in>
+          <in>nameserver.c</in>
+          <in>tests.c</in>
+          <in>timeserver.c</in>
+        </df>
+      </df>
+    </df>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <sourceFolderFilter>^(nbproject)$</sourceFolderFilter>
+  <sourceRootList>
+    <Elem>.</Elem>
+  </sourceRootList>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Default" type="0">
+      <toolsSet>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
+        <compilerSet>default</compilerSet>
+      </toolsSet>
+      <codeAssistance>
+      </codeAssistance>
+      <makefileType>
+        <makeTool>
+          <buildCommandWorkingDir>.</buildCommandWorkingDir>
+          <buildCommand>${MAKE} -f Makefile</buildCommand>
+          <cleanCommand>${MAKE} -f Makefile clean</cleanCommand>
+          <executablePath></executablePath>
+          <cTool>
+            <incDir>
+              <pElem>.</pElem>
+              <pElem>include</pElem>
+            </incDir>
+          </cTool>
+        </makeTool>
+      </makefileType>
+      <item path="include/config/ts7200.h" ex="true" tool="3" flavor2="0">
+      </item>
+      <item path="include/kernel/init.h" ex="true" tool="3" flavor2="0">
+      </item>
+      <item path="include/kernel/sched.h" ex="true" tool="3" flavor2="0">
+      </item>
+      <item path="include/lib/bwio.h" ex="true" tool="3" flavor2="0">
+      </item>
+      <item path="include/tasks/RPS-game.h" ex="true" tool="3" flavor2="0">
+      </item>
+      <item path="include/tasks/first.h" ex="true" tool="3" flavor2="0">
+      </item>
+      <item path="include/tasks/nameserver.h" ex="true" tool="3" flavor2="0">
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>

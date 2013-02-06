@@ -175,7 +175,8 @@ sys_receive( int *sender_tid, char *msg, int msglen, Task_descriptor *receiver_t
 	Message_queue *receive_queue = &(receiver_td->receive_queue);
 	//If there are SOME sends from other tasks to the current task
 	if( receive_queue->size > 0 ) {
-		debug( DBG_KERN, "SYS_RECEIVE: Task unblocked. There are messages waiting to be recieved" );
+		debug( DBG_KERN, "SYS_RECEIVE: Task unblocked. "
+			"There are messages waiting to be recieved" );
 
 		//Modifying the queue
 		receive_queue->size--;
@@ -253,8 +254,8 @@ sys_unblock_receive( Task_descriptor *receiver_td, Kern_Globals *GLOBALS ) {
 
 	//The target task was waiting and there are SOME sends
 	if( receiver_td->state != RECEIVE_TASK || receive_queue->size == 0 ) {
-		debug( DBG_KERN, "SYS_UNBLOCK_RECEIVE: got called for a non-RECEIVE_TASK or a task with no "
-			"messages waiting to be received" );
+		debug( DBG_KERN, "SYS_UNBLOCK_RECEIVE: got called for a non-RECEIVE_TASK "
+			"or a task with no messages waiting to be received" );
 		return;
 	}
 

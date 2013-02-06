@@ -20,4 +20,7 @@ void timer_hwi_handler( Kern_Globals *GLOBALS ){
 	// Clear source of interrupt. 
 	int *timerClrPtr = (int *)( TIMER1_BASE + CLR_OFFSET );
 	*timerClrPtr = 1; // Any value clears the src of the interrupt. 
+	
+	int *vicPtr = (int *)( INT_CONTROL_BASE_1 + INT_VEC_ADDRESS_OFFSET );
+	*vicPtr = 0; 
 }

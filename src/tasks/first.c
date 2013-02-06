@@ -1,20 +1,5 @@
 #include "userspace.h"
 
-
-void sub() {
-	int sender_tid;
-	char buf64[64];
-	char buf4[4];
-
-	Receive( &sender_tid, buf4, 4 );
-	Reply( sender_tid, buf4, 4 );
-
-	Receive( &sender_tid, buf64, 64 );
-	Reply( sender_tid, buf64, 64 );
-
-	Exit();
-}
-
 #define INT_CONTROL_BASE_1		0x800B0000		// VIC 1
 
 void 
@@ -97,3 +82,4 @@ void first_task() {
 	Exit();
 	panic( "FIRST_TASK: Shoot the zombie!" );
 }
+*/

@@ -89,6 +89,11 @@ int Reply( int tid, char *reply, int replylen ) {
 	return ret;
 }
 
+int AwaitEvent( int eventid )
+{
+	
+}
+
 ////////////////////
 // Wrappers
 ////////////////////

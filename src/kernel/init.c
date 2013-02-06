@@ -1,19 +1,5 @@
 #include "kernelspace.h"
 
-//Executed once during initialization
-/*int installSwiHandler( unsigned int handlerLoc, unsigned int *vector ) {
-	unsigned int vec = ( ( handlerLoc - ( unsigned int ) vector - 0x8 ) >> 2 );
-	if ( vec & 0xFF000000 )
-	{
-		return 1; // There was a problem 
-	}
-
-	vec = 0xEA000000 | vec;
-	*vector = vec; 
-
-	return 0; 
-}*/
-
 void init_message_queues( Kern_Globals *GLOBALS ) {
 	int tid ;
 	for( tid = 0; tid < MAX_NUM_TASKS; ++tid) {

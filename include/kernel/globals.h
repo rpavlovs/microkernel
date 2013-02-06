@@ -26,6 +26,8 @@
 #define REPLY_ERROR_NO_ONE_WAITING			-3
 #define REPLY_ERROR_SEND_BUFFER_TOO_SHORT	-4
 
+#define HWI_NUM_EVENTS						10
+
 
 typedef struct Kern_Globals GLOBALS;
 
@@ -94,6 +96,8 @@ typedef struct {
 	int last_active_tid;
 	
 	int tasks_alive;
+	
+	Task_descriptor *hwi_events_waiting_table[HWI_NUM_EVENTS];
 } Schedule;
 
 

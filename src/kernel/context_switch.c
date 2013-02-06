@@ -195,6 +195,7 @@ void start_timer(){
 
 int 
 initialize_context_switching() {
+	
 	// Clean the state of the system to avoid possible errors caused by dirty
 	// state left by other programs. 
 	clean_system_state(); 
@@ -206,9 +207,6 @@ initialize_context_switching() {
 	
 	// Initialize specific interrupts that will be handled. 
 	initialize_interrupts(); 
-	
-	// TODO: Put this outside. 
-	//start_timer(); 
 	
 	return 0; 
 }
@@ -358,11 +356,10 @@ handle_request( int request, Kern_Globals *GLOBALS ) {
 void 
 handle_hwi( Kern_Globals *GLOBALS ){
 	
-	//bwprintf( COM2, "HW interrupt!!! Type:"); 
 	int hwInterrupt = *( ( int * ) INT_CONTROL_BASE_1 + IRQ_STATUS_OFFSET );
 	
 	// Debug. 
-	bwprintf( COM2, "HW interrupt!!! Type: %d\n", hwInterrupt ); 
+	debug( DBG_KERN, "HANDLE_hWI: entered [interrupt id: %d]", hwInterrupt );
 	
 	// NOTE: The cases inside the handler must be organized by the priority
 	// of the hardware interrupt
@@ -377,6 +374,8 @@ handle_hwi( Kern_Globals *GLOBALS ){
 
 void 
 handle_swi( int request, Kern_Globals *GLOBALS ){
+	debug( DBG_KERN, "HANDLE_SWI: entered [request id: %d]", request );
+	
 	// Create a placeholder for the arguments.
 	int sysCallArguments[MAX_NUM_ARGUMENTS];
 

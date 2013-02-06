@@ -47,13 +47,18 @@ init_schedule( int first_task_priority, void (*first_task_code) ( ), Kern_Global
 // Return:
 // tid of the next task to run
 int schedule( Kern_Globals * GLOBALS) {
-	debug( DBG_KERN, "SCHEDULE: entered" );
+	debug( DBG_KERN, "SCHEDULE: entered. [last active: %d]",
+		GLOBALS->schedule.last_active_tid );
 
 	int p = SCHED_NUM_PRIORITIES - 1;
 
 	// If there are no tasks in all priority queues - PANIC
 	for( ; GLOBALS->schedule.priority[p].size == 0; --p ) {
-		if( p < 0 ) panic( "SCHEDULE: pririty queues are all empty." );
+		// if( p < 0 ) panic( "SCHEDULE: pririty queues are all empty." );
+		if( p < 0 ) {
+			debug( DBG_SYS, "SCHEDULE: WARNING: pririty queues are all empty." );
+			break;
+		}
 	}
 
 	// Get the non-empty queue with the highest priority
@@ -76,6 +81,22 @@ int activate( const int tid, Kern_Globals *GLOBALS ) {
 
 	Task_descriptor *td = &(GLOBALS->tasks[tid]);
 
+	if( td->state != READY_TASK ) {
+		int i = 0;
+		for( ; i < SCHED_NUM_PRIORITIES; ++i ) {
+			Task_queue *queue = &(GLOBALS->schedule.priority[i]);
+			bwprintf( COM2, "SCHEDULE: p[%d].size: %d", i,
+				queue->size );
+			if( queue->size != 0 ) {
+				bwprintf( COM2, " oldest: %d newest: %d\n",
+				queue->td_ptrs[queue->oldest]->tid,
+				queue->td_ptrs[queue->newest]->tid );
+			} else {
+				bwprintf( COM2, "\n");
+			}
+		}
+	}
+	
 	assert( td->state == READY_TASK, "It's only possible to activate a READY task. "
 		"[task state: %d]", td->state );
 	

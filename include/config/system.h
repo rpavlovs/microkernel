@@ -11,12 +11,13 @@
 // Note: requests with non-zero nubmer of arguments
 //  do not have debug printouts
 
+
 #define DEBUG_LEVEL 				1
 
 #define NAMESERVER_TASK_PRIORITY	14
 #define TIMESERVER_TASK_PRIORITY	14
 
-#define FIRST_USER_TASK_NAME		test_timeserver
+#define FIRST_USER_TASK_NAME		a3_game
 #define FIRST_USER_TASK_PRIORITY	8
 
 #endif

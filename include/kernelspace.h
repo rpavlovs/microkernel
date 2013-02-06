@@ -15,6 +15,6 @@
 
 #include "kernel/sched.h"
 
-#include "kernel/hw_interrupt_handlers.h"
+#include <kernel/hw_interrupt_handlers.h>
 
 #endif

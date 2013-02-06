@@ -33,6 +33,9 @@
 #define NAMESERVER_RECORD_NAME_MAX_LENGTH	30
 #define NAMESERVER_TABLE_MAX_SIZE			200
 
+//HW Events Indexes
+#define TIMER1_INT_INDEX					0
+
 // Message types
 
 #define NAMESERVER_REGISTER_AS_REQUEST 		0

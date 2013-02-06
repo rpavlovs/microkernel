@@ -2,7 +2,7 @@
 #define __DBG_KERN_GLOBALS__
 
 #define SCHED_QUEUE_LENGTH 					100
-#define SCHED_NUM_PRIORITIES 				21
+#define SCHED_NUM_PRIORITIES 				16
 #define SCHED_TID_MAX_VAL 					2147483600
 
 #define MAX_NUM_TASKS						100

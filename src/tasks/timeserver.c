@@ -11,7 +11,7 @@ void start_timer(){
 	int *timerControl = ( int * ) ( TIMER1_BASE + CRTL_OFFSET ); 
 
 	// First the load is added. 
-	*timerLoad = INITIAL_TIMER_LOAD;
+	*timerLoad = TIMER_CYCLES_PER_TICK;
 
 	// The timer is enabled and configured.
 	timerControlValue = *timerControl;
@@ -73,14 +73,15 @@ int get_tid_to_wakeup( Wakeup_list *list, int current_time ) {
 	if( list->size == 0 || list->first_to_wakeup->wakeup_time > current_time )
 		return -1;
 
-	// Difference in pointers is a position in an array. It is actually also it's TID
+	// Difference in pointers is a position in an array. In our case it is actually also the
+	// task id of a corresponding task
 	// It's magic, I know...
 	
 	debug( DBG_SYS, "TIMESERVER: list->records = %d, list->first_to_wakeup = %d ",
 			list->records, list->first_to_wakeup );
 
 	int tid_to_wakeup = (int)(list->first_to_wakeup - list->records);
-	assert( tid_to_wakeup >= 0 , "GET_TID_TO_WAKEUP: there is no magic in this world... :(" );
+	assert( tid_to_wakeup >= 0, "GET_TID_TO_WAKEUP: there is no magic in this world... :(" );
 
 	list->first_to_wakeup = list->first_to_wakeup->next_to_wakeup;	
 	list->size--;
@@ -94,8 +95,9 @@ void clock_tick_notifier() {
 	msg.type = TICK_NOTIFICATION;
 
 	FOREVER {
-		// AwaitEvent( );
-		debug( DBG_SYS, "TICK_NOTIFIER: sending a tick to %d",
+		debug( DBG_SYS, "TICK_NOTIFIER: waiting for a tick " );
+		AwaitEvent( TIMER1_INT_INDEX );
+		debug( DBG_SYS, "TICK_NOTIFIER: got a tick. Sending a poke to task %d",
 			timeserver_tid);
 		Send( timeserver_tid, (char *) &msg, sizeof(msg), (char *) 0, 0 );
 	}
@@ -115,15 +117,16 @@ void timeserver() {
 	Msg_timeserver_reply reply;
 	Wakeup_list list;
 	init_wakeup_list( &list );
-	Create( 4, clock_tick_notifier );
+	Create( 8, clock_tick_notifier );
 
 	FOREVER {
 		debug( DBG_SYS, "TIMESERVER: listening as task %d...", mytid );
 		Receive( &sender_tid, (char *) &request, sizeof(request) );
 		switch( request.type ) {
 		case TICK_NOTIFICATION:
-			debug( DBG_SYS, "TIMESERVER: tick notification recieved from task %d",
-				sender_tid );
+			debug( DBG_SYS, "TIMESERVER: tick notification recieved from task %d. "
+				"[it's been %d ticks since start]",
+				sender_tid , current_time);
 			current_time++;
 			tid_to_unblock = get_tid_to_wakeup( &list, current_time );
 			if( tid_to_unblock >= 0 ) {

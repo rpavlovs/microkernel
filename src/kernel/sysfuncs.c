@@ -291,10 +291,10 @@ sys_unblock_receive( Task_descriptor *receiver_td, Kern_Globals *GLOBALS ) {
 }
 
 int
-sys_await_event (int eventid, Task_descriptor *td, Kern_Globals *GLOBALS)
-{
-	assert(eventid < HWI_NUM_EVENTS, "SYS_AWAIT_EVENT: eventid is invalid");
-	if(eventid >= HWI_NUM_EVENTS) return -1;
+sys_await_event( int eventid, Task_descriptor *td, Kern_Globals *GLOBALS ) {
+	debug( DBG_KERN, "SYS_AWAIT_EVENT: entered. [event id: %d, task id: %d]",
+		eventid, td->tid );
+	assert( eventid < HWI_NUM_EVENTS, "SYS_AWAIT_EVENT: eventid is invalid" );
 	
 	GLOBALS->schedule.hwi_events_waiting_table[eventid] = td;
 	
@@ -302,6 +302,7 @@ sys_await_event (int eventid, Task_descriptor *td, Kern_Globals *GLOBALS)
 	td->state = AWAIT_TASK;
 	Task_queue *pqueue = &(GLOBALS->schedule.priority[td->priority]);
 	dequeue_tqueue(pqueue);
+	return 0;
 }
 
 int

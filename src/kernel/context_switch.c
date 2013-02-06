@@ -337,21 +337,20 @@ void
 handle_hwi( Kern_Globals *GLOBALS ){
 	
 	int hwInterrupt = *( ( int * ) INT_CONTROL_BASE_1 + IRQ_STATUS_OFFSET );
-	
-	// Debug. 
-	debug( DBG_KERN, "HANDLE_HWI: entered [interrupt id: %d]", hwInterrupt );
+	Task_descriptor *td = &(GLOBALS->tasks[GLOBALS->schedule.last_active_tid]);
+	debug( DBG_KERN, "HANDLE_HWI: entered [interrupt id: %d caller: ]", hwInterrupt, td->tid );
 	
 	// NOTE: The cases inside the handler must be organized by the priority
 	// of the hardware interrupt
 	switch( hwInterrupt ){
 		case TIMER1_INT:
+			debug( DBG_KERN, "TIMER_INTERRUPT: handling" );
 			timer_hwi_handler( GLOBALS );
-			debug( DBG_KERN, "TIMER_HW_INTERRUPT handled" );
+			debug( DBG_KERN, "TIMER_INTERRUPT: handled" );
 			break; 
 	}
 	
 	//Rescheduling the interrupted task
-	Task_descriptor *td = &(GLOBALS->tasks[GLOBALS->schedule.last_active_tid]);
 	sys_reschedule( td, GLOBALS );
 }
 

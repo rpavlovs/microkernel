@@ -296,6 +296,8 @@ void assert( int statement, char *fmt, ... ) {
     va_end(va);
 
 	bwprintf( COM2, "\n" );
+
+	for( ; ; );
 }
 
 void panic( char *fmt, ... ) {

@@ -79,7 +79,8 @@ int activate( const int tid, Kern_Globals *GLOBALS ) {
 
 	Task_descriptor *td = &(GLOBALS->tasks[tid]);
 
-	assert( td->state == READY_TASK, "It should only be possible to activate a READY task" );
+	assert( td->state == READY_TASK, "It's only possible to activate a READY task. "
+		"[task state: %d]", td->state );
 	td->state = ACTIVE_TASK;
 
 	unsigned int uisp = (unsigned int) td->sp;

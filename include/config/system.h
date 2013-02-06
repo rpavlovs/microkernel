@@ -7,6 +7,9 @@
 // 2 - sytem/user tasks
 // 3 - kernel requests + sytem/user tasks
 // 4 - all
+// 
+// Note: requests with non-zero nubmer of arguments
+//  do not have debug printouts
 
 #define DEBUG_LEVEL 				4
 

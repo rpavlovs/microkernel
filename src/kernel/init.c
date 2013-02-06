@@ -78,10 +78,9 @@ void init_hardware() {
 
 void initialize( Kern_Globals *GLOBALS ) {
 
+	initialize_context_switching(); 
+	
 	init_hardware();
-
-	//installSwiHandler((unsigned int) swi_main_handler, (unsigned int *) SWI_ENRTY_ADDRESS);
-    initialize_context_switching(); 
 
 	init_message_queues( GLOBALS );
 

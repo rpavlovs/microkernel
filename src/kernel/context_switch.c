@@ -1,102 +1,214 @@
 #include "kernelspace.h"
 
 extern void swi_main_handler();
+extern void main_interrupt_handler(); // This should be used for both, SWI and HWI. 
 
- /*
-	This handler is executed whenever there's a software interrupt. 
-	The processor automatically leaves the system in the following state. 
-	1- Copies the current CPSR (Current Program Status Register) into 
-	   the SPSR_SVC (Saved Program Status Register->Supervisor)
-	2- Sets the CPSR mode bits to supervisor mode (takes the processor into SVC 
-	   mode). 
-	3- Sets the CPSR IRQ to disable -> disables the interrupts. 
-	4- Stores the value (PC + 4) into LR_SVC. This means that the LR that the 
-	   supervisor receives is pointing to the next address in the user program. 
-	5- Forces the PC to 0x08 (the default SWI handler). This address is in the
-	   vector table (spring board).
- */
-    asm (																	"\n"
+asm(
+												"\n\t"
+	// ------------------------------------------------------------------------
+	// Variables
+	// ------------------------------------------------------------------------
+	// TODO: Put this in a header file. (Check how to compile and include it.)
+	".EQU	IRQ_MODE,			0x92"			"\n\t"
+	".EQU	SVC_MODE,			0x93"			"\n\t"
+	".EQU	SVC_MODE_NO_INTS,	0x13"			"\n\t"
+	".EQU	SYS_MODE,			0x9F"			"\n\t"
 
-    "swi_main_handler:"                                                     "\n\t"
-    // Save in the stack the arguments (in the registers) since they might get
-    // erased. 
-    // NOTE: The current SP is the SP_SVC, so the user SP is not affected.
-    //       
-    // Switch to system mode. 
-    "MSR	CPSR_c, #0x1F"													"\n\t"
+	// ------------------------------------------------------------------------
+	// Debugging
+	// ------------------------------------------------------------------------
+	/*
+	 * This is a method used to debug assembly code. It uses bwputr, but does
+	 * not modify the registers. Therefore, it doesn't corrupt the state. 
+	 * NOTE: This method prints the value in register 4 since it's never used. 
+	 */										
+	"asm_debug_bwputr:"							"\n\t"
+		"STMFD	sp!, { r0-r3 }"					"\n\t"
+		"MOV	r0, #1"							"\n\t"
+		"MOV	r1, r4"							"\n\t"
+		"BL		bwputr"							"\n\t"
+		"LDMFD	sp!, { r0-r3 }"					"\n\t"
+		"MOV	pc, lr"							"\n\t"
 
-    // Leave space for SPSR. 	 
-    "SUB	sp, sp, #4"														"\n\t"
+	// ------------------------------------------------------------------------
+	// Interrupt Handler
+	// ------------------------------------------------------------------------
+    /*
+     * This method is used for both, SW and HW interrupts. 
+     */
+	"main_interrupt_handler:"					"\n\t"
 
-    // Store all the registers (except 13-sp- and 15-pc-).		
-    "STMFD	sp!, { r0-r12, lr }"											"\n\t"
+		// Determine the mode.
+		"SUB	sp, sp, #4"						"\n\t"		// Add space for the return value. 
+		"STMFD	sp!, { r0, r1 }"				"\n\t"		
+		"MRS	r0, cpsr"						"\n\t"
+		"AND	r0, r0, #0x1F"					"\n\t"		// Get only the mode (the last 5 bits represent the mode.)
+		"TEQ	r0, #SVC_MODE_NO_INTS"			"\n\t"		// Is this SVC mode? This will set the Z flag that will be read later. 
+		"BNE	hw_interrupt"					"\n\t"
 
-    // Store the task's SP so that it can be stored later into the TR.
-    "MOV	r0, sp"															"\n\t"
+	// -- SW Interrupt --------------------------------------------------------
+												"\n"
+	"sw_interrupt:"								"\n\t"
+		"LDR	r0, [ lr, #-4 ]"				"\n\t"		// For SW interrupts the return value is the SWI parameter. 
+		"BIC	r0, r0, #0xff000000"			"\n\t"
+		"STR	r0, [ sp, #8 ]"					"\n\t"
+		"LDMFD	sp!, { r0, r1 }"				"\n\t"		// Retrieve the temporarily stored registers. 
+		"B		store_task_registers"			"\n\t"
 
-    // Return to supervisor mode. 
-    "MSR	cpsr_c, #0x13"													"\n\t"
+	// -- HW Interrupt --------------------------------------------------------
+												"\n"
+	"hw_interrupt:"								"\n\t"
+		"MRS	r0, spsr"						"\n\t"		// Copy the LR and SPSR from IRQ to SVC. 
+		"MOV	r1, lr"							"\n\t"
+		"SUB	r1, r1, #4"						"\n\t"		// The LR in HW interrupts is shifted by 4 by the HW. Adjust it here. 
+		"MSR	cpsr_c, #SVC_MODE"				"\n\t"		// Switch to SVC mode. 
+		"MOV	lr, r1"							"\n\t"
+		"MSR	spsr, r0"						"\n\t"
+		"SUB	sp, sp, #4"						"\n\t"		// Store the return value.
+		"MOV	r0, #-1"						"\n\t"		// The return value for HW interrupts is -1. 
+		"STR	r0, [ sp, #0 ]"					"\n\t"
+		"MSR	cpsr_c, #IRQ_MODE"				"\n\t"		// Return to IRQ mode and retrieve the temporarily stored registers.
+		"LDMFD	sp!, { r0, r1 }"				"\n\t"
+		"ADD	sp, sp, #4"						"\n\t"
 
-    // Get the value of the system call
-    // 
-    // Store in the task's stack the spsr (the original CPSR of the task).
-    "MRS	r1, spsr"														"\n\t"			 
-    "STR	r1, [ r0, #14*4 ]"												"\n\t"
+	// -- SWI AND HW ---------------------------------------------------------
+												"\n"
+	"store_task_registers:"						"\n\t"
+		"MSR	cpsr_c, #SYS_MODE"				"\n\t"      // Switch to system mode.
+		"SUB	sp, sp, #4"                     "\n\t"      // Leave space for SPSR. 
+		"STMFD	sp!, { r0-r12, lr }"            "\n\t"      // Store all the registers (except 13-sp- and 15-pc-)
+		"MOV    r0, sp"                         "\n\t"      // Store the task's SP so that it can be later stored in the TR. 
+		"MOV	r1, lr"							"\n\t"
+		"MSR	CPSR_c, #SVC_MODE"				"\n\t"		// Switch to SVC mode
 
-    // Store the return value in the r1 so that it is stored later into the TR. 
-    "MOV	r1, lr"															"\n\t"		
+		// Restore the kernel state. 
+		"LDR	r3, [ sp, #0 ]"					"\n\t"
+		"ADD	sp, sp, #4"						"\n\t"
+		"MOV	r1, lr"							"\n\t"
+		"MRS	r2, spsr"						"\n\t"
+		"STR	r2, [ r0, #14*4 ]"				"\n\t"		// Store the retrieved SPSR in the stack. 
+		"LDMFD	sp!, { r4-r11 }"				"\n\t"
 
-    // Restore the kernel state
-    "LDMFD	sp!, { r4-r11 }"												"\n\t"
+		// Save the TD information. 
+		// R0 - Task stack pointer. 
+		// R1 - Next address to execute (LR).
+		// R2 - Task decriptor pointer. 
+		"LDR	r2, [ sp, #0 ]"                 "\n\t"      // The pointer to the active TD is loaded into register 2.
+		"STR	r3, [ sp, #0 ]"					"\n\t"		// Store the return value so that it's not overwritten. 
+		"BL		StoreTaskInformation"			"\n\t"
 
-    /*// Execute the C system call handler
-    // Store the next instruction to run in the r1 so that it is stored later
-    // into the TR. 
-    "LDR	r2, [ lr, #-4 ]\n\t"		
-    "BIC	r2, r2, #0xff000000\n\t"	
-    "LDR	r3, [ sp, #0 ]\n\t"		// The pointer to the active TD is loaded into
-    register 3.
-    "BL	ExecuteCSWIHandler\n\t"*/
+		// DEBUG!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		//"MRS	r1, spsr"						"\n\t"
+		//"MOV	r0, #1"							"\n\t"
+		//"BL		bwputr"							"\n\t"
+		// DEBUG!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    // Execute the C system call handler.
-    // The pointer to the active TD is loaded into register 2.
-    "LDR	r2, [ sp, #0 ]"													"\n\t"		
-
-    // Store the next instruction to run in the r1 so that it is stored later
-    // into the TR. 
-    "LDR	r3, [ lr, #-4 ]"												"\n\t"		
-    "BIC	r3, r3, #0xff000000"											"\n\t"
-
-    // This variable is stored in local memory to prevent it from being deleted
-    // by the function call. 
-    "STR	r3, [ sp, #0 ]"													"\n\t"
-
-    // r0 - task stack pointer
-    // r1 - next address
-    // r2 - task descriptor pointer	
-    "BL	ExecuteCSWIHandler"													"\n\t"
-
-    // Set the return value.
-    "LDR	r0, [ sp, #0 ]"													"\n\t"	
-
-    // Return control to the kernel C code. 
-    "sub	sp, fp, #12"													"\n\t"
-    "LDMFD	sp, { fp, sp, pc }"												"\n\t"
-    );
+		// Return control to the kernel. 
+		"LDR	r0, [ sp, #0 ]"					"\n\t"		// Load the return value. 
+		"SUBS	sp, fp, #12"					"\n\t"		//NOTE: This instruction also resets the Z flag (activated during TEQ.)
+		"LDMFD	sp, { fp, sp, pc }"				"\n\t"
+); 
 
 void
-ExecuteCSWIHandler( unsigned int taskSP, unsigned int lr, unsigned int activeTD ) {
+StoreTaskInformation( unsigned int taskSP, unsigned int lr, unsigned int activeTD ) {
 
+	// TODO: Add a debug statement with a very verbose level. 
+	// bwprintf( COM2, "Task Information. SP: %x LR: %x TD: %x\n\r", taskSP, lr, activeTD ); 
+	
 	// Update the task descriptor
 	Task_descriptor *td = (Task_descriptor *) activeTD;
 	td->sp = (int *) taskSP;
 	td->lr = (int *) lr;
+}
 
+void 
+clean_system_state(){
+	
+	// Make sure that the CSPR doesn't have FIQ and IRQ enabled. 
+	asm(
+		"MRS	r0, cpsr"						"\n\t"
+		"ORR	r0, r0, #0xC0"					"\n\t"		// Disables FIQ and IRQ
+		"MSR	cpsr, r0"						"\n\t"
+	);
+	
+	// Disable all HW interrupts. 
+	*( ( int * ) INT_CONTROL_BASE_1 + INT_ENABLE_OFFSET ) = INT_RESET_VALUE; 
+	*( ( int * ) INT_CONTROL_BASE_2 + INT_ENABLE_OFFSET ) = INT_RESET_VALUE; 
+	
+	// Disable all HW interrupts caused by SW. 
+	*( ( int * ) INT_CONTROL_BASE_1 + INT_SOFT_OFFSET ) = INT_RESET_VALUE;
+	*( ( int * ) INT_CONTROL_BASE_2 + INT_SOFT_OFFSET ) = INT_RESET_VALUE;
+}
+
+void 
+install_handlers(){
+	// Handler for SW interrupts. 
+	install_interrupt_handler( 
+			( unsigned int ) main_interrupt_handler, ( unsigned int * ) SWI_ENRTY_ADDRESS );
+	
+	// Handler for HW interrupts. 
+	install_interrupt_handler( 
+			( unsigned int ) main_interrupt_handler, ( unsigned int * ) ISR_ENTRY_ADDRESS );
+}
+
+void
+initialize_interrupts(){
+	int *vic1EnablePointer = ( int * )( INT_CONTROL_BASE_1 + INT_ENABLE_OFFSET );
+	int *vic2EnablePointer = ( int * )( INT_CONTROL_BASE_2 + INT_ENABLE_OFFSET );
+	
+	int initialInterruptsVIC1 = INT_RESET_VALUE;
+	int initialInterruptsVIC2 = INT_RESET_VALUE;
+	
+	// Enable here the interrupts found in VIC1 ( The first 32 ). 
+	initialInterruptsVIC1 = initialInterruptsVIC1 | TIMER1_INT;
+	*vic1EnablePointer = initialInterruptsVIC1; 
+	
+	// Enable here the interrupts found in VIC2 ( The last 32 ). 
+	*vic2EnablePointer = initialInterruptsVIC2;
+}
+
+#define INITIAL_TIMER_LOAD 200
+#define TIMER_ENABLE_FLAG 0x80 // 10000000
+#define TIMER_MODE 0x40 // 1000000
+#define MAX_SECONDS 59
+#define MAX_MINUTES 59
+#define MAX_DECI_SECONDS 9
+#define TIMER_ROW_POS 2
+#define TIMER_COL_POS 10
+
+void start_timer(){
+	int timerControlValue; 
+	int *timerLoad = ( int * ) TIMER1_BASE;
+	//int *timerValue = ( int * ) ( TIMER1_BASE + VAL_OFFSET ); 
+	int *timerControl = ( int * ) ( TIMER1_BASE + CRTL_OFFSET ); 
+
+	// First the load is added. 
+	*timerLoad = INITIAL_TIMER_LOAD;
+
+	// The timer is enabled and configured.
+	timerControlValue = *timerControl;
+	timerControlValue = timerControlValue | TIMER_ENABLE_FLAG | TIMER_MODE;
+	*timerControl = timerControlValue;
 }
 
 int 
 initialize_context_switching() {
-    install_interrupt_handler((unsigned int) swi_main_handler, (unsigned int *) SWI_ENRTY_ADDRESS);
+	// Clean the state of the system to avoid possible errors caused by dirty
+	// state left by other programs. 
+	clean_system_state(); 
+	
+	// Install handlers. 
+	install_handlers(); 
+	
+	// TODO: Remember to initialize the tasks' SPSR to enable interrupts. 
+	
+	// Initialize specific interrupts that will be handled. 
+	initialize_interrupts(); 
+	
+	// TODO: Put this outside. 
+	//start_timer(); 
+	
+	return 0; 
 }
 
 int install_interrupt_handler( unsigned int handlerLoc, unsigned int *vector ) {
@@ -121,7 +233,6 @@ int install_interrupt_handler( unsigned int handlerLoc, unsigned int *vector ) {
 	- The next instruction to execute in the user task.
 	- The TID of the current ( active ) user task. 
 */
-
 int
 execute_user_task( unsigned int a, unsigned int b, unsigned int c ) {
 	
@@ -131,7 +242,7 @@ execute_user_task( unsigned int a, unsigned int b, unsigned int c ) {
 	"MOV	ip, sp"														"\n\t"
 	"STMFD	sp!, { fp, ip, lr, pc }"									"\n\t"
 	"SUB	fp, ip, #4"													"\n\t"
-
+	
 	// Store the kernel state.
 	"SUB	sp, sp, #4"													"\n\t"
 
@@ -150,19 +261,19 @@ execute_user_task( unsigned int a, unsigned int b, unsigned int c ) {
 
 	// The task's SPSR		
 	"STR	r3, [ sp, #0 ]"												"\n\t"
-
+	
 	// Load the state of the task. 
 	// 
 	// Switch to system mode.
-	"MSR	cpsr_c, #0x1F"												"\n\t" 
+	"MSR	cpsr_c, #SYS_MODE"											"\n\t"
 	"MOV	sp, r0"														"\n\t"			
 	"LDMFD	sp!, { r0-r12, lr }"										"\n\t"
 	
 	// Temporarily store the r0 (to be able to use this registry).
 	"STR	r0, [ sp, #-4 ]"											"\n\t"
-
+	
 	// Return to supervisor mode.  
-	"MSR	cpsr_c, #0x13"												"\n\t"
+	"MSR	cpsr_c, #SVC_MODE"											"\n\t"
 
 	// Pass control to the user task.
 	// 
@@ -174,6 +285,7 @@ execute_user_task( unsigned int a, unsigned int b, unsigned int c ) {
 	"ADD	sp, sp, #4"													"\n\t"
 	
 	// Switch to user mode.			
+	"BIC	r0, r0, #0xC0"												"\n\t"	// TODO: This is temporary
 	"MSR	cpsr, r0"													"\n\t"
 
 	// Remove the temporarily stored r0. 
@@ -212,18 +324,45 @@ RetrieveSysCallArgs( int *sysCallArguments, int numArguments, unsigned int taskS
 
 void
 SetSysCallReturn( int returnValue, unsigned int taskSP ) {
-	
 	// The return value is in the address that currently holds R0 for the task. 
 	int *ptr = ( int * ) taskSP; 
-	//ptr += 13; 	// Position the pointer at the R0 address.
-	// TODO: Set this as a constant. 
-
 	*( ptr ) = returnValue; 
 }
 
 void
 handle_request( int request, Kern_Globals *GLOBALS ) {
 	
+	bwprintf( COM2, "Handle Request. Request Value: %d", request ); 
+	if ( request < 0 ) {
+		handle_hwi( GLOBALS ); 
+	}
+	else {
+		handle_swi( request, GLOBALS ); 
+	}
+}
+
+void 
+handle_hwi( Kern_Globals *GLOBALS ){
+	
+	//bwprintf( COM2, "HW interrupt!!! Type:"); 
+	int hwInterrupt = *( ( int * ) INT_CONTROL_BASE_1 + IRQ_STATUS_OFFSET );
+	
+	// Debug. 
+	bwprintf( COM2, "HW interrupt!!! Type: %d\n", hwInterrupt ); 
+	
+	// NOTE: The cases inside the handler must be organized by the priority
+	// of the hardware interrupt
+	switch( hwInterrupt ){
+		case TIMER1_INT:
+			bwprintf( COM2, "ENTRAAAAA!!! Type: %d\n", hwInterrupt );
+			timer_hwi_handler( GLOBALS );
+			debug( DBG_CURR_LVL, DBG_KERN, "TIMER_HW_INTERRUPT handled" );
+			break; 
+	}
+}
+
+void 
+handle_swi( int request, Kern_Globals *GLOBALS ){
 	// Create a placeholder for the arguments.
 	int sysCallArguments[MAX_NUM_ARGUMENTS];
 

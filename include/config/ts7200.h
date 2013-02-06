@@ -10,6 +10,7 @@
 
 
 #define SWI_ENRTY_ADDRESS 		0x8 		//Used for installation of SWI handler
+#define ISR_ENTRY_ADDRESS		0x18		// Use for installing the interrupt service routing for HW interrupts. 
 
 #define HALT_ADDR				0x80930008
 			

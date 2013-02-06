@@ -15,7 +15,6 @@ extern void swi_main_handler();
 	5- Forces the PC to 0x08 (the default SWI handler). This address is in the
 	   vector table (spring board).
  */
- // void swi_main_handler() {
     asm (																	"\n"
 
     "swi_main_handler:"                                                     "\n\t"
@@ -84,13 +83,14 @@ extern void swi_main_handler();
     "sub	sp, fp, #12"													"\n\t"
     "LDMFD	sp, { fp, sp, pc }"												"\n\t"
     );
-// }
+
 
 void
 ExecuteCSWIHandler( unsigned int taskSP, unsigned int lr, unsigned int activeTD ) {
 
 	// Update the task descriptor
 	Task_descriptor *td = (Task_descriptor *) activeTD;
+	debug( DBG_KERN, "EXECUTE_CSWI_HANDLER: enters [return address: %d, tid: %d]", lr, td->tid );
 	td->sp = (int *) taskSP;
 	td->lr = (int *) lr;
 
@@ -232,7 +232,7 @@ SetSysCallReturn( int returnValue, unsigned int taskSP ) {
 
 void
 handle_request( int request, Kern_Globals *GLOBALS ) {
-	
+	debug( DBG_KERN, "HANDLE_REQUEST: entered [request id: %d]", request );
 	// Create a placeholder for the arguments.
 	int sysCallArguments[MAX_NUM_ARGUMENTS];
 
@@ -250,25 +250,20 @@ handle_request( int request, Kern_Globals *GLOBALS ) {
 							td, GLOBALS );
 		
 		SetSysCallReturn( returnValue, taskSP );
-		debug( DBG_KERN, "CREATE_SYSCALL handled" );
 		break;
 	case MYTID_SYSCALL:
 		returnValue = sys_mytid( td, GLOBALS );
 		SetSysCallReturn( returnValue, taskSP );
-		debug( DBG_KERN, "MYTID_SYSCALL handled" );
 		break;
 	case MYPARENTTID_SYSCALL:
 		returnValue = sys_myparenttid( td, GLOBALS );
 		SetSysCallReturn( returnValue, taskSP );
-		debug( DBG_KERN, "MYPARENTTID_SYSCALL handled" );
 		break;
 	case PASS_SYSCALL:
 		sys_pass( td, GLOBALS );
-		debug( DBG_KERN, "PASS_SYSCALL handled" );
 		break;
 	case EXIT_SYSCALL:
 		sys_exit( td, GLOBALS );
-		debug( DBG_KERN, "EXIT_SYSCALL handled" );
 		break;
 	case TESTCALL_SYSCALL:
 		RetrieveSysCallArgs( sysCallArguments, TESTCALL_ARGS, taskSP );

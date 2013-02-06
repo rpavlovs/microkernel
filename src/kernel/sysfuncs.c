@@ -127,6 +127,7 @@ sys_reschedule( Task_descriptor *td, Kern_Globals *GLOBALS ) {
 int
 sys_send( int receiver_tid, char *msg, int msglen, char *reply, int replylen,
 		Task_descriptor *sender_td, Kern_Globals *GLOBALS ) {
+	debug( DBG_KERN, "SYS_SEND: entered" );
 
 	//Getting TD of the target task
 	Task_descriptor *receiver_td = &(GLOBALS->tasks[receiver_tid]);
@@ -169,6 +170,7 @@ sys_send( int receiver_tid, char *msg, int msglen, char *reply, int replylen,
 int
 sys_receive( int *sender_tid, char *msg, int msglen, Task_descriptor *receiver_td,
 		Kern_Globals *GLOBALS ) {
+	debug( DBG_KERN, "SYS_RECEIVE: entered" );
 
 	Message_queue *receive_queue = &(receiver_td->receive_queue);
 	//If there are SOME sends from other tasks to the current task
@@ -224,6 +226,7 @@ sys_receive( int *sender_tid, char *msg, int msglen, Task_descriptor *receiver_t
 int
 sys_reply( int sender_tid, char *reply, int replylen, Task_descriptor *receiver_td,
 		Kern_Globals *GLOBALS ) {
+	debug( DBG_KERN, "SYS_REPLY: entered" );
 
 	Reply_info *reply_info = &(receiver_td->reply_infos[sender_tid]);
 
@@ -244,12 +247,13 @@ sys_reply( int sender_tid, char *reply, int replylen, Task_descriptor *receiver_
 
 void
 sys_unblock_receive( Task_descriptor *receiver_td, Kern_Globals *GLOBALS ) {
+	debug( DBG_KERN, "SYS_UNBLOCK_RECEIVE: entered" );
 
 	Message_queue *receive_queue = &(receiver_td->receive_queue);
 
 	//The target task was waiting and there are SOME sends
 	if( receiver_td->state != RECEIVE_TASK || receive_queue->size == 0 ) {
-		debug( DBG_KERN, "sys_unblock_receive: got called for a non-RECEIVE_TASK or a task with no "
+		debug( DBG_KERN, "SYS_UNBLOCK_RECEIVE: got called for a non-RECEIVE_TASK or a task with no "
 			"messages waiting to be received" );
 		return;
 	}

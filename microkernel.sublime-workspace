@@ -4,6 +4,82 @@
 		"selected_items":
 		[
 			[
+				"fir",
+				"first_user_task_tid"
+			],
+			[
+				"pass",
+				"Passing"
+			],
+			[
+				"new",
+				"new_wakeup"
+			],
+			[
+				"ty",
+				"typedef"
+			],
+			[
+				"tid_to",
+				"tid_to_unblock"
+			],
+			[
+				"wake",
+				"wakeup_time"
+			],
+			[
+				"wa",
+				"wakeup_time"
+			],
+			[
+				"ti",
+				"ticks"
+			],
+			[
+				"DB",
+				"DBG_SYS"
+			],
+			[
+				"rep",
+				"reply_msg"
+			],
+			[
+				"req",
+				"request_msg"
+			],
+			[
+				"re",
+				"reply_msg"
+			],
+			[
+				"ret",
+				"ret"
+			],
+			[
+				"r0",
+				"r0"
+			],
+			[
+				"Inte",
+				"interrupt"
+			],
+			[
+				"uni",
+				"unsigned"
+			],
+			[
+				"D",
+				"DBG_KERN"
+			],
+			[
+				"DBG_",
+				"DBG_CURR_LVL"
+			],
+			[
+				"DBG",
+				"DBG_CURR_LVL"
+			],
+			[
 				"SRC",
 				"SRC_DIRS"
 			],
@@ -42,10 +118,6 @@
 			[
 				"msg_",
 				"msg_info"
-			],
-			[
-				"re",
-				"receive_info"
 			],
 			[
 				"Recei",
@@ -100,10 +172,6 @@
 				"status"
 			],
 			[
-				"new",
-				"new_tid"
-			],
-			[
 				"Ke",
 				"KERN_GLOBALS"
 			],
@@ -118,10 +186,6 @@
 			[
 				"inc",
 				"include"
-			],
-			[
-				"ret",
-				"ret"
 			],
 			[
 				"pri",
@@ -140,16 +204,8 @@
 				"train_speeds"
 			],
 			[
-				"fir",
-				"first_byte_recieved"
-			],
-			[
 				"COM",
 				"COM1"
-			],
-			[
-				"D",
-				"SEND_DELAY"
 			],
 			[
 				"SE",
@@ -157,7 +213,7 @@
 			],
 			[
 				"my",
-				"strcpy"
+				"my_strcpy"
 			],
 			[
 				"ter",
@@ -458,139 +514,68 @@
 			[
 				"for",
 				"foreach	foreach …"
-			],
-			[
-				"php",
-				"php"
-			],
-			[
-				"mysq",
-				"mysql_connect"
-			],
-			[
-				"erro",
-				"error_reporting"
 			]
 		]
 	},
 	"buffers":
 	[
-		{
-			"file": "src/tasks/first.c",
-			"settings":
-			{
-				"buffer_size": 2662,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "src/tasks/RPS-game.c",
-			"settings":
-			{
-				"buffer_size": 10664,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "src/kernel/context_switch.c",
-			"settings":
-			{
-				"buffer_size": 8822,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "#include \"commonspace.h\"\n\nvoid assert( int statement, char * err_msg ) {\n	if( !statement ) bwprintf( COM2, \"Assertion failed: %s\\n\\r\", err_msg );\n}\n\nvoid panic( char * panic_reason ) {\n	bwprintf( COM2, \"Kernel panic: %s\\n\\r\", panic_reason );\n	for( ; ; );\n}\n\n// void debug( DBG_KERN, char * fmt, ... ) {\n// 	va_list va;\n\n//     va_start(va,fmt);\n// 	bwprintf( COM2, fmt, va );\n// 	va_end(va);\n// }\n\nvoid strcpy( const char * source, char * target ) {\n	int pos = -1;\n	while( source[++pos] != '\\0' ) {\n		target[pos] = source[pos];\n	}\n	target[pos] = '\\0';\n}\n\nvoid mem_cpy( const char * source, char * target, const unsigned int len ) {\n	int pos = -1;\n	while( ++pos < len ) {\n		target[pos] = source[pos];\n	}\n}\n\nint strcmp( const char *s1, const char *s2 ) {\n    while( (*s1 && *s2) && (*s1++ == *s2++) );\n    return *(--s1) - *(--s2);\n}\n\n",
-			"file": "src/helpers.c",
-			"file_size": 847,
-			"file_write_time": 1359883697000000,
-			"settings":
-			{
-				"buffer_size": 826,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/Users/rpavlovs/Dropbox/w13/cs452/io/io/src/bwio.c",
-			"settings":
-			{
-				"buffer_size": 4827,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "include/kernel/globals.h",
-			"settings":
-			{
-				"buffer_size": 2080,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "include/commonspace.h",
-			"settings":
-			{
-				"buffer_size": 681,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "include/kernel/init.h",
-			"settings":
-			{
-				"buffer_size": 142,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "include/kernel/sched.h",
-			"settings":
-			{
-				"buffer_size": 772,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "include/kernel/queues.h",
-			"settings":
-			{
-				"buffer_size": 245,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "include/tasks/first.h",
-			"settings":
-			{
-				"buffer_size": 83,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "include/helpers.h",
-			"settings":
-			{
-				"buffer_size": 366,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "include/lib/bwio.h",
-			"settings":
-			{
-				"buffer_size": 818,
-				"line_ending": "Unix"
-			}
-		}
 	],
 	"build_system": "Packages/User/install-from-mac.sublime-build",
 	"command_palette":
 	{
-		"height": 392.0,
+		"height": 327.0,
 		"selected_items":
 		[
 			[
+				"ins",
+				"Package Control: Install Package"
+			],
+			[
+				"remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"git pus",
+				"Git: Push"
+			],
+			[
+				"git pu",
+				"Git: Pull"
+			],
+			[
+				"git ci",
+				"Git: Commit"
+			],
+			[
+				"git add .",
+				"Git: Add..."
+			],
+			[
+				"git pull",
+				"Git: Pull"
+			],
+			[
 				"git push",
+				"Git: Push"
+			],
+			[
+				"git add",
+				"Git: Add..."
+			],
+			[
+				"git stat",
+				"Git: Status"
+			],
+			[
+				"git st",
+				"Git: Show Tags"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"git ush",
 				"Git: Push"
 			],
 			[
@@ -602,16 +587,8 @@
 				"Git: Add..."
 			],
 			[
-				"git add",
-				"Git: Add..."
-			],
-			[
 				"git status",
 				"Git: Status"
-			],
-			[
-				"git st",
-				"Git: Show Tags"
 			],
 			[
 				"git cus",
@@ -622,20 +599,12 @@
 				"Git: Custom Command"
 			],
 			[
-				"git ci",
-				"Git: Commit"
-			],
-			[
 				"git ",
 				"Git: Gitk"
 			],
 			[
 				"git add ..",
 				"Git: Add..."
-			],
-			[
-				"git pus",
-				"Git: Push"
 			],
 			[
 				"git add ",
@@ -682,20 +651,8 @@
 				"Git: Commit"
 			],
 			[
-				"git pull",
-				"Git: Pull"
-			],
-			[
 				"clang",
 				"Preferences: SublimeClang Settings – User"
-			],
-			[
-				"insta",
-				"Package Control: Install Package"
-			],
-			[
-				"git add .",
-				"Git: Add..."
 			],
 			[
 				":inde",
@@ -763,24 +720,67 @@
 	},
 	"file_history":
 	[
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/lib/bwio.h",
-		"/Users/rpavlovs/Dropbox/w13/cs452/io/io/src/bwio.c",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/nameserver.c",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/config/ts7200.h",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/queues.c",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/sysfuncs.h",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/userspace.h",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/helpers.h",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/init.c",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/helpers.c",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/syscall.h",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/RPS-game.c",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/first.c",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernelspace.h",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/syscall.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/hw_interrupt_handlers.c",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/sysfuncs.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/syscall.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/nameserver.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/context_switch.c",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/sched.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/timeserver.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/first.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/tests.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/userspace.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernelspace.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/lib/stdlib.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/lib/bwio.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/init.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/tasks/tests.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/syscall.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/commonspace.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/config/system.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/globals.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/tasks/timeserver.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/hw_interrupt_handlers.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/tasks/a3-game.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/a3-game.c",
+		"/Users/rpavlovs/Dropbox/w13/cs450/w450-assembler1-sample/README",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/sched.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/lib/bwio.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/a1.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/tasks/test.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/tasks/a1.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/lib/stdlib.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/lib/string.c",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/kernel.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/lib/string.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/Makefile",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/config/memory.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/microkernel.sublime-workspace",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/RPS-game.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/config/build.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/string.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/string.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/queues.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/context_switch.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/sysfuncs.h",
+		"/Users/rpavlovs/Library/Application Support/Sublime Text 2/Packages/C++/#include-(inc angle).sublime-snippet",
+		"/Users/rpavlovs/Library/Application Support/Sublime Text 2/Packages/C++/Typedef.sublime-snippet",
+		"/Users/rpavlovs/Library/Application Support/Sublime Text 2/Packages/C++/struct.sublime-snippet",
+		"/Users/rpavlovs/Library/Application Support/Sublime Text 2/Packages/C++/do...while-loop-(do).sublime-snippet",
+		"/Users/rpavlovs/Library/Application Support/Sublime Text 2/Packages/C++/030-for-int-loop-(fori).sublime-snippet",
+		"/Users/rpavlovs/Library/Application Support/Sublime Text 2/Packages/C++/$1.begin()-$1.end()-(beginend).sublime-snippet",
+		"/Users/rpavlovs/Library/Application Support/Sublime Text 2/Packages/C++/forv.sublime-snippet",
+		"/Users/rpavlovs/Library/Application Support/Sublime Text 2/Packages/C++/010-main()-(main).sublime-snippet",
+		"/Users/rpavlovs/Library/Application Support/Sublime Text 2/Packages/C++/if-..-(if).sublime-snippet",
+		"/Users/rpavlovs/Library/Application Support/Sublime Text 2/Packages/User/SublimeClang.sublime-settings",
+		"/Users/rpavlovs/Dropbox/w13/cs452/io/io/src/bwio.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/init.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/helpers.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/tasks/nameserver.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/tasks/first.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/config/ts7200.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/helpers.c",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/tasks/first.c",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/tasks/nameserver.c",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/tasks/RPS-game.c",
@@ -788,16 +788,11 @@
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/kernel/queues.c",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/kernel/context_switch.c",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/helpers.c",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/queues.h",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/commonspace.h",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/Makefile",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/.gitignore",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/kernel_globals.h",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/helpers.h",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/sched.h",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/tasks/RPS-game.h",
 		"/Users/rpavlovs/Library/Application Support/Sublime Text 2/Packages/User/install-from-mac.sublime-build",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/context_switch.h",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/kernel/init.c",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/kernel/helpers.c",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/kernel/sysfuncs.c",
@@ -811,7 +806,6 @@
 		"/Users/rpavlovs/Downloads/58869.user.js",
 		"/Users/rpavlovs/Downloads/F1 2012 [MULTI][MACOSX][MONEY][WwW.GamesTorrents.CoM]/Leeme.txt",
 		"/Volumes/UNTITLED/RPS-game.c",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/tasks/nameserver.h",
 		"/Users/rpavlovs/.ssh/config",
 		"/Volumes/home/cs452/RTOS/kernel/interrupt_handlers.c",
 		"/Volumes/home/cs452/RTOS/tasks/first.c",
@@ -849,48 +843,11 @@
 		"/Volumes/home/cs452/io/src/Makefile",
 		"/Volumes/home/cs452/A0/src/Makefile",
 		"/Volumes/home/cs452/test/0",
-		"/Users/rpavlovs/Library/Application Support/Sublime Text 2/Packages/User/SublimeClang.sublime-settings",
 		"/Volumes/home/cs452/A0/include/bwio.h",
 		"/Volumes/home/cs452/A0/src/a0.c",
 		"/Volumes/home/cs452/A0/src/io.c",
 		"/Volumes/home/cs452/A0/include/ts7200.h",
-		"/Volumes/home/cs452/A0/src/io.h",
-		"/Volumes/home/cs452/cstring/types.h",
-		"/Volumes/home/cs452/cstring/Makefile",
-		"/Volumes/home/cs452/cstring/string.h",
-		"/Volumes/home/cs452/cstring/string.c",
-		"/Volumes/home/cs452/cstring/os.h",
-		"/Volumes/home/cs452/cstring/sys/version.h",
-		"/Volumes/home/cs452/io/include/ts7200.h",
-		"/Volumes/home/cs452/io/test/iotest.c",
-		"/Volumes/home/cs452/A0/src/a0.h",
-		"/Volumes/home/cs452/io/Makefile",
-		"/Volumes/home/cs452/A0/Makefile",
-		"/Volumes/home/cs452/A0/io/Makefile",
-		"/Volumes/home/cs452/A0/io/src/Makefile",
-		"/Volumes/home/cs452",
-		"/Volumes/home/cs452/io/test/Makefile",
-		"/Users/rpavlovs/Library/Caches/Cleanup At Startup/Transmit/8B98C5B1-928A-4131-8A7D-7B9BD0B8B9D2/.cshrc",
-		"/Volumes/home/cs452/io/test/orex.ld",
-		"/Users/rpavlovs/Library/Caches/Cleanup At Startup/Transmit/057CD51C-5B3D-491E-A106-3E947E8DF41A/README",
-		"/Volumes/home/cs452/io/test/iotest.h",
-		"/Volumes/home/cs452/io/test/iotest.map",
-		"/Volumes/home/cs452/io/test/iotest.s",
-		"/Users/rpavlovs/Library/Caches/Cleanup At Startup/Transmit/4F8C5639-C642-45A2-97DF-1F06BB6D3A4A/iotest.s",
-		"/Users/rpavlovs/Library/Caches/Cleanup At Startup/Transmit/841A2196-5E82-428E-B12E-194A2C254B1F/.login",
-		"/Users/rpavlovs/Library/Caches/Cleanup At Startup/Transmit/7CCDC3AF-FB4C-451F-8AB0-1BEAE43C47D4/.bashrc",
-		"/private/etc/sshd_config",
-		"/Users/rpavlovs/.ssh/environment",
-		"/Users/rpavlovs/Documents/rails/bazasos/db/seeds.rb",
-		"/Users/rpavlovs/Documents/rails/bazasos/app/models/user.rb",
-		"/Users/rpavlovs/Documents/rails/bazasos/Gemfile",
-		"/Users/rpavlovs/Documents/rails/sample_app/app/views/static_pages/about.html.erb",
-		"/Users/rpavlovs/Documents/rails/sample_app/app/views/layouts/application.html.erb",
-		"/Users/rpavlovs/Documents/rails/bazasos/app/views/layouts/_header.html.erb",
-		"/Users/rpavlovs/Documents/rails/bazasos/app/views/people/index.html.haml",
-		"/Users/rpavlovs/Documents/rails/bazasos/app/assets/stylesheets/custom.css.scss",
-		"/Users/rpavlovs/Documents/rails/bazasos/config/database.yml",
-		"/Users/rpavlovs/Documents/rails/bazasos/README.rdoc"
+		"/Volumes/home/cs452/A0/src/io.h"
 	],
 	"find":
 	{
@@ -907,9 +864,64 @@
 	},
 	"find_state":
 	{
-		"case_sensitive": false,
+		"case_sensitive": true,
 		"find_history":
 		[
+			"start_timer",
+			"  ",
+			"SCHED_NUM_PRIORITIES",
+			" 21 ",
+			"21",
+			"last_active",
+			"->size",
+			"res",
+			"timer_hwi_handler",
+			"start_timer",
+			"new_wakeup",
+			"tids",
+			"sys_unblock_receive",
+			"resc",
+			"> ",
+			"ACTIVE_TASK",
+			"ass",
+			"should",
+			"it should",
+			"It should only",
+			"debug(D",
+			"debug( ",
+			"debug( DBG_CURR_LVL,",
+			"my_strcpy",
+			"str_cpy",
+			"DBG_KERN",
+			"to_wake",
+			"AwaitEvent",
+			"++;\n",
+			"new_weakup",
+			"reply_msg",
+			"request_msg",
+			"Description",
+			"BGD_CURR_LVL",
+			"timeserver",
+			"SWI",
+			"swi",
+			"execute_user_task",
+			"initialize_context_switching",
+			" *",
+			"handle_request",
+			"NAMESERVER_TID",
+			"__BWIO_H__",
+			"__COMMONSPACE__",
+			"__BWIO_H__",
+			"__COMMONSPACE__",
+			"__BWIO_H__",
+			"userspace",
+			"NAMESERVER_TID",
+			"DBG_KERN",
+			"KERNEL",
+			"DBG_LVL",
+			"debug( DBG_LVL, KERNEL",
+			"debug(DBG_LVL, KERNEL",
+			"debug(",
 			"time",
 			"return",
 			"HELPERS",
@@ -982,62 +994,7 @@
 			"strcpy",
 			"mem",
 			"80",
-			"history",
-			"last_send_time",
-			"last_send_timestamp",
-			"time",
-			"Parsing",
-			"strcpy",
-			"memcpy",
-			"cstring",
-			"bwio",
-			"Print_buf_init",
-			"print_buf",
-			"iotest",
-			"per",
-			"%>\n",
-			"page-header",
-			"rman",
-			" <%=",
-			"vi",
-			"<br>",
-			"ubuntu-9.04-desktop-amd64.iso",
-			"CONNECTTIMEOUT",
-			"      #",
-			"echo",
-			"send_msg",
-			"debug",
-			"$screen_name",
-			"screen_name ",
-			"screen_name",
-			"twittero",
-			"рсс2чтмл",
-			"use",
-			";",
-			"nav",
-			"border",
-			"hover",
-			"margin",
-			"margin * auto",
-			"margin",
-			"entry-content",
-			"post-info",
-			"news",
-			"footer",
-			"41px",
-			"ul ",
-			"ul",
-			"social",
-			";",
-			"ignored",
-			"email",
-			"No link",
-			"backlink_found",
-			"curl_http_resp_code",
-			"error_msg",
-			"print_info",
-			"parse_dom",
-			"num_links"
+			"history"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1045,6 +1002,20 @@
 		"regex": false,
 		"replace_history":
 		[
+			"debug(",
+			"debug( ",
+			"strcpy",
+			"DBG_REQ",
+			"reply",
+			"request",
+			"SWI",
+			"DBG_SYS",
+			"DBG_USR",
+			"DBG_KERN",
+			"DBG_CURR_LVL",
+			"debug( DBG_LVL, KERNEL,",
+			"debug( DBG_LVL, KERNEL",
+			"debug(DBG_LVL, KERNEL",
 			"SCHED_QUEUE_LENGTH",
 			"busy_until_time",
 			"last_send_time",
@@ -1068,360 +1039,13 @@
 	"groups":
 	[
 		{
-			"selected": 3,
 			"sheets":
 			[
-				{
-					"buffer": 0,
-					"file": "src/tasks/first.c",
-					"settings":
-					{
-						"buffer_size": 2662,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								674,
-								674
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "src/tasks/RPS-game.c",
-					"settings":
-					{
-						"buffer_size": 10664,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								912,
-								912
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "src/kernel/context_switch.c",
-					"settings":
-					{
-						"buffer_size": 8822,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								3122,
-								3122
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "src/helpers.c",
-					"settings":
-					{
-						"buffer_size": 826,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								309,
-								334
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "/Users/rpavlovs/Dropbox/w13/cs452/io/io/src/bwio.c",
-					"settings":
-					{
-						"buffer_size": 4827,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								4825,
-								4813
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 2956.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				}
 			]
 		},
 		{
-			"selected": 6,
 			"sheets":
 			[
-				{
-					"buffer": 5,
-					"file": "include/kernel/globals.h",
-					"settings":
-					{
-						"buffer_size": 2080,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								756,
-								763
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "include/commonspace.h",
-					"settings":
-					{
-						"buffer_size": 681,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								261,
-								261
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "include/kernel/init.h",
-					"settings":
-					{
-						"buffer_size": 142,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								98,
-								98
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"file": "include/kernel/sched.h",
-					"settings":
-					{
-						"buffer_size": 772,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								41,
-								41
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 9,
-					"file": "include/kernel/queues.h",
-					"settings":
-					{
-						"buffer_size": 245,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								97,
-								97
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 10,
-					"file": "include/tasks/first.h",
-					"settings":
-					{
-						"buffer_size": 83,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								36,
-								36
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 11,
-					"file": "include/helpers.h",
-					"settings":
-					{
-						"buffer_size": 366,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								187,
-								187
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 12,
-					"file": "include/lib/bwio.h",
-					"settings":
-					{
-						"buffer_size": 818,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								420,
-								422
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				}
 			]
 		}
 	],
@@ -1469,7 +1093,7 @@
 	},
 	"output.exec":
 	{
-		"height": 905.0
+		"height": 160.0
 	},
 	"output.git":
 	{
@@ -1485,6 +1109,78 @@
 		"height": 0.0,
 		"selected_items":
 		[
+			[
+				"gae",
+				"include/tasks/a3-game.h"
+			],
+			[
+				"user",
+				"include/userspace.h"
+			],
+			[
+				"com",
+				"include/commonspace.h"
+			],
+			[
+				"sys",
+				"include/config/system.h"
+			],
+			[
+				"bwio",
+				"include/lib/bwio.h"
+			],
+			[
+				"sysf",
+				"src/kernel/sysfuncs.c"
+			],
+			[
+				"que",
+				"src/kernel/queues.c"
+			],
+			[
+				"con",
+				"src/kernel/context_switch.c"
+			],
+			[
+				"ctxs",
+				"src/kernel/context_switch.c"
+			],
+			[
+				"conte",
+				"src/kernel/context_switch.c"
+			],
+			[
+				"hwih",
+				"include/kernel/hw_interrupt_handlers.h"
+			],
+			[
+				"hw",
+				"include/kernel/hw_interrupt_handlers.h"
+			],
+			[
+				"time",
+				"include/tasks/timeserver.h"
+			],
+			[
+				"shed",
+				"include/kernel/sched.h"
+			],
+			[
+				"bw",
+				"src/lib/bwio.c"
+			],
+			[
+				"sched",
+				"src/kernel/sched.c"
+			],
+			[
+				"a1h",
+				"include/tasks/a1.h"
+			],
+			[
+				"bwc",
+				"src/lib/bwio.c"
+			],
 			[
 				"helh",
 				"include/helpers.h"
@@ -1502,20 +1198,12 @@
 				"kernel/sched.c"
 			],
 			[
-				"sys",
-				"kernel/sysfuncs.c"
-			],
-			[
 				"nam",
 				"tasks/nameserver.c"
 			],
 			[
 				"ini",
 				"kernel/init.c"
-			],
-			[
-				"shed",
-				"kernel/sched.c"
 			],
 			[
 				"peoplw",
@@ -1596,10 +1284,6 @@
 			[
 				"users_con",
 				"app/controllers/users_controller.rb"
-			],
-			[
-				"user",
-				"app/models/user.rb"
 			],
 			[
 				"micro",

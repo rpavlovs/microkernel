@@ -12,7 +12,7 @@
 #define ZOMBIE_TASK 						2
 #define FREE_TASK 							3
 #define SEND_TASK 							4
-#define RECEIVE_TASK 						5
+#define RECEIVE_BLOCKED 						5
 #define REPLY_TASK 							6
 #define AWAIT_TASK 							7
 
@@ -40,7 +40,7 @@ typedef struct {
 	int msglen;
 	char *reply;
 	int replylen;
-} Message_info;
+} Send_info;
 
 typedef struct {
 	int *sender_tid;	// needs to be set
@@ -55,7 +55,7 @@ typedef struct {
 } Reply_info;
 
 typedef struct {
-	Message_info msg_infos[MAX_NUM_TASKS];
+	Send_info msg_infos[MAX_NUM_TASKS];
 	int newest, oldest;
 	int size;
 } Message_queue;
@@ -72,13 +72,13 @@ typedef struct {
 	int *lr;
 	int *fp;
 
-	Message_queue receive_queue;			//Queue for recieving messages
+	Message_queue mailbox;			//Queue for recieving messages
 	Receive_info receive_info;				//Last arguments for receiving
 	Reply_info reply_infos[MAX_NUM_TASKS]; 	//Arguments for REPLY function
 	
 } Task_descriptor;
 
-// Schedule structures
+// Scheduler structures
 
 typedef struct {
 	Task_descriptor *td_ptrs[SCHED_QUEUE_LENGTH];
@@ -87,19 +87,19 @@ typedef struct {
 } Task_queue;
 
 typedef struct {
-	Task_queue priority[SCHED_NUM_PRIORITIES];
+	Task_queue queues[SCHED_NUM_PRIORITIES];
 	int last_issued_tid;
 	int last_active_tid;
 	int tasks_alive;
 	
-	Task_descriptor *hwi_events_waiting_table[HWI_NUM_EVENTS];
-} Schedule;
+	Task_descriptor *hwi_watchers[HWI_NUM_EVENTS];
+} Scheduler;
 
 // Globals
 
 typedef struct {
 	Task_descriptor tasks[MAX_NUM_TASKS];
-	Schedule schedule;
+	Scheduler scheduler;
 } Kern_Globals;
 
 #endif

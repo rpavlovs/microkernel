@@ -3,10 +3,10 @@
 void init_message_queues( Kern_Globals *GLOBALS ) {
 	int tid ;
 	for( tid = 0; tid < MAX_NUM_TASKS; ++tid) {
-		Message_queue *receive_queue = &(GLOBALS->tasks[tid].receive_queue);
-		receive_queue->newest = -1;
-		receive_queue->oldest = 0;
-		receive_queue->size = 0;
+		Message_queue *mailbox = &(GLOBALS->tasks[tid].mailbox);
+		mailbox->newest = -1;
+		mailbox->oldest = 0;
+		mailbox->size = 0;
 	}
 }
 

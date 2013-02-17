@@ -4,11 +4,11 @@ int
 sys_create( int priority, void (*code) ( ), Task_descriptor *td, Kern_Globals *GLOBALS ) {	
 	debug( DBG_KERN, "SYS_CREATE: entered" );
 
-	// ERROR: Scheduler was given a wrong task priority.
+	// ERROR: Scheduler  was given a wrong task priority.
 	if( priority < 0 || priority >= SCHED_NUM_PRIORITIES ) return -1;
 	
 	// Getting the schedule
-	Schedule *sched = &(GLOBALS->schedule);
+	Scheduler *sched = &(GLOBALS->scheduler);
 	int new_tid;
 	Task_descriptor *new_td;
 
@@ -16,7 +16,7 @@ sys_create( int priority, void (*code) ( ), Task_descriptor *td, Kern_Globals *G
 	new_tid = sched->last_issued_tid + 1;
 	if( new_tid >= MAX_NUM_TASKS ) new_tid = 0;
 	while( GLOBALS->tasks[new_tid].state != FREE_TASK ) {
-		// ERROR: Scheduler is out of task descriptors. 
+		// ERROR: Scheduler  is out of task descriptors. 
 		if( ++new_tid >= MAX_NUM_TASKS ) return -2;
 	}
 
@@ -31,9 +31,9 @@ sys_create( int priority, void (*code) ( ), Task_descriptor *td, Kern_Globals *G
 	new_td->lr = (int *)code;
 
 	// Add new task descriptor to a proper scheduler queue
-	Task_queue *queue = &(sched->priority[priority]);
+	Task_queue *queue = &(sched->queues[priority]);
 
-	assert( queue->size < SCHED_QUEUE_LENGTH, "SYS_CREATE: Scheduler queue must not be full" );
+	assert( queue->size < SCHED_QUEUE_LENGTH, "SYS_CREATE: Scheduler  queue must not be full" );
 
 	// If the queue is empty or the newest pointer is at the end of the td_ptrs buffer
 	// put the next td_ptr at the beginning on the buffer  
@@ -76,48 +76,34 @@ sys_pass(Task_descriptor *td, Kern_Globals *GLOBALS ) {
 void
 sys_exit( Task_descriptor *td, Kern_Globals *GLOBALS ) {
 	debug( DBG_KERN, "SYS_EXIT: entered" );
-
-	// Getting task properties
-	int priority = td->priority;
 	
-	// Getting the schedule
-	Schedule *sched = &(GLOBALS->schedule);
-	Task_queue *pqueue = &(sched->priority[priority]);
-
-	// Removing the first task from the queue
-	if (++(pqueue->oldest) >= SCHED_QUEUE_LENGTH) pqueue->oldest = 0;
+	// Removing the first task from the corresponding queue
+	Task_queue *queue = &(GLOBALS->scheduler.queues[td->priority]);
+	if( ++(queue->oldest) >= SCHED_QUEUE_LENGTH )
+		queue->oldest = 0;
+	queue->size--;
 
 	// Updating the task's state
 	td->state = ZOMBIE_TASK;
 
-	// Updating the queue
-	pqueue->size--;
-
 	// Updating the schedule
-	sched->tasks_alive--;
+	GLOBALS->scheduler.tasks_alive--;
 }
 
 void
 sys_reschedule( Task_descriptor *td, Kern_Globals *GLOBALS ) {
 	debug( DBG_KERN, "SYS_RESCHEDULE: entered" );
 
-	// Getting task properties
-	int priority = td->priority;
-	
-	// Getting the schedule
-	Schedule *sched = &(GLOBALS->schedule);
 	// Getting the priority queue
-	Task_queue *pqueue = &(sched->priority[priority]);
-
-	//If there are more than one task in the queue
-	if(pqueue->size > 1)
-	{
+	Task_queue *queue = &(GLOBALS->scheduler.queues[td->priority]);
+	assert( queue->td_ptrs[queue->oldest] == td, "can only reschelude most recent task" );
+	if( queue->size > 1 ) {
 		// Removing the first task from the queue
-		if (++(pqueue->oldest) >= SCHED_QUEUE_LENGTH) pqueue->oldest = 0;
+		if( ++(queue->oldest) >= SCHED_QUEUE_LENGTH ) queue->oldest = 0;
 
 		// Adding the task to the end of the queue
-		if (++(pqueue->newest) >= SCHED_QUEUE_LENGTH) pqueue->newest = 0;
-		pqueue->td_ptrs[pqueue->newest] = td;
+		if( ++(queue->newest) >= SCHED_QUEUE_LENGTH ) queue->newest = 0;
+		queue->td_ptrs[queue->newest] = td;
 	}
 
 	// Updating the task's state
@@ -133,18 +119,18 @@ sys_send( int receiver_tid, char *msg, int msglen, char *reply, int replylen,
 	Task_descriptor *receiver_td = &(GLOBALS->tasks[receiver_tid]);
 
 	//Getting the receive queue of the target task
-	Message_queue *receive_queue = &(receiver_td->receive_queue);
+	Message_queue *mailbox = &(receiver_td->mailbox);
 
-	assert( receive_queue->size < MAX_NUM_TASKS - 1,
+	assert( mailbox->size < MAX_NUM_TASKS - 1,
 		"Waiting to be recieved queue should not overflow :(" );
 
 	//Modifying the queue
-	receive_queue->size++;
-	if( ++(receive_queue->newest) == MAX_NUM_TASKS ) {
-		receive_queue->newest = 0;
+	mailbox->size++;
+	if( ++(mailbox->newest) == MAX_NUM_TASKS ) {
+		mailbox->newest = 0;
 	}
 
-	Message_info *msg_info = &(receive_queue->msg_infos[receive_queue->newest]);
+	Send_info *msg_info = &(mailbox->msg_infos[mailbox->newest]);
 	msg_info->sender_tid = sender_td->tid;
 	msg_info->msg = msg;
 	msg_info->msglen = msglen;
@@ -158,69 +144,59 @@ sys_send( int receiver_tid, char *msg, int msglen, char *reply, int replylen,
 	//BLOCKING///////////////////////////////////////////////////
 	//Change the state of the calling task to SEND_BLOCKED
 	sender_td->state = SEND_TASK;
-	GLOBALS->schedule.tasks_alive--;
+	GLOBALS->scheduler.tasks_alive--;
 	
 	//Remove the task from the READY queue
-	Task_queue *pqueue = &(GLOBALS->schedule.priority[sender_td->priority]);
+	Task_queue *pqueue = &(GLOBALS->scheduler.queues[sender_td->priority]);
 	dequeue_tqueue(pqueue);
 
 	return 0;
 }
 
 int
-sys_receive( int *sender_tid, char *msg, int msglen, Task_descriptor *receiver_td,
-		Kern_Globals *GLOBALS ) {
+sys_receive( int *sender_tid, char *reciever_buf, const int reciever_buf_len,
+	Task_descriptor *receiver_td, Kern_Globals *GLOBALS ) {
 	debug( DBG_KERN, "SYS_RECEIVE: entered" );
 
-	Message_queue *receive_queue = &(receiver_td->receive_queue);
-	//If there are SOME sends from other tasks to the current task
-	if( receive_queue->size > 0 ) {
-		debug( DBG_KERN, "SYS_RECEIVE: Task unblocked. "
-			"There are messages waiting to be recieved" );
+	Message_queue *mailbox = &(receiver_td->mailbox);
 
-		//Modifying the queue
-		receive_queue->size--;
-		Message_info *msg_info = &(receive_queue->msg_infos[receive_queue->oldest]);
-		if(++(receive_queue->oldest) == MAX_NUM_TASKS) receive_queue->oldest = 0;
+	if( mailbox->size > 0 ) {
+		debug( DBG_KERN, "SYS_RECEIVE: Task not blocked. Mailbox not empty." );
 
-		mem_cpy( msg_info->msg, msg, msg_info->msglen );
-		*sender_tid = msg_info->sender_tid;
+		Send_info *send_info = &(mailbox->msg_infos[mailbox->oldest]);
 
-		//Save REPLY information
-		
-		Reply_info *reply_info = &(receiver_td->reply_infos[msg_info->sender_tid]);
+		//Remove oldest message
+		if( ++(mailbox->oldest) == MAX_NUM_TASKS ) mailbox->oldest = 0;
+		mailbox->size--;
 
-		reply_info->sender_tid = msg_info->sender_tid;
-		reply_info->reply = msg_info->reply;
-		reply_info->replylen = msg_info->replylen;
+		//Deliver the message to recievers buffer an provide the sender tid
+		mem_cpy( send_info->msg, reciever_buf, send_info->msglen );
+		*sender_tid = send_info->sender_tid;
+
+		//Save information for a further reply
+		Reply_info *reply_info = &(receiver_td->reply_infos[send_info->sender_tid]);
+		reply_info->sender_tid = send_info->sender_tid;
+		reply_info->reply = send_info->reply;
+		reply_info->replylen = send_info->replylen;
 
 		//Changing the state of the sender
-		Task_descriptor *sender_td = &(GLOBALS->tasks[msg_info->sender_tid]);
-		sender_td->state = REPLY_TASK;
-	}
-	//If there are NO sends from other tasks to the current task
-	else {
-		debug( DBG_KERN, "SYS_RECEIVE: Task unblocked. No tasks in the queue." );
+		GLOBALS->tasks[send_info->sender_tid].state = REPLY_TASK;
+	} else {
+		debug( DBG_KERN, "SYS_RECEIVE: Task blocked. Mailbox is empty" );
 
 		//Save the current receive arguments
 		Receive_info *receive_info = &(receiver_td->receive_info);
 		receive_info->sender_tid = sender_tid;
-		receive_info->msg = msg;
-		receive_info->msglen = msglen;
-
-		//BLOCKING THE TASK//////////////////////////////////
-		//Change the state of the calling task
-		receiver_td->state = RECEIVE_TASK;
-		GLOBALS->schedule.tasks_alive--;
+		receive_info->msg = reciever_buf;
+		receive_info->msglen = reciever_buf_len;
 
 		//Remove the task from the READY queue
-		Schedule *sched = &(GLOBALS->schedule);
-		Task_queue *pqueue = &(sched->priority[receiver_td->priority]);
-		dequeue_tqueue(pqueue);
+		dequeue_tqueue( &(GLOBALS->scheduler.queues[receiver_td->priority]) );
 
-		debug( DBG_KERN, "SYS_RECEIVE: Task blocked. Removed from schedule." );
+		receiver_td->state = RECEIVE_BLOCKED;
+
+		GLOBALS->scheduler.tasks_alive--;
 	}
-
 	return 0;
 }
 
@@ -237,9 +213,9 @@ sys_reply( int sender_tid, char *reply, int replylen, Task_descriptor *receiver_
 
 	//Rescheduling the task
 	sender_td->state = READY_TASK;
-	GLOBALS->schedule.tasks_alive++;
+	GLOBALS->scheduler.tasks_alive++;
 
-	Task_queue *pqueue = &(GLOBALS->schedule.priority[sender_td->priority]);
+	Task_queue *pqueue = &(GLOBALS->scheduler.queues[sender_td->priority]);
 	enqueue_tqueue( sender_td, pqueue );
 
 	sys_reschedule( receiver_td, GLOBALS );
@@ -250,20 +226,20 @@ void
 sys_unblock_receive( Task_descriptor *receiver_td, Kern_Globals *GLOBALS ) {
 	debug( DBG_KERN, "SYS_UNBLOCK_RECEIVE: entered" );
 
-	Message_queue *receive_queue = &(receiver_td->receive_queue);
+	Message_queue *mailbox = &(receiver_td->mailbox);
 
 	//The target task was waiting and there are SOME sends
-	if( receiver_td->state != RECEIVE_TASK || receive_queue->size == 0 ) {
-		debug( DBG_KERN, "SYS_UNBLOCK_RECEIVE: got called for a non-RECEIVE_TASK "
+	if( receiver_td->state != RECEIVE_BLOCKED || mailbox->size == 0 ) {
+		debug( DBG_KERN, "SYS_UNBLOCK_RECEIVE: got called for a non-RECEIVE_BLOCKED "
 			"or a task with no messages waiting to be received" );
 		return;
 	}
 
 	//Modifying the queue
-	receive_queue->size--;
-	Message_info *msg_info = &(receive_queue->msg_infos[receive_queue->oldest]);
-	if( ++(receive_queue->oldest) == MAX_NUM_TASKS ) {
-		receive_queue->oldest = 0;
+	mailbox->size--;
+	Send_info *msg_info = &(mailbox->msg_infos[mailbox->oldest]);
+	if( ++(mailbox->oldest) == MAX_NUM_TASKS ) {
+		mailbox->oldest = 0;
 	}
 
 	//Retrieve saved receive arguments
@@ -283,10 +259,10 @@ sys_unblock_receive( Task_descriptor *receiver_td, Kern_Globals *GLOBALS ) {
 	//RESCHEDULING///////////////////////////////////////
 	//Unblocking the task
 	receiver_td->state = READY_TASK;
-	GLOBALS->schedule.tasks_alive++;
+	GLOBALS->scheduler.tasks_alive++;
 
 	//Rescheduling the task
-	Task_queue *pqueue = &(GLOBALS->schedule.priority[receiver_td->priority]);
+	Task_queue *pqueue = &(GLOBALS->scheduler.queues[receiver_td->priority]);
 	enqueue_tqueue(receiver_td, pqueue);
 }
 
@@ -296,11 +272,11 @@ sys_await_event( int eventid, Task_descriptor *td, Kern_Globals *GLOBALS ) {
 		eventid, td->tid );
 	assert( eventid < HWI_NUM_EVENTS, "SYS_AWAIT_EVENT: eventid is invalid" );
 	
-	GLOBALS->schedule.hwi_events_waiting_table[eventid] = td;
+	GLOBALS->scheduler.hwi_watchers[eventid] = td;
 	
 	//Remove the task from the READY queue
 	td->state = AWAIT_TASK;
-	Task_queue *pqueue = &(GLOBALS->schedule.priority[td->priority]);
+	Task_queue *pqueue = &(GLOBALS->scheduler.queues[td->priority]);
 	dequeue_tqueue(pqueue);
 	return 0;
 }

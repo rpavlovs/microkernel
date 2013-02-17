@@ -2,18 +2,16 @@
 
 void timer_hwi_handler( Kern_Globals *GLOBALS ){
 	// Retrieve the waiting event from the hwi table
-	Task_descriptor *td_pointer = GLOBALS->schedule.hwi_events_waiting_table[TIMER1_INT_INDEX];
+	Task_descriptor *watcher = GLOBALS->scheduler.hwi_watchers[TIMER1_INT_INDEX];
 	
-	if( td_pointer != 0 ) {
+	if( watcher != 0 ) {
 	
 		//Rescheduling the task
-		Task_descriptor *td = (Task_descriptor *) td_pointer;
-		Task_queue *pqueue = &(GLOBALS->schedule.priority[td->priority]);
-		td->state = READY_TASK;
-		enqueue_tqueue(td, pqueue);
+		watcher->state = READY_TASK;
+		enqueue_tqueue( watcher, &(GLOBALS->scheduler.queues[watcher->priority]) );
 		
 		//Clear the event in hwi events waiting table
-		GLOBALS->schedule.hwi_events_waiting_table[TIMER1_INT_INDEX] = 0;
+		GLOBALS->scheduler.hwi_watchers[TIMER1_INT_INDEX] = 0;
 	}
 	// Clear source of interrupt. 
 	int *timerClrPtr = (int *)( TIMER1_BASE + CLR_OFFSET );

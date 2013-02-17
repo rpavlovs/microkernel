@@ -337,7 +337,7 @@ void
 handle_hwi( Kern_Globals *GLOBALS ){
 	
 	int hwInterrupt = *( ( int * ) INT_CONTROL_BASE_1 + IRQ_STATUS_OFFSET );
-	Task_descriptor *td = &(GLOBALS->tasks[GLOBALS->schedule.last_active_tid]);
+	Task_descriptor *td = &(GLOBALS->tasks[GLOBALS->scheduler.last_active_tid]);
 	debug( DBG_KERN, "HANDLE_HWI: entered [interrupt id: %d caller: ]", hwInterrupt, td->tid );
 	
 	// NOTE: The cases inside the handler must be organized by the priority
@@ -361,7 +361,7 @@ handle_swi( int request, Kern_Globals *GLOBALS ){
 	// Create a placeholder for the arguments.
 	int sysCallArguments[MAX_NUM_ARGUMENTS];
 
-	Task_descriptor *td = &( GLOBALS->tasks[GLOBALS->schedule.last_active_tid] );
+	Task_descriptor *td = &( GLOBALS->tasks[GLOBALS->scheduler.last_active_tid] );
 	
 	int returnValue;
 	unsigned int taskSP = (unsigned int) td->sp;

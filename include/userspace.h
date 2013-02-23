@@ -6,3 +6,4 @@
 #include "tasks/a1.h"
 #include "tasks/RPS-game.h"
 #include "tasks/a3-game.h"
+#include "tasks/clock-task.h"

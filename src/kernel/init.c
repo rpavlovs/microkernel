@@ -115,6 +115,7 @@ void init_hardware() {
     int *hi = (int *)Timer4ValueHigh;
     *hi = (1 << 8);
 	
+	// TODO: Re-enable this when we stop using busy wait. 
 	init_io(); 
 }
 

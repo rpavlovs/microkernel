@@ -284,8 +284,10 @@ sys_await_event( int eventid, char *event, int eventLength, Task_descriptor *td,
 	td->event_info.bufferLength = eventLength;
 	
 	// Reactivate interrupts
-	// -> UART 1 --------------------------------------------------------------
+	// -> UART 1 -------------------------------------------------------------
+	todo_debug( 50, 0 );
 	if ( eventid == UART1_INIT_SEND ) {
+		todo_debug( 51, 0 );
 		// Reactivate both, transmit and modem status interrupts. 
 		int *uart1_ctrl, temp; 
 		uart1_ctrl = ( int * ) ( UART1_BASE + UART_CTLR_OFFSET ); 
@@ -294,6 +296,7 @@ sys_await_event( int eventid, char *event, int eventLength, Task_descriptor *td,
 	}
 	
 	if ( eventid == UART1_SEND_READY ) {
+		todo_debug( 52, 0 );
 		// Reactivate the modem status interrupt. 
 		int *uart1_ctrl, temp; 
 		uart1_ctrl = ( int * ) ( UART1_BASE + UART_CTLR_OFFSET ); 
@@ -303,6 +306,7 @@ sys_await_event( int eventid, char *event, int eventLength, Task_descriptor *td,
 	
 	// -> UART 2 --------------------------------------------------------------
 	if ( eventid == UART2_SEND_READY ) {
+		todo_debug( 53, 0 );
 		// Reactivate the transmit interrupt. 
 		int *uart2_ctrl, temp; 
 		uart2_ctrl = ( int * ) ( UART2_BASE + UART_CTLR_OFFSET ); 

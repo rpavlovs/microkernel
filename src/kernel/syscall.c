@@ -233,25 +233,34 @@ int Getc( int channel ){
 	UART_request request;
 	UART_reply reply;
 
+	todo_debug( 70, 0 );
 	if(channel == COM1) {
+		todo_debug( 71, 0 );
 		//Train controller
 		tid = WhoIs("uart1_receiver");
 		request.type = UART1_RECEIVE_REQUEST;
 	}
 	else if(channel == COM2) {
+		todo_debug( 72, 0 );
 		//Terminal
 		tid = WhoIs("uart2_receiver");
 		request.type = UART2_RECEIVE_REQUEST;
 	}else{
+		todo_debug( 73, 0 );
 		//COM channel is invalid
 		return -3;
 	}
 
 	//check the return value of WhoIs
-	if(tid < 0){ return -1; }
+	if(tid < 0){ 
+		todo_debug( 74, 0 );
+		return -1; 
+	}
 
 	//Sending the message to the server
+	todo_debug( 75, 0 );
 	Send(tid, (char *) &request, sizeof(request), (char *) &reply, sizeof(reply));
+	todo_debug( 76, 0 );
 
 	return (int) reply.ch;
 }

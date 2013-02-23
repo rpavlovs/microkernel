@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="84">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <df name="microkernel" root=".">
+      <df name="build">
+        <df name="kernel">
+        </df>
+        <df name="lib">
+        </df>
+        <df name="tasks">
+        </df>
+      </df>
+      <df name="include">
+        <df name="config">
+          <in>mem_init.h</in>
+          <in>memory.h</in>
+          <in>system.h</in>
+          <in>ts7200.h</in>
+        </df>
+        <df name="kernel">
+          <in>context_switch.h</in>
+          <in>globals.h</in>
+          <in>hw_interrupt_handlers.h</in>
+          <in>init.h</in>
+          <in>queues.h</in>
+          <in>sched.h</in>
+          <in>scheduler.h</in>
+          <in>syscall.h</in>
+          <in>sysfuncs.h</in>
+        </df>
+        <df name="lib">
+          <in>bwio.h</in>
+          <in>queues.h</in>
+          <in>stdlib.h</in>
+          <in>string.h</in>
+        </df>
+        <df name="tasks">
+          <in>RPS-game.h</in>
+          <in>a1.h</in>
+          <in>a3-game.h</in>
+          <in>assignment0.h</in>
+          <in>clock-task.h</in>
+          <in>first.h</in>
+          <in>nameserver.h</in>
+          <in>tests.h</in>
+          <in>timeserver.h</in>
+          <in>uart1_servers.h</in>
+          <in>uart2_servers.h</in>
+        </df>
+        <in>commonspace.h</in>
+        <in>helpers.h</in>
+        <in>kernelspace.h</in>
+        <in>userspace.h</in>
+      </df>
+      <df name="src">
+        <df name="kernel">
+          <in>context_switch.c</in>
+          <in>hw_interrupt_handlers.c</in>
+          <in>init.c</in>
+          <in>kernel.c</in>
+          <in>queues.c</in>
+          <in>sched.c</in>
+          <in>scheduler.c</in>
+          <in>syscall.c</in>
+          <in>sysfuncs.c</in>
+        </df>
+        <df name="lib">
+          <in>bwio.c</in>
+          <in>queues.c</in>
+          <in>stdlib.c</in>
+          <in>string.c</in>
+        </df>
+        <df name="tasks">
+          <in>RPS-game.c</in>
+          <in>a1.c</in>
+          <in>a3-game.c</in>
+          <in>assignment0.c</in>
+          <in>clock-task.c</in>
+          <in>first.c</in>
+          <in>nameserver.c</in>
+          <in>tests.c</in>
+          <in>timeserver.c</in>
+          <in>uart1_servers.c</in>
+          <in>uart2_servers.c</in>
+        </df>
+      </df>
+    </df>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <sourceFolderFilter>^(nbproject)$</sourceFolderFilter>
+  <sourceRootList>
+    <Elem>.</Elem>
+  </sourceRootList>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Default" type="0">
+      <toolsSet>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
+        <compilerSet>default</compilerSet>
+      </toolsSet>
+      <codeAssistance>
+      </codeAssistance>
+      <makefileType>
+        <makeTool>
+          <buildCommandWorkingDir>.</buildCommandWorkingDir>
+          <buildCommand>${MAKE} -f Makefile</buildCommand>
+          <cleanCommand>${MAKE} -f Makefile clean</cleanCommand>
+          <executablePath></executablePath>
+        </makeTool>
+      </makefileType>
+      <item path="include/tasks/assignment0.h" ex="true" tool="3" flavor2="0">
+      </item>
+      <item path="src/kernel/context_switch.c" ex="false" tool="0" flavor2="2">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+            <pElem>include</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="src/kernel/hw_interrupt_handlers.c" ex="false" tool="0" flavor2="2">
+        <cTool>
+        </cTool>
+      </item>
+      <item path="src/kernel/init.c" ex="false" tool="0" flavor2="2">
+        <cTool>
+        </cTool>
+      </item>
+      <item path="src/kernel/kernel.c" ex="false" tool="0" flavor2="2">
+        <cTool>
+        </cTool>
+      </item>
+      <item path="src/kernel/queues.c" ex="false" tool="0" flavor2="2">
+        <cTool>
+        </cTool>
+      </item>
+      <item path="src/kernel/sched.c" ex="false" tool="0" flavor2="2">
+        <cTool>
+        </cTool>
+      </item>
+      <item path="src/kernel/scheduler.c" ex="false" tool="0" flavor2="2">
+        <cTool>
+        </cTool>
+      </item>
+      <item path="src/kernel/syscall.c" ex="false" tool="0" flavor2="2">
+        <cTool>
+        </cTool>
+      </item>
+      <item path="src/kernel/sysfuncs.c" ex="false" tool="0" flavor2="2">
+        <cTool>
+        </cTool>
+      </item>
+      <item path="src/lib/bwio.c" ex="false" tool="0" flavor2="2">
+        <cTool>
+        </cTool>
+      </item>
+      <item path="src/lib/queues.c" ex="false" tool="0" flavor2="2">
+        <cTool>
+        </cTool>
+      </item>
+      <item path="src/lib/stdlib.c" ex="false" tool="0" flavor2="2">
+        <cTool>
+        </cTool>
+      </item>
+      <item path="src/lib/string.c" ex="false" tool="0" flavor2="2">
+        <cTool>
+        </cTool>
+      </item>
+      <item path="src/tasks/RPS-game.c" ex="false" tool="0" flavor2="2">
+        <cTool>
+        </cTool>
+      </item>
+      <item path="src/tasks/a1.c" ex="false" tool="0" flavor2="2">
+        <cTool>
+        </cTool>
+      </item>
+      <item path="src/tasks/a3-game.c" ex="false" tool="0" flavor2="2">
+        <cTool>
+        </cTool>
+      </item>
+      <item path="src/tasks/assignment0.c" ex="false" tool="0" flavor2="2">
+        <cTool>
+        </cTool>
+      </item>
+      <item path="src/tasks/clock-task.c" ex="false" tool="0" flavor2="2">
+        <cTool>
+        </cTool>
+      </item>
+      <item path="src/tasks/first.c" ex="false" tool="0" flavor2="2">
+        <cTool>
+        </cTool>
+      </item>
+      <item path="src/tasks/nameserver.c" ex="false" tool="0" flavor2="2">
+        <cTool>
+        </cTool>
+      </item>
+      <item path="src/tasks/tests.c" ex="false" tool="0" flavor2="2">
+        <cTool>
+        </cTool>
+      </item>
+      <item path="src/tasks/timeserver.c" ex="false" tool="0" flavor2="2">
+        <cTool>
+        </cTool>
+      </item>
+      <item path="src/tasks/uart1_servers.c" ex="false" tool="0" flavor2="2">
+        <cTool>
+        </cTool>
+      </item>
+      <item path="src/tasks/uart2_servers.c" ex="false" tool="0" flavor2="2">
+        <cTool>
+        </cTool>
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>

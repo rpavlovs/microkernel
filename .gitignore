@@ -9,3 +9,4 @@ build/*
 /instLinuxTemp
 /instLinux
 /instLinux.sh
+nbproject/*

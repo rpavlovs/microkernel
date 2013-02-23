@@ -17,6 +17,7 @@ void enqueue_char_queue(char c, Char_queue *q){
 
 void enqueue_str_to_char_queue(char *str, Char_queue *q){
 	//TODO: Implement this function!!!
+	//assert(q->size != MAX_NUM_TASKS, "Char queue should not overflow");
 }
 
 char dequeue_char_queue(Char_queue *q){

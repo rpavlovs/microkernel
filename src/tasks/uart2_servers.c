@@ -183,7 +183,7 @@ void uart2_receiver_server() {
 
 			//Perform the reply
 			todo_debug( 35, 0 );
-			todo_debug( reply.ch, 1 );
+			//todo_debug( reply.ch, 1 );
 			Reply(target_tid, (char *) &reply, sizeof(reply));
 		}
 	}

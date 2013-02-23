@@ -4,6 +4,25 @@
 
 #define INT_CONTROL_BASE_1		0x800B0000		// VIC 1
 
+void task_test_uart() {
+	
+	// CREATE THE UART2 RECEIVER SERVER. 
+	debug( DBG_SYS, "FIRST_TASK: creating UART2 Receiver Server." );
+	todo_debug( 10, 1 );
+	todo_debug( 18, 0 );
+	int uart2_receiver_tid = Create( 14, uart2_receiver_server );
+	//todo_debug( uart2_receiver_tid, 1 );
+	todo_debug( 19, 0 );
+	
+	// Checking if we can indeed send characters. 
+	todo_debug( 20, 0 );
+	char c = Getc( COM2 );
+	//todo_debug( 21, 0 );
+	
+	todo_debug( c, 1 );
+}
+
+
 void 
 print_hwi_registers(){
 	int *ptr = ( int * ) INT_CONTROL_BASE_1; 

@@ -7,4 +7,6 @@ void test_nameserver();
 
 void test_timeserver();
 
+void task_test_uart();
+
 #endif

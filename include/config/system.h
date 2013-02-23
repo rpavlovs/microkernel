@@ -17,7 +17,7 @@
 #define NAMESERVER_TASK_PRIORITY	14
 #define TIMESERVER_TASK_PRIORITY	14
 
-#define FIRST_USER_TASK_NAME		a3_game
+#define FIRST_USER_TASK_NAME		task_test_uart
 #define FIRST_USER_TASK_PRIORITY	8
 
 #endif

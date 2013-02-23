@@ -222,3 +222,94 @@ int TestCall(int a, int b, int c, int d, int e, int f) {
 	);
 	return ret; 
 }
+
+/////////////////////////////////////////////////
+//
+// IO Wrappers
+//
+/////////////////////////////////////////////////
+int Getc( int channel ){
+	int tid = -1;
+	UART_request request;
+	UART_reply reply;
+
+	if(channel == COM1) {
+		//Train controller
+		tid = WhoIs("uart1_receiver");
+		request.type = UART1_RECEIVE_REQUEST;
+	}
+	else if(channel == COM2) {
+		//Terminal
+		tid = WhoIs("uart2_receiver");
+		request.type = UART2_RECEIVE_REQUEST;
+	}else{
+		//COM channel is invalid
+		return -3;
+	}
+
+	//check the return value of WhoIs
+	if(tid < 0){ return -1; }
+
+	//Sending the message to the server
+	Send(tid, (char *) &request, sizeof(request), (char *) &reply, sizeof(reply));
+
+	return (int) reply.ch;
+}
+
+int Putc( int channel, char ch ) {
+	int server_tid = -1;
+
+	UART_request request;
+	UART_reply reply;
+
+	if(channel == COM1) {
+		//Train controller
+		server_tid = WhoIs("uart1_sender");
+
+		//Checking TID
+		if(server_tid < 0){ return -1; }
+
+		//Configure the request
+		request.type = UART1_SEND_REQUEST;
+		request.ch = ch;
+
+		//Send the message
+		Send(server_tid, (char *) &request, sizeof(request), (char *) &reply, sizeof(reply));
+	}
+	else if(channel == COM2) {
+		//Terminal
+		server_tid = WhoIs("uart2_sender");
+
+		//Check the TID
+		if(server_tid < 0){ return -1; }
+
+		//Configure the request
+		request.type = UART2_SEND_REQUEST;
+		request.ch = ch;
+
+		//Send the message
+		Send(server_tid, (char *) &request, sizeof(request), (char *) &reply, sizeof(reply));
+	}
+	else {
+		//COM channel is invalid
+		return -3;
+	}
+
+	return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

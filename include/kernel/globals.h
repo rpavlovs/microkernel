@@ -29,7 +29,6 @@
 
 #define HWI_NUM_EVENTS						10
 
-
 typedef struct Kern_Globals GLOBALS;
 
 // Send/Receive/Reply structs

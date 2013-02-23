@@ -12,6 +12,7 @@
 // Libraries
 
 #include <lib/bwio.h>
+#include <lib/io.h>
 #include <lib/stdlib.h>
 #include <lib/string.h>
 #include <lib/queues.h>

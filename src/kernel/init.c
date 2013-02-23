@@ -55,11 +55,67 @@ void init_task_descriptors( Kern_Globals *GLOBALS ) {
 	}
 }
 
+void init_io() {
+	int temp; 
+	int *uart_ctrl, *mdm_ctrl, *fifo, *low, *mid; 
+	
+	// -- UART 1 -> Interacts with the train. ---------------------------------
+	uart_ctrl = (int *)( UART1_BASE + UART_CTLR_OFFSET );
+	
+	// -> Enable interrupts. 
+	// 1. Receive interrupt		(UARTRXINTR  - RIEN_MASK )
+	// 2. Transmit interrupt	(UARTTRXINTR - TIEN_MASK )
+	// 3. Modem Status			(UARTMSINTR  - MSIEN_MASK)
+	// NOTE: Both, the transmit interrupt and modem status are enabled during
+	// await event. That's the reason why they are not enabled here. 
+	*uart_ctrl = INT_RESET_VALUE | RIEN_MASK;
+	
+	// -> Set the UART speed (baud rate) -> 2400 bps. 
+	low = (int *)( UART1_BASE + UART_LCRL_OFFSET );
+	mid = (int *)( UART1_BASE + UART_LCRM_OFFSET );
+	*low = 0xbf;
+	*mid = 0x0;
+	
+	// -> Configure UART (Disable FIFOs, and enable two step bits frame) 
+	fifo = (int *)( UART1_BASE + UART_LCRH_OFFSET );
+	temp = *fifo | STP2_MASK;	// TODO: Check if the two step bits frame is really needed. 
+	*fifo = temp & ~FEN_MASK; 
+	
+	// -> Enable modem (to check for CTS).
+	mdm_ctrl = (int *)( UART1_BASE + UART_MDMCTL_OFFSET);
+	*mdm_ctrl = (*mdm_ctrl | 1);
+	
+	// -- UART 2 -> Interacts with the console. -------------------------------
+	uart_ctrl = (int *)( UART2_BASE + UART_CTLR_OFFSET );
+	
+	// -> Enable interrupts. 
+	// 1. Receive interrupt		(UARTRXINTR  - RIEN_MASK )
+	// 2. Transmit interrupt	(UARTTRXINTR - TIEN_MASK )
+	// NOTE: As with UART1, the Transmit interrupt is enabled during await event.
+	*uart_ctrl = INT_RESET_VALUE | RIEN_MASK | RTIEN_MASK; // RTIEN_MASK
+	
+	// -> Set the UART speed (baud rate) -> 115200 bps.
+	low = (int *)( UART2_BASE + UART_LCRL_OFFSET );
+	mid = (int *)( UART2_BASE + UART_LCRM_OFFSET );
+	*low = 0x3;
+	*mid = 0x0;
+	
+	// -> Configure UART (Disable FIFOs)
+	fifo = (int *)( UART2_BASE + UART_LCRH_OFFSET );
+	temp = *fifo;
+	*fifo = temp & ~FEN_MASK;
+	
+	// NOTE: The actual interrupts (in the ICU) are enabled during 
+	// context switch initialization. 
+}
+
 void init_hardware() {
 	
 	// Start Debug timer (Timer 4)
     int *hi = (int *)Timer4ValueHigh;
     *hi = (1 << 8);
+	
+	init_io(); 
 }
 
 void initialize( Kern_Globals *GLOBALS ) {
@@ -68,7 +124,7 @@ void initialize( Kern_Globals *GLOBALS ) {
 	
 	init_hardware();
 
-    initialize_context_switching(); 
+    //initialize_context_switching(); 
 
 	init_message_queues( GLOBALS );
 

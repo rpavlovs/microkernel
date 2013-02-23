@@ -267,17 +267,49 @@ sys_unblock_receive( Task_descriptor *receiver_td, Kern_Globals *GLOBALS ) {
 }
 
 int
-sys_await_event( int eventid, Task_descriptor *td, Kern_Globals *GLOBALS ) {
+sys_await_event( int eventid, char *event, int eventLength, Task_descriptor *td, Kern_Globals *GLOBALS ) {
 	debug( DBG_KERN, "SYS_AWAIT_EVENT: entered. [event id: %d, task id: %d]",
 		eventid, td->tid );
 	assert( eventid < HWI_NUM_EVENTS, "SYS_AWAIT_EVENT: eventid is invalid" );
 	
 	GLOBALS->scheduler.hwi_watchers[eventid] = td;
 	
-	//Remove the task from the READY queue
+	// Remove the task from the READY queue
 	td->state = AWAIT_TASK;
 	Task_queue *pqueue = &(GLOBALS->scheduler.queues[td->priority]);
 	dequeue_tqueue(pqueue);
+	
+	// Save the event buffer information. 
+	td->event_info.eventBuffer = event; 
+	td->event_info.bufferLength = eventLength;
+	
+	// Reactivate interrupts
+	// -> UART 1 --------------------------------------------------------------
+	if ( eventid == UART1_INIT_SEND ) {
+		// Reactivate both, transmit and modem status interrupts. 
+		int *uart1_ctrl, temp; 
+		uart1_ctrl = ( int * ) ( UART1_BASE + UART_CTLR_OFFSET ); 
+		temp = *uart1_ctrl; 
+		*uart1_ctrl = temp | TIEN_MASK | MSIEN_MASK;
+	}
+	
+	if ( eventid == UART1_SEND_READY ) {
+		// Reactivate the modem status interrupt. 
+		int *uart1_ctrl, temp; 
+		uart1_ctrl = ( int * ) ( UART1_BASE + UART_CTLR_OFFSET ); 
+		temp = *uart1_ctrl; 
+		*uart1_ctrl = temp | MSIEN_MASK;
+	}
+	
+	// -> UART 2 --------------------------------------------------------------
+	if ( eventid == UART2_SEND_READY ) {
+		// Reactivate the transmit interrupt. 
+		int *uart2_ctrl, temp; 
+		uart2_ctrl = ( int * ) ( UART2_BASE + UART_CTLR_OFFSET ); 
+		temp = *uart2_ctrl; 
+		*uart2_ctrl = temp | TIEN_MASK; 
+	}
+	
 	return 0;
 }
 

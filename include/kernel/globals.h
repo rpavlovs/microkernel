@@ -60,6 +60,11 @@ typedef struct {
 	int size;
 } Message_queue;
 
+typedef struct {
+	char *eventBuffer; 
+	int bufferLength;
+} Await_event_info;
+
 // Task descriptor
 
 typedef struct {
@@ -75,6 +80,7 @@ typedef struct {
 	Message_queue mailbox;			//Queue for recieving messages
 	Receive_info receive_info;				//Last arguments for receiving
 	Reply_info reply_infos[MAX_NUM_TASKS]; 	//Arguments for REPLY function
+	Await_event_info event_info;			// Arguments for AwaitEvent sys call. 
 	
 } Task_descriptor;
 

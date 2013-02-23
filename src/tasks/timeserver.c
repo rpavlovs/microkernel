@@ -96,7 +96,7 @@ void clock_tick_notifier() {
 
 	FOREVER {
 		debug( DBG_SYS, "TICK_NOTIFIER: waiting for a tick " );
-		AwaitEvent( TIMER1_INT_INDEX );
+		AwaitEvent( TIMER1_INT_INDEX, 0, 0 );
 		debug( DBG_SYS, "TICK_NOTIFIER: got a tick. Sending a poke to task %d",
 			timeserver_tid);
 		Send( timeserver_tid, (char *) &msg, sizeof(msg), (char *) 0, 0 );

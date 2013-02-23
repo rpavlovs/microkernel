@@ -93,7 +93,7 @@ int Reply( int tid, char *reply, int replylen ) {
 	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (REPLY_SYSCALL) );
 }
 
-int AwaitEvent( int eventid )
+int AwaitEvent( int eventid, char *event, int eventLength )
 {
 	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (AWAIT_EVENT_SYSCALL) );	
 }

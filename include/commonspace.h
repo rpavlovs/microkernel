@@ -35,6 +35,11 @@
 
 //HW Events Indexes
 #define TIMER1_INT_INDEX					0
+#define UART1_SEND_READY					1
+#define UART1_INIT_SEND						2
+#define UART1_RECEIVE_READY					3
+#define UART2_SEND_READY					4
+#define	UART2_RECEIVE_READY					5
 
 // Message types
 

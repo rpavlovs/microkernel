@@ -257,6 +257,8 @@ void bwprintf( int channel, char *fmt, ... ) {
 }
 
 void debug( int threshhold_dbg_lvl, char *fmt, ... ) {
+	/*
+	 * TODO: Make this work without busy wait. 
     if( threshhold_dbg_lvl > DEBUG_LEVEL ) return;
     va_list va;
 
@@ -283,9 +285,12 @@ void debug( int threshhold_dbg_lvl, char *fmt, ... ) {
     va_end(va);
     
     bwprintf( COM2, "\n" );
+	*/
 }
 
 void assert( int statement, char *fmt, ... ) {
+	/*
+	 * TODO: Make this work without busy wait. 
 	if( statement ) return;
 	va_list va;
 
@@ -298,6 +303,7 @@ void assert( int statement, char *fmt, ... ) {
 	bwprintf( COM2, "\n" );
 
 	for( ; ; );
+	 * */
 }
 
 void panic( char *fmt, ... ) {
@@ -311,4 +317,15 @@ void panic( char *fmt, ... ) {
 	bwprintf( COM2, "\n" );
 
 	for( ; ; );
+}
+
+void todo_debug( int value, int channel ){
+	int *ptr; 
+	if ( channel == 0 ){
+		ptr = ( int * ) ( 0x01dffe50 );
+	}
+	else{
+		ptr = ( int * ) ( 0x01dffe54 );
+	}
+	*ptr = value; 
 }

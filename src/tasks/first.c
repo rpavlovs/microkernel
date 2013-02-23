@@ -8,6 +8,27 @@ void idle() {
 	}
 }
 
+void first_task(){
+	// TODO: Remove this task.
+	
+	// Create the idle task. (Will execute when no other task has anything to do). 
+	// TODO: Make the idle task gather statistics. 
+	int idle_tid = Create( 0, idle );
+	
+	/*
+	int *ptr = ( int * ) ( 0x01dffe50 );
+	int *ptr2 = ( int * ) ( 0x01dffe54 );
+	*ptr = 50;
+	*ptr2 = 100; 
+	bwprintf( COM2, " Memory address: %x Value: %d Hex Value: %x \n", ptr, *ptr, *ptr );
+	bwprintf( COM2, " Memory address: %x Value: %d Hex Value: %x \n", ptr2, *ptr2, *ptr2 );
+	*/
+	todo_debug( 1, 0 );
+	AwaitEvent( UART2_SEND_READY, 0, 0 );
+	todo_debug( 100, 0 );
+}
+
+/*
 void first_task() {
 	debug( DBG_SYS, "FIRST_TASK: start" );
 
@@ -39,3 +60,4 @@ void first_task() {
 	Exit();
 	panic( "FIRST_TASK: Shoot the zombie!" );
 }
+*/

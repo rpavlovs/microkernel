@@ -85,15 +85,15 @@ int activate( const int tid, Kern_Globals *GLOBALS ) {
 		int i = 0;
 		for( ; i < SCHED_NUM_PRIORITIES; ++i ) {
 			Task_queue *queue = &(GLOBALS->scheduler.queues[i]);
-			bwprintf( COM2, "SCHEDULE: p[%d].size: %d", i,
-				queue->size );
-			if( queue->size != 0 ) {
-				bwprintf( COM2, " oldest: %d newest: %d\n",
-				queue->td_ptrs[queue->oldest]->tid,
-				queue->td_ptrs[queue->newest]->tid );
-			} else {
-				bwprintf( COM2, "\n");
-			}
+			//bwprintf( COM2, "SCHEDULE: p[%d].size: %d", i,
+				//queue->size );
+			//if( queue->size != 0 ) {
+				//bwprintf( COM2, " oldest: %d newest: %d\n",
+				//queue->td_ptrs[queue->oldest]->tid,
+				//queue->td_ptrs[queue->newest]->tid );
+			//} else {
+			//	bwprintf( COM2, "\n");
+			//}
 		}
 	}
 	

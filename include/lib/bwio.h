@@ -49,4 +49,7 @@ void assert( int condition, char * message, ... );
 
 void panic( char * message, ... );
 
+
+void todo_debug( int value, int channel ); 
+
 #endif

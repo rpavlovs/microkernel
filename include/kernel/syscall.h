@@ -187,7 +187,7 @@ int DelayUntil( int ticks );
 // -1 - invalid event
 // -2 - corrupted volatile data. Error indication is in event buffer
 // -3 - volatile data must be collected and interrups re-enabled in the caller
-int AwaitEvent( int eventid );
+int AwaitEvent( int eventid, char *event, int eventLength );
 
 
 int TestCall( int a, int b, int c, int d, int e, int f );

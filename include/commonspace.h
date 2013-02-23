@@ -98,13 +98,13 @@ typedef struct {
 typedef struct {
 	int type;
 	char ch;
-	char str[2];
+	//char str[2];
 } UART_request;
 
 typedef struct {
 	int type;
 	char ch;
-	char str[2];
+	//char str[2];
 } UART_reply;
 
 #endif

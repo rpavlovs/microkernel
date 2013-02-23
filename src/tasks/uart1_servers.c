@@ -47,10 +47,10 @@ void uart1_sender_notifier() {
 		FOREVER {
 			//Wait until UART1 is ready to receive a character
 			if(transmit == 0 || first_iter) {
-				//AwaitEvent(EVENT_UART1_SEND_READY_INITIAL, 0, 0);	//TODO: Need interrupts to implement this part
+				AwaitEvent(EVENT_UART1_SEND_READY_INITIAL, 0, 0);	//TODO: Need interrupts to implement this part
 			}
 			else {
-				//AwaitEvent(EVENT_UART1_SEND_READY, 0, 0);			//TODO: Need interrupts to implement this part
+				AwaitEvent(EVENT_UART1_SEND_READY, 0, 0);			//TODO: Need interrupts to implement this part
 			}
 			
 			first_iter = 0;
@@ -163,7 +163,7 @@ void uart1_receiver_notifier() {
 	char receive_buffer[1];
 
 	FOREVER {
-		//AwaitEvent(EVENT_UART1_RECEIVE_READY, receive_buffer, 1);		//TODO: Need interrupts to implement this part
+		AwaitEvent(EVENT_UART1_RECEIVE_READY, receive_buffer, 1);		//TODO: Need interrupts to implement this part
 
 		request.type = UART1_RECEIVE_NOTIFIER_REQUEST;
 		request.ch = receive_buffer[0];
@@ -198,7 +198,7 @@ void uart1_receiver_server() {
 		//Utility functions for communication
 		int sender_tid = -1;
 		int target_tid = -1;
-	
+
 		//Receive request from:
 		//	system function (Getc)
 		//	notifier (uart1_receiver_notifier)

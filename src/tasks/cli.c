@@ -23,6 +23,12 @@ void task_cli() {
 	FOREVER {
 		c = Getc(COM2);
 		switch( c ) {
+		case CHAR_ARROW_UP:
+			// TODO: make history work
+			break;
+		case CHAR_ARROW_DOWN:
+			// TODO: make history work
+			break;
 		case CHAR_BACKSPACE:
 			// TODO: make backspace work
 			break;

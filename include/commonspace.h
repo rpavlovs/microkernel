@@ -51,6 +51,8 @@ typedef char *va_list;
 #define CHAR_BACKSPACE						0x8
 #define CHAR_NEWLINE						0xA
 #define CHAR_RETURN							0xD
+#define CHAR_ARROW_UP						38
+#define CHAR_ARROW_DOWN						40
 
 // Nameserver config
 

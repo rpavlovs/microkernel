@@ -49,7 +49,6 @@ int char_queue_peek_str( Char_queue *q, char *str, int len ) {
 	return str_pos;
 }
 
-
 int char_queue_pop_str( Char_queue *q, char *str, int len ) {
 	int pos = 0;
 	while( pos < len - 1 && q->size > 0 ) {

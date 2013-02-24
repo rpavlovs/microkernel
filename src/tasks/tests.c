@@ -8,18 +8,18 @@ void task_test_uart() {
 	
 	// CREATE THE UART2 RECEIVER SERVER. 
 	debug( DBG_SYS, "FIRST_TASK: creating UART2 Receiver Server." );
-	todo_debug( 10, 1 );
-	todo_debug( 18, 0 );
-	int uart2_receiver_tid = Create( 14, uart2_receiver_server );
-	//todo_debug( uart2_receiver_tid, 1 );
-	todo_debug( 19, 0 );
+	todo_debug( 0, 0 );
+	todo_debug( 0, 1 );
+	todo_debug( 0, 2 );
+	
+	int uart2_sender_tid = Create( 14, uart2_sender_server );
+	//int uart2_receiver_tid = Create( 14, uart2_receiver_server );
 	
 	// Checking if we can indeed send characters. 
-	todo_debug( 20, 0 );
-	char c = Getc( COM2 );
-	//todo_debug( 21, 0 );
+	//char c = Getc( COM2 );
+	//Putc( COM2, 'g' );
 	
-	todo_debug( c, 1 );
+	Exit(); 
 }
 
 

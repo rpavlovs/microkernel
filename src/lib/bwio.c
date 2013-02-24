@@ -4,10 +4,7 @@
  * Specific to the TS-7200 ARM evaluation board
  *
  */
-
-#include <config/ts7200.h>
-#include <config/system.h>
-#include <lib/bwio.h>
+#include "commonspace.h"
 
 /*
  * The UARTs are initialized by RedBoot to the following state

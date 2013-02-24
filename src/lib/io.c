@@ -1,14 +1,4 @@
-/*
- * bwio.c - busy-wait I/O routines for diagnosis
- *
- * Specific to the TS-7200 ARM evaluation board
- *
- */
-
-#include <config/ts7200.h>
-#include <config/system.h>
-#include <lib/io.h>
-#include <kernel/syscall.h>
+#include "commonspace.h"
 
 char c2x( char ch ) {
 	if ( (ch <= 9) ) return '0' + ch;

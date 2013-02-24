@@ -6,6 +6,12 @@
 
 void task_test_uart() {
 	
+	printf( COM2, "Hello world!\n");
+	printf( COM2, "Hello world!\n");
+	printf( COM2, "Hello world!\n");
+	printf( COM2, "Hello world!\n");
+	printf( COM2, "Hello world!\n");
+	printf( COM2, "Hello world!\n");
 	// CREATE THE UART2 RECEIVER SERVER. 
 	debug( DBG_SYS, "FIRST_TASK: creating UART2 Receiver Server." );
 	todo_debug( 10, 1 );

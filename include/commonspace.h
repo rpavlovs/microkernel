@@ -4,6 +4,8 @@
 #include <config/memory.h>
 #include <config/ts7200.h>
 #include <config/system.h>
+#include <config/environment.h>
+#include <config/ui.h>
 
 // System calls
 
@@ -16,6 +18,7 @@
 #include <lib/stdlib.h>
 #include <lib/string.h>
 #include <lib/queues.h>
+#include <lib/helpers.h>
 
 // System tasks 
 
@@ -27,6 +30,8 @@
 
 #ifndef __COMMONSPACE__
 #define __COMMONSPACE__
+
+// General macros'
 
 typedef char *va_list;
 
@@ -42,6 +47,10 @@ typedef char *va_list;
 
 #define SUCCESS								0
 #define FOREVER								for( ; ; )
+
+#define CHAR_BACKSPACE						0x8
+#define CHAR_NEWLINE						0xA
+#define CHAR_RETURN							0xD
 
 // Nameserver config
 

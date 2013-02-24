@@ -1,6 +1,5 @@
 #include "commonspace.h"
 
-
 void strcpy( const char * source, char * target ) {
 	int pos = -1;
 	while( source[++pos] != '\0' ) {

@@ -4,10 +4,7 @@
  * Specific to the TS-7200 ARM evaluation board
  *
  */
-
-#include <config/ts7200.h>
-#include <config/system.h>
-#include <lib/bwio.h>
+#include "commonspace.h"
 
 /*
  * The UARTs are initialized by RedBoot to the following state
@@ -84,7 +81,7 @@ int bwputc( int channel, char c ) {
 	return 0;
 }
 
-char c2x( char ch ) {
+char bwc2x( char ch ) {
 	if ( (ch <= 9) ) return '0' + ch;
 	return 'a' + ch - 10;
 }
@@ -92,8 +89,8 @@ char c2x( char ch ) {
 int bwputx( int channel, char c ) {
 	char chh, chl;
 
-	chh = c2x( c / 16 );
-	chl = c2x( c % 16 );
+	chh = bwc2x( c / 16 );
+	chl = bwc2x( c % 16 );
 	bwputc( channel, chh );
 	return bwputc( channel, chl );
 }
@@ -256,7 +253,7 @@ void bwprintf( int channel, char *fmt, ... ) {
     va_end(va);
 }
 
-void debug( int threshhold_dbg_lvl, char *fmt, ... ) {
+// void debug( int threshhold_dbg_lvl, char *fmt, ... ) {
 	/*
 	 * TODO: Make this work without busy wait. /
     if( threshhold_dbg_lvl > DEBUG_LEVEL ) return;
@@ -286,9 +283,9 @@ void debug( int threshhold_dbg_lvl, char *fmt, ... ) {
     
     bwprintf( COM2, "\n" );
 	* */
-}
+// }
 
-void assert( int statement, char *fmt, ... ) {
+// void assert( int statement, char *fmt, ... ) {
 	/*
 	 * TODO: Make this work without busy wait. /
 	if( statement ) return;
@@ -304,29 +301,29 @@ void assert( int statement, char *fmt, ... ) {
 
 	for( ; ; );
 	* */
-}
+// }
 
-void panic( char *fmt, ... ) {
-	va_list va;
-	bwprintf( COM2, " PANIC: " );
+// void panic( char *fmt, ... ) {
+// 	va_list va;
+// 	bwprintf( COM2, " PANIC: " );
 
-    va_start(va,fmt);
-    bwformat( COM2, fmt, va );
-    va_end(va);
+//     va_start(va,fmt);
+//     bwformat( COM2, fmt, va );
+//     va_end(va);
 
-	bwprintf( COM2, "\n" );
+// 	bwprintf( COM2, "\n" );
 
-	for( ; ; );
-}
+// 	for( ; ; );
+// }
 
-void todo_debug( int value, int channel ) {
-	int *ptr; 
-	if ( channel == 0 ) {
-		ptr = ( int * ) ( 0x01dffe50 );
-	} else if( channel == 1 ) {
-		ptr = ( int * ) ( 0x01dffe54 );
-	} else {
-		ptr = ( int * ) ( 0x01dffe58 );
-	}
-	*ptr = value; 
-}
+// void todo_debug( int value, int channel ) {
+// 	int *ptr; 
+// 	if ( channel == 0 ) {
+// 		ptr = ( int * ) ( 0x01dffe50 );
+// 	} else if( channel == 1 ) {
+// 		ptr = ( int * ) ( 0x01dffe54 );
+// 	} else {
+// 		ptr = ( int * ) ( 0x01dffe58 );
+// 	}
+// 	*ptr = value; 
+// }

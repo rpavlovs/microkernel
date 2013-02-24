@@ -189,6 +189,8 @@ int DelayUntil( int ticks );
 // -3 - volatile data must be collected and interrups re-enabled in the caller
 int AwaitEvent( int eventid, char *event, int eventLength );
 
+int Getc( int channel );
+int Putc( int channel, char ch );
 
 int TestCall( int a, int b, int c, int d, int e, int f );
 

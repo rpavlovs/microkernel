@@ -1,16 +1,17 @@
 #ifndef __COMMON_QUEUES_H__
 #define __COMMON_QUEUES_H__
 
-#define MAX_NUM_TASKS 100 //TODO: Remove this dirty hack!!!
+#define CHAR_QUEUE_SIZE		1000
+#define INT_QUEUE_SIZE		1000
 
 typedef struct {
-	char chars[MAX_NUM_TASKS];
+	char chars[CHAR_QUEUE_SIZE];
 	int newest, oldest;
 	int size;
 } Char_queue;
 
 typedef struct {
-	int ints[MAX_NUM_TASKS];
+	int ints[INT_QUEUE_SIZE];
 	int newest, oldest;
 	int size;
 } Int_queue;

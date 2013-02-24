@@ -228,7 +228,7 @@ int TestCall(int a, int b, int c, int d, int e, int f) {
 // IO Wrappers
 //
 /////////////////////////////////////////////////
-int Getc( int channel ){
+int Getc( int channel ) {
 	int tid = -1;
 	UART_request request;
 	UART_reply reply;

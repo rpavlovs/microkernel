@@ -47,10 +47,10 @@ void uart1_sender_notifier() {
 		FOREVER {
 			//Wait until UART1 is ready to receive a character
 			if(transmit == 0 || first_iter) {
-				AwaitEvent(EVENT_UART1_SEND_READY_INITIAL, 0, 0);	//TODO: Need interrupts to implement this part
+				AwaitEvent(EVENT_UART1_SEND_READY_INITIAL, 0);	//TODO: Need interrupts to implement this part
 			}
 			else {
-				AwaitEvent(EVENT_UART1_SEND_READY, 0, 0);			//TODO: Need interrupts to implement this part
+				AwaitEvent(EVENT_UART1_SEND_READY, 0);			//TODO: Need interrupts to implement this part
 			}
 			
 			first_iter = 0;
@@ -98,9 +98,6 @@ void uart1_sender_notifier() {
 }
 
 void uart1_sender_server() {
-	//Current tid
-	//int server_tid = MyTid();
-	
 	//Register the server
 	RegisterAs("uart1_sender");
 	
@@ -163,7 +160,7 @@ void uart1_receiver_notifier() {
 	char receive_buffer[1];
 
 	FOREVER {
-		AwaitEvent(EVENT_UART1_RECEIVE_READY, receive_buffer, 1);		//TODO: Need interrupts to implement this part
+		AwaitEvent(EVENT_UART1_RECEIVE_READY, receive_buffer );		//TODO: Need interrupts to implement this part
 
 		request.type = UART1_RECEIVE_NOTIFIER_REQUEST;
 		request.ch = receive_buffer[0];
@@ -174,15 +171,11 @@ void uart1_receiver_notifier() {
 }
 
 void uart1_receiver_server() {
-	//Current TID
-	//int server_tid = MyTid();
-	
 	//Register the server
 	RegisterAs("uart1_receiver");
 
 	//Create the notifier
-	//int notifier_tid;
-	Create(UART_RECEIVER_NOTIFIER_PRIORITY, &uart1_receiver_notifier); //TODO: Set priority
+	Create(UART_RECEIVER_NOTIFIER_PRIORITY, &uart1_receiver_notifier);
 	
 	//Request & Reply
 	UART_request request;
@@ -204,7 +197,6 @@ void uart1_receiver_server() {
 		//	notifier (uart1_receiver_notifier)
 		Receive(&sender_tid, (char *) &request, sizeof(request));
 
-		//Process the request
 		switch(request.type){
 			case UART1_RECEIVE_REQUEST:
 				//Enqueue the system function tid to reply later

@@ -12,7 +12,6 @@
       </df>
       <df name="include">
         <df name="config">
-          <in>mem_init.h</in>
           <in>memory.h</in>
           <in>system.h</in>
           <in>ts7200.h</in>
@@ -30,6 +29,7 @@
         </df>
         <df name="lib">
           <in>bwio.h</in>
+          <in>io.h</in>
           <in>queues.h</in>
           <in>stdlib.h</in>
           <in>string.h</in>
@@ -39,6 +39,7 @@
           <in>a1.h</in>
           <in>a3-game.h</in>
           <in>assignment0.h</in>
+          <in>cli.h</in>
           <in>clock-task.h</in>
           <in>first.h</in>
           <in>nameserver.h</in>
@@ -48,7 +49,6 @@
           <in>uart2_servers.h</in>
         </df>
         <in>commonspace.h</in>
-        <in>helpers.h</in>
         <in>kernelspace.h</in>
         <in>userspace.h</in>
       </df>
@@ -66,6 +66,7 @@
         </df>
         <df name="lib">
           <in>bwio.c</in>
+          <in>io.c</in>
           <in>queues.c</in>
           <in>stdlib.c</in>
           <in>string.c</in>
@@ -75,6 +76,7 @@
           <in>a1.c</in>
           <in>a3-game.c</in>
           <in>assignment0.c</in>
+          <in>cli.c</in>
           <in>clock-task.c</in>
           <in>first.c</in>
           <in>nameserver.c</in>

@@ -35,9 +35,9 @@ void uart1_hwi_handler( Kern_Globals *GLOBALS ) {
 		// Read the character -> This also clears the interrupt. 
 		char c = *( ( int * ) ( UART1_BASE + UART_DATA_OFFSET ) ); 
 		if( waiting_task != 0 ) {
-			assert( waiting_task->event_info.bufferLength > 0, 
-					"UART1_HWI_HANDLER: There must be enough space in the event buffer for the read character." ); 
-			waiting_task->event_info.eventBuffer[0] = c; 
+			//assert( waiting_task->event_info.bufferLength > 0, 
+			//		"UART1_HWI_HANDLER: There must be enough space in the event buffer for the read character." ); 
+			//waiting_task->event_info.eventBuffer[0] = c; 
 		}
 	} else if ( 
 			*uart1_common_interrupt & UART_TX_INT_STATUS || 
@@ -99,27 +99,29 @@ void uart1_hwi_handler( Kern_Globals *GLOBALS ) {
 void uart2_hwi_handler( Kern_Globals *GLOBALS ){
 	int *uart2_common_interrupt = ( int * )( UART2_BASE + UART_INTR_OFFSET ); 
 	Task_descriptor *waiting_task = 0;
+	int c;
 	
-	todo_debug( 7, 0 );
-	todo_debug( *uart2_common_interrupt, 1 );
 	// Is there data to be received?
-	if( *uart2_common_interrupt & UART_RX_INT_STATUS || 
-		*uart2_common_interrupt & UART_RX_TIME_INT_STATUS ) {
-		todo_debug( 8, 0 );
+	int temp = *uart2_common_interrupt; 
+	if( temp & UART_RX_INT_STATUS ) { 
+		//|| temp & UART_RX_TIME_INT_STATUS ) {
+		
 		// Retrieve the waiting event from the hwi table. 
 		waiting_task = ( Task_descriptor * ) GLOBALS->scheduler.hwi_watchers[UART2_RECEIVE_READY];
 		GLOBALS->scheduler.hwi_watchers[UART2_RECEIVE_READY] = 0;
 		
-		// Read the character -> This also clears the interrupt. 
-		char c = *( ( int * ) ( UART2_BASE + UART_DATA_OFFSET ) ); 
+		// Read the character -> This also clears the interrupt.
+		c = *(( int * )( UART2_BASE + UART_DATA_OFFSET ) );
+		
+		//bwprintf(COM2, "\nCharacter: %c \n", ( char ) c );
+		
 		if( waiting_task != 0 ) {
-			// TODO: Do we need to buffer characters? The characters come from the keyboard. 
-			assert( waiting_task->event_info.bufferLength > 0, 
-					"UART2_HWI_HANDLER: There must be enough space in the event buffer for the read character." ); 
-			waiting_task->event_info.eventBuffer[0] = c; 
+			todo_debug( waiting_task->event_char, 2 );
+			int *buffer = ( int * ) waiting_task->event_char; 
+			*buffer = c;
 		}
-	} else if ( *uart2_common_interrupt & UART_TX_INT_STATUS ) {
-		todo_debug( 9, 0 );
+	} 
+	else if ( temp & UART_TX_INT_STATUS ) {
 		// Retrieve the waiting event from the hwi table.
 		waiting_task = ( Task_descriptor * ) GLOBALS->scheduler.hwi_watchers[UART2_SEND_READY];
 		GLOBALS->scheduler.hwi_watchers[UART2_SEND_READY] = 0;
@@ -129,21 +131,22 @@ void uart2_hwi_handler( Kern_Globals *GLOBALS ){
 		int *uart2_ctrl, temp; 
 		uart2_ctrl = ( int * ) (  UART2_BASE + UART_CTLR_OFFSET ); 
 		temp = *uart2_ctrl; 
-		*uart2_ctrl = temp & ~TIEN_MASK; 
-	} else {
-		todo_debug( 10, 0 );
+		*uart2_ctrl = temp & ~TIEN_MASK;
+	}
+	else {
 		// This was an unexpected interrupt; just ignore it. 
 	}
 	
-	// Clear the interrupt in the ICU. 
+	// Clear the interrupt in the ICU.
 	// If there was a task waiting for these events, reschedule it. 
 	if( waiting_task != 0 ) {
 		//Rescheduling the task
 		waiting_task->state = READY_TASK;
 		enqueue_tqueue( waiting_task, &(GLOBALS->scheduler.queues[waiting_task->priority]) );
+		//todo_debug( c, 1 );
 	}
 	
-	// Clear the interrupt in the ICU. 
+	// Clear the interrupt in the ICU.
 	int *vicPtr = (int *)( INT_CONTROL_BASE_2 + INT_VEC_ADDRESS_OFFSET );
 	*vicPtr = 0;
 }

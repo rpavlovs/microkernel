@@ -3,7 +3,7 @@
 // Character Queue in round buffer
 
 void init_char_queue(Char_queue *q){
-	q->newest = 0;
+	q->newest = -1;
 	q->oldest = 0;
 	q->size = 0;
 }
@@ -73,7 +73,7 @@ int char_queue_pop_word( Char_queue *q, char *str, int len ) {
 // Integer Queue
 
 void init_int_queue(Int_queue *q){
-	q->newest = 0;
+	q->newest = -1;
 	q->oldest = 0;
 	q->size = 0;
 }

@@ -20,7 +20,7 @@
 #define SEND_ARGS 				5
 #define RECEIVE_ARGS	 		3
 #define REPLY_ARGS 				3
-#define AWAIT_EVENT_ARGS		1
+#define AWAIT_EVENT_ARGS		2
 #define TESTCALL_ARGS 			6
 
 #define CREATE_RETURN 			1
@@ -187,7 +187,7 @@ int DelayUntil( int ticks );
 // -1 - invalid event
 // -2 - corrupted volatile data. Error indication is in event buffer
 // -3 - volatile data must be collected and interrups re-enabled in the caller
-int AwaitEvent( int eventid, char *event, int eventLength );
+int AwaitEvent( int eventid, int event );
 
 int Getc( int channel );
 int Putc( int channel, char ch );

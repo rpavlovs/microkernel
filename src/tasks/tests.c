@@ -4,28 +4,32 @@
 
 #define INT_CONTROL_BASE_1		0x800B0000		// VIC 1
 
-void task_test_uart() {
+void task_test_uart1(){
+	int uart1_receiver_tid = Create( 14, uart1_receiver_server );
 	
-	printf( COM2, "Hello world!\n");
-	printf( COM2, "Hello world!\n");
-	printf( COM2, "Hello world!\n");
-	printf( COM2, "Hello world!\n");
-	printf( COM2, "Hello world!\n");
-	printf( COM2, "Hello world!\n");
+	
+}
+
+void task_test_uart2() {	
 	// CREATE THE UART2 RECEIVER SERVER. 
 	debug( DBG_SYS, "FIRST_TASK: creating UART2 Receiver Server." );
-	todo_debug( 10, 1 );
-	todo_debug( 18, 0 );
+	todo_debug( 0, 0 );
+	todo_debug( 0, 1 );
+	todo_debug( 0, 2 );
+	
+	int uart2_sender_tid = Create( 14, uart2_sender_server );
 	int uart2_receiver_tid = Create( 14, uart2_receiver_server );
-	//todo_debug( uart2_receiver_tid, 1 );
-	todo_debug( 19, 0 );
 	
-	// Checking if we can indeed send characters. 
-	todo_debug( 20, 0 );
 	char c = Getc( COM2 );
-	//todo_debug( 21, 0 );
+	char d = Getc( COM2 );
 	
-	todo_debug( c, 1 );
+	Putc( COM2, c );
+	Putc( COM2, d );
+	Putc( COM2, 'z' );
+	
+	//bwprintf( COM2, "\nEVERYTHING THAT HAS A BEGINNING HAS AN END, NEO!!!");
+	
+	Exit(); 
 }
 
 

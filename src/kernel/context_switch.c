@@ -149,19 +149,15 @@ handle_hwi( Kern_Globals *GLOBALS ){
 	Task_descriptor *td = &(GLOBALS->tasks[GLOBALS->scheduler.last_active_tid]);
 	debug( DBG_KERN, "HANDLE_HWI: entered [VIC1 interrupt id: %d VIC2 interrupt id: %d caller: ]", 
 			*vic1_hw_interrupt, *vic2_hw_interrupt, td->tid );
-	todo_debug( 2, 0 );
 	
 	// There could be multiple interrupts enabled. Therefore this is handled
 	// in a while loop and not a switch statement. 
 	//while( *vic1_hw_interrupt || *vic2_hw_interrupt ) {
 	if ( *vic1_hw_interrupt || *vic2_hw_interrupt ){
 		
-		todo_debug( 3, 0 );
-		todo_debug( *vic2_hw_interrupt, 1 );
 		
 		// Timer
 		if ( *vic1_hw_interrupt & TIMER1_INT ){
-			todo_debug( 4, 0 );
 			debug( DBG_KERN, "TIMER_INTERRUPT: handling" );
 			timer_hwi_handler( GLOBALS );
 			debug( DBG_KERN, "TIMER_INTERRUPT: handled" );
@@ -169,7 +165,6 @@ handle_hwi( Kern_Globals *GLOBALS ){
 		
 		// UART 1
 		if ( *vic2_hw_interrupt & UART1_INT ){
-			todo_debug( 5, 0 );
 			debug( DBG_KERN, "UART1_INTERRUPT: handling" );
 			uart1_hwi_handler( GLOBALS ); 
 			debug( DBG_KERN, "UART1_INTERRUPT: handled" );
@@ -177,7 +172,6 @@ handle_hwi( Kern_Globals *GLOBALS ){
 		
 		// UART 2
 		if ( *vic2_hw_interrupt & UART2_INT ){
-			todo_debug( 6, 0 );
 			debug( DBG_KERN, "UART2_INTERRUPT: handling" );
 			uart2_hwi_handler( GLOBALS ); 
 			debug( DBG_KERN, "UART2_INTERRUPT: handled" );
@@ -287,8 +281,7 @@ handle_swi( int request, Kern_Globals *GLOBALS ){
 		RetrieveSysCallArgs( sysCallArguments, AWAIT_EVENT_ARGS, taskSP );
 		returnValue = sys_await_event(
 						(int)		sysCallArguments[0],
-						(char *)	sysCallArguments[1],
-						(int)		sysCallArguments[2],
+						(int)		sysCallArguments[1],
 						td, GLOBALS );
 		SetSysCallReturn( returnValue, taskSP );
 		break;

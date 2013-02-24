@@ -27,6 +27,8 @@ void putw( int channel, int n, char fc, char *bf );
 
 void printf( int channel, char *format, ... );
 
+int sprintf( char * buffer, char *format, ... );
+
 void debug( int threshhold_lvl, char *message, ... );
 
 void assert( int condition, char * message, ... );

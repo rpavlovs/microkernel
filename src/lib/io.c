@@ -165,44 +165,45 @@ void format ( int channel, char *fmt, va_list va ) {
 }
 
 void printf( int channel, char *fmt, ... ) {
-    va_list va;
-
-    va_start(va,fmt);
-    format( channel, fmt, va );
-    va_end(va);
+//    va_list va;
+//
+//    va_start(va,fmt);
+//    format( channel, fmt, va );
+//    va_end(va);
 }
 
 void debug( int threshhold_dbg_lvl, char *fmt, ... ) {
-    if( threshhold_dbg_lvl > DEBUG_LEVEL ) return;
-    va_list va;
-
-	switch( threshhold_dbg_lvl ) {
-	case 0:
-	case 1:
-		printf( COM2, " DEBUG: [U] ", threshhold_dbg_lvl );
-		break;
-	case 2:
-		printf( COM2, " DEBUG: [S] ", threshhold_dbg_lvl );
-		break;
-	case 3:
-		printf( COM2, " DEBUG: [R]  ", threshhold_dbg_lvl );
-		break;
-	case 4:
-		printf( COM2, " DEBUG: [K]   ", threshhold_dbg_lvl );
-		break;
-	default:
-		printf( COM2, " DEBUG: [?] ", threshhold_dbg_lvl );
-	}
-
-    va_start(va,fmt);
-    format( COM2, fmt, va );
-    va_end(va);
-    
-    printf( COM2, "\n" );
+//    if( threshhold_dbg_lvl > DEBUG_LEVEL ) return;
+//    va_list va;
+//
+//	switch( threshhold_dbg_lvl ) {
+//	case 0:
+//	case 1:
+//		printf( COM2, " DEBUG: [U] ", threshhold_dbg_lvl );
+//		break;
+//	case 2:
+//		printf( COM2, " DEBUG: [S] ", threshhold_dbg_lvl );
+//		break;
+//	case 3:
+//		printf( COM2, " DEBUG: [R]  ", threshhold_dbg_lvl );
+//		break;
+//	case 4:
+//		printf( COM2, " DEBUG: [K]   ", threshhold_dbg_lvl );
+//		break;
+//	default:
+//		printf( COM2, " DEBUG: [?] ", threshhold_dbg_lvl );
+//	}
+//
+//    va_start(va,fmt);
+//    format( COM2, fmt, va );
+//    va_end(va);
+//    
+//    printf( COM2, "\n" );
 }
 
 void assert( int statement, char *fmt, ... ) {
 	
+	/*
 	if( statement ) return;
 	va_list va;
 
@@ -215,9 +216,11 @@ void assert( int statement, char *fmt, ... ) {
 	printf( COM2, "\n" );
 
 	for( ; ; );
+	 * */
 }
 
 void panic( char *fmt, ... ) {
+	/*
 	va_list va;
 	printf( COM2, " PANIC: " );
 
@@ -228,6 +231,7 @@ void panic( char *fmt, ... ) {
 	printf( COM2, "\n" );
 
 	for( ; ; );
+	*/
 }
 
 void todo_debug( int value, int channel ) {
@@ -239,5 +243,5 @@ void todo_debug( int value, int channel ) {
 	} else {
 		ptr = ( int * ) ( 0x01dffe58 );
 	}
-	*ptr = value; 
+	*ptr = value;
 }

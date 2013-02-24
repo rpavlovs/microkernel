@@ -316,14 +316,16 @@ void bwprintf( int channel, char *fmt, ... ) {
 // 	for( ; ; );
 // }
 
-// void todo_debug( int value, int channel ) {
-// 	int *ptr; 
-// 	if ( channel == 0 ) {
-// 		ptr = ( int * ) ( 0x01dffe50 );
-// 	} else if( channel == 1 ) {
-// 		ptr = ( int * ) ( 0x01dffe54 );
-// 	} else {
-// 		ptr = ( int * ) ( 0x01dffe58 );
-// 	}
-// 	*ptr = value; 
-// }
+/*
+void todo_debug( int value, int channel ) {
+ 	int *ptr; 
+ 	if ( channel == 0 ) {
+ 		ptr = ( int * ) ( 0x01dffe50 );
+ 	} else if( channel == 1 ) {
+ 		ptr = ( int * ) ( 0x01dffe54 );
+ 	} else {
+ 		ptr = ( int * ) ( 0x01dffe58 );
+ 	}
+ 	*ptr = value; 
+}
+*/

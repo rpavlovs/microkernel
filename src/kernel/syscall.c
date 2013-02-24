@@ -93,7 +93,7 @@ int Reply( int tid, char *reply, int replylen ) {
 	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (REPLY_SYSCALL) );
 }
 
-int AwaitEvent( int eventid, char *event, int eventLength )
+int AwaitEvent( int eventid, int event )
 {
 	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (AWAIT_EVENT_SYSCALL) );	
 }
@@ -281,7 +281,7 @@ int Putc( int channel, char ch ) {
 	else if(channel == COM2) {
 		//Terminal
 		server_tid = WhoIs("uart2_sender");
-
+		
 		//Check the TID
 		if(server_tid < 0){ 
 			return -1; 

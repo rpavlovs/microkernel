@@ -3,7 +3,7 @@
 // Character Queue
 
 void init_char_queue(Char_queue *q){
-	q->newest = 0;
+	q->newest = -1;
 	q->oldest = 0;
 	q->size = 0;
 }
@@ -35,7 +35,7 @@ char dequeue_char_queue(Char_queue *q){
 // Integer Queue
 
 void init_int_queue(Int_queue *q){
-	q->newest = 0;
+	q->newest = -1;
 	q->oldest = 0;
 	q->size = 0;
 }

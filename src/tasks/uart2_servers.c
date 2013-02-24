@@ -5,10 +5,13 @@ void uart2_sender_notifier() {
 
 	int server_tid = WhoIs("uart2_sender");
 	UART_request request;
+	int UART_ready = 1;
 
 	FOREVER {
 		//If UART2 is not ready to receive a character
 		if(!( *uart_flags & TXFF_MASK )) {
+			UART_ready = 0;
+			
 			//Notify the server
 			request.type = UART2_SEND_NOTIFIER_REQUEST;
 			request.ch = 0;
@@ -16,15 +19,19 @@ void uart2_sender_notifier() {
 					sizeof(request), (char *) 0, 0);
 
 			//Wait until UART2 is ready
-			AwaitEvent(EVENT_UART2_SEND_READY, 0, 0);
+			AwaitEvent( UART2_SEND_READY, 0 );
 		}
 
-		//UART2 is ready
-		//Notify the server
-		request.type = UART2_SEND_NOTIFIER_REQUEST;
-		request.ch = 1;
-		Send(server_tid, (char *) &request,
-				sizeof(request), (char *) 0, 0);
+		if(!UART_ready){
+			//UART2 is ready
+			UART_ready = 1;
+			
+			//Notify the server
+			request.type = UART2_SEND_NOTIFIER_REQUEST;
+			request.ch = 1;
+			Send(server_tid, (char *) &request,
+					sizeof(request), (char *) 0, 0);
+		}
 	}
 }
 
@@ -33,12 +40,12 @@ void uart2_sender_server() {
 	RegisterAs("uart2_sender");
 	
 	//Create the notifier
-	Create(UART_SENDER_NOTIFIER_PRIORITY, &uart2_sender_notifier); //TODO: Priority for the notifier
+	Create(UART_SENDER_NOTIFIER_PRIORITY, uart2_sender_notifier);
 	
 	//Request & Reply
 	UART_request request;
 	UART_reply reply;
-	int UART_ready = 0;
+	int UART_ready = 1;
 	int *uart_data = (int *)( UART2_BASE + UART_DATA_OFFSET );
 
 	//Buffer queues
@@ -58,7 +65,7 @@ void uart2_sender_server() {
 				Reply(sender_tid, (char *) &reply, sizeof(reply));
 				
 				//Put the string from the request to queue
-				enqueue_char_queue( request.ch, &cqueue );	//TODO: Reimplement to support string
+				enqueue_char_queue( request.ch, &cqueue );
 				break;
 
 			case UART2_SEND_NOTIFIER_REQUEST:
@@ -68,11 +75,14 @@ void uart2_sender_server() {
 				Reply(sender_tid, (char *) &reply, sizeof(reply));
 				
 				//Change the state of the UART
-				UART_ready = request.ch;
-
+				UART_ready = (int) request.ch;
+				
+				//todo_debug( 24, 0 );
 				//If UART is ready - write the character
-				if(UART_ready){
+				if(UART_ready && cqueue.size > 0){
+					todo_debug( 25, 0 );
 					*uart_data = dequeue_char_queue( &cqueue );
+					//*uart_data = 'f';
 				}
 
 				break;
@@ -93,19 +103,16 @@ void uart2_receiver_notifier() {
 	int server_tid = WhoIs("uart2_receiver");
 	UART_request request;
 
-	char receive_buffer[1];
+	int receive_buffer = 0;
+	todo_debug( (int) &receive_buffer, 0 );
 
 	FOREVER {
 		//Wait until there is data in UART2
-
-		//AwaitEvent(EVENT_UART2_RECEIVE_READY, receive_buffer, 1);
-		todo_debug( 40, 0 );
-		AwaitEvent( UART2_RECEIVE_READY, receive_buffer, 1 );
-		todo_debug( 41, 0 );
+		AwaitEvent( UART2_RECEIVE_READY, (int) &receive_buffer );
 		
 		//Configure the request
 		request.type = UART2_RECEIVE_NOTIFIER_REQUEST;
-		request.ch = receive_buffer[0];
+		request.ch = receive_buffer;
 		
 		//Send data to the server (uart2_receiver_server)
 		Send(server_tid, (char *) &request, sizeof(request), (char *) 0, 0);
@@ -113,16 +120,11 @@ void uart2_receiver_notifier() {
 }
 
 void uart2_receiver_server() {
-	//Current TID
-	//int server_tid = MyTid();
-	
 	//Register the server
-	int ret = RegisterAs("uart2_receiver");
-	todo_debug( ret + 1, 1 );
+	RegisterAs("uart2_receiver");
 	
 	//Create the receive notifier
-	//int notifier_tid = 0;
-	Create(UART_RECEIVER_NOTIFIER_PRIORITY, &uart2_receiver_notifier); //TODO: Set priority for the notifier
+	Create(UART_RECEIVER_NOTIFIER_PRIORITY, &uart2_receiver_notifier);
 	
 	//Request & Reply
 	UART_request request;
@@ -139,7 +141,6 @@ void uart2_receiver_server() {
 		int sender_tid = -1;
 		int target_tid = -1;
 		
-		todo_debug( 30, 0 );
 		//Receive request from:
 		//	system function (Getc)
 		//	notifier (uart2_receiver_notifier)
@@ -147,14 +148,12 @@ void uart2_receiver_server() {
 
 		switch(request.type){
 			case UART2_RECEIVE_REQUEST:
-				todo_debug( 31, 0 );
 				//Enqueue the system function tid to reply later
 				enqueue_int_queue( sender_tid, &iqueue );
 				
 				break;
 			
 			case UART2_RECEIVE_NOTIFIER_REQUEST:
-				todo_debug( 32, 0 );
 				//Reply to unblock the notifier
 				Reply(sender_tid, (char *) 0, 0);
 			
@@ -164,7 +163,6 @@ void uart2_receiver_server() {
 				break;
 			
 			default:
-				todo_debug( 33, 0 );
 				reply.type = INVALID_REQUEST;
 				reply.ch = 0;
 				Reply(sender_tid, (char *) &reply, sizeof(reply));
@@ -175,15 +173,12 @@ void uart2_receiver_server() {
 		//If there are system functions to receive
 		//and characters to be sent
 		while(cqueue.size > 0 && iqueue.size > 0){
-			todo_debug( 34, 0 );
 			//Prepare the reply to the system function
 			target_tid = dequeue_int_queue( &iqueue );
-			reply.type = UART1_RECEIVE_REPLY;
+			reply.type = UART2_RECEIVE_REPLY;
 			reply.ch = dequeue_char_queue( &cqueue );
 
 			//Perform the reply
-			todo_debug( 35, 0 );
-			//todo_debug( reply.ch, 1 );
 			Reply(target_tid, (char *) &reply, sizeof(reply));
 		}
 	}

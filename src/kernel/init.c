@@ -68,7 +68,8 @@ void init_io() {
 	// 3. Modem Status			(UARTMSINTR  - MSIEN_MASK)
 	// NOTE: Both, the transmit interrupt and modem status are enabled during
 	// await event. That's the reason why they are not enabled here. 
-	*uart_ctrl = INT_RESET_VALUE | RIEN_MASK;
+	temp = *uart_ctrl; 
+	*uart_ctrl = temp | RIEN_MASK;
 	
 	// -> Set the UART speed (baud rate) -> 2400 bps. 
 	low = (int *)( UART1_BASE + UART_LCRL_OFFSET );
@@ -79,7 +80,7 @@ void init_io() {
 	// -> Configure UART (Disable FIFOs, and enable two step bits frame) 
 	fifo = (int *)( UART1_BASE + UART_LCRH_OFFSET );
 	temp = *fifo | STP2_MASK;	// TODO: Check if the two step bits frame is really needed. 
-	*fifo = temp & ~FEN_MASK; 
+	*fifo = temp & ~FEN_MASK;
 	
 	// -> Enable modem (to check for CTS).
 	mdm_ctrl = (int *)( UART1_BASE + UART_MDMCTL_OFFSET);
@@ -92,17 +93,19 @@ void init_io() {
 	// 1. Receive interrupt		(UARTRXINTR  - RIEN_MASK )
 	// 2. Transmit interrupt	(UARTTRXINTR - TIEN_MASK )
 	// NOTE: As with UART1, the Transmit interrupt is enabled during await event.
-	*uart_ctrl = INT_RESET_VALUE | RIEN_MASK | RTIEN_MASK; // RTIEN_MASK
+	//*uart_ctrl = INT_RESET_VALUE | RIEN_MASK;
+	temp = *uart_ctrl; 
+	*uart_ctrl = temp | RIEN_MASK | RTIEN_MASK;	
 	
 	// -> Set the UART speed (baud rate) -> 115200 bps.
 	low = (int *)( UART2_BASE + UART_LCRL_OFFSET );
 	mid = (int *)( UART2_BASE + UART_LCRM_OFFSET );
-	*low = 0x3;
 	*mid = 0x0;
+	*low = 0x3;
 	
 	// -> Configure UART (Disable FIFOs)
 	fifo = (int *)( UART2_BASE + UART_LCRH_OFFSET );
-	temp = *fifo;
+	temp = *fifo; 
 	*fifo = temp & ~FEN_MASK;
 	
 	// NOTE: The actual interrupts (in the ICU) are enabled during 

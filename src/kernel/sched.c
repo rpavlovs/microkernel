@@ -35,6 +35,7 @@ init_schedule( int first_task_priority, void (*first_task_code) ( ), Kern_Global
 	//Updating the schedule appropriately
 	sched->last_issued_tid = 0;
 	sched->tasks_alive = 1;
+	sched->tasks_exited = 0;
 	
 	//Initializing hwi_watchers
 	int i;
@@ -98,7 +99,7 @@ int activate( const int tid, Kern_Globals *GLOBALS ) {
 	}
 	
 	assert( td->state == READY_TASK, "It's only possible to activate a READY task. "
-		"[task state: %d]", td->state );
+		"[task state: %d task_id: %d]", td->state, td->tid );
 	
 	td->state = ACTIVE_TASK;
 

@@ -58,7 +58,7 @@ void init_task_descriptors( Kern_Globals *GLOBALS ) {
 void init_io() {
 	int temp; 
 	int *uart_ctrl, *mdm_ctrl, *fifo, *low, *mid; 
-	
+	/*
 	// -- UART 1 -> Interacts with the train. ---------------------------------
 	uart_ctrl = (int *)( UART1_BASE + UART_CTLR_OFFSET );
 	
@@ -85,6 +85,7 @@ void init_io() {
 	// -> Enable modem (to check for CTS).
 	mdm_ctrl = (int *)( UART1_BASE + UART_MDMCTL_OFFSET);
 	*mdm_ctrl = (*mdm_ctrl | 1);
+	*/
 	
 	// -- UART 2 -> Interacts with the console. -------------------------------
 	uart_ctrl = (int *)( UART2_BASE + UART_CTLR_OFFSET );

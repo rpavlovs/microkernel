@@ -18,8 +18,12 @@ void enqueue_char_queue(char c, Char_queue *q){
 }
 
 void enqueue_str_to_char_queue(char *str, Char_queue *q){
-	//TODO: Implement this function!!!
-	//assert(q->size != CHAR_QUEUE_SIZE, "Char queue should not overflow");
+	char *ptr = str;
+	while( (q->chars[++(q->newest)] = *(ptr++)) ) {
+		if( q->newest >= CHAR_QUEUE_SIZE ) q->newest = 0;
+		if( q->size++ >= CHAR_QUEUE_SIZE )
+			assert( 0, "Queue overflow" );
+	}
 }
 
 char dequeue_char_queue( Char_queue *q ) {

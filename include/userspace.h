@@ -9,3 +9,4 @@
 #include "tasks/clock-task.h"
 
 #include "tasks/cli.h"
+#include "tasks/train_control.h"

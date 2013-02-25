@@ -77,13 +77,17 @@ typedef char *va_list;
 #define ERROR_WRONG_MESSAGE_TYPE		 	-10
 
 #define UART1_RECEIVE_REQUEST				1
-#define UART1_RECEIVE_REPLY					2
 #define UART2_RECEIVE_REQUEST				3
+#define UART1_RECEIVE_REPLY					2
 #define UART2_RECEIVE_REPLY					4
 #define UART1_SEND_REQUEST					5
-#define UART1_SEND_REPLY					6
 #define UART2_SEND_REQUEST					7
+#define UART1_SEND_REPLY					6
 #define UART2_SEND_REPLY					8
+
+#define UART_SEND_REQUEST_PUTC				9
+#define UART_SEND_REQUEST_PUTSTR			10
+#define UART_NOTIFIER_IDLE					45
 
 #define UART1_RECEIVE_NOTIFIER_REQUEST		11
 #define UART1_RECEIVE_NOTIFIER_REPLY		12
@@ -92,7 +96,8 @@ typedef char *va_list;
 #define UART1_SEND_NOTIFIER_REQUEST			15
 #define UART1_SEND_NOTIFIER_REPLY			16
 #define UART2_SEND_NOTIFIER_REQUEST			17
-#define UART2_SEND_NOTIFIER_REPLY			18
+#define UART2_NOTIFIER_REPLY				18
+#define UART2_INIT_NOTIFIER					19
 
 #define INVALID_REQUEST						20
 
@@ -104,31 +109,39 @@ typedef char *va_list;
 
 #define UART_SENDER_NOTIFIER_PRIORITY		15 // 8
 #define UART_RECEIVER_NOTIFIER_PRIORITY		15 // 8
-
+                                       		  
 
 // Messages
+typedef struct Nameserver_request Nameserver_request;
+typedef struct Nameserver_reply Nameserver_reply;
+typedef struct UART_request UART_request;
+typedef struct UART_reply UART_reply;
+typedef struct UART_notifier_init UART_notifier_init;
 
-typedef struct {
+struct Nameserver_request {
 	int type;
 	char ns_name[NAMESERVER_RECORD_NAME_MAX_LENGTH];
-} Nameserver_request;
+};
 
-typedef struct {
+struct Nameserver_reply {
 	int type;
 	int num;
-} Nameserver_reply;
+};
 
-//IO structures
-typedef struct {
+struct UART_request {
 	int type;
 	char ch;
-	//char str[2];
-} UART_request;
+	char *str;
+};
 
-typedef struct {
+struct UART_reply {
 	int type;
 	char ch;
-	//char str[2];
-} UART_reply;
+};
+
+struct UART_notifier_init {
+	int type;
+	Char_queue *buf;	
+};
 
 #endif

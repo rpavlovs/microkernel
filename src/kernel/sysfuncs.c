@@ -88,6 +88,7 @@ sys_exit( Task_descriptor *td, Kern_Globals *GLOBALS ) {
 
 	// Updating the schedule
 	GLOBALS->scheduler.tasks_alive--;
+	GLOBALS->scheduler.tasks_exited++;
 }
 
 void
@@ -181,6 +182,9 @@ sys_receive( int *sender_tid, char *reciever_buf, const int reciever_buf_len,
 
 		//Changing the state of the sender
 		GLOBALS->tasks[send_info->sender_tid].state = REPLY_TASK;
+
+		//Changing the state of the receiver
+		sys_reschedule( receiver_td, GLOBALS );
 	} else {
 		debug( DBG_KERN, "SYS_RECEIVE: Task blocked. Mailbox is empty" );
 
@@ -203,7 +207,8 @@ sys_receive( int *sender_tid, char *reciever_buf, const int reciever_buf_len,
 int
 sys_reply( int sender_tid, char *reply, int replylen, Task_descriptor *receiver_td,
 		Kern_Globals *GLOBALS ) {
-	debug( DBG_KERN, "SYS_REPLY: entered" );
+	debug( DBG_KERN, "SYS_REPLY: entered [reply to %d from %d]",
+		sender_tid, receiver_td->tid );
 
 	Reply_info *reply_info = &(receiver_td->reply_infos[sender_tid]);
 
@@ -278,6 +283,7 @@ sys_await_event( int eventid, int buffer_addr, Task_descriptor *td, Kern_Globals
 	td->state = AWAIT_TASK;
 	Task_queue *pqueue = &(GLOBALS->scheduler.queues[td->priority]);
 	dequeue_tqueue(pqueue);
+	GLOBALS->scheduler.tasks_alive--;
 	
 	// Save the event buffer information.
 	todo_debug( buffer_addr, 1 );

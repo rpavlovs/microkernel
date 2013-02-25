@@ -105,7 +105,6 @@ int exec_rv( int train_id ) {
 }
 
 int exec_q( ) {
-	// TODO: request system exit
 	Exit();
 	return SUCCESS;
 }
@@ -173,13 +172,13 @@ void update_cli_view( CLI_history *h ) {
 		if( --history_record < h->inputs ) history_record += CLI_HISTORY_LENGTH;
 	}
 	ptr += sprintf( ptr, "\033[u\033?25h" );
-	ptr += sprintf( ptr, "\033[%d;7H%-81s\033[%d;7H",
+	ptr += sprintf( ptr, "\033[%d;7H%-81s\033[%d;7H\0",
 		UI_CLI_CMD_LINE_ROW, " ", UI_CLI_CMD_LINE_ROW );
 
 	// TODO: user assert ( ptr - str < CLI_PRINT_BUFFER_SIZE );
 
 	// TODO: make printf send strings in one message to uart_server 
-	printf( COM2, str );
+	Putstr( COM2, str );
 }
 
 

@@ -4,13 +4,13 @@ void setupScreen() {
 	char buff[3000];
 	char *ptr = buff;
 
-	ptr += sprintf( ptr, "\0332J" );
+	ptr += sprintf( ptr, "\033[2J\033[;H" );
 	ptr += sprintf( ptr,
 		"################################################################################\n"
 		"## Train Control #   Track A    ## ____12__11_____________________________    ##\n"
 		"##################################     /   /                              \\   ##\n"
 		"## Uptime        mm:ss          ## ___4  14__________13______10___________ \\  ##\n"
-		"## CPU Load      dd%%            ##   /   /            \\      /            \\ | ##\n"
+		"## CPU Load      dd             ##   /   /            \\      /            \\ | ##\n"
 		"## Active Tasks  dd             ## _/   /              9C | 9B             \\| ##\n"
 		"##################################     |                 \\|/                9 ##\n"
 		"##       Recent Sensors         ##     |                  |                 | ##\n"
@@ -29,15 +29,29 @@ void setupScreen() {
 		"##                                                                            ##\n"
 		"##                                                                            ##\n"
 		"## ~>                                                                         ##\n"
-		"################################################################################");
-	ptr += sprintf( ptr, "\033[%d;7H" );
-	printf( COM2, buff );
+		"################################################################################\n");
+	ptr += sprintf( ptr, "\033[%d;7H\0", UI_CLI_CMD_LINE_ROW );
+	// printf( COM2, "%s", buff );
+	Putstr( COM2, buff );
 }
 
 void train_control() {
+	// Putc( COM2, '~' );
+	// Putc( COM2, '\n' );
+	// Putstr( COM2, "Hello" );
+	// setupScreen();
+	// Delay(1000);
+	// Create( 7, task_cli );
+	// Delay(10000);
+	char buf[1000];
+	char* ptr = buf;
+
+	ptr += sprintf( ptr, "\033[2J\033[;H" );
+	ptr += sprintf( ptr, "\033[%d;7H%-81s\033[%d;7H\0", 3, "blah", 3 );
+
+	Putstr( COM2, buf ); 
 	
-	setupScreen();
 
-	Create( 9, task_cli );
-
+	// Delay( 500 );
+	Exit();
 }

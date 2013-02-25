@@ -12,7 +12,7 @@
 #define ZOMBIE_TASK 						2
 #define FREE_TASK 							3
 #define SEND_TASK 							4
-#define RECEIVE_BLOCKED 						5
+#define RECEIVE_BLOCKED 					5
 #define REPLY_TASK 							6
 #define AWAIT_TASK 							7
 
@@ -95,6 +95,7 @@ typedef struct {
 	int last_issued_tid;
 	int last_active_tid;
 	int tasks_alive;
+	int tasks_exited;
 	
 	Task_descriptor *hwi_watchers[HWI_NUM_EVENTS];
 } Scheduler;

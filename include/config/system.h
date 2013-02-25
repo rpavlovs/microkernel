@@ -12,12 +12,15 @@
 //  do not have debug printouts
 
 
-#define DEBUG_LEVEL 				1
+#define DEBUG_LEVEL 					0
 
-#define NAMESERVER_TASK_PRIORITY	14
-#define TIMESERVER_TASK_PRIORITY	14
+#define NAMESERVER_TASK_PRIORITY		14
+#define TIMESERVER_TASK_PRIORITY		14
+#define UART2_SENDER_SERVER_PRIORITY	14
+#define UART2_RECEIVER_SERVER_PRIORITY	14
 
-#define FIRST_USER_TASK_NAME		task_test_uart1
-#define FIRST_USER_TASK_PRIORITY	14
+
+#define FIRST_USER_TASK_NAME			train_control
+#define FIRST_USER_TASK_PRIORITY		8
 
 #endif

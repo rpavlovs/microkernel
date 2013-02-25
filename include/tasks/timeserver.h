@@ -27,6 +27,9 @@ typedef struct {
 #define TIMER_ENABLE_FLAG			0x80 // 10000000
 #define TIMER_MODE					0x40 // 1000000
 
+// If this flag is enabled the system will use a 508 kHz clock frequency. 
+// If this flag is disabled the system will use a 2 kHz clock frequency. 
+#define TIMER_CLKSEL				0x8  // 1000; 
 
 
 #endif

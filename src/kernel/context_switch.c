@@ -128,9 +128,6 @@ StoreTaskInformation( unsigned int taskSP, unsigned int lr, unsigned int activeT
 void
 handle_request( int request, Kern_Globals *GLOBALS ) {
 	
-	//int *ptr = ( int * ) INT_CONTROL_BASE_1 + INT_RAW_OFFSET; 
-	//bwprintf( COM2, "HANDLE_Request: entered [request id: %x]\n", *ptr );
-	//bwprintf( COM2, "HANDLE_Request: entered [request id: %d]\n", request );
 	debug( DBG_KERN, "HANDLE_Request: entered [request id: %d]", request );
 	if ( request < 0 ) {
 		handle_hwi( GLOBALS ); 

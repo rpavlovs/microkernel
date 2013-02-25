@@ -1,6 +1,6 @@
 #include "userspace.h"
 
-#define CLOCK_TASK_DELAY	100
+#define CLOCK_TASK_DELAY	10
 #define CLOCK_ROW_POS		10
 #define CLOCK_COL_POS		10
 #define CMD_ROW_POS			20
@@ -29,28 +29,13 @@ void showCursor(){
 	bwprintf( COM2, CURSOR_SHOW_STR );
 }
 
-/*
- void clock_redraw(struct print_buffer* pbuff, int minutes, int seconds, int tseconds){
-	//Clear the screen
-	ap_init_buff( pbuff );
-	ap_putstr( pbuff, "\x1B[?25l");	//hide cursor
-	ap_putstr( pbuff, "\x1B[1;51f");	//move to clock position
-	ap_putstr( pbuff, "\x1B[1;32m");	//set attributes
-	ap_printf( pbuff, "%d:%d:%d ", minutes, seconds, tseconds);
-	ap_putstr( pbuff, "\x1B[0m");	//clear attributes
-	ap_putstr( pbuff, "\x1B[u");	//return to CL 
-	ap_putstr( pbuff, "\x1B[?25h");	//show cursor
-	Putbuff( COM2, pbuff ); 
-}
-
- 
- */
 void print_time( int current_time_ticks ){
 	// Get the time in terms of minutes, seconds and tenths of seconds. 
 	int minutes, seconds, tenths, current_time; 
-	current_time = current_time_ticks / 100; // Set the scale to tenths of seconds. 
+	current_time = current_time_ticks / 10; // Set the scale to tenths of seconds. 
 	tenths = ( current_time % 10 ); 
 	current_time -= tenths; 
+	current_time /= 10; 
 	
 	seconds = ( current_time % 60 ); 
 	minutes = ( current_time / 60 );

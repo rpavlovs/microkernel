@@ -293,7 +293,8 @@ sys_await_event( int eventid, int buffer_addr, Task_descriptor *td, Kern_Globals
 		int *uart1_ctrl, temp; 
 		uart1_ctrl = ( int * ) ( UART1_BASE + UART_CTLR_OFFSET ); 
 		temp = *uart1_ctrl; 
-		*uart1_ctrl = temp | TIEN_MASK | MSIEN_MASK;
+		//*uart1_ctrl = temp | TIEN_MASK | MSIEN_MASK;
+		*uart1_ctrl = temp | TIEN_MASK;
 	}
 	
 	if ( eventid == UART1_SEND_READY ) {
@@ -302,7 +303,7 @@ sys_await_event( int eventid, int buffer_addr, Task_descriptor *td, Kern_Globals
 		int *uart1_ctrl, temp; 
 		uart1_ctrl = ( int * ) ( UART1_BASE + UART_CTLR_OFFSET ); 
 		temp = *uart1_ctrl; 
-		*uart1_ctrl = temp | MSIEN_MASK;
+		//*uart1_ctrl = temp | MSIEN_MASK;
 	}
 	
 	// -> UART 2 --------------------------------------------------------------

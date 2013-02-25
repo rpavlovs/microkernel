@@ -18,8 +18,8 @@ void first_task() {
 	int ns_tid = Create( NAMESERVER_TASK_PRIORITY, nameserver );
 	assert( ns_tid == 1, "FIRST_TASK: Nameserver should have task id of 1" );
 
-	//debug( DBG_SYS, "FIRST_TASK: creating Timeserver" );
-	//int ts_tid = Create( TIMESERVER_TASK_PRIORITY, timeserver );
+	debug( DBG_SYS, "FIRST_TASK: creating Timeserver" );
+	int ts_tid = Create( TIMESERVER_TASK_PRIORITY, timeserver );
 
 	debug( DBG_SYS, "FIRST_TASK: creating Idle task" );
 	int idle_tid = Create( 0, idle );
@@ -31,8 +31,8 @@ void first_task() {
 	debug( DBG_SYS, "FIRST_TASK: system debug level: %d ", DEBUG_LEVEL );
 	debug( DBG_SYS, "FIRST_TASK: nameserver task id: %d, priority: %d, address: %d",
 		ns_tid, NAMESERVER_TASK_PRIORITY, nameserver );
-	//debug( DBG_SYS, "FIRST_TASK: timeserver task id: %d, priority: %d, address: %d",
-	//	ts_tid, TIMESERVER_TASK_PRIORITY, timeserver );
+	debug( DBG_SYS, "FIRST_TASK: timeserver task id: %d, priority: %d, address: %d",
+		ts_tid, TIMESERVER_TASK_PRIORITY, timeserver );
 	debug( DBG_SYS, "FIRST_TASK: sys idle task id  : %d, priority: %d, address: %d",
 		idle_tid, 1, idle );
 	debug( DBG_SYS, "FIRST_TASK: first user task id: %d, priority: %d, address: %d",

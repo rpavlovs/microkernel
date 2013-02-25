@@ -16,6 +16,7 @@ void start_timer(){
 	// The timer is enabled and configured.
 	timerControlValue = *timerControl;
 	timerControlValue = timerControlValue | TIMER_ENABLE_FLAG | TIMER_MODE;
+	timerControlValue = timerControlValue & ~TIMER_CLKSEL;	// This enables the 2 kHz frequency. 
 	*timerControl = timerControlValue;
 }
 

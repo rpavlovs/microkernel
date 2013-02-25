@@ -52,8 +52,8 @@ void uart2_sender_server() {
 	Char_queue cqueue;
 	init_char_queue( &cqueue );
 
-	FOREVER {
-		//Receive request from system function
+	FOREVER{
+		//Receive request from the system function (Putc)
 		int sender_tid = -1;
 		Receive(&sender_tid, (char *) &request, sizeof(request));
 
@@ -64,7 +64,7 @@ void uart2_sender_server() {
 				reply.ch = 0;
 				Reply(sender_tid, (char *) &reply, sizeof(reply));
 				
-				//Put the string from the request to queue
+				//Put the character from the request to queue
 				enqueue_char_queue( request.ch, &cqueue );
 				break;
 
@@ -77,12 +77,9 @@ void uart2_sender_server() {
 				//Change the state of the UART
 				UART_ready = (int) request.ch;
 				
-				//todo_debug( 24, 0 );
 				//If UART is ready - write the character
 				if(UART_ready && cqueue.size > 0){
-					todo_debug( 25, 0 );
 					*uart_data = dequeue_char_queue( &cqueue );
-					//*uart_data = 'f';
 				}
 
 				break;

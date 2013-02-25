@@ -69,7 +69,7 @@ void init_io() {
 	// NOTE: Both, the transmit interrupt and modem status are enabled during
 	// await event. That's the reason why they are not enabled here. 
 	temp = *uart_ctrl; 
-	*uart_ctrl = temp | RIEN_MASK;
+	*uart_ctrl = temp | RIEN_MASK | MSIEN_MASK;
 	
 	// -> Set the UART speed (baud rate) -> 2400 bps. 
 	low = (int *)( UART1_BASE + UART_LCRL_OFFSET );

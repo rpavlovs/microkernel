@@ -4,10 +4,30 @@
 
 #define INT_CONTROL_BASE_1		0x800B0000		// VIC 1
 
+void test_clock(){
+	int clk_tid = Create( 10, draw_clock ); 
+	bwprintf( COM2, "Clock task created: %d", clk_tid ); 
+	
+	Exit(); 
+}
+
+
 void task_test_uart1(){
 	int uart1_receiver_tid = Create( 14, uart1_receiver_server );
+	int uart1_sender_tid = Create( 14, uart1_sender_server );
+	
+	int uart2_sender_tid = Create( 14, uart2_sender_server );
 	
 	
+	char c = Getc( COM1 );
+	Putc( COM2, c ); 
+	
+	//Putc( COM1, 14 );
+	//Delay( 1 );
+	//Putc( COM1, 39 );
+	
+	Delay( 100 );
+	Exit();
 }
 
 void task_test_uart2() {	
@@ -26,9 +46,7 @@ void task_test_uart2() {
 	Putc( COM2, c );
 	Putc( COM2, d );
 	Putc( COM2, 'z' );
-	
-	//bwprintf( COM2, "\nEVERYTHING THAT HAS A BEGINNING HAS AN END, NEO!!!");
-	
+		
 	Exit(); 
 }
 

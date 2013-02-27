@@ -164,11 +164,11 @@ void format ( int channel, char *fmt, va_list va ) {
 }
 
 void printf( int channel, char *fmt, ... ) {
-//    va_list va;
-//
-//    va_start(va,fmt);
-//    format( channel, fmt, va );
-//    va_end(va);
+	va_list va;
+
+	va_start(va,fmt);
+	format( channel, fmt, va );
+	va_end(va);
 }
 
 int sputw( char *buffer, int n, char fc, char *bf, int lj) {
@@ -206,6 +206,9 @@ int sformat ( char *buffer, char *fmt, va_list va ) {
 				break;
 			}
 			switch ( ch ) {
+			case 0:
+				*buffer_pos = '\0';
+				return (int) (buffer_pos - buffer);
 			case '0':
 				lz = 1; ch = *(fmt++);
 				break;
@@ -222,7 +225,9 @@ int sformat ( char *buffer, char *fmt, va_list va ) {
 				break;
 			}
 			switch( ch ) {
-			case 0: return 0;
+			case 0:
+				*buffer_pos = '\0';
+				return (int) (buffer_pos - buffer);
 			case 'c':
 				*(buffer_pos++) = va_arg( va, char );
 				break;
@@ -247,6 +252,7 @@ int sformat ( char *buffer, char *fmt, va_list va ) {
 			}
 		}
 	}
+	*buffer_pos = '\0';
 	return (int) (buffer_pos - buffer);
 }
 
@@ -261,75 +267,72 @@ int sprintf( char *buffer, char *fmt, ... ) {
 }
 
 void debug( int threshhold_dbg_lvl, char *fmt, ... ) {
-//    if( threshhold_dbg_lvl > DEBUG_LEVEL ) return;
-//    va_list va;
+//   if( threshhold_dbg_lvl > DEBUG_LEVEL ) return;
+//   va_list va;
 //
 //	switch( threshhold_dbg_lvl ) {
 //	case 0:
 //	case 1:
-//		printf( COM2, " DEBUG: [U] ", threshhold_dbg_lvl );
+//		bwprintf( COM2, " DEBUG: [U] ", threshhold_dbg_lvl );
 //		break;
 //	case 2:
-//		printf( COM2, " DEBUG: [S] ", threshhold_dbg_lvl );
+//		bwprintf( COM2, " DEBUG: [S] ", threshhold_dbg_lvl );
 //		break;
 //	case 3:
-//		printf( COM2, " DEBUG: [R]  ", threshhold_dbg_lvl );
+//		bwprintf( COM2, " DEBUG: [R]  ", threshhold_dbg_lvl );
 //		break;
 //	case 4:
-//		printf( COM2, " DEBUG: [K]   ", threshhold_dbg_lvl );
+//		bwprintf( COM2, " DEBUG: [K]   ", threshhold_dbg_lvl );
 //		break;
 //	default:
-//		printf( COM2, " DEBUG: [?] ", threshhold_dbg_lvl );
+//		bwprintf( COM2, " DEBUG: [?] ", threshhold_dbg_lvl );
 //	}
 //
-//    va_start(va,fmt);
-//    format( COM2, fmt, va );
-//    va_end(va);
-//    
-//    printf( COM2, "\n" );
+//   va_start(va,fmt);
+//   bwformat( COM2, fmt, va );
+//   va_end(va);
+//   
+//   bwprintf( COM2, "\n" );
 }
 
 void assert( int statement, char *fmt, ... ) {
 	
-	/*
-	if( statement ) return;
-	va_list va;
-
-	printf( COM2, "ASSERT: " );
-
-    va_start(va,fmt);
-    format( COM2, fmt, va );
-    va_end(va);
-
-	printf( COM2, "\n" );
-
-	for( ; ; );
-	 * */
+//	if( statement ) return;
+//	va_list va;
+//
+//	bwprintf( COM2, "ASSERT: " );
+//
+//    va_start(va,fmt);
+//    bwformat( COM2, fmt, va );
+//    va_end(va);
+//
+//	bwprintf( COM2, "\n" );
+//
+//	for( ; ; );
 }
 
 void panic( char *fmt, ... ) {
-	/*
-	va_list va;
-	printf( COM2, " PANIC: " );
-
-    va_start(va,fmt);
-    format( COM2, fmt, va );
-    va_end(va);
-
-	printf( COM2, "\n" );
-
-	for( ; ; );
-	*/
+	
+//	va_list va;
+//	bwprintf( COM2, " PANIC: " );
+//
+//    va_start(va,fmt);
+//	Create( 7, task_cli );
+//    va_end(va);
+//
+//	bwprintf( COM2, "\n" );
+//
+//	for( ; ; );	
 }
 
 void todo_debug( int value, int channel ) {
-	int *ptr; 
-	if ( channel == 0 ) {
-		ptr = ( int * ) ( 0x01dffe50 );
-	} else if( channel == 1 ) {
-		ptr = ( int * ) ( 0x01dffe54 );
-	} else {
-		ptr = ( int * ) ( 0x01dffe58 );
-	}
-	*ptr = value;
+	// int *ptr; 
+	// if ( channel == 0 ) {
+	// 	ptr = ( int * ) ( 0x01dffe50 );
+	// } else if( channel == 1 ) {
+	// 	ptr = ( int * ) ( 0x01dffe54 );
+	// } else {
+	// 	ptr = ( int * ) ( 0x01dffe58 );
+	// }
+	// *ptr = value;
 }

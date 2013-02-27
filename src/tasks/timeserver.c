@@ -11,7 +11,7 @@ void start_timer(){
 	int *timerControl = ( int * ) ( TIMER1_BASE + CRTL_OFFSET ); 
 
 	// First the load is added. 
-	*timerLoad = TIMER_CYCLES_PER_TICK;
+	*timerLoad = TIMER_CYCLES_PER_TICK - 1;
 
 	// The timer is enabled and configured.
 	timerControlValue = *timerControl;

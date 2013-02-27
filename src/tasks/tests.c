@@ -6,7 +6,7 @@
 
 void test_clock(){
 	int clk_tid = Create( 10, draw_clock ); 
-	bwprintf( COM2, "Clock task created: %d", clk_tid ); 
+	bwprintf( COM2, "Clock task created: %d", clk_tid );
 	
 	Exit(); 
 }
@@ -16,17 +16,26 @@ void task_test_uart1(){
 	int uart1_receiver_tid = Create( 14, uart1_receiver_server );
 	int uart1_sender_tid = Create( 14, uart1_sender_server );
 	
-	int uart2_sender_tid = Create( 14, uart2_sender_server );
+	//int uart2_sender_tid = Create( 14, uart2_sender_server );
 	
-	
+	/*
+	// TEST GETC
 	char c = Getc( COM1 );
+	char d = Getc( COM1 );
+	
 	Putc( COM2, c ); 
+	Putc( COM2, d ); 
 	
-	//Putc( COM1, 14 );
-	//Delay( 1 );
-	//Putc( COM1, 39 );
+	Putc( COM2, '1' ); 
+	Putc( COM2, '2' ); 
+	 */ 
 	
-	Delay( 100 );
+	// TESTS FOR PUTC
+	Putc( COM1, 14 );
+	Delay( 1 );
+	Putc( COM1, 39 );
+	
+	//Delay( 100000 );
 	Exit();
 }
 
@@ -37,8 +46,8 @@ void task_test_uart2() {
 	todo_debug( 0, 1 );
 	todo_debug( 0, 2 );
 	
-	int uart2_sender_tid = Create( 14, uart2_sender_server );
-	int uart2_receiver_tid = Create( 14, uart2_receiver_server );
+	//int uart2_sender_tid = Create( 14, uart2_sender_server );
+	//int uart2_receiver_tid = Create( 14, uart2_receiver_server );
 	
 	char c = Getc( COM2 );
 	char d = Getc( COM2 );

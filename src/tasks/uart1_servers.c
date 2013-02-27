@@ -287,7 +287,8 @@ void uart1_receiver_server() {
 				Reply(sender_tid, (char *) 0, 0);
 			
 				//Enqueue received character
-				enqueue_char_queue( request.ch, &cqueue );
+				if ( iqueue.size > 0 )
+					enqueue_char_queue( request.ch, &cqueue );
 			
 				break;
 			

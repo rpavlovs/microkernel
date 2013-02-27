@@ -9,7 +9,8 @@ void timer_hwi_handler( Kern_Globals *GLOBALS ){
 		//Rescheduling the task
 		watcher->state = READY_TASK;
 		enqueue_tqueue( watcher, &(GLOBALS->scheduler.queues[watcher->priority]) );
-		
+		GLOBALS->scheduler.tasks_alive++;
+
 		//Clear the event in hwi events waiting table
 		GLOBALS->scheduler.hwi_watchers[TIMER1_INT_INDEX] = 0;
 	}
@@ -28,8 +29,9 @@ void uart1_hwi_handler( Kern_Globals *GLOBALS ) {
 	Task_descriptor *waiting_task = 0;
 	Task_descriptor *waiting_task_init = 0; 
 	
-	//bwprintf( COM2, "UART1_HWI_HANDLER: RECEIVED TX OR MODEM HW INT. [VALUE: %d]\n", uart1_interrupt );
-	
+	debug( DBG_KERN, "UART1_HWI_HANDLER: interrupt recieved [%d]",
+			*uart1_common_interrupt );
+
 	// Is there data to be received?
 	if ( uart1_interrupt & UART_RX_INT_STATUS ) {
 		
@@ -39,9 +41,10 @@ void uart1_hwi_handler( Kern_Globals *GLOBALS ) {
 		
 		// Read the character -> This also clears the interrupt. 
 		int c = *( ( int * ) ( UART1_BASE + UART_DATA_OFFSET ) ); 
+		
 		if( waiting_task != 0 ) {
 			int *buffer = ( int * ) waiting_task->event_char; 
-			*buffer = c; 
+			*buffer = c;
 		}
 	} 
 	else if ( 
@@ -88,12 +91,14 @@ void uart1_hwi_handler( Kern_Globals *GLOBALS ) {
 		//Rescheduling the task
 		waiting_task->state = READY_TASK;
 		enqueue_tqueue( waiting_task, &(GLOBALS->scheduler.queues[waiting_task->priority]) );
+		GLOBALS->scheduler.tasks_alive++;
 	}
 	
 	if ( waiting_task_init != 0 ) {
 		//Rescheduling the task
 		waiting_task_init->state = READY_TASK;
 		enqueue_tqueue( waiting_task_init, &(GLOBALS->scheduler.queues[waiting_task_init->priority]) );		
+		GLOBALS->scheduler.tasks_alive++;
 	}
 	
 	// Clear the interrupt in the ICU.
@@ -102,9 +107,13 @@ void uart1_hwi_handler( Kern_Globals *GLOBALS ) {
 }
 
 void uart2_hwi_handler( Kern_Globals *GLOBALS ){
+
 	int *uart2_common_interrupt = ( int * )( UART2_BASE + UART_INTR_OFFSET ); 
 	Task_descriptor *waiting_task = 0;
 	int c;
+
+	debug( DBG_KERN, "UART2_HWI_HANDLER: interrupt recieved [%d]",
+			*uart2_common_interrupt );
 	
 	// Is there data to be received?
 	int temp = *uart2_common_interrupt; 
@@ -145,6 +154,7 @@ void uart2_hwi_handler( Kern_Globals *GLOBALS ){
 		//Rescheduling the task
 		waiting_task->state = READY_TASK;
 		enqueue_tqueue( waiting_task, &(GLOBALS->scheduler.queues[waiting_task->priority]) );
+		GLOBALS->scheduler.tasks_alive++;
 		//todo_debug( c, 1 );
 	}
 	

@@ -5,7 +5,7 @@
 
 #define CLI_HISTORY_LENGTH 		20	// Commands
 #define CLI_COMMAND_MAX_LENGTH	10	// Characters
-#define CLI_PRINT_BUFFER_SIZE	500	// Characters
+#define CLI_PRINT_BUFFER_SIZE	1000	// Characters
 
 #define INVALID_TRAIN_ID		-1
 #define INVALID_SPEED			-2

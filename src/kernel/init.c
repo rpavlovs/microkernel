@@ -128,8 +128,6 @@ void initialize( Kern_Globals *GLOBALS ) {
 	
 	init_hardware();
 
-    //initialize_context_switching(); 
-
 	init_message_queues( GLOBALS );
 
 	init_task_descriptors( GLOBALS );

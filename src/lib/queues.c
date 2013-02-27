@@ -18,8 +18,15 @@ void enqueue_char_queue(char c, Char_queue *q){
 }
 
 void enqueue_str_to_char_queue(char *str, Char_queue *q){
-	//TODO: Implement this function!!!
-	//assert(q->size != CHAR_QUEUE_SIZE, "Char queue should not overflow");
+	char *ptr = str;
+	
+	do{
+		q->chars[ ++(q->newest) ] = *( ptr++ );
+		if( q->newest >= CHAR_QUEUE_SIZE ) 
+			q->newest = 0;
+		if( q->size++ >= CHAR_QUEUE_SIZE )
+			assert( 0, "Queue overflow" );		
+	} while( *ptr );
 }
 
 char dequeue_char_queue( Char_queue *q ) {
@@ -48,7 +55,6 @@ int char_queue_peek_str( Char_queue *q, char *str, int len ) {
 	str[str_pos] = '\0';
 	return str_pos;
 }
-
 
 int char_queue_pop_str( Char_queue *q, char *str, int len ) {
 	int pos = 0;

@@ -259,46 +259,30 @@ int Getc( int channel ) {
 }
 
 int Putc( int channel, char ch ) {
-	int server_tid = -1;
+	if( channel != COM1 && channel != COM2 ) return -3; //COM channel is invalid
 
-	UART_request request;
-	UART_reply reply;
+	int server_tid = WhoIs( channel == COM1 ? "uart1_sender" : "uart2_sender" );
+	if( server_tid < 0 ) return -1;
 
-	if(channel == COM1) {
-		//Train controller
-		server_tid = WhoIs("uart1_sender");
+	UART_request req;
+	req.type = UART_SEND_REQUEST_PUTC;
+	req.ch = ch;
 
-		//Checking TID
-		if(server_tid < 0){ return -1; }
+	Send( server_tid, (char *) &req, sizeof(req), 0, 0 );
+	return 0;
+}
 
-		//Configure the request
-		request.type = UART1_SEND_REQUEST;
-		request.ch = ch;
+int Putstr( int channel, char *str ) {
+	if( channel != COM1 && channel != COM2 ) return -3; //COM channel is invalid
 
-		//Send the message
-		Send(server_tid, (char *) &request, sizeof(request), (char *) &reply, sizeof(reply));
-	}
-	else if(channel == COM2) {
-		//Terminal
-		server_tid = WhoIs("uart2_sender");
-		
-		//Check the TID
-		if(server_tid < 0){ 
-			return -1; 
-		}
+	int server_tid = WhoIs( channel == COM1 ? "uart1_sender" : "uart2_sender" );
+	if( server_tid < 0 ) return -1;
 
-		//Configure the request
-		request.type = UART2_SEND_REQUEST;
-		request.ch = ch;
-
-		//Send the message
-		Send(server_tid, (char *) &request, sizeof(request), (char *) &reply, sizeof(reply));
-	}
-	else {
-		//COM channel is invalid
-		return -3;
-	}
-
+	UART_request req;
+	req.type = UART_SEND_REQUEST_PUTSTR;
+	req.str = str;
+	
+	Send( server_tid, (char *) &req, sizeof(req), 0, 0 );
 	return 0;
 }
 

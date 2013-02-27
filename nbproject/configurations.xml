@@ -12,9 +12,11 @@
       </df>
       <df name="include">
         <df name="config">
+          <in>environment.h</in>
           <in>memory.h</in>
           <in>system.h</in>
           <in>ts7200.h</in>
+          <in>ui.h</in>
         </df>
         <df name="kernel">
           <in>context_switch.h</in>
@@ -29,6 +31,7 @@
         </df>
         <df name="lib">
           <in>bwio.h</in>
+          <in>helpers.h</in>
           <in>io.h</in>
           <in>queues.h</in>
           <in>stdlib.h</in>
@@ -45,6 +48,7 @@
           <in>nameserver.h</in>
           <in>tests.h</in>
           <in>timeserver.h</in>
+          <in>train_control.h</in>
           <in>uart1_servers.h</in>
           <in>uart2_servers.h</in>
         </df>
@@ -66,6 +70,7 @@
         </df>
         <df name="lib">
           <in>bwio.c</in>
+          <in>helpers.c</in>
           <in>io.c</in>
           <in>queues.c</in>
           <in>stdlib.c</in>
@@ -82,6 +87,7 @@
           <in>nameserver.c</in>
           <in>tests.c</in>
           <in>timeserver.c</in>
+          <in>train_control.c</in>
           <in>uart1_servers.c</in>
           <in>uart2_servers.c</in>
         </df>

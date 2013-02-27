@@ -22,7 +22,7 @@ typedef struct {
 
 #define TIME_REPLY					4
 
-#define TIMER_CYCLES_PER_TICK		20
+#define TIMER_CYCLES_PER_TICK			20
 
 #define TIMER_ENABLE_FLAG			0x80 // 10000000
 #define TIMER_MODE					0x40 // 1000000

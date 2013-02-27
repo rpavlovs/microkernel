@@ -191,6 +191,7 @@ int AwaitEvent( int eventid, int event );
 
 int Getc( int channel );
 int Putc( int channel, char ch );
+int Putstr( int channel, char* str );
 
 int TestCall( int a, int b, int c, int d, int e, int f );
 

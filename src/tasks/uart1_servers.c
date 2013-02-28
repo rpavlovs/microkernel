@@ -35,7 +35,7 @@ void uart1_sender_notifier() {
 		//Reply, to unblock the uart1_sender_server
 		Reply(sender_tid, (char *) 0, 0);
 		
-		//bwprintf( COM2, "Received character: %c\n", request.ch );
+		bwprintf( COM2, "Received character Value: %d  Char: %c \n", ( int ) request.ch, request.ch );
 		
 		//Reinitialize modem
 		//RTSn pin is set to low
@@ -52,7 +52,6 @@ void uart1_sender_notifier() {
 			//*uart_data = 'b';
 			//Wait until UART1 is ready to receive a character
 			if(txfe_state == 0 || first_iter) {
-				//bwprintf( COM2, "EVENT01: UART1_INIT_SEND\n");
 				AwaitEvent(UART1_INIT_SEND, 0);
 			}
 			else {
@@ -139,7 +138,7 @@ void uart1_sender_server() {
 		Receive(&sender_tid, (char *) &request, sizeof(request));
 
 		switch(request.type){
-			case UART1_SEND_REQUEST:
+			case UART_SEND_REQUEST_PUTC:
 				//Reply to unblock the system function (Putc)
 				reply.type = UART1_SEND_REPLY;
 				reply.ch = 0;

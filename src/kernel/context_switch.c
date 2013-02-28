@@ -16,7 +16,7 @@ asm(
 	// TODO: Put this in a header file. (Check how to compile and include it.)
 	".EQU	IRQ_MODE,			0x92"			"\n\t"
 	".EQU	SVC_MODE,			0x93"			"\n\t"
-	".EQU	SVC_MODE_NO_INTS,	0x13"			"\n\t"
+	".EQU	SVC_MODE_NO_INTS,	0x13"				"\n\t"
 	".EQU	SYS_MODE,			0x9F"			"\n\t"
 
 	// ------------------------------------------------------------------------
@@ -154,7 +154,7 @@ handle_hwi( Kern_Globals *GLOBALS ){
 		
 		
 		// Timer
-		if ( *vic1_hw_interrupt & TIMER1_INT ){
+		if ( *vic2_hw_interrupt & TIMER3_INT ){
 			debug( DBG_KERN, "TIMER_INTERRUPT: handling" );
 			timer_hwi_handler( GLOBALS );
 			debug( DBG_KERN, "TIMER_INTERRUPT: handled" );
@@ -177,25 +177,6 @@ handle_hwi( Kern_Globals *GLOBALS ){
 	
 	//Rescheduling the interrupted task
 	sys_reschedule( td, GLOBALS );
-	
-	/*
-	int hwInterrupt = *( ( int * ) INT_CONTROL_BASE_1 + IRQ_STATUS_OFFSET );
-	Task_descriptor *td = &(GLOBALS->tasks[GLOBALS->scheduler.last_active_tid]);
-	debug( DBG_KERN, "HANDLE_HWI: entered [interrupt id: %d caller: ]", hwInterrupt, td->tid );
-	
-	// NOTE: The cases inside the handler must be organized by the priority
-	// of the hardware interrupt
-	switch( hwInterrupt ){
-		case TIMER1_INT:
-			debug( DBG_KERN, "TIMER_INTERRUPT: handling" );
-			timer_hwi_handler( GLOBALS );
-			debug( DBG_KERN, "TIMER_INTERRUPT: handled" );
-			break; 
-	}
-	
-	//Rescheduling the interrupted task
-	sys_reschedule( td, GLOBALS );
-	 */ 
 }
 
 void 
@@ -433,6 +414,10 @@ clean_system_state(){
 	// Disable all HW interrupts caused by SW. 
 	*( ( int * ) INT_CONTROL_BASE_1 + INT_SOFT_OFFSET ) = INT_RESET_VALUE;
 	*( ( int * ) INT_CONTROL_BASE_2 + INT_SOFT_OFFSET ) = INT_RESET_VALUE;
+	
+	// Clean the timer. 
+	int *timerControl = ( int * ) ( TIMER3_BASE + CRTL_OFFSET ); 
+	*timerControl = 0; 
 }
 
 void 
@@ -454,12 +439,20 @@ initialize_interrupts(){
 	int initialInterruptsVIC1 = INT_RESET_VALUE;
 	int initialInterruptsVIC2 = INT_RESET_VALUE;
 	
+	/*
 	// Enable here the interrupts found in VIC1 ( The first 32 ). 
 	initialInterruptsVIC1 = initialInterruptsVIC1 | TIMER1_INT ;
 	*vic1EnablePointer = initialInterruptsVIC1; 
 	
 	// Enable here the interrupts found in VIC2 ( The last 32 ). 
 	initialInterruptsVIC2 = initialInterruptsVIC2 | UART1_INT | UART2_INT;
+	*vic2EnablePointer = initialInterruptsVIC2;
+	*/
+	initialInterruptsVIC1 = initialInterruptsVIC1;
+	*vic1EnablePointer = initialInterruptsVIC1; 
+	
+	// Enable here the interrupts found in VIC2 ( The last 32 ). 
+	initialInterruptsVIC2 = initialInterruptsVIC2 | UART1_INT | UART2_INT | TIMER3_INT;
 	*vic2EnablePointer = initialInterruptsVIC2;
 }
 

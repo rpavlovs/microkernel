@@ -15,7 +15,7 @@ void timer_hwi_handler( Kern_Globals *GLOBALS ){
 		GLOBALS->scheduler.hwi_watchers[TIMER1_INT_INDEX] = 0;
 	}
 	// Clear source of interrupt. 
-	int *timerClrPtr = ( int * )( TIMER1_BASE + CLR_OFFSET );
+	int *timerClrPtr = ( int * )( TIMER3_BASE + CLR_OFFSET );
 	*timerClrPtr = 1; // Any value clears the src of the interrupt. 
 	
 	int *vicPtr = ( int * )( INT_CONTROL_BASE_1 + INT_VEC_ADDRESS_OFFSET );
@@ -32,6 +32,8 @@ void uart1_hwi_handler( Kern_Globals *GLOBALS ) {
 	debug( DBG_KERN, "UART1_HWI_HANDLER: interrupt recieved [%d]",
 			*uart1_common_interrupt );
 
+	//bwprintf( COM2, "UART1 INT RECEIVED \n" ); 
+	
 	// Is there data to be received?
 	if ( uart1_interrupt & UART_RX_INT_STATUS ) {
 		
@@ -60,6 +62,8 @@ void uart1_hwi_handler( Kern_Globals *GLOBALS ) {
 		
 		// Clear the interrupt sources. 
 		if ( uart1_interrupt & UART_TX_INT_STATUS ) {
+			//bwprintf( COM2, "TX INTERRUPT RECEIVED \n" ); 
+			
 			// This interrupt can't be cleared until something is written to the FIFO. 
 			// However, if some trash is put there just to clear the interrupt, that 
 			// will be sent to the train, producing unexpected results. Therefore, the 
@@ -72,6 +76,8 @@ void uart1_hwi_handler( Kern_Globals *GLOBALS ) {
 		}
 		
 		if ( uart1_interrupt & UART_MODEM_INT_STATUS ) {
+			//bwprintf( COM2, "MODEM INTERRUPT RECEIVED\n" ); 
+			
 			// The interrupt is cleared. 
 			*uart1_common_interrupt = 0; 
 			

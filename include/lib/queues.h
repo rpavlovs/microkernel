@@ -2,7 +2,7 @@
 #define __COMMON_QUEUES_H__
 
 #define CHAR_QUEUE_SIZE		4000
-#define INT_QUEUE_SIZE		1000
+#define INT_QUEUE_SIZE			1000
 
 typedef struct {
 	char chars[CHAR_QUEUE_SIZE];

@@ -21,16 +21,22 @@ void enqueue_str_to_char_queue(char *str, Char_queue *q){
 	char *ptr = str;
 	
 	do{
-		q->chars[ ++(q->newest) ] = *( ptr++ );
-		if( q->newest >= CHAR_QUEUE_SIZE ) 
+		assert( q->size != CHAR_QUEUE_SIZE, "Char queue should not overflow" ); 
+		q->size++; 
+		
+		if( ++(q->newest) >= CHAR_QUEUE_SIZE ) 
 			q->newest = 0;
-		if( q->size++ >= CHAR_QUEUE_SIZE )
-			assert( 0, "Queue overflow" );		
+		
+		q->chars[q->newest] = *( ptr++ ); 
 	} while( *ptr );
 }
 
 char dequeue_char_queue( Char_queue *q ) {
-	assert(q->size != 0, "Char queue should have items to dequeue");
+	if( q->size <= 0 ){
+		//assert(q->size != 0, "Char queue should have items to dequeue");
+		assert( 0, "Char queue should have items to dequeue" ); 
+		bwprintf( COM2, "Char queue should have items to dequeue" ); 
+	}
 
 	//Dequeue the character
 	q->size--;

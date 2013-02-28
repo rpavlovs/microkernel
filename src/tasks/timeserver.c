@@ -2,10 +2,11 @@
 
 #define TIMESERVER_WAKEUP_QUEUE_SIZE 100
 
-// ----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------------------------------------------
 // Timer
-// ----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------------------------------------------
 void start_timer(){
+	/*
 	int timerControlValue; 
 	int *timerLoad = ( int * ) TIMER1_BASE;
 	int *timerControl = ( int * ) ( TIMER1_BASE + CRTL_OFFSET ); 
@@ -18,11 +19,24 @@ void start_timer(){
 	timerControlValue = timerControlValue | TIMER_ENABLE_FLAG | TIMER_MODE;
 	timerControlValue = timerControlValue & ~TIMER_CLKSEL;	// This enables the 2 kHz frequency. 
 	*timerControl = timerControlValue;
+	 */
+	int timerControlValue; 
+	int *timerLoad = ( int * ) TIMER3_BASE;
+	int *timerControl = ( int * ) ( TIMER3_BASE + CRTL_OFFSET ); 
+
+	// First the load is added. 
+	*timerLoad = TIMER_CYCLES_PER_TICK - 1;
+
+	// The timer is enabled and configured.
+	timerControlValue = *timerControl;
+	timerControlValue = timerControlValue | TIMER_ENABLE_FLAG | TIMER_MODE;
+	timerControlValue = timerControlValue & ~TIMER_CLKSEL;	// This enables the 2 kHz frequency. 
+	*timerControl = timerControlValue;
 }
 
-// ----------------------------------------------------------------------------
-// Time Server
-// ----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------------------------------------------
+// Time Server Structs
+// -----------------------------------------------------------------------------------------------------------------------------------------------
 typedef struct Wakeup_record Wakeup_record;
 
 struct Wakeup_record {
@@ -36,6 +50,9 @@ typedef struct {
 	int size;
 } Wakeup_list;
 
+// -----------------------------------------------------------------------------------------------------------------------------------------------
+// Time Server Methods
+// -----------------------------------------------------------------------------------------------------------------------------------------------
 void init_wakeup_list( Wakeup_list *list ) {
 	list->size = 0;
 }

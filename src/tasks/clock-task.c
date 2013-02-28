@@ -6,6 +6,8 @@
 #define CMD_ROW_POS			20
 #define CMD_COL_POS			10
 
+#define CURSOR_SAVE			"\033[s"
+#define CURSOR_RESTORE			"\033[u"
 #define CURSOR_POS_STR			"\033[%d;%dH"
 #define CURSOR_HIDE_STR			"\033[?25l"
 #define CURSOR_SHOW_STR		"\033[?25h"
@@ -14,7 +16,10 @@
 
 // TODO: Put this in a helper functions file. 
 int cursorPositioning( char *str_buff, int row, int column ){
-	return sprintf( str_buff, CURSOR_POS_STR, row, column ); 
+	int size = 0; 
+	size += sprintf( str_buff, CURSOR_SAVE ); 
+	size += sprintf( ( str_buff + size ), CURSOR_POS_STR, row, column ); 
+	return size; 
 }
 
 int clearScreen( char *str_buff ){
@@ -30,6 +35,10 @@ int hideCursor( char *str_buff ){
 
 int showCursor( char *str_buff ){
 	return sprintf( str_buff, CURSOR_SHOW_STR ); 
+}
+
+int restoreCursor( char *str_buff ){
+	return sprintf( str_buff, CURSOR_RESTORE ); 
 }
 
 void print_time( char *str_buff, int current_time_ticks ){
@@ -49,8 +58,9 @@ void print_time( char *str_buff, int current_time_ticks ){
 	temp_buffer += hideCursor( temp_buffer );
 	temp_buffer += cursorPositioning( temp_buffer, CLOCK_ROW_POS, CLOCK_COL_POS );
 	temp_buffer += sprintf( temp_buffer, "%d:%d:%d ", minutes, seconds, tenths ); 
-	temp_buffer += cursorPositioning( temp_buffer, CMD_ROW_POS, CMD_COL_POS );
-	temp_buffer += showCursor( temp_buffer );
+	//temp_buffer += cursorPositioning( temp_buffer, CMD_ROW_POS, CMD_COL_POS );
+	temp_buffer += restoreCursor( temp_buffer ); 
+	//temp_buffer += showCursor( temp_buffer );
 	
 	// Print clock
 	Putstr( COM2, str_buff );

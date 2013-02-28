@@ -31,6 +31,9 @@ void task_cli() {
 			break;
 		case CHAR_BACKSPACE:
 			// TODO: make backspace work
+			if( buf.size > 0 ){
+				
+			}
 			break;
 		case CHAR_NEWLINE:
 		case CHAR_RETURN:
@@ -135,7 +138,9 @@ void update_cli_view( CLI_history *h ) {
 	Input *history_record;
 	char str[CLI_PRINT_BUFFER_SIZE], *ptr;
 
-	ptr = str + sprintf( str, "\033[?25l\033[s" );
+	// TODO
+	ptr = str + sprintf( str, "\033[?25l" );
+	//ptr = str + sprintf( str, "\033[?25l\033[s" );
 	
 	inputs_poped = 0;
 	history_record = h->head;

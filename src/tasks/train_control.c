@@ -37,8 +37,8 @@ void setupScreen() {
 
 void train_control() {
 	
-	//setupScreen();
-	//Create( 8, task_cli ); 
+	setupScreen();
+	Create( 8, task_cli ); 
 	Create( 12, draw_clock ); 
 	
 	// Putc( COM2, '~' );

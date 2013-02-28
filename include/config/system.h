@@ -20,7 +20,7 @@
 #define UART2_RECEIVER_SERVER_PRIORITY	12
 
 
-#define FIRST_USER_TASK_NAME				task_test_uart1//train_control
+#define FIRST_USER_TASK_NAME				train_control
 #define FIRST_USER_TASK_PRIORITY			8
 
 #endif

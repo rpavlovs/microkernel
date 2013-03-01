@@ -248,8 +248,38 @@ int Getc( int channel ) {
 	}
 
 	//check the return value of WhoIs
-	if(tid < 0){ 
-		return -1; 
+	if(tid < 0) {
+		return -1;
+	}
+
+	//Sending the message to the server
+	Send(tid, (char *) &request, sizeof(request), (char *) &reply, sizeof(reply));
+
+	return (int) reply.ch;
+}
+
+int Getstr( int channel ) {
+	int tid = -1;
+	UART_request request;
+	UART_reply reply;
+
+	if(channel == COM1) {
+		//Train controller
+		tid = WhoIs("uart1_receiver");
+		request.type = UART1_RECEIVE_REQUEST;
+	}
+	else if(channel == COM2) {
+		//Terminal
+		tid = WhoIs("uart2_receiver");
+		request.type = UART2_RECEIVE_REQUEST;
+	}else{
+		//COM channel is invalid
+		return -3;
+	}
+
+	//check the return value of WhoIs
+	if(tid < 0) {
+		return -1;
 	}
 
 	//Sending the message to the server

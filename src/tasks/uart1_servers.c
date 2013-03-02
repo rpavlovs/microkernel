@@ -169,66 +169,6 @@ void uart1_sender_server() {
 	}
 }
 
-void uart1_sender_server2() {
-	//Register the server
-	RegisterAs("uart1_sender");
-	
-	//Create the notifier
-	Create(UART_SENDER_NOTIFIER_PRIORITY, &uart1_sender_notifier);
-	
-	//Request & Reply
-	UART_request request;
-	UART_reply reply;
-	int UART_ready = 1;
-	int *uart_data = (int *)( UART1_BASE + UART_DATA_OFFSET );
-
-	//Buffer queues
-	Char_queue cqueue;
-	init_char_queue( &cqueue );
-
-	FOREVER{
-		//Receive request from the system function (Putc)
-		int sender_tid = -1;
-		Receive(&sender_tid, (char *) &request, sizeof(request));
-
-		switch(request.type){
-			case UART1_SEND_REQUEST:
-				//Reply to unblock the system function (Putc)
-				reply.type = UART1_SEND_REPLY;
-				reply.ch = 0;
-				Reply(sender_tid, (char *) &reply, sizeof(reply));
-
-				//Put the character from the request to queue
-				enqueue_char_queue( request.ch, &cqueue );
-				break;
-
-			case UART1_SEND_NOTIFIER_REQUEST:
-				//Reply to unblock the notifier
-				reply.type = UART1_SEND_NOTIFIER_REPLY;
-				reply.ch = 0;
-				Reply(sender_tid, (char *) &reply, sizeof(reply));
-				
-				//Change the state of the UART
-				UART_ready = (int) request.ch;
-				
-				//If UART is ready - write the character
-				if(UART_ready && cqueue.size > 0){
-					*uart_data = dequeue_char_queue( &cqueue );
-					
-				}
-
-				break;
-				
-			default:
-				//Invalid request
-				reply.type = INVALID_REQUEST;
-				reply.ch = 0;
-				Reply(sender_tid, (char *) &reply, sizeof(reply));
-				break;
-		}
-	}
-}
-
 
 
 void uart1_receiver_notifier() {

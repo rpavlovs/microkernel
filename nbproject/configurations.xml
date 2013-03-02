@@ -47,6 +47,7 @@
           <in>command_server.h</in>
           <in>first.h</in>
           <in>nameserver.h</in>
+          <in>sensors_server.h</in>
           <in>tests.h</in>
           <in>timeserver.h</in>
           <in>train_control.h</in>
@@ -87,6 +88,7 @@
           <in>command_server.c</in>
           <in>first.c</in>
           <in>nameserver.c</in>
+          <in>sensors_server.c</in>
           <in>tests.c</in>
           <in>timeserver.c</in>
           <in>train_control.c</in>

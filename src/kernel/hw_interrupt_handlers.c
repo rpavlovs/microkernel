@@ -133,7 +133,7 @@ void uart2_hwi_handler( Kern_Globals *GLOBALS ){
 		c = *(( int * )( UART2_BASE + UART_DATA_OFFSET ) );
 		
 		if( waiting_task != 0 ) {
-			todo_debug( waiting_task->event_char, 2 );
+			//todo_debug( waiting_task->event_char, 2 );
 			int *buffer = ( int * ) waiting_task->event_char; 
 			*buffer = c;
 		}

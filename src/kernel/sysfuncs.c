@@ -286,7 +286,7 @@ sys_await_event( int eventid, int buffer_addr, Task_descriptor *td, Kern_Globals
 	GLOBALS->scheduler.tasks_alive--;
 	
 	// Save the event buffer information.
-	todo_debug( buffer_addr, 1 );
+	//todo_debug( buffer_addr, 1 );
 	td->event_char = buffer_addr; 
 	
 	// Reactivate interrupts

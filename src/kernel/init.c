@@ -95,7 +95,7 @@ void init_io() {
 	// NOTE: As with UART1, the Transmit interrupt is enabled during await event.
 	//*uart_ctrl = INT_RESET_VALUE | RIEN_MASK;
 	temp = *uart_ctrl; 
-	*uart_ctrl = temp | RIEN_MASK | RTIEN_MASK;	
+	*uart_ctrl = temp | RIEN_MASK;// | RTIEN_MASK;
 	
 	// -> Set the UART speed (baud rate) -> 115200 bps.
 	low = (int *)( UART2_BASE + UART_LCRL_OFFSET );

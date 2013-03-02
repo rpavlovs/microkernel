@@ -114,7 +114,7 @@ void enqueue_int_queue(int i, Int_queue *q){
 
 	//Enqueue the integer
 	q->size++;
-	if(++(q->newest) == INT_QUEUE_SIZE) q->newest = 0;
+	if(++(q->newest) >= INT_QUEUE_SIZE) q->newest = 0;
 	q->ints[q->newest] = i;
 }
 
@@ -124,6 +124,6 @@ int dequeue_int_queue(Int_queue *q){
 	//Dequeue the integer
 	q->size--;
 	int i = q->ints[q->oldest];
-	if(++(q->oldest) == INT_QUEUE_SIZE) q->oldest = 0;
+	if(++(q->oldest) >= INT_QUEUE_SIZE) q->oldest = 0;
 	return i;
 }

@@ -1,5 +1,9 @@
 #include <commonspace.h>
 
+// -----------------------------------------------------------------------------------------------------------------------------------------------
+// Methods for Putc
+// -- SEND
+// -----------------------------------------------------------------------------------------------------------------------------------------------
 void uart2_sender_notifier() {
 	debug( DBG_SYS, "UART2_SENDER_NOTIFIER: enters" );
 	int *uart_flags, *uart_data, server_tid;
@@ -82,13 +86,17 @@ void uart2_sender_server() {
 	}
 }
 
+// -----------------------------------------------------------------------------------------------------------------------------------------------
+// Methods for Getc
+// -- Receiver
+// -----------------------------------------------------------------------------------------------------------------------------------------------
 void uart2_receiver_notifier() {
 	debug( DBG_SYS, "UART2_RECEIVER_NOTIFIER: enters" );
 	int server_tid = WhoIs("uart2_receiver");
 	UART_request request;
 
 	int receive_buffer = 0;
-	todo_debug( (int) &receive_buffer, 0 );
+	//todo_debug( (int) &receive_buffer, 0 );
 
 	FOREVER {
 		debug( DBG_SYS, "UART2_RECEIVER_NOTIFIER: waiting for an interrupt" );

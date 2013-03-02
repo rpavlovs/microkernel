@@ -36,6 +36,7 @@ void update_sensor_history( char s80, char pin1, char pin2, Sensor_history *hist
 	history->commands[history->newest][2] = pin2;
 	history->commands[history->newest][3] = '\0';
 
+	bwprintf( COM2, "SENSOR. Group: %c; Pin1: %c; Pin2: %c\n", s80, pin1, pin2 );
 	/*
 	int i;
 	for (i = 0; i < SENSOR_HISTORY_LEN; ++i)
@@ -53,15 +54,17 @@ void receive_sensors(char* sensors) {
 	int i;
 	char reset, request;
 	
-	reset = 192;
+	reset = 192;			
 	request = 133;
 	
-	Putc( COM1, reset );
+	Putc( COM1, reset );				// NOTE: They don't add this reset message.<------------------------ 
 	Putc( COM1, request );
 
-	for( i = 0; i < 9; ++i ) {
+	//bwprintf( COM2, "Get sensors started...\n");
+	for( i = 0; i < 10; ++i ) {			// NOTE: This isn't consistent with either of the projects. Roman and the other dudes are reading 10. Here we're reading 9. 
 		sensors[i] = Getc( COM1 );
 	}
+	//bwprintf( COM2, "Get sensors ended...\n");
 }
 
 void sensors_server() {
@@ -77,7 +80,8 @@ void sensors_server() {
 	// Initialization
 	timeserver_tid = WhoIs("timeserver");
 	request.type = TIME_REQUEST;
-	for(i = 0; i < 10; i++) sensors[i] = 0;
+	for(i = 0; i < 10; i++) 
+		sensors[i] = 0;
 	init_sensor_history( &sensor_history );
 	//TODO: refactor
 	s80s[0] = 'A';
@@ -86,6 +90,7 @@ void sensors_server() {
 	s80s[3] = 'D';
 	s80s[4] = 'E';
 
+	/*
 	// Getting sensors request time
 	Putc( COM1, 133 );
 	Send(timeserver_tid, (char *) &request, sizeof(request), (char *) &reply, sizeof(reply));
@@ -96,15 +101,22 @@ void sensors_server() {
 	Send(timeserver_tid, (char *) &request, sizeof(request), (char *) &reply, sizeof(reply));
 	delay_end_time = reply.num;
 	delay_time = delay_end_time - delay_start_time;
+	
+	bwprintf( COM2, "Delay time is: %d", delay_time);
 
 	// Receiving trash data from sensors
-	for( i = 0; i < 9; ++i ) Getc( COM1 );
+	for( i = 0; i < 9; ++i ) {
+		Getc( COM1 );
+	}
+	bwprintf( COM2, "Trash received...\n");*/
 
 	//request_sensors_data( &train_buf );
 	//long wait_till = get_time() + SENSOR_CELAR_TIME;
 	//while (get_time() < wait_till) try_to_recieve_char( &train_recieve_buf, COM1 );
 	
 	FOREVER {
+		//bwprintf( COM2, "Iteration\n");
+		
 		receive_sensors( sensors );
 
 		for( j = 0; j < 5; j++ ) {
@@ -126,6 +138,8 @@ void sensors_server() {
 			if(sensors[2*j+1] & 0x2)	update_sensor_history( s80s[j], '1', '5', &sensor_history );
 			if(sensors[2*j+1] & 0x1)	update_sensor_history( s80s[j], '1', '6', &sensor_history );
 		}
+		
+		//Delay(10);
 	}
 }
 

@@ -9,7 +9,9 @@ void test_timeserver();
 
 void test_clock(); 
 
-void task_test_uart1();
+void test_uart1_send();
+
+void test_uart1_receive();
 
 void task_test_uart2();
 

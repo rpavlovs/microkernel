@@ -11,7 +11,44 @@ void test_clock(){
 	Exit(); 
 }
 
+void test_uart1_send(){
+	Create( 14, uart1_sender_server );
+	
+	int train_number = 35;
+	
+	//Putc( COM2, 'A' );
+	Putc( COM1, 14 );
+	Delay( 1 );
+	Putc( COM1, train_number );
+	
+	Putc( COM2, 'B' );
+	Delay( 1000 ); 
+	
+	Putc( COM2, 'C' );
+	Putc( COM1, 0 );
+	Delay( 1 );
+	Putc( COM1, train_number );
+	Putc( COM2, 'D' );
+	
+	Exit();
+}
 
+void test_uart1_receive(){
+	Create( 14, uart1_receiver_server );
+	
+	char c = Getc( COM1 );
+	char d = Getc( COM1 );
+	
+	Putc( COM2, c ); 
+	Putc( COM2, d ); 
+	
+	Putc( COM2, '1' ); 
+	Putc( COM2, '2' ); 
+	
+	Exit();
+}
+
+/*
 void task_test_uart1(){
 	//int uart1_receiver_tid = Create( 14, uart1_receiver_server );
 	int uart1_sender_tid = Create( 14, uart1_sender_server );
@@ -28,28 +65,21 @@ void task_test_uart1(){
 	
 	Putc( COM2, '1' ); 
 	Putc( COM2, '2' ); 
-	*/
 	
-	int train_number = 45; 
+	
+	
 	
 	// TESTS FOR PUTC
 	//Putc( COM2, '1' ); 
 	//Putc( COM2, '2' ); 
 	//bwprintf( COM2, "STARTING TEST\n" ); 
 	
-	Putc( COM1, 14 );
-	Delay( 1 );
-	Putc( COM1, train_number );
-	
-	Delay( 1000 ); 
-	
-	Putc( COM1, 0 );
-	Delay( 1 );
-	Putc( COM1, train_number );
+
 	
 	//Delay( 100000 );
-	Exit();
+	
 }
+*/
 
 void task_test_uart2() {	
 	// CREATE THE UART2 RECEIVER SERVER. 

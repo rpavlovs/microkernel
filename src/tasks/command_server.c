@@ -82,13 +82,20 @@ void command_notifier(){
 			Command command = dequeue_cmd( cmd_queue ); 
 			switch( command.cmd_type ){
 				case TRAIN_CMD_TYPE:		// Train
+					//bwprintf( COM2, "\033[20;7HEXECUTING TRAIN CMD [ Id: %d Param: %d ]", train_list.trains[ command.element_id ].id, train_list.trains[ command.element_id ].speed ); 
+					
 					// Keep track of the current speed. 
 					train_list.trains[ command.element_id ].id = command.element_id; 
 					train_list.trains[ command.element_id ].speed = command.param; 
 					
+					//bwprintf( COM2, "\033[20;7HEXECUTING TRAIN CMD [ Id: %d Param: %d ]", train_list.trains[ command.element_id ].id, train_list.trains[ command.element_id ].speed ); 
+					
 					// Send commands to UART 1. 
 					Putc( COM1, command.param );
+					//Delay( 1 );
 					Putc( COM1, command.element_id );
+					
+					//bwprintf( COM2, "\033[20;7HEXECUTING TRAIN CMD [ Id: %d Param: %d ]", train_list.trains[ command.element_id ].id, train_list.trains[ command.element_id ].speed ); 
 
 					//bwprintf( COM2, "\033[20;7HEXECUTING TRAIN CMD [ Id: %d Param: %d ]", train_list.trains[ command.element_id ].id, train_list.trains[ command.element_id ].speed ); 
 					

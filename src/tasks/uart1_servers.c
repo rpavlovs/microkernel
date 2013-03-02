@@ -135,15 +135,21 @@ void uart1_sender_server() {
 		int sender_tid = -1;
 		Receive(&sender_tid, (char *) &request, sizeof(request));
 
+		
 		switch(request.type){
 			case UART_SEND_REQUEST_PUTC:
 				//Reply to unblock the system function (Putc)
-				reply.type = UART1_SEND_REPLY;
-				reply.ch = 0;
-				Reply(sender_tid, (char *) &reply, sizeof(reply));
+				//reply.type = UART1_SEND_REPLY;
+				//reply.ch = 0;
+				//Reply(sender_tid, (char *) &reply, sizeof(reply));
+				//bwprintf( COM2, "Before reply Sender: %d\n", sender_tid  ); 
+				Reply(sender_tid, 0, 0);
+				//bwprintf( COM2, "After reply\n"  );
 
+				//bwprintf( COM2, "Before enqueueing\n"  ); 
 				//Put the character from the request to queue
 				enqueue_char_queue( request.ch, &cqueue );
+				//bwprintf( COM2, "After enqueueing\n"  ); 
 				break;
 
 			default:

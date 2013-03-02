@@ -242,14 +242,15 @@ int Getc( int channel ) {
 		//Terminal
 		tid = WhoIs("uart2_receiver");
 		request.type = UART2_RECEIVE_REQUEST;
-	}else{
+	}
+	else{
 		//COM channel is invalid
 		return -3;
 	}
 
 	//check the return value of WhoIs
-	if(tid < 0){ 
-		return -1; 
+	if(tid < 0) {
+		return -1;
 	}
 
 	//Sending the message to the server

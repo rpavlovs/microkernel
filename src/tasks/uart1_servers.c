@@ -4,7 +4,7 @@ void uart1_sender_notifier() {
 	int* uart_flags =	(int *)( UART1_BASE + UART_FLAG_OFFSET );
 	int* uart_data =	(int *)( UART1_BASE + UART_DATA_OFFSET );
 	int* modem_ctrl =	(int *)( UART1_BASE + UART_MDMCTL_OFFSET);
-	int* modem_status = (int *)( UART1_BASE + UART_MDMSTS_OFFSET);
+	int* modem_status =	(int *)( UART1_BASE + UART_MDMSTS_OFFSET);
 	
 	int uart_flags_temp = 0;
 	int modem_ctrl_temp = 0;
@@ -282,11 +282,11 @@ void uart1_receiver_server() {
 			case UART1_RECEIVE_NOTIFIER_REQUEST:
 				//Reply to unblock the notifier
 				Reply(sender_tid, (char *) 0, 0);
-			
+				
 				//Enqueue received character
 				if ( iqueue.size > 0 )
 					enqueue_char_queue( request.ch, &cqueue );
-			
+
 				break;
 			
 			default:

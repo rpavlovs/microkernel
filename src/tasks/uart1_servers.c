@@ -1,9 +1,5 @@
 #include <userspace.h>
 
-// -----------------------------------------------------------------------------------------------------------------------------------------------
-// Methods for Putc
-// -- SEND
-// -----------------------------------------------------------------------------------------------------------------------------------------------
 void uart1_sender_notifier() {
 	int* uart_flags =	(int *)( UART1_BASE + UART_FLAG_OFFSET );
 	int* uart_data =	(int *)( UART1_BASE + UART_DATA_OFFSET );
@@ -184,7 +180,7 @@ void uart1_receiver_notifier() {
 
 	FOREVER {
 		//Wait until there is data in UART1
-		AwaitEvent( UART1_RECEIVE_READY, (int) &receive_buffer );
+		AwaitEvent( UART1_RECEIVE_READY, (int) &receive_buffer ); 
 
 		//Configure the request
 		request.type = UART1_RECEIVE_NOTIFIER_REQUEST;

@@ -31,10 +31,10 @@ clean:
 	@rm -rf build/*
 
 install:
-	#@cp build/kernel.elf /u/cs452/tftp/ARM/$(USER)/kernel.elf
-	#@chmod a+r /u/cs452/tftp/ARM/$(USER)/kernel.elf
-	@cp build/kernel.elf /u/cs452/tftp/ARM/jpadillagaeta/kernel.elf
-	@chmod a+r /u/cs452/tftp/ARM/jpadillagaeta/kernel.elf
+	@cp build/kernel.elf /u/cs452/tftp/ARM/$(USER)/kernel.elf
+	@chmod a+r /u/cs452/tftp/ARM/$(USER)/kernel.elf
+	#@cp build/kernel.elf /u/cs452/tftp/ARM/jpadillagaeta/kernel.elf
+	#@chmod a+r /u/cs452/tftp/ARM/jpadillagaeta/kernel.elf
 ## Compile
 
 build/%.s: src/%.c

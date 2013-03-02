@@ -254,7 +254,9 @@ int Getc( int channel ) {
 	}
 
 	//Sending the message to the server
+	todo_debug( 0x1, 3 );
 	Send(tid, (char *) &request, sizeof(request), (char *) &reply, sizeof(reply));
+	todo_debug( 0x2, 3 );
 
 	return (int) reply.ch;
 }

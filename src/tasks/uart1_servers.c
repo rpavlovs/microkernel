@@ -176,18 +176,22 @@ void uart1_receiver_notifier() {
 	UART_request request;
 	
 	int receive_buffer = 0;
-	//
+
 
 	FOREVER {
 		//Wait until there is data in UART1
-		AwaitEvent( UART1_RECEIVE_READY, (int) &receive_buffer ); 
+		todo_debug( 0x1, 0 );
+		AwaitEvent( UART1_RECEIVE_READY, (int) &receive_buffer );
+		todo_debug( 0x2, 0 );
 
 		//Configure the request
 		request.type = UART1_RECEIVE_NOTIFIER_REQUEST;
 		request.ch = receive_buffer;
 
 		//Send data to the server (uart1_receiver_server)
+		todo_debug( 0x3, 0 );
 		Send(server_tid, (char *) &request, sizeof(request), (char *) 0, 0);
+		todo_debug( 0x4, 0 );
 	}
 }
 
@@ -216,30 +220,39 @@ void uart1_receiver_server() {
 		//Receive request from:
 		//	system function (Getc)
 		//	notifier (uart1_receiver_notifier)
+		todo_debug( 0x1, 1 );
 		Receive(&sender_tid, (char *) &request, sizeof(request));
+		todo_debug( 0x2, 1 );
 
 		switch(request.type){
 			case UART1_RECEIVE_REQUEST:
 				//Enqueue the system function tid to reply later
+				todo_debug( 0x3, 1 );
 				enqueue_int_queue( sender_tid, &iqueue );
-				
+				todo_debug( 0x4, 1 );
 				break;
 				
 			case UART1_RECEIVE_NOTIFIER_REQUEST:
 				//Reply to unblock the notifier
+				todo_debug( 0x5, 1 );
 				Reply(sender_tid, (char *) 0, 0);
-				
+				todo_debug( 0x6, 1 );
+
 				//Enqueue received character
-				if ( iqueue.size > 0 )
+				if ( iqueue.size > 0 ){
+					todo_debug( 0x7, 1 );
 					enqueue_char_queue( request.ch, &cqueue );
+					todo_debug( 0x8, 1 );
+				}
 
 				break;
 			
 			default:
 				reply.type = INVALID_REQUEST;
 				reply.ch = 0;
+				todo_debug( 0x9, 1 );
 				Reply(sender_tid, (char *) &reply, sizeof(reply));
-				
+				todo_debug( 0x10, 1 );
 				break;
 		}
 
@@ -252,7 +265,9 @@ void uart1_receiver_server() {
 			reply.ch = dequeue_char_queue( &cqueue );
 
 			//Perform the reply
+			todo_debug( 0x11, 1 );
 			Reply(target_tid, (char *) &reply, sizeof(reply));
+			todo_debug( 0x12, 1 );
 		}
 	}
 }

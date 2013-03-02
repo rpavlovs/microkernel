@@ -277,7 +277,9 @@ sys_await_event( int eventid, int buffer_addr, Task_descriptor *td, Kern_Globals
 		eventid, td->tid );
 	assert( eventid < HWI_NUM_EVENTS, "SYS_AWAIT_EVENT: eventid is invalid" );
 	
+	todo_debug( 0x1, 2 );
 	GLOBALS->scheduler.hwi_watchers[eventid] = td;
+	todo_debug( 0x2, 2 );
 	
 	// Remove the task from the READY queue
 	td->state = AWAIT_TASK;
@@ -288,12 +290,14 @@ sys_await_event( int eventid, int buffer_addr, Task_descriptor *td, Kern_Globals
 	// Save the event buffer information.
 	//todo_debug( buffer_addr, 1 );
 	td->event_char = buffer_addr; 
+	todo_debug( 0x3, 2 );
 	
 	// Reactivate interrupts
 	// -> UART 1 -------------------------------------------------------------
 	//todo_debug( 50, 2 );
 	//todo_debug( eventid, 2 );
 	if ( eventid == UART1_INIT_SEND ) {
+		todo_debug( 0x4, 2 );
 		//todo_debug( 51, 2 );
 		// Reactivate both, transmit and modem status interrupts. 
 		int *uart1_ctrl, temp; 
@@ -301,25 +305,35 @@ sys_await_event( int eventid, int buffer_addr, Task_descriptor *td, Kern_Globals
 		temp = *uart1_ctrl; 
 		//*uart1_ctrl = temp | TIEN_MASK | MSIEN_MASK;
 		*uart1_ctrl = temp | TIEN_MASK;
+		todo_debug( 0x5, 2 );
 	}
 	
-	if ( eventid == UART1_SEND_READY ) {
+	else if ( eventid == UART1_SEND_READY ) {
+		todo_debug( 0x6, 2 );
 		//todo_debug( 52, 2 );
 		// Reactivate the modem status interrupt. 
 		int *uart1_ctrl, temp; 
 		uart1_ctrl = ( int * ) ( UART1_BASE + UART_CTLR_OFFSET ); 
 		temp = *uart1_ctrl; 
+		todo_debug( 0x7, 2 );
 		//*uart1_ctrl = temp | MSIEN_MASK;
 	}
 	
 	// -> UART 2 --------------------------------------------------------------
-	if ( eventid == UART2_SEND_READY ) {
+	else if ( eventid == UART2_SEND_READY ) {
+		todo_debug( 0x8, 2 );
 		//todo_debug( 53, 2 );
 		// Reactivate the transmit interrupt. 
 		int *uart2_ctrl, temp; 
 		uart2_ctrl = ( int * ) ( UART2_BASE + UART_CTLR_OFFSET ); 
 		temp = *uart2_ctrl; 
 		*uart2_ctrl = temp | TIEN_MASK; 
+		todo_debug( 0x9, 2 );
+	}
+
+	else {
+		//Different interrupt!!!
+		todo_debug( 0x10, 2 );
 	}
 	
 	return 0;

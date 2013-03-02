@@ -96,11 +96,12 @@ void uart2_receiver_notifier() {
 	UART_request request;
 
 	int receive_buffer = 0;
-	//todo_debug( (int) &receive_buffer, 0 );
 
 	FOREVER {
 		debug( DBG_SYS, "UART2_RECEIVER_NOTIFIER: waiting for an interrupt" );
+		todo_debug( 0x1, 1 );
 		AwaitEvent( UART2_RECEIVE_READY, (int) &receive_buffer );
+		todo_debug( 0x2, 1 );
 		
 		//Configure the request
 		request.type = UART2_RECEIVE_NOTIFIER_REQUEST;

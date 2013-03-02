@@ -32,11 +32,8 @@ void enqueue_str_to_char_queue(char *str, Char_queue *q){
 }
 
 char dequeue_char_queue( Char_queue *q ) {
-	if( q->size <= 0 ){
-		//assert(q->size != 0, "Char queue should have items to dequeue");
+	if( q->size <= 0 )
 		assert( 0, "Char queue should have items to dequeue" ); 
-		bwprintf( COM2, "Char queue should have items to dequeue" ); 
-	}
 
 	//Dequeue the character
 	q->size--;
@@ -55,11 +52,24 @@ int char_queue_peek_str( Char_queue *q, char *str, int len ) {
 	int buf_pos = q->oldest;
 	while( str_pos < len - 1 && num_peeked < q->size ) {
 		str[str_pos++] = q->chars[buf_pos++];
-		if( buf_pos == CHAR_QUEUE_SIZE ) buf_pos = 0;
+		if( buf_pos == CHAR_QUEUE_SIZE ) 
+			buf_pos = 0;
 		num_peeked++;
 	}
 	str[str_pos] = '\0';
 	return str_pos;
+}
+
+char char_queue_pop_char( Char_queue *q ){
+	assert( q->size != 0, "Char queue should have items to pop." );
+	
+	// Pop the character. 
+	q->size--; 
+	char c = q->chars[ (q->newest)-- ]; 
+	if( q->newest < 0 )
+		q->newest = CHAR_QUEUE_SIZE - 1; 
+	
+	return c; 
 }
 
 int char_queue_pop_str( Char_queue *q, char *str, int len ) {
@@ -81,6 +91,14 @@ int char_queue_pop_word( Char_queue *q, char *str, int len ) {
 	}
 	str[pos] = '\0';
 	return pos;
+}
+
+void char_ignore_spaces(Char_queue *q ){
+	int pos = 0; 
+	char c; 
+	while( q->chars[q->oldest] == ' ' && q->size > 0 ){
+		dequeue_char_queue( q ); 
+	}
 }
 
 // Integer Queue

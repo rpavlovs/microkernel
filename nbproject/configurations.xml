@@ -44,6 +44,7 @@
           <in>assignment0.h</in>
           <in>cli.h</in>
           <in>clock-task.h</in>
+          <in>command_server.h</in>
           <in>first.h</in>
           <in>nameserver.h</in>
           <in>tests.h</in>
@@ -83,6 +84,7 @@
           <in>assignment0.c</in>
           <in>cli.c</in>
           <in>clock-task.c</in>
+          <in>command_server.c</in>
           <in>first.c</in>
           <in>nameserver.c</in>
           <in>tests.c</in>

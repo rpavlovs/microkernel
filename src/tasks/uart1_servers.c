@@ -35,8 +35,6 @@ void uart1_sender_notifier() {
 		//Reply, to unblock the uart1_sender_server
 		Reply(sender_tid, (char *) 0, 0);
 		
-		bwprintf( COM2, "Received character Value: %d  Char: %c \n", ( int ) request.ch, request.ch );
-		
 		//Reinitialize modem
 		//RTSn pin is set to low
 		//DTRn pin is set to low

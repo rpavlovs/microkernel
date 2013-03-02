@@ -30,7 +30,7 @@ void setupScreen() {
 		"##                                                                            ##\n"
 		"## ~>                                                                         ##\n"
 		"################################################################################\n");
-	ptr += sprintf( ptr, "\033[%d;7H\0", UI_CLI_CMD_LINE_ROW );
+	ptr += sprintf( ptr, "\033[%d;7H", UI_CLI_CMD_LINE_ROW );
 	// printf( COM2, "%s", buff );
 	Putstr( COM2, buff );
 }

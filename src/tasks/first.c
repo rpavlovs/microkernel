@@ -29,6 +29,10 @@ void first_task() {
 
 	debug( DBG_SYS, "FIRST_TASK: creating UART2 reciever server" );
 	int uart2_receiver_tid = Create( UART2_RECEIVER_SERVER_PRIORITY, uart2_receiver_server );
+	
+	int uart1_sender_tid = Create( 14, uart1_sender_server );
+	
+	int uart1_receiver_tid = Create( 14, uart1_receiver_server );
 
 	debug( DBG_SYS, "FIRST_TASK: creating Idle task" );
 	int idle_tid = Create( 0, idle );

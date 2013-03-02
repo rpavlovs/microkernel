@@ -115,7 +115,7 @@ int
 sys_send( int receiver_tid, char *msg, int msglen, char *reply, int replylen,
 		Task_descriptor *sender_td, Kern_Globals *GLOBALS ) {
 	debug( DBG_KERN, "SYS_SEND: entered" );
-
+	
 	//Getting TD of the target task
 	Task_descriptor *receiver_td = &(GLOBALS->tasks[receiver_tid]);
 

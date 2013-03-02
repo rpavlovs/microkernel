@@ -9,7 +9,11 @@ void strcpy( const char * source, char * target ) {
 }
 
 int strcmp( const char *s1, const char *s2 ) {
-    while( (*s1 && *s2) && (*s1++ == *s2++) );
-    return *(--s1) - *(--s2);
+	while( (*s1 && *s2) && ( *s1 == *s2 ) ){
+		// This increment is not done in the while's condition because of short circuiting.
+		*s1++; 
+		*s2++;
+	}
+	return *s1 - *s2; 
 }
 

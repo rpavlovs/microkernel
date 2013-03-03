@@ -22,7 +22,7 @@ void first_task() {
 	assert( ns_tid == 1, "FIRST_TASK: Nameserver should have task id of 1" );
 
 	debug( DBG_SYS, "FIRST_TASK: creating Timeserver" );
-	//int ts_tid = Create( TIMESERVER_TASK_PRIORITY, timeserver );
+	int ts_tid = Create( TIMESERVER_TASK_PRIORITY, timeserver );
 
 	debug( DBG_SYS, "FIRST_TASK: creating UART2 sender server" );
 	int uart2_sender_tid = Create( UART2_SENDER_SERVER_PRIORITY, uart2_sender_server );

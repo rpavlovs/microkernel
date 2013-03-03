@@ -326,24 +326,6 @@ void panic( char *fmt, ... ) {
 }
 
 // dump -b 0x01dffe50 -l 4
-/*
-void todo_debug( int value, int channel ) {
-	int *ptr; 
-	if ( channel == 0 ) {
-		ptr = ( int * ) ( 0x01dffe50 );
-	} 
-	else if( channel == 1 ) {
-		ptr = ( int * ) ( 0x01dffe54 );
-	}
-	else if( channel == 2 ) {
-		ptr = ( int * ) ( 0x01dffe58 );
-	}
-	else if( channel == 3 ){
-		ptr = ( int * ) ( 0x01dffe5c );
-	}
-	*ptr = value;
-}*/
-
 void todo_debug( int value, int channel ) {
 	int *ptr, addr;
 	

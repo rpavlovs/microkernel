@@ -4,29 +4,28 @@ void
 init_schedule( int first_task_priority, void (*first_task_code) ( ), Kern_Globals *GLOBALS ) {	
 	debug( DBG_KERN, "INIT_SCHEDULE: first task priority %d, address %d",
 		first_task_priority, (int) first_task_code );
-	
+
 	assert( first_task_priority < SCHED_NUM_PRIORITIES && first_task_priority >= 0,
 		"first task should have priority between 0 and %d", SCHED_NUM_PRIORITIES - 1 );
 
+	//Initialize priority queues
 	Scheduler *sched = &(GLOBALS->scheduler);
 	int p;
 	for( p = 0; p < SCHED_NUM_PRIORITIES; ++p )	{
 		sched->queues[p].oldest = 0;
-		sched->queues[p].newest = 0;
+		sched->queues[p].newest = -1;	//TODO: maybe newest = -1?
 		sched->queues[p].size = 0;
 	}
 
+	//Initialize the first task
 	Task_descriptor *first_td = &(GLOBALS->tasks[0]);
 	first_td->state = READY_TASK;
-
-	//Setting priority of the task
 	first_td->priority = first_task_priority;
-	//Setting link register to the address of task code
 	first_td->lr = (int *)first_task_code;
 	//Setting the next instruction
 	// first_td->next_instruction = (unsigned int) first_task_code + ELF_START;
 	
-	//Updating the queue appropriately////////////////////////
+	//Updating the queue appropriately
 	sched->queues[first_task_priority].td_ptrs[0] = first_td;
 	sched->queues[first_task_priority].newest = 0;
 	sched->queues[first_task_priority].oldest = 0;
@@ -82,7 +81,8 @@ int activate( const int tid, Kern_Globals *GLOBALS ) {
 
 	Task_descriptor *td = &(GLOBALS->tasks[tid]);
 
-	if( td->state != READY_TASK ) {
+	//TODO: Check if we need this at all
+	/*if( td->state != READY_TASK ) {
 		int i = 0;
 		for( ; i < SCHED_NUM_PRIORITIES; ++i ) {
 			Task_queue *queue = &(GLOBALS->scheduler.queues[i]);
@@ -96,7 +96,7 @@ int activate( const int tid, Kern_Globals *GLOBALS ) {
 			//	bwprintf( COM2, "\n");
 			//}
 		}
-	}
+	}*/
 	
 	assert( td->state == READY_TASK, "It's only possible to activate a READY task. "
 		"[task state: %d task_id: %d]", td->state, td->tid );

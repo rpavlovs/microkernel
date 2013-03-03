@@ -115,6 +115,7 @@ int
 sys_send( int receiver_tid, char *msg, int msglen, char *reply, int replylen,
 		Task_descriptor *sender_td, Kern_Globals *GLOBALS ) {
 	debug( DBG_KERN, "SYS_SEND: entered" );
+	todo_debug( 0x1, 4 );
 	
 	//Getting TD of the target task
 	Task_descriptor *receiver_td = &(GLOBALS->tasks[receiver_tid]);
@@ -124,6 +125,7 @@ sys_send( int receiver_tid, char *msg, int msglen, char *reply, int replylen,
 
 	assert( mailbox->size < MAX_NUM_TASKS - 1,
 		"Waiting to be recieved queue should not overflow :(" );
+	todo_debug( 0x2, 4 );
 
 	//Modifying the queue
 	mailbox->size++;
@@ -138,18 +140,25 @@ sys_send( int receiver_tid, char *msg, int msglen, char *reply, int replylen,
 	msg_info->reply = reply;
 	msg_info->replylen = replylen;
 	
+	todo_debug( 0x3, 4 );
 
 	//Unblocking the target task
 	sys_unblock_receive( receiver_td, GLOBALS );
+
+	todo_debug( 0x4, 4 );
 
 	//BLOCKING///////////////////////////////////////////////////
 	//Change the state of the calling task to SEND_BLOCKED
 	sender_td->state = SEND_TASK;
 	GLOBALS->scheduler.tasks_alive--;
+
+	todo_debug( 0x5, 4 );
 	
 	//Remove the task from the READY queue
 	Task_queue *pqueue = &(GLOBALS->scheduler.queues[sender_td->priority]);
 	dequeue_tqueue(pqueue);
+
+	todo_debug( 0x6, 4 );
 
 	return 0;
 }
@@ -158,11 +167,14 @@ int
 sys_receive( int *sender_tid, char *reciever_buf, const int reciever_buf_len,
 	Task_descriptor *receiver_td, Kern_Globals *GLOBALS ) {
 	debug( DBG_KERN, "SYS_RECEIVE: entered" );
+	todo_debug( 0x1, 5 );
 
 	Message_queue *mailbox = &(receiver_td->mailbox);
+	todo_debug( 0x2, 5 );
 
 	if( mailbox->size > 0 ) {
 		debug( DBG_KERN, "SYS_RECEIVE: Task not blocked. Mailbox not empty." );
+		todo_debug( 0x3, 5 );
 
 		Send_info *send_info = &(mailbox->msg_infos[mailbox->oldest]);
 
@@ -170,9 +182,13 @@ sys_receive( int *sender_tid, char *reciever_buf, const int reciever_buf_len,
 		if( ++(mailbox->oldest) == MAX_NUM_TASKS ) mailbox->oldest = 0;
 		mailbox->size--;
 
+		todo_debug( 0x4, 5 );
+
 		//Deliver the message to recievers buffer an provide the sender tid
 		mem_cpy( send_info->msg, reciever_buf, send_info->msglen );
 		*sender_tid = send_info->sender_tid;
+
+		todo_debug( 0x5, 5 );
 
 		//Save information for a further reply
 		Reply_info *reply_info = &(receiver_td->reply_infos[send_info->sender_tid]);
@@ -180,13 +196,22 @@ sys_receive( int *sender_tid, char *reciever_buf, const int reciever_buf_len,
 		reply_info->reply = send_info->reply;
 		reply_info->replylen = send_info->replylen;
 
+		todo_debug( 0x6, 5 );
+
 		//Changing the state of the sender
 		GLOBALS->tasks[send_info->sender_tid].state = REPLY_TASK;
 
+		todo_debug( 0x7, 5 );
+
 		//Changing the state of the receiver
 		sys_reschedule( receiver_td, GLOBALS );
-	} else {
+
+		todo_debug( 0x8, 5 );
+
+	}
+	else {
 		debug( DBG_KERN, "SYS_RECEIVE: Task blocked. Mailbox is empty" );
+		todo_debug( 0x9, 5 );
 
 		//Save the current receive arguments
 		Receive_info *receive_info = &(receiver_td->receive_info);
@@ -194,12 +219,18 @@ sys_receive( int *sender_tid, char *reciever_buf, const int reciever_buf_len,
 		receive_info->msg = reciever_buf;
 		receive_info->msglen = reciever_buf_len;
 
+		todo_debug( 0x10, 5 );
+
 		//Remove the task from the READY queue
 		dequeue_tqueue( &(GLOBALS->scheduler.queues[receiver_td->priority]) );
+
+		todo_debug( 0x11, 5 );
 
 		receiver_td->state = RECEIVE_BLOCKED;
 
 		GLOBALS->scheduler.tasks_alive--;
+
+		todo_debug( 0x12, 5 );
 	}
 	return 0;
 }
@@ -209,34 +240,51 @@ sys_reply( int sender_tid, char *reply, int replylen, Task_descriptor *receiver_
 		Kern_Globals *GLOBALS ) {
 	debug( DBG_KERN, "SYS_REPLY: entered [reply to %d from %d]",
 		sender_tid, receiver_td->tid );
+	todo_debug( 0x1, 6 );
 
 	Reply_info *reply_info = &(receiver_td->reply_infos[sender_tid]);
 
+	todo_debug( 0x2, 6 );
+
 	mem_cpy( reply, reply_info->reply, replylen );
 
+	todo_debug( 0x3, 6 );
+
 	Task_descriptor *sender_td = &(GLOBALS->tasks[sender_tid]);
+
+	todo_debug( 0x4, 6 );
 
 	//Rescheduling the task
 	sender_td->state = READY_TASK;
 	GLOBALS->scheduler.tasks_alive++;
 
+	todo_debug( 0x5, 6 );
+
 	Task_queue *pqueue = &(GLOBALS->scheduler.queues[sender_td->priority]);
 	enqueue_tqueue( sender_td, pqueue );
 
+	todo_debug( 0x6, 6 );
+
 	sys_reschedule( receiver_td, GLOBALS );
+
+	todo_debug( 0x7, 6 );
 	return 0;
 }
 
 void
 sys_unblock_receive( Task_descriptor *receiver_td, Kern_Globals *GLOBALS ) {
 	debug( DBG_KERN, "SYS_UNBLOCK_RECEIVE: entered" );
+	todo_debug( 0x1, 7 );
 
 	Message_queue *mailbox = &(receiver_td->mailbox);
+
+	todo_debug( 0x2, 7 );
 
 	//The target task was waiting and there are SOME sends
 	if( receiver_td->state != RECEIVE_BLOCKED || mailbox->size == 0 ) {
 		//debug( DBG_KERN, "SYS_UNBLOCK_RECEIVE: got called for a non-RECEIVE_BLOCKED "
 		//	"or a task with no messages waiting to be received" );
+		todo_debug( 0x3, 7 );
 		return;
 	}
 
@@ -247,28 +295,42 @@ sys_unblock_receive( Task_descriptor *receiver_td, Kern_Globals *GLOBALS ) {
 		mailbox->oldest = 0;
 	}
 
+	todo_debug( 0x4, 7 );
+
 	//Retrieve saved receive arguments
 	Receive_info *receive_info = &(receiver_td->receive_info);
 
+	todo_debug( 0x5, 7 );
+
 	mem_cpy( msg_info->msg, receive_info->msg, msg_info->msglen );
 	*(receive_info->sender_tid) = msg_info->sender_tid;
+
+	todo_debug( 0x6, 7 );
 
 	Reply_info *reply_info = &(receiver_td->reply_infos[msg_info->sender_tid]);
 	reply_info->sender_tid = msg_info->sender_tid;
 	reply_info->reply = msg_info->reply;
 	reply_info->replylen = msg_info->replylen;
 
+	todo_debug( 0x7, 7 );
+
 	//Changing the state of the sender
 	GLOBALS->tasks[msg_info->sender_tid].state = REPLY_TASK;
+
+	todo_debug( 0x8, 7 );
 
 	//RESCHEDULING///////////////////////////////////////
 	//Unblocking the task
 	receiver_td->state = READY_TASK;
 	GLOBALS->scheduler.tasks_alive++;
 
+	todo_debug( 0x9, 7 );
+
 	//Rescheduling the task
 	Task_queue *pqueue = &(GLOBALS->scheduler.queues[receiver_td->priority]);
 	enqueue_tqueue(receiver_td, pqueue);
+
+	todo_debug( 0x10, 7 );
 }
 
 int
@@ -277,9 +339,9 @@ sys_await_event( int eventid, int buffer_addr, Task_descriptor *td, Kern_Globals
 		eventid, td->tid );
 	assert( eventid < HWI_NUM_EVENTS, "SYS_AWAIT_EVENT: eventid is invalid" );
 	
-	todo_debug( 0x1, 2 );
+	todo_debug( 0x1, 3 );
 	GLOBALS->scheduler.hwi_watchers[eventid] = td;
-	todo_debug( 0x2, 2 );
+	todo_debug( 0x2, 3 );
 	
 	// Remove the task from the READY queue
 	td->state = AWAIT_TASK;
@@ -290,50 +352,50 @@ sys_await_event( int eventid, int buffer_addr, Task_descriptor *td, Kern_Globals
 	// Save the event buffer information.
 	//todo_debug( buffer_addr, 1 );
 	td->event_char = buffer_addr; 
-	todo_debug( 0x3, 2 );
+	todo_debug( 0x3, 3 );
 	
 	// Reactivate interrupts
 	// -> UART 1 -------------------------------------------------------------
-	//todo_debug( 50, 2 );
-	//todo_debug( eventid, 2 );
+	//todo_debug( 50, 3 );
+	//todo_debug( eventid, 3 );
 	if ( eventid == UART1_INIT_SEND ) {
-		todo_debug( 0x4, 2 );
-		//todo_debug( 51, 2 );
+		todo_debug( 0x4, 3 );
+		//todo_debug( 51, 3 );
 		// Reactivate both, transmit and modem status interrupts. 
 		int *uart1_ctrl, temp; 
 		uart1_ctrl = ( int * ) ( UART1_BASE + UART_CTLR_OFFSET ); 
 		temp = *uart1_ctrl; 
 		//*uart1_ctrl = temp | TIEN_MASK | MSIEN_MASK;
 		*uart1_ctrl = temp | TIEN_MASK;
-		todo_debug( 0x5, 2 );
+		todo_debug( 0x5, 3 );
 	}
 	
 	else if ( eventid == UART1_SEND_READY ) {
-		todo_debug( 0x6, 2 );
-		//todo_debug( 52, 2 );
+		todo_debug( 0x6, 3 );
+		//todo_debug( 52, 3 );
 		// Reactivate the modem status interrupt. 
 		int *uart1_ctrl, temp; 
 		uart1_ctrl = ( int * ) ( UART1_BASE + UART_CTLR_OFFSET ); 
 		temp = *uart1_ctrl; 
-		todo_debug( 0x7, 2 );
+		todo_debug( 0x7, 3 );
 		//*uart1_ctrl = temp | MSIEN_MASK;
 	}
 	
 	// -> UART 2 --------------------------------------------------------------
 	else if ( eventid == UART2_SEND_READY ) {
-		todo_debug( 0x8, 2 );
-		//todo_debug( 53, 2 );
+		todo_debug( 0x8, 3 );
+		//todo_debug( 53, 3 );
 		// Reactivate the transmit interrupt. 
 		int *uart2_ctrl, temp; 
 		uart2_ctrl = ( int * ) ( UART2_BASE + UART_CTLR_OFFSET ); 
 		temp = *uart2_ctrl; 
 		*uart2_ctrl = temp | TIEN_MASK; 
-		todo_debug( 0x9, 2 );
+		todo_debug( 0x9, 3 );
 	}
 
 	else {
 		//Different interrupt!!!
-		todo_debug( 0x10, 2 );
+		todo_debug( 0x10, 3 );
 	}
 	
 	return 0;

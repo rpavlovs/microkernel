@@ -10,8 +10,23 @@
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 void stress_test_uart1_getc(){
 	while(1){
+		todo_debug( 0x0, 0 );
+		todo_debug( 0x0, 1 );
+		todo_debug( 0x0, 2 );
+		todo_debug( 0x0, 3 );
+		todo_debug( 0x0, 4 );
+		todo_debug( 0x0, 5 );
+		todo_debug( 0x0, 6 );
+		todo_debug( 0x0, 7 );
+		todo_debug( 0x0, 8 );
+
+		todo_debug( 0x1, 8 );
 		char c = Getc( COM1 );
-		bwprintf( COM2, "%c", c ); 
+		todo_debug( c, 9 );
+		todo_debug( 0x2, 8 );
+		bwprintf( COM2, "%c", c );
+		//Putc( COM2, c );
+		todo_debug( 0x3, 8 );
 	}
 	
 	Exit();
@@ -39,15 +54,9 @@ void stress_test_uart2_putc(){
 // -- These tests are similar to unit tests, since they are very small and run fast. 
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 void test_sensors_server(){
-	
-	/*
-	while(1){
-		char c = Getc( COM1 );
-		//Putc( COM2, c ); 
-		bwprintf( COM2, "%c", c ); 
-	}
-	 * */
+
 	Create( 14, sensors_server ); 
+	bwprintf( COM2, "Sunshine! :)");
 	
 	Exit();
 }

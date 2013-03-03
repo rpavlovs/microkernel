@@ -20,7 +20,7 @@
 #define UART2_RECEIVER_SERVER_PRIORITY	12
 
 
-#define FIRST_USER_TASK_NAME				stress_test_uart1_getc
+#define FIRST_USER_TASK_NAME				test_sensors_server//stress_test_uart1_getc//
 #define FIRST_USER_TASK_PRIORITY			8
 
 #endif

@@ -180,18 +180,18 @@ void uart1_receiver_notifier() {
 
 	FOREVER {
 		//Wait until there is data in UART1
-		todo_debug( 0x1, 0 );
+		todo_debug( 0x1, 2 );
 		AwaitEvent( UART1_RECEIVE_READY, (int) &receive_buffer );
-		todo_debug( 0x2, 0 );
+		todo_debug( 0x2, 2 );
 
 		//Configure the request
 		request.type = UART1_RECEIVE_NOTIFIER_REQUEST;
 		request.ch = receive_buffer;
 
 		//Send data to the server (uart1_receiver_server)
-		todo_debug( 0x3, 0 );
+		todo_debug( 0x3, 2 );
 		Send(server_tid, (char *) &request, sizeof(request), (char *) 0, 0);
-		todo_debug( 0x4, 0 );
+		todo_debug( 0x4, 2 );
 	}
 }
 

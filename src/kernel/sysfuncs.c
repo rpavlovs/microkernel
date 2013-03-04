@@ -1,51 +1,27 @@
 #include "kernelspace.h"
 
 int
-sys_create( int priority, void (*code) ( ), Task_descriptor *td, Kern_Globals *GLOBALS ) {	
+sys_create( int priority, void (*code) ( ), Task_descriptor *td, Kern_Globals *GLOBALS ) {
 	debug( DBG_KERN, "SYS_CREATE: entered" );
 
-	// ERROR: Scheduler  was given a wrong task priority.
+	// ERROR: Scheduler was given a wrong task priority.
 	if( priority < 0 || priority >= SCHED_NUM_PRIORITIES ) return -1;
-	
-	// Getting the schedule
-	Scheduler *sched = &(GLOBALS->scheduler);
+
+	// Utility variables
 	int new_tid;
 	Task_descriptor *new_td;
 
-	// Find a free task descriptor for a new task.
-	new_tid = sched->last_issued_tid + 1;
-	if( new_tid >= MAX_NUM_TASKS ) new_tid = 0;
-	while( GLOBALS->tasks[new_tid].state != FREE_TASK ) {
-		// ERROR: Scheduler  is out of task descriptors. 
-		if( ++new_tid >= MAX_NUM_TASKS ) return -2;
-	}
-
-	//Updating the schedule
-	sched->last_issued_tid = new_tid;
-	sched->tasks_alive++;
+	// Initialize utility variables
+	new_tid = sched_get_free_tid(GLOBALS);
+	new_td = &(GLOBALS->tasks[new_tid]);
 	
 	// Setup new task descriptor
-	new_td = &(GLOBALS->tasks[new_tid]);
 	new_td->state = READY_TASK;
 	new_td->priority = priority;
 	new_td->lr = (int *)code;
 
 	// Add new task descriptor to a proper scheduler queue
-	Task_queue *queue = &(sched->queues[priority]);
-
-	assert( queue->size < SCHED_QUEUE_LENGTH, "SYS_CREATE: Scheduler  queue must not be full" );
-
-	// If the queue is empty or the newest pointer is at the end of the td_ptrs buffer
-	// put the next td_ptr at the beginning on the buffer  
-	if (queue->size == 0 || ++(queue->newest) >= SCHED_QUEUE_LENGTH) queue->newest = 0;
-	
-	// If the queue was empty then newest and oldest elements are the same 
-	// and are at the beginning of the buffer
-	if (queue->size == 0) queue->oldest = 0;
-
-	// Updating the queue
-	queue->size++;
-	queue->td_ptrs[queue->newest] = new_td;
+	sched_add_td( new_td, GLOBALS );
 
 	// Rescheduling the task
 	sys_reschedule( td, GLOBALS );
@@ -77,17 +53,10 @@ void
 sys_exit( Task_descriptor *td, Kern_Globals *GLOBALS ) {
 	debug( DBG_KERN, "SYS_EXIT: entered" );
 	
-	// Removing the first task from the corresponding queue
-	Task_queue *queue = &(GLOBALS->scheduler.queues[td->priority]);
-	if( ++(queue->oldest) >= SCHED_QUEUE_LENGTH )
-		queue->oldest = 0;
-	queue->size--;
+	sched_remove_td( td, GLOBALS );
 
 	// Updating the task's state
 	td->state = ZOMBIE_TASK;
-
-	// Updating the schedule
-	GLOBALS->scheduler.tasks_alive--;
 	GLOBALS->scheduler.tasks_exited++;
 }
 
@@ -95,17 +64,8 @@ void
 sys_reschedule( Task_descriptor *td, Kern_Globals *GLOBALS ) {
 	debug( DBG_KERN, "SYS_RESCHEDULE: entered" );
 
-	// Getting the priority queue
-	Task_queue *queue = &(GLOBALS->scheduler.queues[td->priority]);
-	assert( queue->td_ptrs[queue->oldest] == td, "can only reschelude most recent task" );
-	if( queue->size > 1 ) {
-		// Removing the first task from the queue
-		if( ++(queue->oldest) >= SCHED_QUEUE_LENGTH ) queue->oldest = 0;
-
-		// Adding the task to the end of the queue
-		if( ++(queue->newest) >= SCHED_QUEUE_LENGTH ) queue->newest = 0;
-		queue->td_ptrs[queue->newest] = td;
-	}
+	sched_remove_td( td, GLOBALS );
+	sched_add_td( td, GLOBALS );
 
 	// Updating the task's state
 	td->state = READY_TASK;
@@ -150,15 +110,10 @@ sys_send( int receiver_tid, char *msg, int msglen, char *reply, int replylen,
 	//BLOCKING///////////////////////////////////////////////////
 	//Change the state of the calling task to SEND_BLOCKED
 	sender_td->state = SEND_TASK;
-	GLOBALS->scheduler.tasks_alive--;
+
+	sched_remove_td( sender_td, GLOBALS );
 
 	todo_debug( 0x5, 4 );
-	
-	//Remove the task from the READY queue
-	Task_queue *pqueue = &(GLOBALS->scheduler.queues[sender_td->priority]);
-	dequeue_tqueue(pqueue);
-
-	todo_debug( 0x6, 4 );
 
 	return 0;
 }
@@ -222,15 +177,10 @@ sys_receive( int *sender_tid, char *reciever_buf, const int reciever_buf_len,
 		todo_debug( 0x10, 5 );
 
 		//Remove the task from the READY queue
-		dequeue_tqueue( &(GLOBALS->scheduler.queues[receiver_td->priority]) );
+		receiver_td->state = RECEIVE_BLOCKED;
+		sched_remove_td( receiver_td, GLOBALS );
 
 		todo_debug( 0x11, 5 );
-
-		receiver_td->state = RECEIVE_BLOCKED;
-
-		GLOBALS->scheduler.tasks_alive--;
-
-		todo_debug( 0x12, 5 );
 	}
 	return 0;
 }
@@ -256,12 +206,7 @@ sys_reply( int sender_tid, char *reply, int replylen, Task_descriptor *receiver_
 
 	//Rescheduling the task
 	sender_td->state = READY_TASK;
-	GLOBALS->scheduler.tasks_alive++;
-
-	todo_debug( 0x5, 6 );
-
-	Task_queue *pqueue = &(GLOBALS->scheduler.queues[sender_td->priority]);
-	enqueue_tqueue( sender_td, pqueue );
+	sched_add_td( sender_td, GLOBALS );
 
 	todo_debug( 0x6, 6 );
 
@@ -322,13 +267,7 @@ sys_unblock_receive( Task_descriptor *receiver_td, Kern_Globals *GLOBALS ) {
 	//RESCHEDULING///////////////////////////////////////
 	//Unblocking the task
 	receiver_td->state = READY_TASK;
-	GLOBALS->scheduler.tasks_alive++;
-
-	todo_debug( 0x9, 7 );
-
-	//Rescheduling the task
-	Task_queue *pqueue = &(GLOBALS->scheduler.queues[receiver_td->priority]);
-	enqueue_tqueue(receiver_td, pqueue);
+	sched_add_td( receiver_td, GLOBALS );
 
 	todo_debug( 0x10, 7 );
 }
@@ -341,23 +280,15 @@ sys_await_event( int eventid, int buffer_addr, Task_descriptor *td, Kern_Globals
 	
 	todo_debug( 0x1, 3 );
 	GLOBALS->scheduler.hwi_watchers[eventid] = td;
-	todo_debug( 0x2, 3 );
-	
-	// Remove the task from the READY queue
 	td->state = AWAIT_TASK;
-	Task_queue *pqueue = &(GLOBALS->scheduler.queues[td->priority]);
-	dequeue_tqueue(pqueue);
-	GLOBALS->scheduler.tasks_alive--;
+	sched_remove_td( td, GLOBALS );
 	
 	// Save the event buffer information.
-	//todo_debug( buffer_addr, 1 );
 	td->event_char = buffer_addr; 
-	todo_debug( 0x3, 3 );
+	todo_debug( 0x2, 3 );
 	
 	// Reactivate interrupts
 	// -> UART 1 -------------------------------------------------------------
-	//todo_debug( 50, 3 );
-	//todo_debug( eventid, 3 );
 	if ( eventid == UART1_INIT_SEND ) {
 		todo_debug( 0x4, 3 );
 		//todo_debug( 51, 3 );
@@ -403,8 +334,5 @@ sys_await_event( int eventid, int buffer_addr, Task_descriptor *td, Kern_Globals
 
 int
 sys_testcall( int a, int b, int c, int d, int e, int f ) {
-//int sys_testcall(int a, int b, int c, int d, int e){ //, int f){
-//int sys_testcall(int a, int b, int c, int d){
-
 	return a + b + c + d + e + f;
 }

@@ -118,4 +118,93 @@ int getNextRequest( Kern_Globals *GLOBALS )
 	return activate( schedule( GLOBALS ), GLOBALS );
 }
 
+/////////////////////////////////////////////////////////////////////
+//
+// Utility functions
+//
+/////////////////////////////////////////////////////////////////////
+
+int sched_get_free_tid( Kern_Globals *GLOBALS ) {
+	Scheduler *sched = &(GLOBALS->scheduler);
+	int new_tid;
+
+	// Find a free task descriptor for a new task.
+	new_tid = sched->last_issued_tid + 1;
+	if( new_tid >= MAX_NUM_TASKS ) new_tid = 0;
+
+	while( GLOBALS->tasks[new_tid].state != FREE_TASK ) {
+		// ERROR: Scheduler  is out of task descriptors.
+		if( ++new_tid >= MAX_NUM_TASKS ) return -2;		//TODO: PANIC!!!
+	}
+
+	// Update schedule
+	sched->last_issued_tid = new_tid;
+
+	return new_tid;
+}
+
+void sched_add_td( Task_descriptor *td, Kern_Globals *GLOBALS ){
+	// Utility variables
+	Scheduler *sched;
+	Task_queue *queue;
+
+	// Initialize utility variables
+	sched = &(GLOBALS->scheduler);
+	queue = &(sched->queues[td->priority]);
+
+	assert( queue->size < SCHED_QUEUE_LENGTH, "SYS_CREATE: Scheduler  queue must not be full" );
+
+	// If the queue is empty or the newest pointer is at the end of the td_ptrs buffer
+	// put the next td_ptr at the beginning on the buffer  
+	if (queue->size == 0 || ++(queue->newest) >= SCHED_QUEUE_LENGTH) queue->newest = 0;
+	
+	// If the queue was empty then newest and oldest elements are the same 
+	// and are at the beginning of the buffer
+	if (queue->size == 0) queue->oldest = 0;
+
+	queue->td_ptrs[queue->newest] = td;
+
+	//Updating the schedule
+	queue->size++;
+	sched->tasks_alive++;
+}
+
+void sched_remove_td( Task_descriptor *td, Kern_Globals *GLOBALS ){
+	// Utility variables
+	Scheduler *sched;
+	Task_queue *queue;
+
+	// Initialize utility variables
+	sched = &(GLOBALS->scheduler);
+	queue = &(sched->queues[td->priority]);
+
+	assert( queue->td_ptrs[queue->oldest] == td, "can only reschelude most recent task" );
+
+	// Removing the first task from the corresponding queue
+	if( ++(queue->oldest) >= SCHED_QUEUE_LENGTH )
+		queue->oldest = 0;
+
+	// Updating the schedule
+	queue->size--;
+	sched->tasks_alive--;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

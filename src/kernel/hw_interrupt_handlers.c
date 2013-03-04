@@ -8,8 +8,8 @@ void timer_hwi_handler( Kern_Globals *GLOBALS ){
 	
 		//Rescheduling the task
 		watcher->state = READY_TASK;
-		enqueue_tqueue( watcher, &(GLOBALS->scheduler.queues[watcher->priority]) );
-		GLOBALS->scheduler.tasks_alive++;
+
+		sched_add_td( watcher, GLOBALS );
 
 		//Clear the event in hwi events waiting table
 		GLOBALS->scheduler.hwi_watchers[TIMER1_INT_INDEX] = 0;
@@ -91,20 +91,18 @@ void uart1_hwi_handler( Kern_Globals *GLOBALS ) {
 	} else {
 		// This was an unexpected interrupt; we don't care about it. 
 	}
-	
-	// If there were tasks waiting for these events, reschedule them. 
-	if( waiting_task != 0 ) {	
+
+	// If there were tasks waiting for these events, reschedule them.
+	if( waiting_task != 0 ) {
 		//Rescheduling the task
 		waiting_task->state = READY_TASK;
-		enqueue_tqueue( waiting_task, &(GLOBALS->scheduler.queues[waiting_task->priority]) );
-		GLOBALS->scheduler.tasks_alive++;
+		sched_add_td( waiting_task, GLOBALS );
 	}
 	
 	if ( waiting_task_init != 0 ) {
 		//Rescheduling the task
 		waiting_task_init->state = READY_TASK;
-		enqueue_tqueue( waiting_task_init, &(GLOBALS->scheduler.queues[waiting_task_init->priority]) );		
-		GLOBALS->scheduler.tasks_alive++;
+		sched_add_td( waiting_task, GLOBALS );
 	}
 	
 	// Clear the interrupt in the ICU.
@@ -144,10 +142,10 @@ void uart2_hwi_handler( Kern_Globals *GLOBALS ){
 		GLOBALS->scheduler.hwi_watchers[UART2_SEND_READY] = 0;
 		
 		// Deactivate the interrupt.
-		// NOTE: This interrupt also needs to be DISABLED. 
-		int *uart2_ctrl, temp; 
-		uart2_ctrl = ( int * ) (  UART2_BASE + UART_CTLR_OFFSET ); 
-		temp = *uart2_ctrl; 
+		// NOTE: This interrupt also needs to be DISABLED.
+		int *uart2_ctrl, temp;
+		uart2_ctrl = ( int * ) (  UART2_BASE + UART_CTLR_OFFSET );
+		temp = *uart2_ctrl;
 		*uart2_ctrl = temp & ~TIEN_MASK;
 	}
 	else {
@@ -159,9 +157,7 @@ void uart2_hwi_handler( Kern_Globals *GLOBALS ){
 	if( waiting_task != 0 ) {
 		//Rescheduling the task
 		waiting_task->state = READY_TASK;
-		enqueue_tqueue( waiting_task, &(GLOBALS->scheduler.queues[waiting_task->priority]) );
-		GLOBALS->scheduler.tasks_alive++;
-		//todo_debug( c, 1 );
+		sched_add_td( waiting_task, GLOBALS );
 	}
 	
 	// Clear the interrupt in the ICU.

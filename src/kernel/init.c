@@ -58,7 +58,7 @@ void init_task_descriptors( Kern_Globals *GLOBALS ) {
 void init_io() {
 	int temp; 
 	int *uart_ctrl, *mdm_ctrl, *fifo, *low, *mid; 
-	/*
+	
 	// -- UART 1 -> Interacts with the train. ---------------------------------
 	uart_ctrl = (int *)( UART1_BASE + UART_CTLR_OFFSET );
 	
@@ -69,7 +69,7 @@ void init_io() {
 	// NOTE: Both, the transmit interrupt and modem status are enabled during
 	// await event. That's the reason why they are not enabled here. 
 	temp = *uart_ctrl; 
-	*uart_ctrl = temp | RIEN_MASK;
+	*uart_ctrl = temp | RIEN_MASK | MSIEN_MASK;
 	
 	// -> Set the UART speed (baud rate) -> 2400 bps. 
 	low = (int *)( UART1_BASE + UART_LCRL_OFFSET );
@@ -85,7 +85,6 @@ void init_io() {
 	// -> Enable modem (to check for CTS).
 	mdm_ctrl = (int *)( UART1_BASE + UART_MDMCTL_OFFSET);
 	*mdm_ctrl = (*mdm_ctrl | 1);
-	*/
 	
 	// -- UART 2 -> Interacts with the console. -------------------------------
 	uart_ctrl = (int *)( UART2_BASE + UART_CTLR_OFFSET );
@@ -96,7 +95,7 @@ void init_io() {
 	// NOTE: As with UART1, the Transmit interrupt is enabled during await event.
 	//*uart_ctrl = INT_RESET_VALUE | RIEN_MASK;
 	temp = *uart_ctrl; 
-	*uart_ctrl = temp | RIEN_MASK | RTIEN_MASK;	
+	*uart_ctrl = temp | RIEN_MASK;// | RTIEN_MASK;
 	
 	// -> Set the UART speed (baud rate) -> 115200 bps.
 	low = (int *)( UART2_BASE + UART_LCRL_OFFSET );
@@ -128,8 +127,6 @@ void initialize( Kern_Globals *GLOBALS ) {
 	initialize_context_switching(); 
 	
 	init_hardware();
-
-    //initialize_context_switching(); 
 
 	init_message_queues( GLOBALS );
 

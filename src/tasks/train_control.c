@@ -30,29 +30,27 @@ void setupScreen() {
 		"##                                                                            ##\n"
 		"## ~>                                                                         ##\n"
 		"################################################################################\n");
-	ptr += sprintf( ptr, "\033[%d;7H\0", UI_CLI_CMD_LINE_ROW );
+	ptr += sprintf( ptr, "\033[%d;7H", UI_CLI_CMD_LINE_ROW );
 	// printf( COM2, "%s", buff );
 	Putstr( COM2, buff );
 }
 
 void train_control() {
+	
+	setupScreen();
+	Create( 8, task_cli ); 
+	Create( 12, draw_clock ); 
+	
 	// Putc( COM2, '~' );
 	// Putc( COM2, '\n' );
 	// Putstr( COM2, "Hello" );
-	// setupScreen();
+	//setupScreen();
+	//Create( 8, task_cli ); 
+	
 	// Delay(1000);
-	// Create( 7, task_cli );
+	//Create( 7, task_cli );
 	// Delay(10000);
-	// char buf[100];
-	// char* ptr = buf;
 
-	// ptr += sprintf( ptr, "\033[2J\033[;H" );
-	// ptr += sprintf( ptr, "\033[%d;7H%-81s\033[%d;7H\0", 3, "blah", 3 );
-
-	// ptr += sprintf( ptr, "1234567890" );
-	// ptr += sprintf( ptr, "ABCDEFGH" );
-
-	// printf( COM2, "XXXXXXXXXXXXXXX" ); 
 	
 
 	// Delay( 500 );

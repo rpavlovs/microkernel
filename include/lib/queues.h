@@ -3,6 +3,7 @@
 
 #define CHAR_QUEUE_SIZE		4000
 #define INT_QUEUE_SIZE		1000
+#define MSG_QUEUE_SIZE		100
 
 typedef struct {
 	char chars[CHAR_QUEUE_SIZE];
@@ -15,6 +16,12 @@ typedef struct {
 	int newest, oldest;
 	int size;
 } Int_queue;
+
+/////////////////////////////////////////////////////////////////////
+//
+// Character Queue in round buffer
+//
+/////////////////////////////////////////////////////////////////////
 
 void init_char_queue( Char_queue * );
 
@@ -32,11 +39,15 @@ int char_queue_pop_word( Char_queue *q, char *str, int len );
 
 int char_queue_pop_str( Char_queue *q, char *str, int len );
 
+/////////////////////////////////////////////////////////////////////
+//
+// Integer Queue
+//
+/////////////////////////////////////////////////////////////////////
 
 void init_int_queue( Int_queue *q );
 
 void enqueue_int_queue( int i, Int_queue *q );
 
 int dequeue_int_queue( Int_queue *q );
-
 #endif

@@ -3,14 +3,28 @@
 
 #include "kernelspace.h"
 
-// TODO: Description:
-//       
+/////////////////////////////////////////////////////////////////////
+//
+// Message queues
+//
+/////////////////////////////////////////////////////////////////////
+void enqueue_msg_queue(int sender_tid, char *msg, int msglen,
+						char *reply, int replylen, Message_queue *mailbox);
 
+void dequeue_msg_queue(Message_queue *mailbox);
+
+
+
+/////////////////////////////////////////////////////////////////////
+//
+// Task queues
+//
+/////////////////////////////////////////////////////////////////////
+
+/*
 void enqueue_tqueue(Task_descriptor *td, Task_queue *q);
 
-// TODO: Description:
-//       
-
 Task_descriptor *dequeue_tqueue(Task_queue *q);
+*/
 
 #endif

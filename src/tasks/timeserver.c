@@ -2,30 +2,33 @@
 
 #define TIMESERVER_WAKEUP_QUEUE_SIZE 100
 
-// ----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------------------------------------------
 // Timer
-// ----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------------------------------------------
 void start_timer(){
+	// Initialization
 	int timerControlValue; 
-	int *timerLoad = ( int * ) TIMER1_BASE;
-	int *timerControl = ( int * ) ( TIMER1_BASE + CRTL_OFFSET ); 
+	int *timerLoad = ( int * ) TIMER3_BASE;
+	int *timerControl = ( int * ) ( TIMER3_BASE + CRTL_OFFSET ); 
 
 	// First the load is added. 
-	*timerLoad = TIMER_CYCLES_PER_TICK;
+	*timerLoad = TIMER_CYCLES_PER_TICK - 1;
 
 	// The timer is enabled and configured.
 	timerControlValue = *timerControl;
 	timerControlValue = timerControlValue | TIMER_ENABLE_FLAG | TIMER_MODE;
+	timerControlValue = timerControlValue & ~TIMER_CLKSEL;	// This enables the 2 kHz frequency. 
 	*timerControl = timerControlValue;
 }
 
-// ----------------------------------------------------------------------------
-// Time Server
-// ----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------------------------------------------
+// Time Server Structs
+// -----------------------------------------------------------------------------------------------------------------------------------------------
 typedef struct Wakeup_record Wakeup_record;
 
 struct Wakeup_record {
 	int wakeup_time;
+	int tid; 
 	Wakeup_record *next_to_wakeup;
 };
 
@@ -35,6 +38,9 @@ typedef struct {
 	int size;
 } Wakeup_list;
 
+// -----------------------------------------------------------------------------------------------------------------------------------------------
+// Time Server Methods
+// -----------------------------------------------------------------------------------------------------------------------------------------------
 void init_wakeup_list( Wakeup_list *list ) {
 	list->size = 0;
 }
@@ -46,43 +52,44 @@ void schedule_for_wakeup( Wakeup_list *list, int new_tid, int wakeup_time ) {
 	//Note: task id is a position of a correspondong record in a record list
 	Wakeup_record *new_record = &(list->records[new_tid]);
 	new_record->wakeup_time = wakeup_time;
+	new_record->tid = new_tid; 
 
 	if( list->size == 0 || wakeup_time < list->first_to_wakeup->wakeup_time ) {
-		new_record->next_to_wakeup = 0;
+		if ( list->first_to_wakeup )
+			new_record->next_to_wakeup = list->first_to_wakeup; 
+		else
+			new_record->next_to_wakeup = 0;
 		list->first_to_wakeup = new_record;
-	} else {
-		Wakeup_record *wake_after = list->first_to_wakeup;
-		Wakeup_record *wake_before = wake_after->next_to_wakeup;
 		
-		while( wake_before != 0 && wakeup_time > wake_before->wakeup_time ) {
-			wake_after = wake_before;
-			wake_before = wake_before->next_to_wakeup;
+	} else {
+		Wakeup_record *wake_before = list->first_to_wakeup;
+		Wakeup_record *wake_after = wake_before->next_to_wakeup; 
+		
+		while( wake_after != 0 && wakeup_time > wake_after->wakeup_time ){
+			wake_before = wake_after; 
+			wake_after = wake_before->next_to_wakeup; 
 		}
-
-		wake_after->next_to_wakeup = new_record;
-		new_record->next_to_wakeup = wake_before;
+		
+		wake_before->next_to_wakeup = new_record; 
+		new_record->next_to_wakeup = wake_after; 
 	}
-
+	
 	list->size++;
 	debug( DBG_SYS, "TIMESERVER: task %d is scheduled to run at %d ticks",
 			new_tid, new_record->wakeup_time );
 }
 
 // Note: Returns -1 if there is no task to wakeup at the moment
-int get_tid_to_wakeup( Wakeup_list *list, int current_time ) {
-	if( list->size == 0 || list->first_to_wakeup->wakeup_time > current_time )
+int get_tid_to_wakeup( Wakeup_list *list, int current_time ) {	
+	if( list->size == 0 || list->first_to_wakeup->wakeup_time > current_time ){
 		return -1;
-
-	// Difference in pointers is a position in an array. In our case it is actually also the
-	// task id of a corresponding task
-	// It's magic, I know...
+	}
 	
 	debug( DBG_SYS, "TIMESERVER: list->records = %d, list->first_to_wakeup = %d ",
 			list->records, list->first_to_wakeup );
-
-	int tid_to_wakeup = (int)(list->first_to_wakeup - list->records);
+	int tid_to_wakeup = list->first_to_wakeup->tid; 
 	assert( tid_to_wakeup >= 0, "GET_TID_TO_WAKEUP: there is no magic in this world... :(" );
-
+	
 	list->first_to_wakeup = list->first_to_wakeup->next_to_wakeup;	
 	list->size--;
 	return tid_to_wakeup;
@@ -118,7 +125,7 @@ void timeserver() {
 	Wakeup_list list;
 	init_wakeup_list( &list );
 	Create( 8, clock_tick_notifier );
-
+	
 	FOREVER {
 		debug( DBG_SYS, "TIMESERVER: listening as task %d...", mytid );
 		Receive( &sender_tid, (char *) &request, sizeof(request) );
@@ -147,6 +154,7 @@ void timeserver() {
 		case DELAY_REQUEST:
 			debug( DBG_SYS, "TIMESERVER: delay for %d ticks request recieved "
 				"from task %d", request.num, sender_tid );
+			
 			schedule_for_wakeup( &list, sender_tid, current_time + request.num );
 			break;
 		case DELAY_UNTIL_REQUEST:

@@ -1,100 +1,46 @@
 #include "kernelspace.h"
 
-// int jump( int a, int b, int c, int d, int e, int syscall_id ) {
-// 	int ret;
-// 	switch( syscall_id ) {
-// 	case CREATE_SYSCALL:
-// 		asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (CREATE_SYSCALL) );
-// 		break;
-// 	case MYTID_SYSCALL:
-// 		asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (MYTID_SYSCALL) );
-// 		break;
-// 	case MYPARENTTID_SYSCALL:
-// 		asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (MYPARENTTID_SYSCALL) );
-// 		break;
-// 	case PASS_SYSCALL:
-// 		asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (PASS_SYSCALL) );
-// 		break;
-// 	case EXIT_SYSCALL:
-// 		asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (EXIT_SYSCALL) );
-// 		break;
-// 	case SEND_SYSCALL:
-// 		asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (SEND_SYSCALL) );
-// 		break;
-// 	case RECEIVE_SYSCALL:
-// 		asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (RECEIVE_SYSCALL) );
-// 		break;
-// 	case REPLY_SYSCALL:
-// 		asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (REPLY_SYSCALL) );
-// 		break;
-// 	}
-
-// 	asm( "MOV	%[ret], r0" "\n\t" : [ret] "=r" (ret) );
-	
-// 	return ret;
-// }
-
 int Create( int priority, void (*code) ( ) ) {
-	// debug( DBG_REQ, "CREATE: request recieved. Priority %d, address %d",
-	// 		priority, (int) code );
-
-	// return jump( (int) priority, (int) code, 0, 0, 0, CREATE_SYSCALL );
 	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (CREATE_SYSCALL) );
 }
 
 int MyTid( ) {
 	debug( DBG_REQ, "MY_TID: request recieved." );
 
-	// return jump( 0, 0, 0, 0, 0, MYTID_SYSCALL);
 	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (MYTID_SYSCALL) );
 }
 
 int MyParentTid( ) {
 	debug( DBG_REQ, "MY_PARENT_TID: request recieved." );
 
-	// return jump( 0, 0, 0, 0, 0, MYPARENTTID_SYSCALL);
 	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (MYPARENTTID_SYSCALL) );
-
 }
 
 void Pass( ) {
 	debug( DBG_REQ, "PASS: request recieved." );
 
-	// jump( 0, 0, 0, 0, 0, PASS_SYSCALL);
 	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (PASS_SYSCALL) );
 }
 
 void Exit( ) {
 	debug( DBG_REQ, "EXIT: request recieved." );
 
-	// jump( 0, 0, 0, 0, 0, EXIT_SYSCALL);
 	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (EXIT_SYSCALL) );
 }
 
 int Send( int tid, char *msg, int msglen, char *reply, int replylen ) {
-	// debug( DBG_REQ, "SEND: request recieved. Recipient tid is %d", tid );
-	
-	// return jump( (int) tid, (int) *msg, (int) msglen, (int) *reply,
-	// 	(int) replylen, SEND_SYSCALL);
 	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (SEND_SYSCALL) );
 }
 
 int Receive( int *tid, char *msg, int msglen ) {
-	// debug( DBG_REQ, "RECEIVE: request recieved." );
-	
-	// return jump( (int) tid, (int) msg, (int) msglen, 0, 0, MYPARENTTID_SYSCALL);
 	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (RECEIVE_SYSCALL) );
 }
 
 int Reply( int tid, char *reply, int replylen ) {
-	// debug( DBG_REQ, "REPLY: request recieved. Recipient tid is %d", tid );
-
-	// return jump( (int) tid, (int) reply, (int) replylen, 0, 0, MYPARENTTID_SYSCALL);
 	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (REPLY_SYSCALL) );
 }
 
-int AwaitEvent( int eventid, int event )
-{
+int AwaitEvent( int eventid, int event ) {
 	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (AWAIT_EVENT_SYSCALL) );	
 }
 
@@ -233,27 +179,38 @@ int Getc( int channel ) {
 	UART_request request;
 	UART_reply reply;
 
+	todo_debug( 0x1, 0 );
+
 	if(channel == COM1) {
+		todo_debug( 0x2, 0 );
 		//Train controller
 		tid = WhoIs("uart1_receiver");
 		request.type = UART1_RECEIVE_REQUEST;
+		todo_debug( 0x3, 0 );
 	}
 	else if(channel == COM2) {
+		todo_debug( 0x4, 0 );
 		//Terminal
 		tid = WhoIs("uart2_receiver");
 		request.type = UART2_RECEIVE_REQUEST;
-	}else{
+		todo_debug( 0x5, 0 );
+	}
+	else{
+		todo_debug( 0x6, 0 );
 		//COM channel is invalid
 		return -3;
 	}
 
 	//check the return value of WhoIs
-	if(tid < 0){ 
-		return -1; 
+	if(tid < 0) {
+		todo_debug( 0x7, 0 );
+		return -1;
 	}
 
 	//Sending the message to the server
+	todo_debug( 0x8, 0 );
 	Send(tid, (char *) &request, sizeof(request), (char *) &reply, sizeof(reply));
+	todo_debug( 0x9, 0 );
 
 	return (int) reply.ch;
 }

@@ -1,5 +1,9 @@
 #include <commonspace.h>
 
+// -----------------------------------------------------------------------------------------------------------------------------------------------
+// Methods for Putc
+// -- SEND
+// -----------------------------------------------------------------------------------------------------------------------------------------------
 void uart2_sender_notifier() {
 	debug( DBG_SYS, "UART2_SENDER_NOTIFIER: enters" );
 	int *uart_flags, *uart_data, server_tid;
@@ -12,14 +16,16 @@ void uart2_sender_notifier() {
 	debug( DBG_SYS, "UART2_SENDER_NOTIFIER: recieving init info" );
 	Receive( &server_tid, (char *)&init_msg, sizeof(init_msg) );
 	Reply( server_tid, 0, 0 );
-	if( init_msg.type != UART2_INIT_NOTIFIER )
+	if( init_msg.type != UART2_INIT_NOTIFIER ){
 		bwprintf( COM2, "notifier screwed\n");
+	}
 
 	Char_queue *buf = init_msg.buf;
 
 	FOREVER {
 		// If UART2 is not ready to receive a character wait until it is ready
-		if( !(*uart_flags & TXFF_MASK) ) AwaitEvent( UART2_SEND_READY, 0 );
+		if( !(*uart_flags & TXFF_MASK) ) 
+			AwaitEvent( UART2_SEND_READY, 0 );
 		
 		// If nothing to send notify server and block 
 		if( buf->size > 0 ) {
@@ -80,17 +86,22 @@ void uart2_sender_server() {
 	}
 }
 
+// -----------------------------------------------------------------------------------------------------------------------------------------------
+// Methods for Getc
+// -- Receiver
+// -----------------------------------------------------------------------------------------------------------------------------------------------
 void uart2_receiver_notifier() {
 	debug( DBG_SYS, "UART2_RECEIVER_NOTIFIER: enters" );
 	int server_tid = WhoIs("uart2_receiver");
 	UART_request request;
 
 	int receive_buffer = 0;
-	todo_debug( (int) &receive_buffer, 0 );
 
 	FOREVER {
 		debug( DBG_SYS, "UART2_RECEIVER_NOTIFIER: waiting for an interrupt" );
+		////todo_debug( 0x1, 1 );
 		AwaitEvent( UART2_RECEIVE_READY, (int) &receive_buffer );
+		////todo_debug( 0x2, 1 );
 		
 		//Configure the request
 		request.type = UART2_RECEIVE_NOTIFIER_REQUEST;

@@ -4,21 +4,109 @@
 
 #define INT_CONTROL_BASE_1		0x800B0000		// VIC 1
 
-void task_test_uart1(){
-	int uart1_receiver_tid = Create( 14, uart1_receiver_server );
+// -----------------------------------------------------------------------------------------------------------------------------------------------
+// Stress Tests
+// -- These tests are longer, and more time consuming.
+// -----------------------------------------------------------------------------------------------------------------------------------------------
+void stress_test_uart1_getc(){
+	while(1){
+		todo_debug( 0x0, 0 );
+		todo_debug( 0x0, 1 );
+		todo_debug( 0x0, 2 );
+		todo_debug( 0x0, 3 );
+		todo_debug( 0x0, 4 );
+		todo_debug( 0x0, 5 );
+		todo_debug( 0x0, 6 );
+		todo_debug( 0x0, 7 );
+		todo_debug( 0x0, 8 );
+
+		//todo_debug( 0x1, 8 );
+		char c = Getc( COM1 );
+		//todo_debug( c, 9 );
+		//todo_debug( 0x2, 8 );
+		//bwprintf( COM2, "%c", c );
+		Putc( COM2, c );
+		//todo_debug( 0x3, 8 );
+	}
 	
+	Exit();
+}
+
+void stress_test_uart2_getc(){
+	while(1){
+		char c = Getc( COM2 ); 
+		bwprintf( COM2, "%c", c ); 
+	}
 	
+	Exit();
+}
+
+void stress_test_uart2_putc(){
+	while(1){
+		Putc( COM2, 'y' ); 
+	}
+	
+	Exit();	
+}
+
+// -----------------------------------------------------------------------------------------------------------------------------------------------
+// Simple Tests
+// -- These tests are similar to unit tests, since they are very small and run fast. 
+// -----------------------------------------------------------------------------------------------------------------------------------------------
+void test_sensors_server(){
+
+	bwprintf( COM2, "Sunshine Before! :)");
+	Create( 14, sensors_server ); 
+	bwprintf( COM2, "Sunshine After! :)");
+	
+	Exit();
+}
+
+void test_clock(){
+	int clk_tid = Create( 10, draw_clock ); 
+	bwprintf( COM2, "Clock task created: %d", clk_tid );
+	
+	Exit(); 
+}
+
+void test_uart1_send(){
+	int train_number = 35;
+	
+	//Putc( COM2, 'A' );
+	Putc( COM1, 14 );
+	Delay( 1 );
+	Putc( COM1, train_number );
+	
+	Putc( COM2, 'B' );
+	Delay( 1000 ); 
+	
+	Putc( COM2, 'C' );
+	Putc( COM1, 0 );
+	Delay( 1 );
+	Putc( COM1, train_number );
+	Putc( COM2, 'D' );
+	
+	Exit();
+}
+
+void test_uart1_receive(){
+	while(1){
+		char c = Getc( COM1 );
+		bwprintf( COM2, "%c", c ); 
+	}
+	
+	Exit();
 }
 
 void task_test_uart2() {	
 	// CREATE THE UART2 RECEIVER SERVER. 
 	debug( DBG_SYS, "FIRST_TASK: creating UART2 Receiver Server." );
-	todo_debug( 0, 0 );
-	todo_debug( 0, 1 );
-	todo_debug( 0, 2 );
+	////todo_debug( 0, 0 );
+	////todo_debug( 0, 1 );
+	////todo_debug( 0, 2 );
 	
-	int uart2_sender_tid = Create( 14, uart2_sender_server );
-	int uart2_receiver_tid = Create( 14, uart2_receiver_server );
+	//int uart2_sender_tid = Create( 14, uart2_sender_server );
+	//int uart2_receiver_tid = Create( 14, uart2_receiver_server );
 	
 	char c = Getc( COM2 );
 	char d = Getc( COM2 );
@@ -26,9 +114,7 @@ void task_test_uart2() {
 	Putc( COM2, c );
 	Putc( COM2, d );
 	Putc( COM2, 'z' );
-	
-	//bwprintf( COM2, "\nEVERYTHING THAT HAS A BEGINNING HAS AN END, NEO!!!");
-	
+		
 	Exit(); 
 }
 

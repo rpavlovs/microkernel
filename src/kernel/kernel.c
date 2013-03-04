@@ -5,11 +5,12 @@ int main( ) {
 	initialize( &KERN_GLOBALS );	// includes starting the first user task
 
 	int request;
-	int exits = 0;
 
 	FOREVER {
 		request = getNextRequest( &KERN_GLOBALS );
-		if( request == EXIT_SYSCALL ) if( exits++ > 1 ) return 666;
+
+		if( KERN_GLOBALS.scheduler.tasks_exited > 10 ) return 0;
+		
 		handle_request( request, &KERN_GLOBALS );
 	}
 }

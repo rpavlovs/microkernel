@@ -35,4 +35,16 @@ int getNextRequest( Kern_Globals * );
 
 void handle_request( int, Kern_Globals * );
 
+/////////////////////////////////////////////////////////////////////
+//
+// Utility functions
+//
+/////////////////////////////////////////////////////////////////////
+
+int sched_get_free_tid( Kern_Globals *GLOBALS );
+
+void sched_add_td( Task_descriptor *td, Kern_Globals *GLOBALS );
+
+void sched_remove_td( Task_descriptor *td, Kern_Globals *GLOBALS );
+
 #endif

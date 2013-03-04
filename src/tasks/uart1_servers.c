@@ -1,12 +1,13 @@
 #include <userspace.h>
 
 void uart1_sender_notifier() {
-	int* uart_flags = (int *)( UART1_BASE + UART_FLAG_OFFSET );
-	int* uart_data = (int *)( UART1_BASE + UART_DATA_OFFSET );
-	int* modem_ctrl = (int *)( UART1_BASE + UART_MDMCTL_OFFSET);
-	int* modem_status = (int *) (UART1_BASE + UART_MDMSTS_OFFSET);
+	int* uart_flags =	(int *)( UART1_BASE + UART_FLAG_OFFSET );
+	int* uart_data =	(int *)( UART1_BASE + UART_DATA_OFFSET );
+	int* modem_ctrl =	(int *)( UART1_BASE + UART_MDMCTL_OFFSET);
+	int* modem_status =	(int *)( UART1_BASE + UART_MDMSTS_OFFSET);
 	
 	int uart_flags_temp = 0;
+	int modem_ctrl_temp = 0;
 	int modem_status_temp = 0;
 
 	int sender_tid;
@@ -17,13 +18,13 @@ void uart1_sender_notifier() {
 	//	0 - CTS is set to '1' before the character is sent
 	//	1 - CTS is set to '0' after the character is sent
 	//	2 - CTS is set to '1' after the character is sent
-	int cts = 0;
+	int cts_state = 0;
 	
 	//Transmit states:
 	//	0 - Transmit is set to '0' right after the character is sent
 	//	1 - Transmit is set to '1' after the character is sent
-	int transmit = 0;
-	
+	int txfe_state = 0;
+
 	//Utility variables
 	int first_request = 1;
 	int first_iter = 1;
@@ -37,58 +38,75 @@ void uart1_sender_notifier() {
 		//Reinitialize modem
 		//RTSn pin is set to low
 		//DTRn pin is set to low
-		*modem_ctrl = *modem_ctrl | 3;
+		modem_ctrl_temp = *modem_ctrl;
+		*modem_ctrl = modem_ctrl_temp | 3;
 
 		//Initialize the state machine
-		cts = 0;
-		transmit = 0;
+		cts_state = 0;
+		txfe_state = 0;
 		first_iter = 1;
 		
 		FOREVER {
+			//*uart_data = 'b';
 			//Wait until UART1 is ready to receive a character
-			if(transmit == 0 || first_iter) {
-				AwaitEvent(EVENT_UART1_SEND_READY_INITIAL, 0);	//TODO: Need interrupts to implement this part
+			if(txfe_state == 0 || first_iter) {
+				AwaitEvent(UART1_INIT_SEND, 0);
 			}
 			else {
-				AwaitEvent(EVENT_UART1_SEND_READY, 0);			//TODO: Need interrupts to implement this part
+				//bwprintf( COM2, "EVENT02: UART1_SEND_READY\n");
+				AwaitEvent(UART1_SEND_READY, 0);
 			}
 			
+			//*uart_data = 'd';
+			
 			first_iter = 0;
+			//txfe_state = 1;
+			//*uart_data = 'e';
+			
 			modem_status_temp = *modem_status;
 			uart_flags_temp = *uart_flags;
 
 			//Changing state of the state machine////////////////////
-			
-			//IF transmit is set to '1'
-			if((uart_flags_temp & TXFE_MASK)) {
-				transmit = 1;
-			}
-
-			//IF   CTS value is set to '0'
-			//THEN CTS has been deasserted
-			if(cts == 0 && !(uart_flags_temp & CTS_MASK)) {
-				cts = 1;
-			}
+			//bwprintf( COM2, "STATE00: CTS: %d TXFE: %d\n", cts_state, txfe_state );
 			
 			//IF   CTS value has changed
 			//AND  CTS value is now set to '1'
 			//THEN CTS has been reasserted
 			if( ((modem_status_temp & DCTS_MASK) || first_request)
 				&& (uart_flags_temp & CTS_MASK)) {
-				cts = 2;
+				cts_state = 2;
+				//bwprintf( COM2, "STATE03: CTS: %d TXFE: %d\n", cts_state, txfe_state );
 			}
+			
+			//IF   CTS value is set to '0'
+			//THEN CTS has been deasserted
+			if(cts_state == 0 && !(uart_flags_temp & CTS_MASK)) {
+				cts_state = 1;
+				//bwprintf( COM2, "STATE02: CTS: %d TXFE: %d\n", cts_state, txfe_state );
+			}
+			
+			
 
 			//IF   CTS has been deasserted
 			//AND  CTS value is now set to '1'
 			//THEN CTS has been reasserted
-			if(cts == 1 && (uart_flags_temp & CTS_MASK)) {				//TODO: not sure if we need this...
-				cts = 2;
+			if(cts_state == 1 && (uart_flags_temp & CTS_MASK)) {
+				cts_state = 2;
+				//bwprintf( COM2, "STATE04: CTS: %d TXFE: %d\n", cts_state, txfe_state );
 			}
-
+			
+			//IF transmit is set to '1'
+			if((uart_flags_temp & TXFE_MASK)) {
+				txfe_state = 1;
+				//bwprintf( COM2, "STATE01: CTS: %d TXFE: %d\n", cts_state, txfe_state );
+			}
+			
 			//IF   CTS has been reasserted
 			//AND  Transmit has been reasserted
 			//THEN Send the character to UART1
-			if(cts == 2 && transmit == 1) {
+			if(cts_state == 2 && txfe_state == 1) {
+				//bwprintf( COM2, "STATE05: CTS: %d TXFE: %d\n", cts_state, txfe_state );
+				
 				*uart_data = (char) request.ch;
 				first_request = 0;
 				break;
@@ -102,50 +120,51 @@ void uart1_sender_server() {
 	RegisterAs("uart1_sender");
 	
 	//Create the notifier
-	int sender_notifier_tid = Create(UART_SENDER_NOTIFIER_PRIORITY, &uart1_sender_notifier);	//TODO: define priorities for notifiers
+	int notifier_tid = Create(UART_SENDER_NOTIFIER_PRIORITY, &uart1_sender_notifier);
 	
 	//Request & Reply
 	UART_request request;
 	UART_reply reply;
-	UART_request notifier_request;
-	UART_reply notifier_reply;
-	
-	//Create buffer queues
+
+	//Buffer queues
 	Char_queue cqueue;
 	init_char_queue( &cqueue );
 
 	FOREVER{
-		//Receiving the request with character to send
+		//Receive request from the system function (Putc)
 		int sender_tid = -1;
 		Receive(&sender_tid, (char *) &request, sizeof(request));
 
-		switch(request.type) {
-			case UART1_SEND_REQUEST:
-				//Reply to the system function
-				reply.type = UART1_SEND_REPLY;
-				reply.ch = 0;
-				Reply(sender_tid, (char *) &reply, sizeof(reply));
+		
+		switch(request.type){
+			case UART_SEND_REQUEST_PUTC:
+				//Reply to unblock the system function (Putc)
+				//reply.type = UART1_SEND_REPLY;
+				//reply.ch = 0;
+				//Reply(sender_tid, (char *) &reply, sizeof(reply));
+				//bwprintf( COM2, "Before reply Sender: %d\n", sender_tid  ); 
+				Reply(sender_tid, 0, 0);
+				//bwprintf( COM2, "After reply\n"  );
 
-				//Enqueue the character
+				//bwprintf( COM2, "Before enqueueing\n"  ); 
+				//Put the character from the request to queue
 				enqueue_char_queue( request.ch, &cqueue );
+				//bwprintf( COM2, "After enqueueing\n"  ); 
 				break;
+
 			default:
-				//Invalid request is received
+				//Invalid request
 				reply.type = INVALID_REQUEST;
 				reply.ch = 0;
 				Reply(sender_tid, (char *) &reply, sizeof(reply));
 				break;
 		}
-
-		//Sending request to notifier
-		while(cqueue.size > 0){
-			//Set up request to notifier
-			notifier_request.type = UART1_SEND_REQUEST;
-			notifier_request.ch = dequeue_char_queue( &cqueue );
+		
+		while( cqueue.size > 0){
+			request.type = UART1_SEND_NOTIFIER_REQUEST;
+			request.ch = dequeue_char_queue( &cqueue );
 			
-			//Send the request
-			Send(sender_notifier_tid, (char *) &notifier_request, sizeof(notifier_request),
-				(char *) &notifier_reply, sizeof(notifier_reply));
+			Send( notifier_tid, (char *) &request, sizeof(request), (char *) 0, 0);
 		}
 	}
 }
@@ -155,18 +174,24 @@ void uart1_sender_server() {
 void uart1_receiver_notifier() {
 	int server_tid = WhoIs("uart1_receiver");
 	UART_request request;
-	UART_reply reply;
+	
+	int receive_buffer = 0;
 
-	char receive_buffer[1];
 
 	FOREVER {
-		AwaitEvent(EVENT_UART1_RECEIVE_READY, receive_buffer );		//TODO: Need interrupts to implement this part
+		//Wait until there is data in UART1
+		//todo_debug( 0x1, 2 );
+		AwaitEvent( UART1_RECEIVE_READY, (int) &receive_buffer );
+		//todo_debug( 0x2, 2 );
 
+		//Configure the request
 		request.type = UART1_RECEIVE_NOTIFIER_REQUEST;
-		request.ch = receive_buffer[0];
+		request.ch = receive_buffer;
 
-		Send(server_tid, (char *) &request, sizeof(request),
-			(char *) &reply, sizeof(reply));
+		//Send data to the server (uart1_receiver_server)
+		//todo_debug( 0x3, 2 );
+		Send(server_tid, (char *) &request, sizeof(request), (char *) 0, 0);
+		//todo_debug( 0x4, 2 );
 	}
 }
 
@@ -195,29 +220,39 @@ void uart1_receiver_server() {
 		//Receive request from:
 		//	system function (Getc)
 		//	notifier (uart1_receiver_notifier)
+		//todo_debug( 0x1, 1 );
 		Receive(&sender_tid, (char *) &request, sizeof(request));
+		//todo_debug( 0x2, 1 );
 
 		switch(request.type){
 			case UART1_RECEIVE_REQUEST:
 				//Enqueue the system function tid to reply later
+				//todo_debug( 0x3, 1 );
 				enqueue_int_queue( sender_tid, &iqueue );
-				
+				//todo_debug( 0x4, 1 );
 				break;
 				
 			case UART1_RECEIVE_NOTIFIER_REQUEST:
 				//Reply to unblock the notifier
+				//todo_debug( 0x5, 1 );
 				Reply(sender_tid, (char *) 0, 0);
-			
+				//todo_debug( 0x6, 1 );
+
 				//Enqueue received character
-				enqueue_char_queue( request.ch, &cqueue );
-			
+				if ( iqueue.size > 0 ){
+					//todo_debug( 0x7, 1 );
+					enqueue_char_queue( request.ch, &cqueue );
+					//todo_debug( 0x8, 1 );
+				}
+
 				break;
 			
 			default:
 				reply.type = INVALID_REQUEST;
 				reply.ch = 0;
+				//todo_debug( 0x9, 1 );
 				Reply(sender_tid, (char *) &reply, sizeof(reply));
-				
+				//todo_debug( 0x10, 1 );
 				break;
 		}
 
@@ -230,7 +265,9 @@ void uart1_receiver_server() {
 			reply.ch = dequeue_char_queue( &cqueue );
 
 			//Perform the reply
+			//todo_debug( 0x11, 1 );
 			Reply(target_tid, (char *) &reply, sizeof(reply));
+			//todo_debug( 0x12, 1 );
 		}
 	}
 }

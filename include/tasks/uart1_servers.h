@@ -5,6 +5,8 @@ void uart1_sender_notifier();
 
 void uart1_sender_server();
 
+void uart1_sender_server2(); 
+
 void uart1_receiver_notifier();
 
 void uart1_receiver_server();

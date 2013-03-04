@@ -43,13 +43,16 @@ void train_control() {
 	// Delay(1000);
 	// Create( 7, task_cli );
 	// Delay(10000);
-	char buf[1000];
-	char* ptr = buf;
+	// char buf[100];
+	// char* ptr = buf;
 
-	ptr += sprintf( ptr, "\033[2J\033[;H" );
-	ptr += sprintf( ptr, "\033[%d;7H%-81s\033[%d;7H\0", 3, "blah", 3 );
+	// ptr += sprintf( ptr, "\033[2J\033[;H" );
+	// ptr += sprintf( ptr, "\033[%d;7H%-81s\033[%d;7H\0", 3, "blah", 3 );
 
-	Putstr( COM2, buf ); 
+	// ptr += sprintf( ptr, "1234567890" );
+	// ptr += sprintf( ptr, "ABCDEFGH" );
+
+	// printf( COM2, "XXXXXXXXXXXXXXX" ); 
 	
 
 	// Delay( 500 );

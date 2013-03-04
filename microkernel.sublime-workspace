@@ -4,6 +4,70 @@
 		"selected_items":
 		[
 			[
+				"Put",
+				"Putstr"
+			],
+			[
+				"not",
+				"notifier_is_waiting"
+			],
+			[
+				"ser",
+				"server_tid"
+			],
+			[
+				"Cha",
+				"Char_queue"
+			],
+			[
+				"size",
+				"sizeof"
+			],
+			[
+				"req",
+				"request"
+			],
+			[
+				"his",
+				"history_record"
+			],
+			[
+				"str",
+				"str"
+			],
+			[
+				"buffer",
+				"buffer_pos"
+			],
+			[
+				"in",
+				"inputs"
+			],
+			[
+				"qu",
+				"queue_pos"
+			],
+			[
+				"qeu",
+				"queue_pos"
+			],
+			[
+				"sp",
+				"speed_str"
+			],
+			[
+				"tra",
+				"train_id_str"
+			],
+			[
+				"c",
+				"c"
+			],
+			[
+				"inc",
+				"inc	#include \"…\""
+			],
+			[
 				"fir",
 				"first_user_task_tid"
 			],
@@ -42,10 +106,6 @@
 			[
 				"rep",
 				"reply_msg"
-			],
-			[
-				"req",
-				"request_msg"
 			],
 			[
 				"re",
@@ -184,10 +244,6 @@
 				"tasks"
 			],
 			[
-				"inc",
-				"include"
-			],
-			[
 				"pri",
 				"priority"
 			],
@@ -198,10 +254,6 @@
 			[
 				"swi",
 				"switch_states"
-			],
-			[
-				"tra",
-				"train_speeds"
 			],
 			[
 				"COM",
@@ -230,10 +282,6 @@
 			[
 				"print",
 				"printf	printf …"
-			],
-			[
-				"str",
-				"strcpy"
 			],
 			[
 				"com",
@@ -466,122 +514,48 @@
 			[
 				"url",
 				"urlorlink"
-			],
-			[
-				"dom",
-				"target_domain"
-			],
-			[
-				"targ",
-				"target_domain"
-			],
-			[
-				"fe",
-				"fetch_links"
-			],
-			[
-				"par",
-				"parse_url"
-			],
-			[
-				"parse_",
-				"parse_dom"
-			],
-			[
-				"preg",
-				"preg_match"
-			],
-			[
-				"chek",
-				"check_curl_results"
-			],
-			[
-				"curl_ha",
-				"curl_handler"
-			],
-			[
-				"sta",
-				"status_code"
-			],
-			[
-				"tar",
-				"target_html"
-			],
-			[
-				"fun",
-				"function"
-			],
-			[
-				"for",
-				"foreach	foreach …"
 			]
 		]
 	},
 	"buffers":
 	[
 		{
-			"file": "src/kernel/hw_interrupt_handlers.c",
+			"file": "src/tasks/cli.c",
 			"settings":
 			{
-				"buffer_size": 5770,
+				"buffer_size": 4870,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "src/kernel/scheduler.c",
+			"file": "src/tasks/train_control.c",
 			"settings":
 			{
-				"buffer_size": 55,
+				"buffer_size": 2864,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/kernel/kernel.c",
+			"settings":
+			{
+				"buffer_size": 368,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "src/kernel/sched.c",
+			"file": "src/lib/io.c",
 			"settings":
 			{
-				"buffer_size": 3490,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "src/kernel/sysfuncs.c",
-			"settings":
-			{
-				"buffer_size": 9887,
+				"buffer_size": 6402,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"contents": "Searching 67 files for \"todo_debug( ., 1 )\" (regex, case sensitive)\n\n0 matches across 0 files\n",
+			"file": "include/config/system.h",
 			"settings":
 			{
-				"buffer_size": 94,
-				"line_ending": "Unix",
-				"name": "Find Results",
-				"scratch": true
-			}
-		},
-		{
-			"file": "microkernel.sublime-workspace",
-			"settings":
-			{
-				"buffer_size": 52978,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "src/kernel/init.c",
-			"settings":
-			{
-				"buffer_size": 3549,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "include/kernel/scheduler.h",
-			"settings":
-			{
-				"buffer_size": 417,
+				"buffer_size": 544,
 				"line_ending": "Unix"
 			}
 		},
@@ -589,23 +563,31 @@
 			"file": "include/kernel/globals.h",
 			"settings":
 			{
-				"buffer_size": 2216,
+				"buffer_size": 2178,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "src/kernel/kernel.c",
+			"file": "include/commonspace.h",
 			"settings":
 			{
-				"buffer_size": 393,
-				"line_ending": "Windows"
+				"buffer_size": 3319,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "include/kernel/syscall.h",
+			"settings":
+			{
+				"buffer_size": 6156,
+				"line_ending": "Unix"
 			}
 		}
 	],
 	"build_system": "Packages/User/install-from-mac.sublime-build",
 	"command_palette":
 	{
-		"height": 327.0,
+		"height": 392.0,
 		"selected_items":
 		[
 			[
@@ -802,43 +784,66 @@
 	},
 	"file_history":
 	[
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/first.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/uart2_servers.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/sysfuncs.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/commonspace.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/tasks/uart2_servers.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/tasks/cli.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/lib/io.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/syscall.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/ui.txt",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/globals.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/timeserver.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/lib/queues.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/lib/io.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/sched.c",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/context_switch.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/hw_interrupt_handlers.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/config/system.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/kernel.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/tasks/timeserver.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/tests.c",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/syscall.c",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/queues.c",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/hw_interrupt_handlers.c",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/sysfuncs.c",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/nameserver.c",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/sched.c",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/timeserver.c",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/first.c",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/tests.c",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/userspace.h",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernelspace.h",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/lib/stdlib.h",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/lib/bwio.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/nameserver.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/scheduler.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/tasks/first.h",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/init.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/a0/src/a0.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/train_control.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/lib/queues.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/lib/helpers.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/tasks/train_control.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/lib/helpers.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/config/ui.h",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/tasks/tests.h",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/syscall.h",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/commonspace.h",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/config/system.h",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/globals.h",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/tasks/timeserver.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/userspace.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/.git/MERGE_MSG",
+		"/Volumes/MagicDraw UML 16.0 sp1/readme.txt",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/config/environment.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/track_a.txt",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/lib/stdlib.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/lib/stdlib.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/lib/string.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/lib/bwio.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/lib/bwio.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/microkernel.sublime-workspace",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/scheduler.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/tasks/test_uart.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/test_uart.c",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/hw_interrupt_handlers.h",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/tasks/a3-game.h",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/a3-game.c",
 		"/Users/rpavlovs/Dropbox/w13/cs450/w450-assembler1-sample/README",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/sched.h",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/lib/bwio.c",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/a1.c",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/tasks/test.h",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/tasks/a1.h",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/lib/stdlib.c",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/lib/string.c",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/kernel.c",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/lib/string.h",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/Makefile",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/config/memory.h",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/microkernel.sublime-workspace",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/RPS-game.c",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/config/build.h",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/string.h",
@@ -860,7 +865,6 @@
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/init.h",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/helpers.h",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/tasks/nameserver.h",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/tasks/first.h",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/config/ts7200.h",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/helpers.c",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/tasks/first.c",
@@ -907,29 +911,7 @@
 		"/Users/rpavlovs/Downloads/Movies/README.txt",
 		"/Volumes/home/cs452/RTOS/build/kernel.map",
 		"/Volumes/home/cs452/RTOS/kernel/contextsw.c",
-		"/Volumes/home/cs452/RTOS/include/kernel/sysfuncs.h",
-		"/Volumes/home/cs452/RTOS/include/config/mem_init.h",
-		"/Volumes/home/cs452/RTOS/include/tasks/first.h",
-		"/Volumes/home/cs452/RTOS/Makefile",
-		"/Volumes/home/cs452/io/src/bwio.c",
-		"/Volumes/home/cs452/io/include/bwio.h",
-		"/Volumes/home/cs452/RTOS/include/config/ts7200.h",
-		"/Volumes/home/cs452/RTOS/include/tasks.h",
-		"/Volumes/home/cs452/test/syscall_dispatch.c",
-		"/Volumes/home/cs452/test/Makefile",
-		"/Users/rpavlovs/Dropbox/f11/cs350/binutils-2.17+os161-2.0.1/include/elf/ChangeLog",
-		"/Volumes/home/cs452/test/syscall_dispatch.s",
-		"/Volumes/home/cs452/RTOS/kernel/syscall_handler.c",
-		"/Volumes/home/cs452/RTOS/kernel/sched.h",
-		"/Volumes/home/cs452/test/test.s",
-		"/Volumes/home/cs452/io/src/Makefile",
-		"/Volumes/home/cs452/A0/src/Makefile",
-		"/Volumes/home/cs452/test/0",
-		"/Volumes/home/cs452/A0/include/bwio.h",
-		"/Volumes/home/cs452/A0/src/a0.c",
-		"/Volumes/home/cs452/A0/src/io.c",
-		"/Volumes/home/cs452/A0/include/ts7200.h",
-		"/Volumes/home/cs452/A0/src/io.h"
+		"/Volumes/home/cs452/RTOS/include/kernel/sysfuncs.h"
 	],
 	"find":
 	{
@@ -946,9 +928,43 @@
 	},
 	"find_state":
 	{
-		"case_sensitive": true,
+		"case_sensitive": false,
 		"find_history":
 		[
+			"exit()",
+			"interrupt id",
+			"interrutp id",
+			"HANDLE_REQUEST",
+			"PASS: req",
+			"tasks_alive",
+			"	//Modifying the queue\nACTIVE_TASK",
+			"	//Modifying the queue\nSEND_TASK",
+			"SEND_TASK",
+			"TIMESERVER_TASK_PRIORITY",
+			"first_task",
+			"first",
+			"request",
+			"cqueue",
+			"request",
+			"channel",
+			"UART_request",
+			"todo_debug",
+			"curr_input",
+			"GUI",
+			"TRAIN_IDS",
+			");\n",
+			"c",
+			"C",
+			"switch_states",
+			"\"sw\"",
+			"sw",
+			"Putc",
+			"c2x",
+			"todo_debug( 50",
+			"todo_debug",
+			"todo_debug (.*, 1)",
+			"todo_debug ( .*, 1 )",
+			"todo_debug( .*, 1 )",
 			"todo_debug( ., 1 )",
 			"todo_debug(.*)",
 			"todo_debug( ?, 1 )",
@@ -1042,48 +1058,15 @@
 			"printf",
 			"prinf",
 			"reply_client",
-			"server",
-			"ACTIVE_TASK",
-			"tid",
-			"reciever_tid",
-			"reciever_td",
-			"sending_td",
-			"td",
-			"tid",
-			"rmsg",
-			"smsg",
-			"sending_tid",
-			"td",
-			"Wait_queue",
-			"target_td",
-			"td",
-			"Tid",
-			"tid",
-			"It should only",
-			"memcpy",
-			"NAMESERVER_TID",
-			"tab ",
-			"tab",
-			"HEAD",
-			"			//",
-			"activ",
-			"ExecuteCSWIHandler",
-			"218D4C",
-			"td->tid",
-			"	unsigned int uini = (unsigned int) td->next_instruction;	//This is right, judging by the map file and arithmetic :)\n",
-			"\n",
-			"assert",
-			"helpers",
-			"pc",
-			"code",
-			"pc"
+			"server"
 		],
 		"highlight": true,
 		"in_selection": false,
 		"preserve_case": false,
-		"regex": true,
+		"regex": false,
 		"replace_history":
 		[
+			"UI",
 			"Send_info",
 			"mailbox",
 			"RECEIVE_BLOCKED",
@@ -1129,23 +1112,137 @@
 	"groups":
 	[
 		{
-			"selected": 4,
+			"selected": 2,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "src/kernel/hw_interrupt_handlers.c",
+					"file": "src/tasks/cli.c",
 					"settings":
 					{
-						"buffer_size": 5770,
+						"buffer_size": 4870,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								4634,
+								4661
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110.0
+							],
+							"gjslint_options":
+							[
+							],
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": true,
+							"sublimelinter_delay": 2.0,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": false,
+							"sublimelinter_mark_style": "outline",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syntax": "Packages/C++/C.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 1876.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "src/tasks/train_control.c",
+					"settings":
+					{
+						"buffer_size": 2864,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2575,
+								2575
 							]
 						],
 						"settings":
@@ -1242,139 +1339,25 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "src/kernel/scheduler.c",
-					"settings":
-					{
-						"buffer_size": 55,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								55,
-								55
-							]
-						],
-						"settings":
-						{
-							"annotations":
-							[
-								"TODO",
-								"README",
-								"FIXME"
-							],
-							"csslint_options":
-							{
-								"adjoining-classes": "warning",
-								"box-model": true,
-								"box-sizing": "warning",
-								"compatible-vendor-prefixes": "warning",
-								"display-property-grouping": true,
-								"duplicate-background-images": "warning",
-								"duplicate-properties": true,
-								"empty-rules": true,
-								"errors": true,
-								"fallback-colors": "warning",
-								"floats": "warning",
-								"font-faces": "warning",
-								"font-sizes": "warning",
-								"gradients": "warning",
-								"ids": "warning",
-								"import": "warning",
-								"important": "warning",
-								"known-properties": true,
-								"outline-none": "warning",
-								"overqualified-elements": "warning",
-								"qualified-headings": "warning",
-								"regex-selectors": "warning",
-								"rules-count": "warning",
-								"shorthand": "warning",
-								"star-property-hack": "warning",
-								"text-indent": "warning",
-								"underscore-property-hack": "warning",
-								"unique-headings": "warning",
-								"universal-selector": "warning",
-								"vendor-prefix": true,
-								"zero-units": "warning"
-							},
-							"gjslint_ignore":
-							[
-								110.0
-							],
-							"gjslint_options":
-							[
-							],
-							"javascript_linter": "jshint",
-							"jshint_options":
-							{
-								"browser": true,
-								"evil": true,
-								"regexdash": true,
-								"sub": true,
-								"trailing": true,
-								"wsh": true
-							},
-							"pep8": true,
-							"pep8_ignore":
-							[
-								"E501"
-							],
-							"perl_linter": "perlcritic",
-							"pyflakes_ignore":
-							[
-							],
-							"pyflakes_ignore_import_*": true,
-							"sublimelinter": true,
-							"sublimelinter_delay": 2.0,
-							"sublimelinter_disable":
-							[
-							],
-							"sublimelinter_executable_map":
-							{
-							},
-							"sublimelinter_fill_outlines": false,
-							"sublimelinter_gutter_marks": false,
-							"sublimelinter_mark_style": "outline",
-							"sublimelinter_notes": false,
-							"sublimelinter_objj_check_ascii": false,
-							"sublimelinter_popup_errors_on_save": false,
-							"sublimelinter_syntax_map":
-							{
-								"C++": "c",
-								"Python Django": "python",
-								"Ruby on Rails": "ruby"
-							},
-							"sublimelinter_wrap_find": true,
-							"syntax": "Packages/C++/C.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 16.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 2,
-					"file": "src/kernel/sched.c",
+					"file": "src/kernel/kernel.c",
 					"settings":
 					{
-						"buffer_size": 3490,
+						"buffer_size": 368,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								304,
+								304
 							]
 						],
 						"settings":
@@ -1478,18 +1461,18 @@
 				},
 				{
 					"buffer": 3,
-					"file": "src/kernel/sysfuncs.c",
+					"file": "src/lib/io.c",
 					"settings":
 					{
-						"buffer_size": 9887,
+						"buffer_size": 6402,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								3961,
+								3961
 							]
 						],
 						"settings":
@@ -1586,268 +1569,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"settings":
-					{
-						"buffer_size": 94,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"detect_indentation": false,
-							"output_tag": 1,
-							"result_base_dir": "",
-							"result_file_regex": "^([A-Za-z\\\\/<].*):$",
-							"result_line_regex": "^ +([0-9]+):",
-							"scroll_past_end": true,
-							"syntax": "Packages/Default/Find Results.hidden-tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "microkernel.sublime-workspace",
-					"settings":
-					{
-						"buffer_size": 52978,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"annotations":
-							[
-								"TODO",
-								"README",
-								"FIXME"
-							],
-							"csslint_options":
-							{
-								"adjoining-classes": "warning",
-								"box-model": true,
-								"box-sizing": "warning",
-								"compatible-vendor-prefixes": "warning",
-								"display-property-grouping": true,
-								"duplicate-background-images": "warning",
-								"duplicate-properties": true,
-								"empty-rules": true,
-								"errors": true,
-								"fallback-colors": "warning",
-								"floats": "warning",
-								"font-faces": "warning",
-								"font-sizes": "warning",
-								"gradients": "warning",
-								"ids": "warning",
-								"import": "warning",
-								"important": "warning",
-								"known-properties": true,
-								"outline-none": "warning",
-								"overqualified-elements": "warning",
-								"qualified-headings": "warning",
-								"regex-selectors": "warning",
-								"rules-count": "warning",
-								"shorthand": "warning",
-								"star-property-hack": "warning",
-								"text-indent": "warning",
-								"underscore-property-hack": "warning",
-								"unique-headings": "warning",
-								"universal-selector": "warning",
-								"vendor-prefix": true,
-								"zero-units": "warning"
-							},
-							"gjslint_ignore":
-							[
-								110.0
-							],
-							"gjslint_options":
-							[
-							],
-							"javascript_linter": "jshint",
-							"jshint_options":
-							{
-								"browser": true,
-								"evil": true,
-								"regexdash": true,
-								"sub": true,
-								"trailing": true,
-								"wsh": true
-							},
-							"pep8": true,
-							"pep8_ignore":
-							[
-								"E501"
-							],
-							"perl_linter": "perlcritic",
-							"pyflakes_ignore":
-							[
-							],
-							"pyflakes_ignore_import_*": true,
-							"sublimelinter": true,
-							"sublimelinter_delay": 2.0,
-							"sublimelinter_disable":
-							[
-							],
-							"sublimelinter_executable_map":
-							{
-							},
-							"sublimelinter_fill_outlines": false,
-							"sublimelinter_gutter_marks": false,
-							"sublimelinter_mark_style": "outline",
-							"sublimelinter_notes": false,
-							"sublimelinter_objj_check_ascii": false,
-							"sublimelinter_popup_errors_on_save": false,
-							"sublimelinter_syntax_map":
-							{
-								"C++": "c",
-								"Python Django": "python",
-								"Ruby on Rails": "ruby"
-							},
-							"sublimelinter_wrap_find": true,
-							"syntax": "Packages/Text/Plain text.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "src/kernel/init.c",
-					"settings":
-					{
-						"buffer_size": 3549,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"annotations":
-							[
-								"TODO",
-								"README",
-								"FIXME"
-							],
-							"csslint_options":
-							{
-								"adjoining-classes": "warning",
-								"box-model": true,
-								"box-sizing": "warning",
-								"compatible-vendor-prefixes": "warning",
-								"display-property-grouping": true,
-								"duplicate-background-images": "warning",
-								"duplicate-properties": true,
-								"empty-rules": true,
-								"errors": true,
-								"fallback-colors": "warning",
-								"floats": "warning",
-								"font-faces": "warning",
-								"font-sizes": "warning",
-								"gradients": "warning",
-								"ids": "warning",
-								"import": "warning",
-								"important": "warning",
-								"known-properties": true,
-								"outline-none": "warning",
-								"overqualified-elements": "warning",
-								"qualified-headings": "warning",
-								"regex-selectors": "warning",
-								"rules-count": "warning",
-								"shorthand": "warning",
-								"star-property-hack": "warning",
-								"text-indent": "warning",
-								"underscore-property-hack": "warning",
-								"unique-headings": "warning",
-								"universal-selector": "warning",
-								"vendor-prefix": true,
-								"zero-units": "warning"
-							},
-							"gjslint_ignore":
-							[
-								110.0
-							],
-							"gjslint_options":
-							[
-							],
-							"javascript_linter": "jshint",
-							"jshint_options":
-							{
-								"browser": true,
-								"evil": true,
-								"regexdash": true,
-								"sub": true,
-								"trailing": true,
-								"wsh": true
-							},
-							"pep8": true,
-							"pep8_ignore":
-							[
-								"E501"
-							],
-							"perl_linter": "perlcritic",
-							"pyflakes_ignore":
-							[
-							],
-							"pyflakes_ignore_import_*": true,
-							"sublimelinter": true,
-							"sublimelinter_delay": 2.0,
-							"sublimelinter_disable":
-							[
-							],
-							"sublimelinter_executable_map":
-							{
-							},
-							"sublimelinter_fill_outlines": false,
-							"sublimelinter_gutter_marks": false,
-							"sublimelinter_mark_style": "outline",
-							"sublimelinter_notes": false,
-							"sublimelinter_objj_check_ascii": false,
-							"sublimelinter_popup_errors_on_save": false,
-							"sublimelinter_syntax_map":
-							{
-								"C++": "c",
-								"Python Django": "python",
-								"Ruby on Rails": "ruby"
-							},
-							"sublimelinter_wrap_find": true,
-							"syntax": "Packages/C++/C.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 2840.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1855,23 +1577,23 @@
 			]
 		},
 		{
-			"selected": 1,
+			"selected": 3,
 			"sheets":
 			[
 				{
-					"buffer": 7,
-					"file": "include/kernel/scheduler.h",
+					"buffer": 4,
+					"file": "include/config/system.h",
 					"settings":
 					{
-						"buffer_size": 417,
+						"buffer_size": 544,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								369,
+								369
 							]
 						],
 						"settings":
@@ -1973,19 +1695,19 @@
 					"type": "text"
 				},
 				{
-					"buffer": 8,
+					"buffer": 5,
 					"file": "include/kernel/globals.h",
 					"settings":
 					{
-						"buffer_size": 2216,
+						"buffer_size": 2178,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								1366,
+								1366
 							]
 						],
 						"settings":
@@ -2082,25 +1804,25 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 275.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
-					"buffer": 9,
-					"file": "src/kernel/kernel.c",
+					"buffer": 6,
+					"file": "include/commonspace.h",
 					"settings":
 					{
-						"buffer_size": 393,
+						"buffer_size": 3319,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								207,
+								207
 							]
 						],
 						"settings":
@@ -2193,8 +1915,122 @@
 								"Ruby on Rails": "ruby"
 							},
 							"sublimelinter_wrap_find": true,
-							"syntax": "Packages/C++/C.tmLanguage",
+							"syntax": "Packages/C++/C++.tmLanguage",
 							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "include/kernel/syscall.h",
+					"settings":
+					{
+						"buffer_size": 6156,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								177,
+								177
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110.0
+							],
+							"gjslint_options":
+							[
+							],
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": true,
+							"sublimelinter_delay": 2.0,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": false,
+							"sublimelinter_mark_style": "outline",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syntax": "Packages/C++/C++.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -2233,7 +2069,7 @@
 		"cols":
 		[
 			0.0,
-			0.516243178718,
+			0.5,
 			1.0
 		],
 		"rows":
@@ -2267,19 +2103,131 @@
 		[
 			[
 				"sys",
-				"src/kernel/syscall.c"
+				"include/kernel/syscall.h"
 			],
 			[
-				"gae",
-				"include/tasks/a3-game.h"
+				"glo",
+				"include/kernel/globals.h"
+			],
+			[
+				"que",
+				"include/lib/queues.h"
+			],
+			[
+				"com",
+				"include/commonspace.h"
+			],
+			[
+				"sched",
+				"src/kernel/sched.c"
+			],
+			[
+				"tim",
+				"include/tasks/timeserver.h"
+			],
+			[
+				"ker",
+				"src/kernel/kernel.c"
+			],
+			[
+				"ke",
+				"src/kernel/kernel.c"
+			],
+			[
+				"tra",
+				"src/tasks/train_control.c"
+			],
+			[
+				"sche",
+				"src/kernel/sched.c"
+			],
+			[
+				"name",
+				"src/tasks/nameserver.c"
+			],
+			[
+				"sch",
+				"src/kernel/sched.c"
+			],
+			[
+				"syst",
+				"include/config/system.h"
+			],
+			[
+				"ui",
+				"ui.txt"
+			],
+			[
+				"io",
+				"include/lib/io.h"
+			],
+			[
+				"fir",
+				"src/tasks/first.c"
+			],
+			[
+				"ioc",
+				"src/lib/io.c"
+			],
+			[
+				"har",
+				"src/kernel/hw_interrupt_handlers.c"
+			],
+			[
+				"test",
+				"include/tasks/tests.h"
+			],
+			[
+				"use",
+				"include/userspace.h"
+			],
+			[
+				"gui",
+				"include/config/ui.h"
+			],
+			[
+				"io.h",
+				"include/lib/io.h"
+			],
+			[
+				"he",
+				"include/lib/helpers.h"
+			],
+			[
+				"std",
+				"include/lib/stdlib.h"
+			],
+			[
+				"cli",
+				"include/tasks/cli.h"
+			],
+			[
+				"io.c",
+				"src/lib/io.c"
+			],
+			[
+				"bw",
+				"src/lib/bwio.c"
+			],
+			[
+				"bwi",
+				"include/lib/bwio.h"
+			],
+			[
+				"syscallh",
+				"include/kernel/syscall.h"
+			],
+			[
+				"sysh",
+				"include/config/system.h"
 			],
 			[
 				"user",
 				"include/userspace.h"
 			],
 			[
-				"com",
-				"include/commonspace.h"
+				"gae",
+				"include/tasks/a3-game.h"
 			],
 			[
 				"bwio",
@@ -2288,10 +2236,6 @@
 			[
 				"sysf",
 				"src/kernel/sysfuncs.c"
-			],
-			[
-				"que",
-				"src/kernel/queues.c"
 			],
 			[
 				"con",
@@ -2320,14 +2264,6 @@
 			[
 				"shed",
 				"include/kernel/sched.h"
-			],
-			[
-				"bw",
-				"src/lib/bwio.c"
-			],
-			[
-				"sched",
-				"src/kernel/sched.c"
 			],
 			[
 				"a1h",

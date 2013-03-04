@@ -118,7 +118,7 @@ void init_int_queue(Int_queue *q){
 }
 
 void enqueue_int_queue(int i, Int_queue *q){
-	assert(q->size != INT_QUEUE_SIZE, "Integer queue should not overflow");
+	assert(q->size < INT_QUEUE_SIZE, "Integer queue should not overflow");
 
 	//Enqueue the integer
 	q->size++;
@@ -127,7 +127,7 @@ void enqueue_int_queue(int i, Int_queue *q){
 }
 
 int dequeue_int_queue(Int_queue *q){
-	assert(q->size != 0, "Task queue should have items to dequeue");
+	assert(q->size > 0, "Task queue should have items to dequeue");
 
 	//Dequeue the integer
 	q->size--;

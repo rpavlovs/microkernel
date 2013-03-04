@@ -57,22 +57,22 @@ void receive_sensors(char* sensors) {
 	reset = 192;
 	request = 133;
 
-	todo_debug( 0x1, 8 );
+	//todo_debug( 0x1, 8 );
 	
 	Putc( COM1, reset );				// NOTE: They don't add this reset message
 
-	todo_debug( 0x2, 8 );
+	//todo_debug( 0x2, 8 );
 
 	Putc( COM1, request );
 
 	//bwprintf( COM2, "Get sensors started...\n");
 	for( i = 0; i < 10; ++i ) {
 
-		todo_debug( 0x3, 8 );
+		//todo_debug( 0x3, 8 );
 
 		sensors[i] = Getc( COM1 );
 
-		todo_debug( 0x4, 8 );
+		//todo_debug( 0x4, 8 );
 	}
 	//bwprintf( COM2, "Get sensors ended...\n");
 }
@@ -125,19 +125,19 @@ void sensors_server() {
 	//while (get_time() < wait_till) try_to_recieve_char( &train_recieve_buf, COM1 );
 	
 	FOREVER {
-		todo_debug( 0x0, 0 );
-		todo_debug( 0x0, 1 );
-		todo_debug( 0x0, 2 );
-		todo_debug( 0x0, 3 );
-		todo_debug( 0x0, 4 );
-		todo_debug( 0x0, 5 );
-		todo_debug( 0x0, 6 );
-		todo_debug( 0x0, 7 );
-		todo_debug( 0x0, 8 );
+		//todo_debug( 0x0, 0 );
+		//todo_debug( 0x0, 1 );
+		//todo_debug( 0x0, 2 );
+		//todo_debug( 0x0, 3 );
+		//todo_debug( 0x0, 4 );
+		//todo_debug( 0x0, 5 );
+		//todo_debug( 0x0, 6 );
+		//todo_debug( 0x0, 7 );
+		//todo_debug( 0x0, 8 );
 		
 		receive_sensors( sensors );
 
-		todo_debug( 0x5, 8 );
+		//todo_debug( 0x5, 8 );
 
 		for( j = 0; j < 5; j++ ) {
 			if(sensors[2*j] & 0x80) 	update_sensor_history( s80s[j], '0', '1', &sensor_history );

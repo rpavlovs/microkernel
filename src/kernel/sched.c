@@ -102,6 +102,7 @@ int activate( const int tid, Kern_Globals *GLOBALS ) {
 		"[task state: %d task_id: %d]", td->state, td->tid );
 	
 	td->state = ACTIVE_TASK;
+	//todo_debug( td->tid, 0 );
 
 	unsigned int uisp = (unsigned int) td->sp;
 	unsigned int uilr = (unsigned int) td->lr;
@@ -133,8 +134,11 @@ int sched_get_free_tid( Kern_Globals *GLOBALS ) {
 	if( new_tid >= MAX_NUM_TASKS ) new_tid = 0;
 
 	while( GLOBALS->tasks[new_tid].state != FREE_TASK ) {
-		// ERROR: Scheduler  is out of task descriptors.
-		if( ++new_tid >= MAX_NUM_TASKS ) return -2;		//TODO: PANIC!!!
+		assert( ++new_tid < MAX_NUM_TASKS, 
+			"sched_get_free_tid: Scheduler is out of task descriptors" );
+		if( new_tid >= MAX_NUM_TASKS ){
+			return -2;
+		}
 	}
 
 	// Update schedule
@@ -181,15 +185,12 @@ void sched_remove_td( Task_descriptor *td, Kern_Globals *GLOBALS ){
 	assert( queue->td_ptrs[queue->oldest] == td, "can only reschelude most recent task" );
 
 	// Removing the first task from the corresponding queue
-	if( ++(queue->oldest) >= SCHED_QUEUE_LENGTH )
-		queue->oldest = 0;
+	if( ++(queue->oldest) >= SCHED_QUEUE_LENGTH ) queue->oldest = 0;
 
 	// Updating the schedule
 	queue->size--;
 	sched->tasks_alive--;
 }
-
-
 
 
 

@@ -20,13 +20,13 @@ void stress_test_uart1_getc(){
 		todo_debug( 0x0, 7 );
 		todo_debug( 0x0, 8 );
 
-		todo_debug( 0x1, 8 );
+		//todo_debug( 0x1, 8 );
 		char c = Getc( COM1 );
-		todo_debug( c, 9 );
-		todo_debug( 0x2, 8 );
-		bwprintf( COM2, "%c", c );
-		//Putc( COM2, c );
-		todo_debug( 0x3, 8 );
+		//todo_debug( c, 9 );
+		//todo_debug( 0x2, 8 );
+		//bwprintf( COM2, "%c", c );
+		Putc( COM2, c );
+		//todo_debug( 0x3, 8 );
 	}
 	
 	Exit();
@@ -55,8 +55,9 @@ void stress_test_uart2_putc(){
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 void test_sensors_server(){
 
+	bwprintf( COM2, "Sunshine Before! :)");
 	Create( 14, sensors_server ); 
-	bwprintf( COM2, "Sunshine! :)");
+	bwprintf( COM2, "Sunshine After! :)");
 	
 	Exit();
 }
@@ -100,9 +101,9 @@ void test_uart1_receive(){
 void task_test_uart2() {	
 	// CREATE THE UART2 RECEIVER SERVER. 
 	debug( DBG_SYS, "FIRST_TASK: creating UART2 Receiver Server." );
-	//todo_debug( 0, 0 );
-	//todo_debug( 0, 1 );
-	//todo_debug( 0, 2 );
+	////todo_debug( 0, 0 );
+	////todo_debug( 0, 1 );
+	////todo_debug( 0, 2 );
 	
 	//int uart2_sender_tid = Create( 14, uart2_sender_server );
 	//int uart2_receiver_tid = Create( 14, uart2_receiver_server );

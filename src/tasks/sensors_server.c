@@ -34,56 +34,90 @@ void draw_sensor_history( Sensor_history *history ) {
 	char buf[100], *ptr;
 	int i;
 	ptr = buf;
+	
+	int size = 0; 
 
-	ptr += sprintf( ptr, CURSOR_SAVE );
-	ptr += sprintf( ptr, CURSOR_HIDE_STR );
-	ptr += cursorPositioning( ptr, 9, 4 );
+	size += sprintf( ptr, CURSOR_SAVE );
+	size += sprintf( ( ptr + size ), CURSOR_HIDE_STR );
+	size += cursorPositioning( ( ptr + size), 9, 4 );
 
 	for( i = 0; i < history->size; ++i ) {
 		if( i != 0 && i % 7 == 0 ) 
-			ptr += cursorPositioning( ptr, 10, 4 );
+			size += cursorPositioning( ( ptr + size ), 10, 4 );
 
 		int pos = history->newest_pos - i;
 		if( pos < 0 ) pos %= SENSOR_HISTORY_LEN;
-		ptr += sprintf( ptr, "%s ", history->sensors[pos] );
+		size += sprintf( ( ptr + size ), "%s ", history->sensors[pos] );
 	}
 
-	ptr += sprintf( ptr, CURSOR_SHOW_STR );
-	ptr += sprintf( ptr, CURSOR_RESTORE );
+	size += sprintf( ( ptr + size ), CURSOR_SHOW_STR );
+	size += sprintf( ( ptr + size ), CURSOR_RESTORE );
 	Putstr( COM2, ptr );
 }
 
 void receive_sensors( char *sensors ) {
 	printf( COM2, "requesting sensors\n" );
 	Putc( COM1, REQUEST_DATA_CODE );
-
+	//Putc( COM1, RESET_CODE );
+	
 	int i;
 	for( i = 0; i < 10; ++i ) {
 		sensors[i] = Getc( COM1 );
-		printf( COM2, "recieved %d\n", sensors[i] );
+		//printf( COM2, "recieved %d\n", sensors[i] );
 	}
-	printf( COM2, "recied sensors\n" );
+	printf( COM2, "Recieved sensors\n" );
 }
 
 #define GET_BIT(a,b) (int)(a & 1<<b)
 
 void sensors_server() {
+	// Data structures
+	printf( COM2, "Sensors Server:\n" );
 	int i, s88_num, bit_pos, val, val_prev, last_recieved;
 	char s88s[10], s88s_prev[10];
 	Sensor_history sensor_history;
-
+	int my_tid = MyTid(); 
+	
 	// Initialization
 	init_sensor_history( &sensor_history );
-
+	int cmd_server_tid = WhoIs( COMMAND_SERVER_NAME );
+	bwassert( cmd_server_tid >= 0, "SENSORS SERVER: This task requires the command server to be able to operate." ); 
+	
+	printf( COM2, "Retrieved CMD Server TID: %d FROM %d\n", cmd_server_tid, my_tid );
+	
+	// Send a cmd to the command server to reset the switches. 
+	
+	
+	Cmd_request cmd_request; 
+	cmd_request.type = QUERY_CMD_REQUEST; 
+	cmd_request.cmd.cmd_type = RESET_SENSORS_CMD_TYPE; 	
+	cmd_request.cmd.sender_tid = my_tid; 
+	Send( cmd_server_tid, ( char * ) &cmd_request, sizeof( cmd_request ), 0, 0  ); 
+	printf( COM2, "Initialized sensors\n" );
+	
+	// Receive trash. 
+	cmd_request.type = QUERY_CMD_REQUEST; 
+	cmd_request.cmd.cmd_type = QUERY_SENSORS_CMD_TYPE; 
+	cmd_request.cmd.sensors = s88s_prev; 
+	Send( cmd_server_tid, ( char * ) &cmd_request, sizeof( cmd_request ), 0, 0  ); 
+	printf( COM2, "Recieved sensors trash\n" );
 	// Reset sensors
-	Putc( COM1, RESET_CODE );
-	Delay( 500 );
-	receive_sensors( s88s_prev );
+	//Delay( 200 ); 
+	//Putc( COM1, RESET_CODE );
+	//Delay( 1 );
+	//receive_sensors( s88s_prev );
 	
 	FOREVER {
-		receive_sensors( s88s );
+		
+		// Send the command server the request for getting the sensors. 
+		//receive_sensors( s88s );
+		printf( COM2, "Receiving\n" );
+		cmd_request.cmd.sensors = s88s; 
+		Send( cmd_server_tid, ( char * ) &cmd_request, sizeof( cmd_request ), 0, 0  ); 
 		last_recieved = Time();
 
+		// Parse sensors
+		printf( COM2, "Parsing sensors\n" );
 		for( s88_num = 0; s88_num < 5; ++s88_num ) {
 			for( bit_pos = 0; bit_pos < 8; ++bit_pos ) {
 				val = GET_BIT( s88s[s88_num*2], bit_pos );
@@ -99,11 +133,17 @@ void sensors_server() {
 			}
 		}
 
+		// Draw the result to the screen. 
+		printf( COM2, "Drawing sensors\n" );
 		draw_sensor_history( &sensor_history );
 
+		// Store the previously triggered sensors to compare the next time. 
 		for(i = 0; i < 10; i++) {
 			s88s_prev[i] = s88s[i];
 		}
-		DelayUntil( last_recieved + 100 / SENSOR_QUERY_FREQENCY );
+		
+		///DelayUntil( last_recieved + 100 / SENSOR_QUERY_FREQENCY );
+		Delay( 10 ); 
+		printf( COM2, "Finished delay\n" );
 	}
 }

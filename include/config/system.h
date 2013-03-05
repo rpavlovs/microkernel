@@ -20,7 +20,7 @@
 
 
 #define FIRST_USER_TASK_NAME				train_control
-// #define FIRST_USER_TASK_NAME				stress_test_uart1_getc
+//#define FIRST_USER_TASK_NAME				stress_test_uart1_getc
 #define FIRST_USER_TASK_PRIORITY			8
 
 #endif

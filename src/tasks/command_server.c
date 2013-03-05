@@ -135,6 +135,32 @@ void command_notifier(){
 					// Reset the switch (so that the solenoid doesn't burn)
 					Putc( COM1, 32 );
 					break; 
+				
+				case RESET_SENSORS_CMD_TYPE:
+					// Simply execute the reset code. 
+					Putc( COM1, RESET_CODE );
+					//bwprintf( COM2, "RESET_SENSORS_CMD_TYPE: Replying: %d \n", command.cmd_type ); 
+					//Reply( command.sender_tid, 0, 0 ); 
+					Reply( 18, 0, 0 ); 
+					break; 
+				case QUERY_SENSORS_CMD_TYPE:
+					bwdebug( DBG_USR, "COMMAND_NOTIFIER: query sensors" );
+					
+					// Init
+					char *sensors = command.sensors; 
+					
+					// First request the data
+					Putc( COM1, RESET_CODE );
+					Putc( COM1, REQUEST_DATA_CODE );
+
+					// Retrieve and return the sensors data. 
+					int i;
+					for( i = 0; i < 10; ++i ) {
+						sensors[i] = Getc( COM1 );
+					}
+					Reply( 18, 0, 0 ); 
+					
+					break; 
 				default: 
 					bwdebug( DBG_USR, "COMMAND SERVER: Invalid command. Cannot execute [ Cmd: %d ]", 
 							command.cmd_type ); 
@@ -188,6 +214,17 @@ void commandserver(){
 					sender_tid );
 				enqueue_cmd( cmd_request.cmd, &cmd_queue ); 
 				Reply( sender_tid, 0, 0 ); 
+				break; 
+			case QUERY_CMD_REQUEST:
+				bwdebug( DBG_USR, "COMMAND SERVER: Added query command from [sender_tid: %d]",
+					sender_tid );				
+				//bwprintf( COM2, "RECEIVED QUERY CMD: sender: %d type: %d", cmd_request.cmd.sender_tid, cmd_request.cmd.cmd_type ); 
+				//Command cmd = cmd_request.cmd; 
+				//cmd.sender_tid = sender_tid;
+				enqueue_cmd( cmd_request.cmd, &cmd_queue ); 
+				
+				// NOTE: This command requires returning data. Hence, there's no reply here.
+				
 				break; 
 			case CMD_NOTIFIER_IDLE:
 				bwdebug( DBG_USR, "COMMAND SERVER: notifier is idle" );

@@ -41,7 +41,7 @@ void train_control() {
 	Create( 8, task_cli ); 
 	Create( SWITCHES_SERVER_PRIORITY, switchserver );
 	Create( 15, draw_clock ); 
-	Create( 14, sensors_server );
+	//Create( 14, sensors_server );
 
 	Exit();
 }

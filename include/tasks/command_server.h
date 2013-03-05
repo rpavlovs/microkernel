@@ -11,12 +11,15 @@
 
 #define COMMAND_QUEUE_SIZE			100
 
-#define ADD_CMD_REQUEST				1			
+#define ADD_CMD_REQUEST			1			
 #define CMD_NOTIFIER_IDLE			2
+#define QUERY_CMD_REQUEST			3
 
 #define TRAIN_CMD_TYPE				1
 #define REVERSE_CMD_TYPE			2
 #define SWITCH_CMD_TYPE				3
+#define QUERY_SENSORS_CMD_TYPE		4
+#define RESET_SENSORS_CMD_TYPE		5
 
 #define CMD_PARAM_NOT_REQUIRED		-1
 
@@ -29,6 +32,8 @@ typedef struct{
 	int cmd_type; 
 	int element_id;			// This represents the ID of the element on which the command will be executed, like the train or switch number. 
 	int param;				// This element is used to give extra information, like speed. 
+	char *sensors;			// This element is used to transfer the sensor data. 
+	int sender_tid;	
 }Command;
 
 typedef struct{

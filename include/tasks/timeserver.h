@@ -15,6 +15,8 @@ typedef struct {
 	int num;
 } Msg_timeserver_reply;
 
+#define TIME_SERVER_NAME			"timeserver"
+
 #define TIME_REQUEST				0
 #define DELAY_REQUEST				1
 #define DELAY_UNTIL_REQUEST			2

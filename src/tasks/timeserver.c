@@ -116,7 +116,7 @@ void timeserver() {
 	start_timer();
 	
 	int mytid = MyTid();
-	RegisterAs( "timeserver" );
+	RegisterAs( TIME_SERVER_NAME );
 	long current_time = 0;
 	int sender_tid;
 	int tid_to_unblock;

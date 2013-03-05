@@ -1,7 +1,7 @@
 #include <userspace.h>
 
 void setupScreen() {
-	char buff[3000];
+	char buff[4000];
 	char *ptr = buff;
 
 	ptr += sprintf( ptr, "\033[2J\033[;H" );
@@ -18,17 +18,17 @@ void setupScreen() {
 		"## A12 A12 A12 A12 A12 A12 A12  ## __   \\              99 | 9A             /| ##\n"
 		"##################################   \\   \\             /     \\            / | ##\n"
 		"##       Switch Positions       ## ___1   15__________16______17_________/ /  ##\n"
-		"##  1:C 4:C 7:C 10:C 13:C 16:C  ##     \\   \\                              /   ##\n"
-		"##  2:C 5:C 8:C 11:C 14:C 17:C  ## _____2   \\_______6___________7________/    ##\n"
-		"##  3:C 6:C 9:C 12:C 15:C 18:C  ##       \\           \\         /              ##\n"
-		"##  153:C  154:C  155:C  156:C  ## _______3__________18_______5______________ ##\n"
+		"##  1:  4:  7:  10:  13:  16:   ##     \\   \\                              /   ##\n"
+		"##  2:  5:  8:  11:  14:  17:   ## _____2   \\_______6___________7________/    ##\n"
+		"##  3:  6:  9:  12:  15:  18:   ##       \\           \\         /              ##\n"
+		"##  153:   154:   155:   156:   ## _______3__________18_______5______________ ##\n"
 		"################################################################################\n"
-		"##                                                                            ##\n"
-		"##                                                                            ##\n"
-		"##                                                                            ##\n"
-		"##                                                                            ##\n"
-		"##                                                                            ##\n"
-		"## ~>                                                                         ##\n"
+		"## Executed Command:\n"
+		"##\n"
+		"##\n"
+		"##\n"
+		"##\n"
+		"## ~>\n"
 		"################################################################################\n");
 	ptr += sprintf( ptr, "\033[%d;7H", UI_CLI_CMD_LINE_ROW );
 	// printf( COM2, "%s", buff );
@@ -39,26 +39,9 @@ void train_control() {
 	
 	setupScreen();
 	Create( 8, task_cli ); 
-	Create( 12, draw_clock ); 
-	
-	// Putc( COM2, '~' );
-	// Putc( COM2, '\n' );
-	// Putstr( COM2, "Hello" );
-	//setupScreen();
-	//Create( 8, task_cli ); 
-	
-	// Delay(1000);
-	//Create( 7, task_cli );
-	// Delay(10000);
-	//char buf[1000];
-	//char* ptr = buf;
+	Create( SWITCHES_SERVER_PRIORITY, switchserver );
+	Create( 15, draw_clock ); 
 
-	//ptr += sprintf( ptr, "\033[2J\033[;H" );
-	//ptr += sprintf( ptr, "\033[%d;7H%-81s\033[%d;7H\0", 3, "blah", 3 );
-
-	//Putstr( COM2, buf ); 
-	
-
-	// Delay( 500 );
 	Exit();
 }
+

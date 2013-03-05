@@ -1,21 +1,26 @@
 #include "userspace.h"
 
-int parse_and_exec_cmd( Char_queue *buf, int cmd_server_tid );
-void init_cli_history( CLI_history *h );
-void update_cli_view( CLI_history *h );
-void history_push( CLI_history *h, char * cmd, int status );
-int exec_tr( int train_id, int speed, int cmd_server_tid );
-int exec_sw( int switch_id, char state, int cmd_server_tid );
-int exec_rv( int train_id, int cmd_server_tid );
-int exec_q( );
+void init_server_list( Servers_tid_list *servers_list ){
+	int cmd_server_tid = WhoIs( COMMAND_SERVER_NAME ); 
+	servers_list->items[ CMD_SERVER_INDEX ] = cmd_server_tid; 
+	assert( cmd_server_tid >= 0, "CLI: This task requires the command server to work properly." );
+	
+	int sw_server_tid = WhoIs( SWITCHES_SERVER_NAME );
+	servers_list->items[SWITCHES_SERVER_INDEX] = sw_server_tid; 
+	assert( cmd_server_tid >= 0, "CLI: This task requires the command server to work properly." );
+}
 
 void task_cli() {
 
 	CLI_history history;
 	init_cli_history( &history );
 	
+	// Retrieve the tid of the tasks required for the CLI to work properly. 
+	Servers_tid_list servers_list; 
+	init_server_list( &servers_list ); 
+	
 	// Create the tasks required for the CLI to work. 
-	int cmd_server_tid = Create( COMMAND_SERVER_PRIORITY, commandserver );  
+	int cmd_server_tid = WhoIs( COMMAND_SERVER_NAME ); 
 
 	Char_queue buf;
 	init_char_queue( &buf );
@@ -43,7 +48,7 @@ void task_cli() {
 			// Get and parses the executed command. 
 			enqueue_char_queue( '\0', &buf );
 			char_queue_peek_str( &buf, cmd, CLI_COMMAND_MAX_LENGTH );
-			status = parse_and_exec_cmd( &buf, cmd_server_tid );
+			status = parse_and_exec_cmd( &buf, &servers_list );
 			
 			// Shows the result of the command in the screen. It also shows the history of previously 
 			// executed commands.
@@ -63,7 +68,7 @@ void task_cli() {
 }
 
 // returns the execution status 
-int parse_and_exec_cmd( Char_queue *buf, int cmd_server_tid ) {
+int parse_and_exec_cmd( Char_queue *buf, Servers_tid_list *servers_list ) {
 	char cmd_name[CLI_COMMAND_MAX_LENGTH];
 	char_queue_pop_word( buf, cmd_name, CLI_COMMAND_MAX_LENGTH );
 	
@@ -74,17 +79,19 @@ int parse_and_exec_cmd( Char_queue *buf, int cmd_server_tid ) {
 		char_queue_pop_word( buf, speed_str, 3 );
 		
 		// NOTE: If the speed is not specified it will default to 0. 
-		return exec_tr( atoi(train_id_str), atoi(speed_str), cmd_server_tid );
+		return exec_tr( atoi(train_id_str), atoi(speed_str), servers_list );
 	}
 	if( strcmp( cmd_name, "sw" ) == 0 ) {
-		char switch_id_str[3];
-		char_queue_pop_word( buf, switch_id_str, 3 );
-		return exec_sw( atoi(switch_id_str), dequeue_char_queue(buf), cmd_server_tid );
+		char switch_id_str[4], position;
+		char_queue_pop_word( buf, switch_id_str, 4 );
+		char_ignore_spaces( buf ); 
+		position = dequeue_char_queue(buf); 
+		return exec_sw( atoi(switch_id_str), position, servers_list );
 	}
 	if( strcmp( cmd_name, "rv" ) == 0 ) {
 		char train_id_str[3];
 		char_queue_pop_word( buf, train_id_str, 3 );
-		return exec_rv( atoi(train_id_str), cmd_server_tid );
+		return exec_rv( atoi(train_id_str), servers_list );
 	}
 	if( strcmp( cmd_name, "q" ) == 0 ) {
 		return exec_q( );
@@ -92,46 +99,51 @@ int parse_and_exec_cmd( Char_queue *buf, int cmd_server_tid ) {
 	return INVALID_COMMAND_NAME;
 }
 
-void send_command( int cmd_type,  int element_id, int param, int cmd_server_tid ){
+void send_command( int cmd_type,  int element_id, int param, int server_tid ){
 	Cmd_request cmd_request;
 	cmd_request.type = ADD_CMD_REQUEST; 
 	cmd_request.cmd.cmd_type = cmd_type; 
 	cmd_request.cmd.element_id = element_id; 
 	cmd_request.cmd.param = param; 
 	
-	Send( cmd_server_tid, ( char * ) &cmd_request, sizeof( cmd_request ), 0, 0  ); 
+	bwprintf( COM2, "\033[%39;7HSending reverse command. Server: %  Train: %d Param: %d Cmd: %d \n", 
+		server_tid,  element_id, param, cmd_type ); 
+	Send( server_tid, ( char * ) &cmd_request, sizeof( cmd_request ), 0, 0  ); 
 }
 
-int exec_tr( int train_id, int speed, int cmd_server_tid ) {
+int exec_tr( int train_id, int speed, Servers_tid_list *servers_list ) {
 	if( !is_train_id(train_id) )
 		return INVALID_TRAIN_ID;
 	if( speed < 0 || speed > 14 ) 
 		return INVALID_SPEED;
 	
 	// Send message to command server.  
+	int cmd_server_tid = servers_list->items[CMD_SERVER_INDEX]; 
 	send_command( TRAIN_CMD_TYPE, train_id, speed, cmd_server_tid ); 
 	return SUCCESS;
 }
 
-int exec_sw( int switch_id, char state, int cmd_server_tid ) {
+int exec_sw( int switch_id, char state, Servers_tid_list *servers_list ) {
 	if( !(1 <= switch_id && switch_id <= 18) && !(153 <= switch_id && switch_id <= 156) )
 		return INVALID_SWITCH_ID;
 	if( !(state == 'C' || state == 'S') )
 		return INVALID_SWITCH_STATE;
 
 	// Send message to command server. 
-	send_command( SWITCH_CMD_TYPE, switch_id, state, cmd_server_tid ); 
+	int sw_server_tid = servers_list->items[SWITCHES_SERVER_INDEX]; 
+	send_command( SWITCH_CMD_TYPE, switch_id, state, sw_server_tid ); 
 	return SUCCESS;
 }
 
-int exec_rv( int train_id, int cmd_server_tid ) {
+int exec_rv( int train_id, Servers_tid_list *servers_list ) {
 	if( !is_train_id(train_id) )
 		return INVALID_TRAIN_ID;
 	
 	// TODO: Add a structure that allows to get the information of the train. 
 	
 	// Send message to command server. 
-	send_command( ADD_CMD_REQUEST, train_id, CMD_PARAM_NOT_REQUIRED, cmd_server_tid ); 
+	int cmd_server_tid = servers_list->items[CMD_SERVER_INDEX]; 
+	send_command( REVERSE_CMD_TYPE, train_id, CMD_PARAM_NOT_REQUIRED, cmd_server_tid ); 
 	return SUCCESS;
 }
 

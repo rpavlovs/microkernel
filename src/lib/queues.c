@@ -94,7 +94,6 @@ int char_queue_pop_word( Char_queue *q, char *str, int len ) {
 }
 
 void char_ignore_spaces(Char_queue *q ){
-	int pos = 0; 
 	char c; 
 	while( q->chars[q->oldest] == ' ' && q->size > 0 ){
 		dequeue_char_queue( q ); 

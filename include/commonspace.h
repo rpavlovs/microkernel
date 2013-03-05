@@ -106,6 +106,10 @@ typedef char *va_list;
 
 #define UART_SENDER_NOTIFIER_PRIORITY			15 // 8
 #define UART_RECEIVER_NOTIFIER_PRIORITY		13 // 8
+#define UART1_SENDER_NOTIFIER_PRIORITY		13
+#define UART1_RECEIVER_NOTIFIER_PRIORITY		13
+
+
                                        		  
 
 // Messages

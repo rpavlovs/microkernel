@@ -296,19 +296,20 @@ void debug( int threshhold_dbg_lvl, char *fmt, ... ) {
 }
 
 void assert( int statement, char *fmt, ... ) {
+	if( statement ) 
+		return;
 	
-//	if( statement ) return;
-//	va_list va;
-//
-//	bwprintf( COM2, "ASSERT: " );
-//
-//    va_start(va,fmt);
-//    bwformat( COM2, fmt, va );
-//    va_end(va);
-//
-//	bwprintf( COM2, "\n" );
-//
-//	for( ; ; );
+	va_list va;
+
+	bwprintf( COM2, "ASSERT: " );
+
+	va_start(va,fmt);
+	bwformat( COM2, fmt, va );
+	va_end(va);
+
+	bwprintf( COM2, "\n" );
+
+	for( ; ; );
 }
 
 void panic( char *fmt, ... ) {
@@ -345,13 +346,22 @@ void todo_debug( int value, int channel ) {
 }*/
 
 void todo_debug( int value, int channel ) {
+	/*
 	int *ptr, addr;
 	
-	addr = 0x01dffe50;
+	//addr = 0x01dffe50;
+	addr =  0x01ddff4c;
 	addr += channel * 4;
 	ptr = ( int * ) addr;
 
 	*ptr = value;
+	 * */
+	if ( channel == 20 ){
+		int *ptr, addr;
+		addr = 0x01dffe50; 
+		ptr = ( int * ) addr;
+		*ptr = value; 
+	}
 }
 
 

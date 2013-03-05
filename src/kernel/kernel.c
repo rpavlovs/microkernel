@@ -2,6 +2,26 @@
 
 int main( ) {
   
+	asm( 
+		".EQU	IRQ_MODE,			0x92"			"\n\t"
+		".EQU	SVC_MODE,			0x93"			"\n\t"
+	
+		// Show SVC sp
+		//"MOV	r1, #20"							"\n\t"
+		//"MRS		r0, cpsr"							"\n\t"
+		//"MOV	r0, sp"							"\n\t"
+		//"BL		todo_debug"							"\n\t"
+	
+		// Move to IRQ
+		"MSR	cpsr_c, #IRQ_MODE"						"\n\t"
+		"MOV	r1, #20"							"\n\t"
+		"MOV	r0, sp"							"\n\t"
+		"BL		todo_debug"							"\n\t"
+	
+		// Return to SVC
+		"MSR	cpsr_c, #SVC_MODE"						"\n\t"
+	); 
+	
 	Kern_Globals KERN_GLOBALS;		// "Global" kernel structure
 	initialize( &KERN_GLOBALS );	// includes starting the first user task
 

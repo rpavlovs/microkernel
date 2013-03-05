@@ -44,7 +44,7 @@ asm(
 	"main_interrupt_handler:"					"\n\t"
 
 		// Determine the mode.
-		"SUB	sp, sp, #4"						"\n\t"		// Add space for the return value. 
+		"SUB	sp, sp, #4"					"\n\t"		// Add space for the return value. 
 		"STMFD	sp!, { r0, r1 }"				"\n\t"		
 		"MRS	r0, cpsr"						"\n\t"
 		"AND	r0, r0, #0x1F"					"\n\t"		// Get only the mode (the last 5 bits represent the mode.)
@@ -53,54 +53,54 @@ asm(
 
 	// -- SW Interrupt --------------------------------------------------------
 												"\n"
-	"sw_interrupt:"								"\n\t"
-		"LDR	r0, [ lr, #-4 ]"				"\n\t"		// For SW interrupts the return value is the SWI parameter. 
-		"BIC	r0, r0, #0xff000000"			"\n\t"
+	"sw_interrupt:"							"\n\t"
+		"LDR	r0, [ lr, #-4 ]"					"\n\t"		// For SW interrupts the return value is the SWI parameter. 
+		"BIC	r0, r0, #0xff000000"				"\n\t"
 		"STR	r0, [ sp, #8 ]"					"\n\t"
 		"LDMFD	sp!, { r0, r1 }"				"\n\t"		// Retrieve the temporarily stored registers. 
 		"B		store_task_registers"			"\n\t"
 
 	// -- HW Interrupt --------------------------------------------------------
 												"\n"
-	"hw_interrupt:"								"\n\t"
+	"hw_interrupt:"							"\n\t"
 		"MRS	r0, spsr"						"\n\t"		// Copy the LR and SPSR from IRQ to SVC. 
-		"MOV	r1, lr"							"\n\t"
+		"MOV	r1, lr"					"\n\t"
 		"SUB	r1, r1, #4"						"\n\t"		// The LR in HW interrupts is shifted by 4 by the HW. Adjust it here. 
 		"MSR	cpsr_c, #SVC_MODE"				"\n\t"		// Switch to SVC mode. 
-		"MOV	lr, r1"							"\n\t"
+		"MOV	lr, r1"					"\n\t"
 		"MSR	spsr, r0"						"\n\t"
-		"SUB	sp, sp, #4"						"\n\t"		// Store the return value.
-		"MOV	r0, #-1"						"\n\t"		// The return value for HW interrupts is -1. 
+		"SUB	sp, sp, #4"					"\n\t"		// Store the return value.
+		"MOV	r0, #-1"					"\n\t"		// The return value for HW interrupts is -1. 
 		"STR	r0, [ sp, #0 ]"					"\n\t"
 		"MSR	cpsr_c, #IRQ_MODE"				"\n\t"		// Return to IRQ mode and retrieve the temporarily stored registers.
 		"LDMFD	sp!, { r0, r1 }"				"\n\t"
-		"ADD	sp, sp, #4"						"\n\t"
+		"ADD	sp, sp, #4"					"\n\t"
 
 	// -- SWI AND HW ---------------------------------------------------------
 												"\n"
-	"store_task_registers:"						"\n\t"
+	"store_task_registers:"					"\n\t"
 		"MSR	cpsr_c, #SYS_MODE"				"\n\t"      // Switch to system mode.
-		"SUB	sp, sp, #4"                     "\n\t"      // Leave space for SPSR. 
-		"STMFD	sp!, { r0-r12, lr }"            "\n\t"      // Store all the registers (except 13-sp- and 15-pc-)
-		"MOV    r0, sp"                         "\n\t"      // Store the task's SP so that it can be later stored in the TR. 
-		"MOV	r1, lr"							"\n\t"
-		"MSR	CPSR_c, #SVC_MODE"				"\n\t"		// Switch to SVC mode
+		"SUB	sp, sp, #4"					"\n\t"      // Leave space for SPSR. 
+		"STMFD	sp!, { r0-r12, lr }"			"\n\t"      // Store all the registers (except 13-sp- and 15-pc-)
+		"MOV    r0, sp"						"\n\t"      // Store the task's SP so that it can be later stored in the TR. 
+		//"MOV	r1, lr"					"\n\t"			// DELETE THIS!!!
+		"MSR	CPSR_c, #SVC_MODE"			"\n\t"		// Switch to SVC mode
 
 		// Restore the kernel state. 
 		"LDR	r3, [ sp, #0 ]"					"\n\t"
-		"ADD	sp, sp, #4"						"\n\t"
-		"MOV	r1, lr"							"\n\t"
+		"ADD	sp, sp, #4"					"\n\t"
+		"MOV	r1, lr"					"\n\t"	// This seems suspicious. 
 		"MRS	r2, spsr"						"\n\t"
 		"STR	r2, [ r0, #14*4 ]"				"\n\t"		// Store the retrieved SPSR in the stack. 
-		"LDMFD	sp!, { r4-r11 }"				"\n\t"
+		"LDMFD	sp!, { r4-r11 }"			"\n\t"	// CHANGED!!!!!!!!!!!!!!!!!!!!!
 
 		// Save the TD information. 
 		// R0 - Task stack pointer. 
 		// R1 - Next address to execute (LR).
 		// R2 - Task decriptor pointer. 
-		"LDR	r2, [ sp, #0 ]"                 "\n\t"      // The pointer to the active TD is loaded into register 2.
+		"LDR	r2, [ sp, #0 ]"					"\n\t"      // The pointer to the active TD is loaded into register 2.
 		"STR	r3, [ sp, #0 ]"					"\n\t"		// Store the return value so that it's not overwritten. 
-		"BL		StoreTaskInformation"			"\n\t"
+		"BL		StoreTaskInformation"		"\n\t"
 
 		// DEBUG!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		//"MRS	r1, spsr"						"\n\t"
@@ -110,8 +110,8 @@ asm(
 
 		// Return control to the kernel. 
 		"LDR	r0, [ sp, #0 ]"					"\n\t"		// Load the return value. 
-		"SUBS	sp, fp, #12"					"\n\t"		//NOTE: This instruction also resets the Z flag (activated during TEQ.)
-		"LDMFD	sp, { fp, sp, pc }"				"\n\t"
+		"SUBS	sp, fp, #12"				"\n\t"		//NOTE: This instruction also resets the Z flag (activated during TEQ.)
+		"LDMFD	sp, { fp, sp, pc }"			"\n\t"
 ); 
 
 
@@ -311,7 +311,7 @@ SetSysCallReturn( int returnValue, unsigned int taskSP ) {
 	- The TID of the current ( active ) user task. 
 */
 int
-execute_user_task( unsigned int a, unsigned int b, unsigned int c ) {
+execute_user_task( unsigned int task_sp, unsigned int task_lr, unsigned int task_td ) {
 
 	int ret;
 
@@ -327,66 +327,37 @@ execute_user_task( unsigned int a, unsigned int b, unsigned int c ) {
 	// // -- DEBUG ----------------------------------------------------------------
 
 	// Store the information about the kernel as would happen in a normal task. 
-	"MOV	ip, sp"														"\n\t"
-	"STMFD	sp!, { fp, ip, lr, pc }"									"\n\t"
-	"SUB	fp, ip, #4"													"\n\t"
+	"MOV	ip, sp"							"\n\t"
+	"STMFD	sp!, { fp, ip, lr, pc }"					"\n\t"
+	"SUB		fp, ip, #4"							"\n\t"
 	
 	// Store the kernel state.
-	"SUB	sp, sp, #4"													"\n\t"
+	"SUB		sp, sp, #4"						"\n\t"
 
 	// Store the TID
-	"STR	r2, [ sp, #0 ]"												"\n\t"
-	"STMFD	sp!, { r4-r11 }"											"\n\t"
+	"STR		r2, [ sp, #0 ]"						"\n\t"
+	"STMFD	sp!, { r4-r11 }"					"\n\t"	// Store all the registers of the kernel ( fp, ip and lr were saved before). // This was modified
 
 	// Store information temporarily
-	"SUB	sp, sp, #4"													"\n\t"
+	//"ADD		sp, sp, #4"						"\n\t"
 
-	// The task's SPSR is loaded.
-	"LDR	r3, [ r0, #14*4 ]"											"\n\t"
-
-	// The next instruction to execute in the user task.
-	"STR	r1, [ r0, #14*4 ]"											"\n\t"
-
-	// The task's SPSR		
-	"STR	r3, [ sp, #0 ]"												"\n\t"
+	"LDR		r3, [ r0, #14*4 ]"					"\n\t"	// Load the spsr of the task into r3. 
+	//"SUB		sp, sp, #4"						"\n\t"	// Remove the space that had been used for the spsr
+	"BIC		r3, r3, #0x80"						"\n\t"	
+	"MSR		spsr, r3"							"\n\t"	// Store the cpsr of the task with interrupts enabled into the  spsr 
+	"MOV	lr, r1"							"\n\t"	// Set the address of the task to return to into the lr. 
 	
 	// Load the state of the task. 
-	// 
-	// Switch to system mode.
-	"MSR	cpsr_c, #SYS_MODE"											"\n\t"
-	"MOV	sp, r0"														"\n\t"			
-	"LDMFD	sp!, { r0-r12, lr }"										"\n\t"
+	"MSR		cpsr_c, #SYS_MODE"					"\n\t"	// Switch to system mode
+	"MOV	sp, r0"							"\n\t"		
+	"LDMFD	sp!, { r0-r12, lr }"					"\n\t"	
+	"ADD		sp, sp, #4"						"\n\t"	// Remove the stored "counter"
 	
-	// Temporarily store the r0 (to be able to use this registry).
-	"STR	r0, [ sp, #-4 ]"											"\n\t"
+	// Return to supervisor mode to re-enable HW interrupts and finally give control back to the task. 
+	"MSR		cpsr_c, #SVC_MODE"					"\n\t"
+	"MOVS	pc, lr"							"\n\t"
 	
-	// Return to supervisor mode.  
-	"MSR	cpsr_c, #SVC_MODE"											"\n\t"
-
-	// Pass control to the user task.
-	// 
-	// Loads the previously stored SPSR. 
-	"LDR	r0, [ sp, #0 ]"												"\n\t"
-	
-	// "Remove" the top elements of the stack that won't be used anymore.
-	// (Kernel's stack).	  
-	"ADD	sp, sp, #4"													"\n\t"
-	
-	// Switch to user mode.			
-	"BIC	r0, r0, #0xC0"												"\n\t"	// TODO: This is temporary
-	"MSR	cpsr, r0"													"\n\t"
-
-	// Remove the temporarily stored r0. 
-	"LDR	r0, [ sp, #-4 ]"											"\n\t"
-
-	// Remove the stored "counter"
-	"ADD	sp, sp, #4"													"\n\t"
-
-	// Jump to the next instruction in the user task.
-	"LDR	PC, [ sp, #-4 ]"											"\n\t"
-
-	// return here after interrupt is handled
-	
+	// This is never executed. 
 	"MOV	%0, r0" "\n\r" : "=r" (ret)
 	);
 	return ret;	

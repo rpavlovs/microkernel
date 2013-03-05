@@ -22,7 +22,7 @@ void first_task() {
 	assert( ns_tid == 1, "FIRST_TASK: Nameserver should have task id of 1" );
 
 	debug( DBG_SYS, "FIRST_TASK: creating Timeserver" );
-	//int ts_tid = Create( TIMESERVER_TASK_PRIORITY, timeserver );
+	int ts_tid = Create( TIMESERVER_TASK_PRIORITY, timeserver );
 
 	debug( DBG_SYS, "FIRST_TASK: creating UART2 sender server" );
 	int uart2_sender_tid = Create( UART2_SENDER_SERVER_PRIORITY, uart2_sender_server );
@@ -30,10 +30,12 @@ void first_task() {
 	debug( DBG_SYS, "FIRST_TASK: creating UART2 reciever server" );
 	int uart2_receiver_tid = Create( UART2_RECEIVER_SERVER_PRIORITY, uart2_receiver_server );
 	
-	int uart1_sender_tid = Create( 14, uart1_sender_server );
+	int uart1_sender_tid = Create( UART1_SENDER_SERVER_PRIORITY, uart1_sender_server );
 	
-	int uart1_receiver_tid = Create( 14, uart1_receiver_server );
+	int uart1_receiver_tid = Create( UART1_RECEIVER_SERVER_PRIORITY, uart1_receiver_server );
 
+	int cmd_server_tid = Create( COMMAND_SERVER_PRIORITY, commandserver );  
+	
 	debug( DBG_SYS, "FIRST_TASK: creating Idle task" );
 	int idle_tid = Create( 0, idle );
 
@@ -57,6 +59,12 @@ void first_task() {
 	
 	debug( DBG_SYS, "FIRST_TASK: UART2 reciever server task id: %d, priority: %d, address: %d",
 		uart2_receiver_tid, UART2_RECEIVER_SERVER_PRIORITY, uart2_receiver_server );
+	
+	debug( DBG_SYS, "FIRST_TASK: UART2 sender server task id: %d, priority: %d, address: %d",
+		uart1_sender_tid, UART1_SENDER_SERVER_PRIORITY, uart1_sender_server );
+	
+	debug( DBG_SYS, "FIRST_TASK: UART2 reciever server task id: %d, priority: %d, address: %d",
+		uart1_receiver_tid, UART1_RECEIVER_SERVER_PRIORITY, uart1_receiver_server );
 
 	debug( DBG_SYS, "FIRST_TASK: sys idle task id  : %d, priority: %d, address: %d",
 		idle_tid, 0, idle );

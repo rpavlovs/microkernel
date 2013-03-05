@@ -10,23 +10,24 @@
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 void stress_test_uart1_getc(){
 	while(1){
-		todo_debug( 0x0, 0 );
-		todo_debug( 0x0, 1 );
-		todo_debug( 0x0, 2 );
-		todo_debug( 0x0, 3 );
-		todo_debug( 0x0, 4 );
-		todo_debug( 0x0, 5 );
-		todo_debug( 0x0, 6 );
-		todo_debug( 0x0, 7 );
-		todo_debug( 0x0, 8 );
+		todo_debug( 0x100, 0 );
+		todo_debug( 0x100, 1 );
+		todo_debug( 0x100, 2 );
+		todo_debug( 0x100, 3 );
+		todo_debug( 0x100, 4 );
+		todo_debug( 0x100, 5 );
+		todo_debug( 0x100, 6 );
+		todo_debug( 0x100, 7 );
+		todo_debug( 0x100, 8 );
+		todo_debug( 0x100, 9 );
 
-		todo_debug( 0x1, 8 );
+		todo_debug( 0x1, 9 );
 		char c = Getc( COM1 );
-		todo_debug( c, 9 );
-		todo_debug( 0x2, 8 );
+		//todo_debug( c, 9 );
+		todo_debug( 0x2, 9 );
 		bwprintf( COM2, "%c", c );
 		//Putc( COM2, c );
-		todo_debug( 0x3, 8 );
+		todo_debug( 0x3, 9 );
 	}
 	
 	Exit();

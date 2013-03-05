@@ -120,7 +120,7 @@ void uart1_sender_server() {
 	RegisterAs("uart1_sender");
 	
 	//Create the notifier
-	int notifier_tid = Create(UART_SENDER_NOTIFIER_PRIORITY, &uart1_sender_notifier);
+	int notifier_tid = Create(UART1_SENDER_SERVER_PRIORITY, &uart1_sender_notifier);
 	
 	//Request & Reply
 	UART_request request;
@@ -200,7 +200,7 @@ void uart1_receiver_server() {
 	RegisterAs("uart1_receiver");
 
 	//Create the notifier
-	Create(UART_RECEIVER_NOTIFIER_PRIORITY, &uart1_receiver_notifier);
+	Create(UART1_RECEIVER_NOTIFIER_PRIORITY, &uart1_receiver_notifier);
 	
 	//Request & Reply
 	UART_request request;

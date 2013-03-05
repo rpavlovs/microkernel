@@ -6,41 +6,6 @@
 #define CMD_ROW_POS			20
 #define CMD_COL_POS			10
 
-#define CURSOR_SAVE			"\033[s"
-#define CURSOR_RESTORE			"\033[u"
-#define CURSOR_POS_STR			"\033[%d;%dH"
-#define CURSOR_HIDE_STR			"\033[?25l"
-#define CURSOR_SHOW_STR		"\033[?25h"
-#define CLEAR_SCREEN_STR		"\033[2J"
-#define MOVE_CURSOR_UP_LEFT		"\033[H"
-
-// TODO: Put this in a helper functions file. 
-int cursorPositioning( char *str_buff, int row, int column ){
-	int size = 0; 
-	size += sprintf( str_buff, CURSOR_SAVE ); 
-	size += sprintf( ( str_buff + size ), CURSOR_POS_STR, row, column ); 
-	return size; 
-}
-
-int clearScreen( char *str_buff ){
-	int size;
-	size = sprintf( str_buff, CLEAR_SCREEN_STR ); 
-	size += sprintf( ( str_buff + size ), MOVE_CURSOR_UP_LEFT ); 
-	return size;
-}
-
-int hideCursor( char *str_buff ){
-	return sprintf( str_buff, CURSOR_HIDE_STR ); 
-}
-
-int showCursor( char *str_buff ){
-	return sprintf( str_buff, CURSOR_SHOW_STR ); 
-}
-
-int restoreCursor( char *str_buff ){
-	return sprintf( str_buff, CURSOR_RESTORE ); 
-}
-
 void print_time( char *str_buff, int current_time_ticks ){
 	// Get the time in terms of minutes, seconds and tenths of seconds. 
 	int minutes, seconds, tenths, current_time; 

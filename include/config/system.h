@@ -19,8 +19,11 @@
 #define UART2_SENDER_SERVER_PRIORITY		14
 #define UART2_RECEIVER_SERVER_PRIORITY	12
 
+#define UART1_SENDER_SERVER_PRIORITY		12
+#define UART1_RECEIVER_SERVER_PRIORITY	12
 
-#define FIRST_USER_TASK_NAME				test_sensors_server//stress_test_uart1_getc//
+
+#define FIRST_USER_TASK_NAME				stress_test_uart1_getc//train_control//test_sensors_server//stress_test_uart1_getc//train_control
 #define FIRST_USER_TASK_PRIORITY			8
 
 #endif

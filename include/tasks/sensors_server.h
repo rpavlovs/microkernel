@@ -1,29 +1,26 @@
-#ifndef SENSORS_SERVER_H
-#define	SENSORS_SERVER_H
+#ifndef __SENSORS_SERVER_H__
+#define	__SENSORS_SERVER_H__
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 // Constants
 // -----------------------------------------------------------------------------------------------------------------------------------------------
-#define SENSOR_HISTORY_LEN			22
+#define SENSOR_HISTORY_LEN		14
 #define SENSORS_SERVER_NAME		"sensors_server"
+#define SENSOR_QUERY_FREQENCY	10 // Queries per second 	
+
+#define RESET_CODE				192
+#define REQUEST_DATA_CODE		133
+
+static const char s88_letters[5] = { 'A', 'B', 'C', 'D', 'E' };
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 // Structures
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 typedef struct {
-	char commands[SENSOR_HISTORY_LEN][4];
-	int newest;
+	char sensors[SENSOR_HISTORY_LEN][4];
+	int newest_pos;
+	int size;
 } Sensor_history;
-
-/*
-void init_sensor_history( Sensor_history *history ) {
-	history->newest = -1;
-
-	int i;
-	for(i = 0; i < SENSOR_HISTORY_LEN; ++i){
-		history->commands[i][0] = '\0';
-	}
-}*/
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 // Methods

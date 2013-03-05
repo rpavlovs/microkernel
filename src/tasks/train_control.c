@@ -14,8 +14,8 @@ void setupScreen() {
 		"## Active Tasks  dd             ## _/   /              9C | 9B             \\| ##\n"
 		"##################################     |                 \\|/                9 ##\n"
 		"##       Recent Sensors         ##     |                  |                 | ##\n"
-		"## A12 A12 A12 A12 A12 A12 A12  ##     |                 /|\\                8 ##\n"
-		"## A12 A12 A12 A12 A12 A12 A12  ## __   \\              99 | 9A             /| ##\n"
+		"##                              ##     |                 /|\\                8 ##\n"
+		"##                              ## __   \\              99 | 9A             /| ##\n"
 		"##################################   \\   \\             /     \\            / | ##\n"
 		"##       Switch Positions       ## ___1   15__________16______17_________/ /  ##\n"
 		"##  1:  4:  7:  10:  13:  16:   ##     \\   \\                              /   ##\n"
@@ -41,6 +41,7 @@ void train_control() {
 	Create( 8, task_cli ); 
 	Create( SWITCHES_SERVER_PRIORITY, switchserver );
 	Create( 15, draw_clock ); 
+	Create( 14, sensors_server );
 
 	Exit();
 }

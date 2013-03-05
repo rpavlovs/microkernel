@@ -5,166 +5,107 @@
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 
 void init_sensor_history( Sensor_history *history ) {
-	history->newest = -1;
+	history->newest_pos = -1;
+	history->size = 0;
 
 	int i;
 	for(i = 0; i < SENSOR_HISTORY_LEN; ++i){
-		history->commands[i][0] = '\0';
+		history->sensors[i][0] = '\0';
 	}
 }
 
-void update_sensor_history( char s80, char pin1, char pin2, Sensor_history *history ) {
-
-	//If there is nothing to update - return
-	if( history->commands[history->newest][0] == s80  &&
-		history->commands[history->newest][1] == pin1 &&
-		history->commands[history->newest][2] == pin2 )
-		return;
-
-	//Iterate history
-	if( ++(history->newest) >= SENSOR_HISTORY_LEN 
-		|| history->newest == -1) {
-		history->newest = 0;
+void sensor_history_push( int s88_id, int pin_id, int val, Sensor_history *history ) {
+	if( history->newest_pos == -1 || history->newest_pos == SENSOR_HISTORY_LEN - 1 ) {
+		history->newest_pos = 0;
+	} else {
+		++history->newest_pos;
 	}
+
+	if( history->size < SENSOR_HISTORY_LEN ) ++history->size;
 
 	//Perform history update
-	history->commands[history->newest][0] = s80;
-	history->commands[history->newest][1] = pin1;
-	history->commands[history->newest][2] = pin2;
-	history->commands[history->newest][3] = '\0';
-
-	bwprintf( COM2, "SENSOR. Group: %c; Pin1: %c; Pin2: %c\n", s80, pin1, pin2 );
-	/*
-	int i;
-	for (i = 0; i < SENSOR_HISTORY_LEN; ++i)
-	{
-		int pos = (history->newest + 1 + i) % SENSOR_HISTORY_LEN;
-		bprintf( buf, "\033[s\033[%d;1H%s\033[%d;1H%s\033[u",
-			SENSOR_LINE_POS - SENSOR_HISTORY_LEN + i,
-			"    ",
-			SENSOR_LINE_POS - SENSOR_HISTORY_LEN + i,
-			history->commands[pos] );
-	}*/
-}
-
-void receive_sensors(char* sensors) {
-	int i;
-	char reset, request;
-	
-	reset = 192;
-	request = 133;
-
-	//todo_debug( 0x1, 8 );
-	
-	Putc( COM1, reset );				// NOTE: They don't add this reset message
-
-	//todo_debug( 0x2, 8 );
-
-	Putc( COM1, request );
-
-	//bwprintf( COM2, "Get sensors started...\n");
-	for( i = 0; i < 10; ++i ) {
-
-		//todo_debug( 0x3, 8 );
-
-		sensors[i] = Getc( COM1 );
-
-		//todo_debug( 0x4, 8 );
+	if( val == 1 ) {
+		sprintf( history->sensors[history->newest_pos], "%c%d\0",
+			s88_letters[s88_id], pin_id );
 	}
-	//bwprintf( COM2, "Get sensors ended...\n");
 }
+
+void draw_sensor_history( Sensor_history *history ) {
+	char buf[100], *ptr;
+	int i;
+	ptr = buf;
+
+	ptr += sprintf( ptr, CURSOR_SAVE );
+	ptr += sprintf( ptr, CURSOR_HIDE_STR );
+	ptr += cursorPositioning( ptr, 9, 4 );
+
+	for( i = 0; i < history->size; ++i ) {
+		if( i != 0 && i % 7 == 0 ) 
+			ptr += cursorPositioning( ptr, 10, 4 );
+
+		int pos = history->newest_pos - i;
+		if( pos < 0 ) pos %= SENSOR_HISTORY_LEN;
+		ptr += sprintf( ptr, "%s ", history->sensors[pos] );
+	}
+
+	ptr += sprintf( ptr, CURSOR_SHOW_STR );
+	ptr += sprintf( ptr, CURSOR_RESTORE );
+	Putstr( COM2, ptr );
+}
+
+void receive_sensors( char *sensors ) {
+	printf( COM2, "requesting sensors\n" );
+	Putc( COM1, REQUEST_DATA_CODE );
+	printf( COM2, "recieving sensors\n" );
+
+	int i;
+	for( i = 0; i < 10; ++i ) {
+		sensors[i] = Getc( COM1 );
+		printf( COM2, "recieved %d\n", sensors[i] );
+	}
+	printf( COM2, "recied sensors\n" );
+}
+
+#define GET_BIT(a,b) (int)(a & 1<<b)
 
 void sensors_server() {
-	printf( COM2, "sensors_server: enter" );
-	// Data structures
-	int i, j;
-	//int timeserver_tid;
-	Msg_timeserver_request request;
-	Msg_timeserver_reply reply;
-	long delay_start_time, delay_end_time, delay_time;
-	char s80s[5], sensors[10];
+	int i, s88_num, bit_pos, val, val_prev, last_recieved;
+	char s88s[10], s88s_prev[10];
 	Sensor_history sensor_history;
 
+	printf( COM2, "sensors_server: enter\n" );
+
 	// Initialization
-	//timeserver_tid = WhoIs("timeserver");
-	request.type = TIME_REQUEST;
-	for(i = 0; i < 10; i++) 
-		sensors[i] = 0;
-
-	printf( COM2, "init_sensor_history: enter" );
 	init_sensor_history( &sensor_history );
-	printf( COM2, "init_sensor_history: done" );
-	//TODO: refactor
-	s80s[0] = 'A';
-	s80s[1] = 'B';
-	s80s[2] = 'C';
-	s80s[3] = 'D';
-	s80s[4] = 'E';
 
-	/*
-	// Getting sensors request time
-	Putc( COM1, 133 );
-	Send(timeserver_tid, (char *) &request, sizeof(request), (char *) &reply, sizeof(reply));
-	delay_start_time = reply.num;
-
-	// Getting sensors response	time
-	Getc( COM1 );
-	Send(timeserver_tid, (char *) &request, sizeof(request), (char *) &reply, sizeof(reply));
-	delay_end_time = reply.num;
-	delay_time = delay_end_time - delay_start_time;
-	
-	bwprintf( COM2, "Delay time is: %d", delay_time);
-
-	// Receiving trash data from sensors
-	for( i = 0; i < 9; ++i ) {
-		Getc( COM1 );
-	}
-	bwprintf( COM2, "Trash received...\n");*/
-
-	//request_sensors_data( &train_buf );
-	//long wait_till = get_time() + SENSOR_CELAR_TIME;
-	//while (get_time() < wait_till) try_to_recieve_char( &train_recieve_buf, COM1 );
+	// Reset sensors
+	Putc( COM1, RESET_CODE );
+	receive_sensors( s88s_prev );
 	
 	FOREVER {
-		printf( COM2, "recieve_sensors: enter" );
-		receive_sensors( sensors );
-		printf( COM2, "recieve_sensors: done" );	
+		receive_sensors( s88s );
+		last_recieved = Time();
 
-		//todo_debug( 0x5, 8 );
-
-		for( j = 0; j < 5; j++ ) {
-			if(sensors[2*j] & 0x80) 	update_sensor_history( s80s[j], '0', '1', &sensor_history );
-			if(sensors[2*j] & 0x40) 	update_sensor_history( s80s[j], '0', '2', &sensor_history );
-			if(sensors[2*j] & 0x20) 	update_sensor_history( s80s[j], '0', '3', &sensor_history );
-			if(sensors[2*j] & 0x10) 	update_sensor_history( s80s[j], '0', '4', &sensor_history );
-			if(sensors[2*j] & 0x8)		update_sensor_history( s80s[j], '0', '5', &sensor_history );
-			if(sensors[2*j] & 0x4)		update_sensor_history( s80s[j], '0', '6', &sensor_history );
-			if(sensors[2*j] & 0x2)		update_sensor_history( s80s[j], '0', '7', &sensor_history );
-			if(sensors[2*j] & 0x1)		update_sensor_history( s80s[j], '0', '8', &sensor_history );
-
-			if(sensors[2*j+1] & 0x80) 	update_sensor_history( s80s[j], '0', '9', &sensor_history );
-			if(sensors[2*j+1] & 0x40) 	update_sensor_history( s80s[j], '1', '0', &sensor_history );
-			if(sensors[2*j+1] & 0x20) 	update_sensor_history( s80s[j], '1', '1', &sensor_history );
-			if(sensors[2*j+1] & 0x10) 	update_sensor_history( s80s[j], '1', '2', &sensor_history );
-			if(sensors[2*j+1] & 0x8)	update_sensor_history( s80s[j], '1', '3', &sensor_history );
-			if(sensors[2*j+1] & 0x4)	update_sensor_history( s80s[j], '1', '4', &sensor_history );
-			if(sensors[2*j+1] & 0x2)	update_sensor_history( s80s[j], '1', '5', &sensor_history );
-			if(sensors[2*j+1] & 0x1)	update_sensor_history( s80s[j], '1', '6', &sensor_history );
+		for( s88_num = 0; s88_num < 5; ++s88_num ) {
+			for( bit_pos = 0; bit_pos < 8; ++bit_pos ) {
+				val = GET_BIT( s88s[s88_num*2], bit_pos );
+				val_prev = GET_BIT( s88s_prev[s88_num*2], bit_pos );
+				if( val != val_prev )
+					sensor_history_push( s88_num, bit_pos, val, &sensor_history );
+			}
+			for( bit_pos = 0; bit_pos < 8; ++bit_pos ) {
+				val = GET_BIT( s88s[s88_num*2+1], bit_pos );
+				val_prev = GET_BIT( s88s_prev[s88_num*2+1], bit_pos );
+				if( val != val_prev )
+					sensor_history_push( s88_num, bit_pos + 8, val, &sensor_history );
+			}
 		}
+
+		draw_sensor_history( &sensor_history );
+
+		for(i = 0; i < 10; i++) {
+			s88s_prev[i] = s88s[i];
+		}
+		DelayUntil( last_recieved + 100 / SENSOR_QUERY_FREQENCY );
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

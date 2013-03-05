@@ -85,7 +85,8 @@ void command_notifier(){
 			
 			switch( command.cmd_type ){
 				case TRAIN_CMD_TYPE:		// Train
-			    	bwdebug( DBG_USR, "COMMAND_NOTIFIER: send tr" );
+					bwdebug( DBG_USR, "COMMAND_NOTIFIER: send tr" );
+					
 					// Keep track of the current speed. 
 					train_list.trains[ command.element_id ].id = command.element_id; 
 					train_list.trains[ command.element_id ].speed = command.param; 
@@ -96,26 +97,25 @@ void command_notifier(){
 					
 					break; 
 				case REVERSE_CMD_TYPE:		// Reverse
-			    	bwdebug( DBG_USR, "COMMAND_NOTIFIER: send rv" );
-				                      		
-					/*
+					bwdebug( DBG_USR, "COMMAND_NOTIFIER: send rv" );
+					
 					// Stop train
 					Putc( COM1, 0 );				// Stop the train
 					Putc( COM1, command.element_id );
-					Delay( INTER_CMD_DELAY ); 
+					//Delay( INTER_CMD_DELAY ); 
 					
 					// Reverse train
 					Putc( COM1, 15 );
 					Putc( COM1, command.element_id ); 
-					Delay( INTER_CMD_DELAY ); 
+					//Delay( INTER_CMD_DELAY ); 
 					
 					// Restart train
 					Putc( COM1, train_list.trains[ command.element_id ].speed );
-					Putc( COM1, command.element_id ); 					
-					*/
+					Putc( COM1, command.element_id ); 
+					
 					break; 
 				case SWITCH_CMD_TYPE:		// Switch
-			    	bwdebug( DBG_USR, "COMMAND_NOTIFIER: send sw" );
+					bwdebug( DBG_USR, "COMMAND_NOTIFIER: send sw" );
 
 					requested_pos = ( char ) command.param; 
 					if ( requested_pos == SWITCH_STRAIGHT_POS ){

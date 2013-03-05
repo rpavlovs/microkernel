@@ -81,8 +81,8 @@ int parse_and_exec_cmd( Char_queue *buf, Servers_tid_list *servers_list ) {
 		return exec_tr( atoi(train_id_str), atoi(speed_str), servers_list );
 	}
 	if( strcmp( cmd_name, "sw" ) == 0 ) {
-		char switch_id_str[3], switch_state[2];
-		char_queue_pop_word( buf, switch_id_str, 3 );
+		char switch_id_str[4], switch_state[2];
+		char_queue_pop_word( buf, switch_id_str, 4 );
 		char_queue_pop_word( buf, switch_state, 2 );
 
 		if( switch_id_str == '\0' || switch_state == '\0' )
@@ -108,8 +108,6 @@ void send_command( int cmd_type, int element_id, int param, int server_tid ){
 	cmd_request.cmd.element_id = element_id; 
 	cmd_request.cmd.param = param; 
 	
-	bwprintf( COM2, "\033[%39;7HSending reverse command. Server: %  Train: %d Param: %d Cmd: %d \n", 
-		server_tid,  element_id, param, cmd_type ); 
 	Send( server_tid, ( char * ) &cmd_request, sizeof( cmd_request ), 0, 0  ); 
 }
 
@@ -141,8 +139,6 @@ int exec_rv( int train_id, Servers_tid_list *servers_list ) {
 	if( !is_train_id(train_id) )
 		return INVALID_TRAIN_ID;
 	
-	// TODO: Add a structure that allows to get the information of the train. 
-	
 	// Send message to command server. 
 	int cmd_server_tid = servers_list->items[CMD_SERVER_INDEX]; 
 	send_command( REVERSE_CMD_TYPE, train_id, CMD_PARAM_NOT_REQUIRED, cmd_server_tid ); 
@@ -150,8 +146,8 @@ int exec_rv( int train_id, Servers_tid_list *servers_list ) {
 }
 
 int exec_q( ) {
-	Exit();
-	return SUCCESS;
+	Shutdown(); 
+	return SUCCESS;	// This should never execute. 
 }
 
 void init_cli_history( CLI_history *h ) {
@@ -204,8 +200,8 @@ void update_cli_view( CLI_history *h ) {
 	
 	// TODO: 
 	// For now just print the last command issued and the result. Later we will have a whole history feature. 
-	ptr += sprintf( ptr, "\033[%d;4H\033[K%s", history_row, history_record->command ); 
-	ptr += sprintf( ptr, "\033[%d;7H\033[K", history_row + 1 ); 
+	ptr += sprintf( ptr, "\033[%d;4H\033[K-%s", history_row + 1, history_record->command ); 
+	ptr += sprintf( ptr, "\033[%d;7H\033[K", history_row + 2 ); 
 	
 	switch( history_record->status ) {
 	case SUCCESS:

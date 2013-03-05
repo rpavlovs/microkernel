@@ -63,7 +63,7 @@ Command dequeue_cmd( Command_queue *cmd_queue ){
 // -- NOTE: The notifier requires time server to work properly. 
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 void command_notifier(){
-	bwdebug( DBG_USR, "COMMAND SERVER: enters" );
+	bwdebug( DBG_USR, "COMMAND_NOTIFIER: enters" );
 	
 	// Initialization
 	int cmd_server_tid; 
@@ -85,7 +85,7 @@ void command_notifier(){
 			
 			switch( command.cmd_type ){
 				case TRAIN_CMD_TYPE:		// Train
-
+			    	bwdebug( DBG_USR, "COMMAND_NOTIFIER: send tr" );
 					// Keep track of the current speed. 
 					train_list.trains[ command.element_id ].id = command.element_id; 
 					train_list.trains[ command.element_id ].speed = command.param; 
@@ -96,7 +96,8 @@ void command_notifier(){
 					
 					break; 
 				case REVERSE_CMD_TYPE:		// Reverse
-					bwprintf( COM2, "\033[%40;8HReversing the train/0" ); 
+			    	bwdebug( DBG_USR, "COMMAND_NOTIFIER: send rv" );
+				                      		
 					/*
 					// Stop train
 					Putc( COM1, 0 );				// Stop the train
@@ -114,9 +115,14 @@ void command_notifier(){
 					*/
 					break; 
 				case SWITCH_CMD_TYPE:		// Switch
+			    	bwdebug( DBG_USR, "COMMAND_NOTIFIER: send sw" );
+
 					requested_pos = ( char ) command.param; 
 					if ( requested_pos == SWITCH_STRAIGHT_POS ){
+						bwdebug( DBG_USR, "COMMAND_NOTIFIER: Putc( COM1, 33 ) call" );
 						Putc( COM1, 33 );
+						bwdebug( DBG_USR, "COMMAND_NOTIFIER: Putc( COM1, 33 ) done" );
+
 					}
 					else if ( requested_pos == SWITCH_CURVE_POS ){
 						Putc( COM1, 34 );
@@ -132,7 +138,6 @@ void command_notifier(){
 				default: 
 					bwdebug( DBG_USR, "COMMAND SERVER: Invalid command. Cannot execute [ Cmd: %d ]", 
 							command.cmd_type ); 
-					bwprintf( COM2, "Reversing the train/0" ); 
 					break; 
 			}
 			
@@ -140,7 +145,8 @@ void command_notifier(){
 		}
 		else{
 			// There are not commands left to send. Wait until one arrives. 
-			cmd_request.type = CMD_NOTIFIER_IDLE; 
+			cmd_request.type = CMD_NOTIFIER_IDLE;
+			bwdebug( DBG_USR, "COMMAND_NOTIFIER: report idle" );
 			Send( cmd_server_tid, ( char * ) &cmd_request, sizeof( cmd_request ), 0, 0 ); 
 		}
 	}

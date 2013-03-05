@@ -75,6 +75,7 @@ void receive_sensors(char* sensors) {
 }
 
 void sensors_server() {
+	printf( COM2, "sensors_server: enter" );
 	// Data structures
 	int i, j;
 	//int timeserver_tid;
@@ -89,7 +90,10 @@ void sensors_server() {
 	request.type = TIME_REQUEST;
 	for(i = 0; i < 10; i++) 
 		sensors[i] = 0;
+
+	printf( COM2, "init_sensor_history: enter" );
 	init_sensor_history( &sensor_history );
+	printf( COM2, "init_sensor_history: done" );
 	//TODO: refactor
 	s80s[0] = 'A';
 	s80s[1] = 'B';
@@ -122,8 +126,9 @@ void sensors_server() {
 	//while (get_time() < wait_till) try_to_recieve_char( &train_recieve_buf, COM1 );
 	
 	FOREVER {
-
+		printf( COM2, "recieve_sensors: enter" );
 		receive_sensors( sensors );
+		printf( COM2, "recieve_sensors: done" );	
 
 		//todo_debug( 0x5, 8 );
 

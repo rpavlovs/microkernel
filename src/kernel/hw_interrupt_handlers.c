@@ -102,7 +102,7 @@ void uart1_hwi_handler( Kern_Globals *GLOBALS ) {
 	if ( waiting_task_init != 0 ) {
 		//Rescheduling the task
 		waiting_task_init->state = READY_TASK;
-		sched_add_td( waiting_task, GLOBALS );
+		sched_add_td( waiting_task_init, GLOBALS );
 	}
 	
 	// Clear the interrupt in the ICU.

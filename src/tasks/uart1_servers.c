@@ -34,7 +34,6 @@ void uart1_sender_notifier() {
 		Receive(&sender_tid, (char *) &request, sizeof(request));
 		//Reply, to unblock the uart1_sender_server
 		Reply(sender_tid, (char *) 0, 0);
-		
 		//Reinitialize modem
 		//RTSn pin is set to low
 		//DTRn pin is set to low
@@ -50,12 +49,15 @@ void uart1_sender_notifier() {
 			//*uart_data = 'b';
 			//Wait until UART1 is ready to receive a character
 			if(txfe_state == 0 || first_iter) {
+				// bwprintf( COM2, "uart1_sender_notifier: AwaitEvent(UART1_INIT_SEND, 0)\n" );
 				AwaitEvent(UART1_INIT_SEND, 0);
 			}
 			else {
 				//bwprintf( COM2, "EVENT02: UART1_SEND_READY\n");
+				// bwprintf( COM2, "uart1_sender_notifier: AwaitEvent(UART1_SEND_READY, 0)\n" );
 				AwaitEvent(UART1_SEND_READY, 0);
 			}
+
 			
 			//*uart_data = 'd';
 			
@@ -67,7 +69,7 @@ void uart1_sender_notifier() {
 			uart_flags_temp = *uart_flags;
 
 			//Changing state of the state machine////////////////////
-			//bwprintf( COM2, "STATE00: CTS: %d TXFE: %d\n", cts_state, txfe_state );
+			// bwprintf( COM2, "STATE00: CTS: %d TXFE: %d\n", cts_state, txfe_state );
 			
 			//IF   CTS value has changed
 			//AND  CTS value is now set to '1'
@@ -75,14 +77,14 @@ void uart1_sender_notifier() {
 			if( ((modem_status_temp & DCTS_MASK) || first_request)
 				&& (uart_flags_temp & CTS_MASK)) {
 				cts_state = 2;
-				//bwprintf( COM2, "STATE03: CTS: %d TXFE: %d\n", cts_state, txfe_state );
+				// bwprintf( COM2, "STATE03: CTS: %d TXFE: %d\n", cts_state, txfe_state );
 			}
 			
 			//IF   CTS value is set to '0'
 			//THEN CTS has been deasserted
-			if(cts_state == 0 && !(uart_flags_temp & CTS_MASK)) {
+			if( cts_state == 0 && !(uart_flags_temp & CTS_MASK) ) {
 				cts_state = 1;
-				//bwprintf( COM2, "STATE02: CTS: %d TXFE: %d\n", cts_state, txfe_state );
+				// bwprintf( COM2, "STATE02: CTS: %d TXFE: %d\n", cts_state, txfe_state );
 			}
 			
 			
@@ -90,22 +92,22 @@ void uart1_sender_notifier() {
 			//IF   CTS has been deasserted
 			//AND  CTS value is now set to '1'
 			//THEN CTS has been reasserted
-			if(cts_state == 1 && (uart_flags_temp & CTS_MASK)) {
+			if( cts_state == 1 && (uart_flags_temp & CTS_MASK) ) {
 				cts_state = 2;
-				//bwprintf( COM2, "STATE04: CTS: %d TXFE: %d\n", cts_state, txfe_state );
+				// bwprintf( COM2, "STATE04: CTS: %d TXFE: %d\n", cts_state, txfe_state );
 			}
 			
 			//IF transmit is set to '1'
-			if((uart_flags_temp & TXFE_MASK)) {
+			if( (uart_flags_temp & TXFE_MASK) ) {
 				txfe_state = 1;
-				//bwprintf( COM2, "STATE01: CTS: %d TXFE: %d\n", cts_state, txfe_state );
+				// bwprintf( COM2, "STATE01: CTS: %d TXFE: %d\n", cts_state, txfe_state );
 			}
 			
 			//IF   CTS has been reasserted
 			//AND  Transmit has been reasserted
 			//THEN Send the character to UART1
-			if(cts_state == 2 && txfe_state == 1) {
-				//bwprintf( COM2, "STATE05: CTS: %d TXFE: %d\n", cts_state, txfe_state );
+			if( cts_state == 2 && txfe_state == 1 ) {
+				// bwprintf( COM2, "STATE05: CTS: %d TXFE: %d\n", cts_state, txfe_state );
 				
 				*uart_data = (char) request.ch;
 				first_request = 0;
@@ -138,18 +140,15 @@ void uart1_sender_server() {
 		
 		switch(request.type){
 			case UART_SEND_REQUEST_PUTC:
+
 				//Reply to unblock the system function (Putc)
 				//reply.type = UART1_SEND_REPLY;
 				//reply.ch = 0;
 				//Reply(sender_tid, (char *) &reply, sizeof(reply));
 				//bwprintf( COM2, "Before reply Sender: %d\n", sender_tid  ); 
-				Reply(sender_tid, 0, 0);
-				//bwprintf( COM2, "After reply\n"  );
-
-				//bwprintf( COM2, "Before enqueueing\n"  ); 
-				//Put the character from the request to queue
+				
 				char_queue_push( request.ch, &cqueue );
-				//bwprintf( COM2, "After enqueueing\n"  ); 
+				Reply(sender_tid, 0, 0);
 				break;
 
 			default:
@@ -164,7 +163,7 @@ void uart1_sender_server() {
 			request.type = UART1_SEND_NOTIFIER_REQUEST;
 			request.ch = char_queue_pop( &cqueue );
 			
-			Send( notifier_tid, (char *) &request, sizeof(request), (char *) 0, 0);
+			Send( notifier_tid, (char *) &request, sizeof(request), 0, 0);
 		}
 	}
 }

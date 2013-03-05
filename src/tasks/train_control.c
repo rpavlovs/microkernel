@@ -38,9 +38,9 @@ void setupScreen() {
 void train_control() {
 	
 	setupScreen();
-	// Create( 8, task_cli ); 
+	Create( 8, task_cli ); 
 	Create( SWITCHES_SERVER_PRIORITY, switchserver );
-	// Create( 15, draw_clock ); 
+	Create( 15, draw_clock ); 
 
 	Exit();
 }

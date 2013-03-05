@@ -373,10 +373,36 @@ clean_system_state(){
 	
 	// Make sure that the CSPR doesn't have FIQ and IRQ enabled. 
 	asm(
-		"MRS	r0, cpsr"						"\n\t"
-		"ORR	r0, r0, #0xC0"					"\n\t"		// Disables FIQ and IRQ
-		"MSR	cpsr, r0"						"\n\t"
+		// Disable both FIQ and IRQ in the CPSR
+		"MRS		r0, cpsr"					"\n\t"
+		"ORR		r0, r0, #0xC0"				"\n\t"		// Disables FIQ and IRQ
+		"MSR		cpsr, r0"					"\n\t"
+	
+		// Enable caches
+		"MOV	r0, #0"					"\n\t"
+		"MCR		p15, 0, r0, c7, c5, 0"			"\n\t"		// Invalidate caches
+		"MRC		p15, 0, r0, c1, c0, 0"			"\n\t"		// Get the current value in the co-processor
+		"ORR		r0, r0, #4096"				"\n\t"		// Enable caches
+		"MCR		p15, 0, r0, c1, c0, 0"			"\n\t"		// Add the changes to the processor
+		
+	// TODO: Enable fast processor clocking
 	);
+	
+	/*
+	 	asm("MOV r10, #0");
+	asm("MCR p15, 0, r10, c7, c5, 0");
+	//Enable the Instruction Cache
+	asm("MRC p15, 0, r10, c1, c0, 0");	//get the current value of the register
+	asm("MOV r9, #1");
+	asm("MOV r9, r9, LSL#30");	//generate the proper bits in r9 for fast clock
+	asm("ORR r10, r10, #4096");	//or the bits for the instruction cache
+	asm("ORR r10, r10, r9");	//or the bits for the fast clock
+	//asm("ORR r10, r10, #2");	//or the bits for the data cache
+	asm("MCR p15, 0, r10, c1, c0, 0");
+	 
+	 */
+	
+	
 	
 	// Disable all HW interrupts. 
 	*( ( int * ) INT_CONTROL_BASE_1 + INT_ENABLE_OFFSET ) = INT_RESET_VALUE; 

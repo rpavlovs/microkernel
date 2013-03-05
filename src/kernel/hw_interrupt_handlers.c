@@ -23,11 +23,19 @@ void timer_hwi_handler( Kern_Globals *GLOBALS ){
 }
 
 void uart1_hwi_handler( Kern_Globals *GLOBALS ) {
+	// Initialization
+	int temp; 
 	int *uart1_common_interrupt = ( int * )( UART1_BASE + UART_INTR_OFFSET ); 
 	int uart1_interrupt = *uart1_common_interrupt;
 	
+	// Task descriptors
 	Task_descriptor *waiting_task = 0;
 	Task_descriptor *waiting_task_init = 0; 
+	
+	// Interrupt type
+	int tx_interrupt = uart1_interrupt & UART_TX_INT_STATUS; 
+	int mdm_interrupt = uart1_interrupt & UART_MODEM_INT_STATUS; 
+	int reception_interrupt = uart1_interrupt & UART_RX_INT_STATUS;
 	
 	bwdebug( DBG_KERN, "UART1_HWI_HANDLER: interrupt recieved [%d]",
 			*uart1_common_interrupt );
@@ -35,7 +43,7 @@ void uart1_hwi_handler( Kern_Globals *GLOBALS ) {
 	//bwprintf( COM2, "UART1 INT RECEIVED \n" ); 
 	
 	// Is there data to be received?
-	if ( uart1_interrupt & UART_RX_INT_STATUS ) {
+	if ( reception_interrupt ) {
 		
 		// Retrieve the waiting event from the hwi table. 
 		waiting_task = ( Task_descriptor * ) GLOBALS->scheduler.hwi_watchers[UART1_RECEIVE_READY];
@@ -49,9 +57,7 @@ void uart1_hwi_handler( Kern_Globals *GLOBALS ) {
 			*buffer = c;
 		}
 	} 
-	else if ( 
-			uart1_interrupt & UART_TX_INT_STATUS || 
-			uart1_interrupt & UART_MODEM_INT_STATUS ) {
+	else if ( tx_interrupt || mdm_interrupt ) {
 		
 		// Check if there ara tasks waiting for the events. 
 		waiting_task = ( Task_descriptor * ) GLOBALS->scheduler.hwi_watchers[UART1_SEND_READY];
@@ -61,7 +67,7 @@ void uart1_hwi_handler( Kern_Globals *GLOBALS ) {
 		GLOBALS->scheduler.hwi_watchers[UART1_INIT_SEND] = 0;		
 		
 		// Clear the interrupt sources. 
-		if ( uart1_interrupt & UART_TX_INT_STATUS ) {
+		if ( tx_interrupt ) {
 			//bwprintf( COM2, "TX INTERRUPT RECEIVED \n" ); 
 			
 			// This interrupt can't be cleared until something is written to the FIFO. 
@@ -69,27 +75,25 @@ void uart1_hwi_handler( Kern_Globals *GLOBALS ) {
 			// will be sent to the train, producing unexpected results. Therefore, the 
 			// interrupt is not cleaned, but DISABLED. Next time it's needed it will  
 			// be re-enabled (during AwaitEvent). 
-			int *uart1_ctrl, temp; 
+			int *uart1_ctrl; 
 			uart1_ctrl = ( int * ) ( UART1_BASE + UART_CTLR_OFFSET ); 
 			temp = *uart1_ctrl; 
 			*uart1_ctrl = temp & ~TIEN_MASK; 
 		}
 		
-		if ( uart1_interrupt & UART_MODEM_INT_STATUS ) {
+		if ( mdm_interrupt ) {
 			//bwprintf( COM2, "MODEM INTERRUPT RECEIVED\n" ); 
 			
 			// The interrupt is cleared. 
 			*uart1_common_interrupt = 0; 
 			
 			// The interrupt is also disabled, as what happened with UART_TX_INT_STATUS. 
-			int *uart1_ctrl, temp; 
+			int *uart1_ctrl; 
 			uart1_ctrl = ( int * ) ( UART1_BASE + UART_CTLR_OFFSET ); 
 			temp = *uart1_ctrl; 
 			//*uart1_ctrl = temp & ~MSIEN_MASK;
 		}
 		
-	} else {
-		// This was an unexpected interrupt; we don't care about it. 
 	}
 
 	// If there were tasks waiting for these events, reschedule them.

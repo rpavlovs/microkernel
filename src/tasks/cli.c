@@ -81,8 +81,8 @@ int parse_and_exec_cmd( Char_queue *buf, Servers_tid_list *servers_list ) {
 		return exec_tr( atoi(train_id_str), atoi(speed_str), servers_list );
 	}
 	if( strcmp( cmd_name, "sw" ) == 0 ) {
-		char switch_id_str[3], switch_state[2];
-		char_queue_pop_word( buf, switch_id_str, 3 );
+		char switch_id_str[4], switch_state[2];
+		char_queue_pop_word( buf, switch_id_str, 4 );
 		char_queue_pop_word( buf, switch_state, 2 );
 
 		if( switch_id_str == '\0' || switch_state == '\0' )

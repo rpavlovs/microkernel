@@ -34,14 +34,14 @@ void task_cli() {
 			break;
 		case CHAR_BACKSPACE:
 			if( buf.size > 0 ){
-				char_queue_pop_char( &buf ); 
+				char_queue_pop_back( &buf ); 
 				Putstr( COM2, "\b \b" );
 			}
 			break;
 		case CHAR_NEWLINE:
 		case CHAR_RETURN:
 			// Get and parses the executed command. 
-			enqueue_char_queue( '\0', &buf );
+			char_queue_push( '\0', &buf );
 			char_queue_peek_str( &buf, cmd, CLI_COMMAND_MAX_LENGTH );
 			status = parse_and_exec_cmd( &buf, cmd_server_tid );
 			
@@ -55,7 +55,7 @@ void task_cli() {
 			break;
 		default:
 			// TODO: check that new char is sensible
-			enqueue_char_queue( c, &buf );
+			char_queue_push( c, &buf );
 			//printf( COM2, "%c", c );
 			Putc( COM2, c ); 
 		}
@@ -66,20 +66,27 @@ void task_cli() {
 int parse_and_exec_cmd( Char_queue *buf, int cmd_server_tid ) {
 	char cmd_name[CLI_COMMAND_MAX_LENGTH];
 	char_queue_pop_word( buf, cmd_name, CLI_COMMAND_MAX_LENGTH );
-	
+	printf( COM2, "%s\n", buf );
 	if( strcmp( cmd_name, "tr" ) == 0 ) {
 		char train_id_str[3], speed_str[3];
 		char_queue_pop_word( buf, train_id_str, 3 );
-		char_ignore_spaces( buf ); 
 		char_queue_pop_word( buf, speed_str, 3 );
-		
+
+		if( train_id_str == '\0' || train_id_str == '\0' )
+			return INVALID_NUMBER_OF_ARGUMENTS;
+
 		// NOTE: If the speed is not specified it will default to 0. 
 		return exec_tr( atoi(train_id_str), atoi(speed_str), cmd_server_tid );
 	}
 	if( strcmp( cmd_name, "sw" ) == 0 ) {
-		char switch_id_str[3];
+		char switch_id_str[3], switch_state[2];
 		char_queue_pop_word( buf, switch_id_str, 3 );
-		return exec_sw( atoi(switch_id_str), dequeue_char_queue(buf), cmd_server_tid );
+		char_queue_pop_word( buf, switch_state, 2 );
+
+		if( switch_id_str == '\0' || switch_state == '\0' )
+			return INVALID_NUMBER_OF_ARGUMENTS;
+
+		return exec_sw( atoi(switch_id_str), switch_state[0], cmd_server_tid );
 	}
 	if( strcmp( cmd_name, "rv" ) == 0 ) {
 		char train_id_str[3];
@@ -92,7 +99,7 @@ int parse_and_exec_cmd( Char_queue *buf, int cmd_server_tid ) {
 	return INVALID_COMMAND_NAME;
 }
 
-void send_command( int cmd_type,  int element_id, int param, int cmd_server_tid ){
+void send_command( int cmd_type, int element_id, int param, int cmd_server_tid ){
 	Cmd_request cmd_request;
 	cmd_request.type = ADD_CMD_REQUEST; 
 	cmd_request.cmd.cmd_type = cmd_type; 
@@ -103,6 +110,7 @@ void send_command( int cmd_type,  int element_id, int param, int cmd_server_tid 
 }
 
 int exec_tr( int train_id, int speed, int cmd_server_tid ) {
+
 	if( !is_train_id(train_id) )
 		return INVALID_TRAIN_ID;
 	if( speed < 0 || speed > 14 ) 
@@ -131,7 +139,7 @@ int exec_rv( int train_id, int cmd_server_tid ) {
 	// TODO: Add a structure that allows to get the information of the train. 
 	
 	// Send message to command server. 
-	send_command( ADD_CMD_REQUEST, train_id, CMD_PARAM_NOT_REQUIRED, cmd_server_tid ); 
+	send_command( REVERSE_CMD_TYPE, train_id, CMD_PARAM_NOT_REQUIRED, cmd_server_tid ); 
 	return SUCCESS;
 }
 
@@ -211,6 +219,9 @@ void update_cli_view( CLI_history *h ) {
 	case INVALID_COMMAND_NAME:
 		ptr += sprintf( ptr, "%s", "Error: Invalid command name.");
 		break;
+	case INVALID_NUMBER_OF_ARGUMENTS:
+		ptr += sprintf( ptr, "%s", "Error: Invalid number of arguments.");
+		break;
 	default:
 		ptr += sprintf( ptr, "%s", "Unknown error.");
 	}
@@ -243,6 +254,9 @@ void update_cli_view( CLI_history *h ) {
 		case INVALID_COMMAND_NAME:
 			ptr += sprintf( ptr, "%-81s", "Error: Invalid command name.");
 			break;
+		case INVALID_NUMBER_OF_ARGUMENTS:
+			ptr += sprintf( ptr, "%s", "Error: Invalid number of arguments.");
+			break;
 		default:
 			ptr += sprintf( ptr, "%-81s", "Unknown error.");
 		}
@@ -255,7 +269,7 @@ void update_cli_view( CLI_history *h ) {
 	ptr += sprintf( ptr, "\033[?25h" );	// Show the cursor again. 
 	
 
-	// TODO: user assert ( ptr - str < CLI_PRINT_BUFFER_SIZE );
+	// TODO: user bwassert( ptr - str < CLI_PRINT_BUFFER_SIZE );
 
 	// TODO: make printf send strings in one message to uart_server 
 	Putstr( COM2, str );

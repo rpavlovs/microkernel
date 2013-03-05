@@ -5,7 +5,7 @@
 // -- SEND
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 void uart2_sender_notifier() {
-	debug( DBG_SYS, "UART2_SENDER_NOTIFIER: enters" );
+	bwdebug( DBG_SYS, "UART2_SENDER_NOTIFIER: enters" );
 	int *uart_flags, *uart_data, server_tid;
 	UART_notifier_init init_msg;
 	UART_request req;
@@ -13,7 +13,7 @@ void uart2_sender_notifier() {
 	uart_flags = (int *)( UART2_BASE + UART_FLAG_OFFSET );
 	uart_data = (int *)( UART2_BASE + UART_DATA_OFFSET );
 
-	debug( DBG_SYS, "UART2_SENDER_NOTIFIER: recieving init info" );
+	bwdebug( DBG_SYS, "UART2_SENDER_NOTIFIER: recieving init info" );
 	Receive( &server_tid, (char *)&init_msg, sizeof(init_msg) );
 	Reply( server_tid, 0, 0 );
 	if( init_msg.type != UART2_INIT_NOTIFIER ){
@@ -29,9 +29,9 @@ void uart2_sender_notifier() {
 		
 		// If nothing to send notify server and block 
 		if( buf->size > 0 ) {
-			*uart_data = dequeue_char_queue( buf );
+			*uart_data = char_queue_pop( buf );
 		} else {
-			debug( DBG_SYS, "UART2_SENDER_NOTIFIER: blocking until buffer refiled" );
+			bwdebug( DBG_SYS, "UART2_SENDER_NOTIFIER: blocking until buffer refiled" );
 			req.type = UART_NOTIFIER_IDLE;
 			Send( server_tid, (char *)&req, sizeof(req), 0, 0 );
 		}
@@ -39,7 +39,7 @@ void uart2_sender_notifier() {
 }
 
 void uart2_sender_server() {
-	debug( DBG_SYS, "UART2_SENDER_SERVER: enters" );
+	bwdebug( DBG_SYS, "UART2_SENDER_SERVER: enters" );
 	RegisterAs("uart2_sender");
 	int notifier_tid, sender_tid, notifier_is_idle = 0;
 	UART_request req;
@@ -52,35 +52,35 @@ void uart2_sender_server() {
 	init_msg.buf = &buf;
 
 	notifier_tid = Create( UART_SENDER_NOTIFIER_PRIORITY, uart2_sender_notifier );
-	debug( DBG_SYS, "UART2_SENDER_SERVER: uart2_sender_notifier created [tid: %d priority: %d]", 
+	bwdebug( DBG_SYS, "UART2_SENDER_SERVER: uart2_sender_notifier created [tid: %d priority: %d]", 
 						notifier_tid, UART_SENDER_NOTIFIER_PRIORITY );
 	Send( notifier_tid, (char *)&init_msg, sizeof(init_msg), 0, 0 );
 
 	FOREVER {
-		debug( DBG_SYS, "UART2_SENDER_SERVER: listening for a request" );
+		bwdebug( DBG_SYS, "UART2_SENDER_SERVER: listening for a request" );
 		Receive( &sender_tid, (char *) &req, sizeof(req) );
 		switch( req.type ) {
 		case UART_SEND_REQUEST_PUTC:
-			debug( DBG_SYS, "UART2_SENDER_SERVER: Putc request from [sender_tid: %d]",
+			bwdebug( DBG_SYS, "UART2_SENDER_SERVER: Putc request from [sender_tid: %d]",
 				sender_tid );
-			enqueue_char_queue( req.ch, &buf );
+			char_queue_push( req.ch, &buf );
 			Reply( sender_tid, 0, 0 );
 			break;
 		case UART_SEND_REQUEST_PUTSTR:
-			debug( DBG_SYS, "UART2_SENDER_SERVER: Putstr request from [sender_tid: %d]",
+			bwdebug( DBG_SYS, "UART2_SENDER_SERVER: Putstr request from [sender_tid: %d]",
 				sender_tid );
-			enqueue_str_to_char_queue( req.str, &buf );
+			char_queue_push_str( req.str, &buf );
 			Reply( sender_tid, 0, 0 );
 			break;
 		case UART_NOTIFIER_IDLE:
-			debug( DBG_SYS, "UART2_SENDER_SERVER: notifier is idle" );
+			bwdebug( DBG_SYS, "UART2_SENDER_SERVER: notifier is idle" );
 			notifier_is_idle = 1;
 			break;
 		}
 
 		if( notifier_is_idle && buf.size > 0 ) {
 			notifier_is_idle = 0;
-			debug( DBG_SYS, "UART2_SENDER_SERVER: Waking up notifier" );
+			bwdebug( DBG_SYS, "UART2_SENDER_SERVER: Waking up notifier" );
 			Reply( notifier_tid, 0, 0 );
 		}
 	}
@@ -91,14 +91,14 @@ void uart2_sender_server() {
 // -- Receiver
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 void uart2_receiver_notifier() {
-	debug( DBG_SYS, "UART2_RECEIVER_NOTIFIER: enters" );
+	bwdebug( DBG_SYS, "UART2_RECEIVER_NOTIFIER: enters" );
 	int server_tid = WhoIs("uart2_receiver");
 	UART_request request;
 
 	int receive_buffer = 0;
 
 	FOREVER {
-		debug( DBG_SYS, "UART2_RECEIVER_NOTIFIER: waiting for an interrupt" );
+		bwdebug( DBG_SYS, "UART2_RECEIVER_NOTIFIER: waiting for an interrupt" );
 		////todo_debug( 0x1, 1 );
 		AwaitEvent( UART2_RECEIVE_READY, (int) &receive_buffer );
 		////todo_debug( 0x2, 1 );
@@ -108,14 +108,14 @@ void uart2_receiver_notifier() {
 		request.ch = receive_buffer;
 		
 		//Send data to the server (uart2_receiver_server)
-		debug( DBG_SYS, "UART2_RECEIVER_NOTIFIER: sending data to the server [%c]",
+		bwdebug( DBG_SYS, "UART2_RECEIVER_NOTIFIER: sending data to the server [%c]",
 							(char)receive_buffer );
 		Send(server_tid, (char *) &request, sizeof(request), (char *) 0, 0);
 	}
 }
 
 void uart2_receiver_server() {
-	debug( DBG_SYS, "UART2_RECEIVER_SERVER: enters" );
+	bwdebug( DBG_SYS, "UART2_RECEIVER_SERVER: enters" );
 	RegisterAs("uart2_receiver");
 	
 	Create(UART_RECEIVER_NOTIFIER_PRIORITY, &uart2_receiver_notifier);
@@ -131,27 +131,27 @@ void uart2_receiver_server() {
 	init_int_queue( &iqueue );
 	
 	FOREVER {
-		debug( DBG_SYS, "UART2_RECIEVER_SERVER: listening for a request" );
+		bwdebug( DBG_SYS, "UART2_RECIEVER_SERVER: listening for a request" );
 		Receive( &sender_tid, (char *) &request, sizeof(request) );
 
 		switch(request.type){
 		case UART2_RECEIVE_REQUEST:
-			debug( DBG_SYS, "UART2_RECIEVER_SERVER: Getc request from [sender_tid: %d]",
+			bwdebug( DBG_SYS, "UART2_RECIEVER_SERVER: Getc request from [sender_tid: %d]",
 								sender_tid );
 			//Enqueue the system function tid to reply later
 			enqueue_int_queue( sender_tid, &iqueue );
 			break;
 		case UART2_RECEIVE_NOTIFIER_REQUEST:
-			debug( DBG_SYS, "UART2_RECIEVER_SERVER: notifier request [sender_tid: %d]",
+			bwdebug( DBG_SYS, "UART2_RECIEVER_SERVER: notifier request [sender_tid: %d]",
 								sender_tid );
 			Reply(sender_tid, (char *) 0, 0);
 		
 			//Enqueue received character if someone is waiting for it
 			if( iqueue.size > 0 )
-				enqueue_char_queue( request.ch, &cqueue );
+				char_queue_push( request.ch, &cqueue );
 			break;
 		default:
-			debug( DBG_SYS, "UART2_RECIEVER_SERVER: invalid request from [sender_tid: %d]",
+			bwdebug( DBG_SYS, "UART2_RECIEVER_SERVER: invalid request from [sender_tid: %d]",
 								sender_tid );
 			reply.type = INVALID_REQUEST;
 			reply.ch = 0;
@@ -165,9 +165,9 @@ void uart2_receiver_server() {
 			//Prepare the reply to the system function
 			target_tid = dequeue_int_queue( &iqueue );
 			reply.type = UART2_RECEIVE_REPLY;
-			reply.ch = dequeue_char_queue( &cqueue );
+			reply.ch = char_queue_pop( &cqueue );
 
-			debug( DBG_SYS, "UART2_RECIEVER_SERVER: replying [to: %d with: %d]",
+			bwdebug( DBG_SYS, "UART2_RECIEVER_SERVER: replying [to: %d with: %d]",
 								target_tid, reply.ch );
 			Reply(target_tid, (char *) &reply, sizeof(reply));
 		}

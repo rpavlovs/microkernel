@@ -3,14 +3,14 @@
 #define CLOCK_TASK_DELAY		10
 #define CLOCK_ROW_POS			4
 #define CLOCK_COL_POS			18
-#define CMD_ROW_POS			20
-#define CMD_COL_POS			10
+#define CMD_ROW_POS				20
+#define CMD_COL_POS				10
 
-#define CURSOR_SAVE			"\033[s"
+#define CURSOR_SAVE				"\033[s"
 #define CURSOR_RESTORE			"\033[u"
 #define CURSOR_POS_STR			"\033[%d;%dH"
 #define CURSOR_HIDE_STR			"\033[?25l"
-#define CURSOR_SHOW_STR		"\033[?25h"
+#define CURSOR_SHOW_STR			"\033[?25h"
 #define CLEAR_SCREEN_STR		"\033[2J"
 #define MOVE_CURSOR_UP_LEFT		"\033[H"
 
@@ -57,7 +57,7 @@ void print_time( char *str_buff, int current_time_ticks ){
 	char *temp_buffer = str_buff; 
 	temp_buffer += hideCursor( temp_buffer );
 	temp_buffer += cursorPositioning( temp_buffer, CLOCK_ROW_POS, CLOCK_COL_POS );
-	temp_buffer += sprintf( temp_buffer, "%d:%d:%d ", minutes, seconds, tenths ); 
+	temp_buffer += sprintf( temp_buffer, "%02d:%02d:%02d ", minutes, seconds, tenths ); 
 	//temp_buffer += cursorPositioning( temp_buffer, CMD_ROW_POS, CMD_COL_POS );
 	temp_buffer += restoreCursor( temp_buffer ); 
 	//temp_buffer += showCursor( temp_buffer );

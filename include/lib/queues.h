@@ -25,19 +25,26 @@ typedef struct {
 
 void init_char_queue( Char_queue * );
 
-void enqueue_char_queue( char c, Char_queue *q );
+void char_queue_push( char c, Char_queue *q );
 
-void enqueue_str_to_char_queue( char *str, Char_queue *q );
+void char_queue_push_str( char *str, Char_queue *q );
 
-char char_queue_peek( Char_queue *q );
+char char_queue_pop( Char_queue *q );
+
+char char_queue_pop_back( Char_queue *q );
+
+char char_queue_front( Char_queue *q );
+
+int char_queue_size( Char_queue *q );
+
+// wrappers
 
 int char_queue_peek_str( Char_queue *q, char *str, int len );
-
-char dequeue_char_queue( Char_queue *q );
 
 int char_queue_pop_word( Char_queue *q, char *str, int len );
 
 int char_queue_pop_str( Char_queue *q, char *str, int len );
+
 
 /////////////////////////////////////////////////////////////////////
 //

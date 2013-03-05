@@ -31,11 +31,11 @@ void bwputw( int channel, int n, char fc, char *bf );
 
 void bwprintf( int channel, char *format, ... );
 
-void debug( int threshhold_lvl, char *message, ... );
+void bwdebug( int threshhold_lvl, char *message, ... );
 
-void assert( int condition, char * message, ... );
+void bwassert( int condition, char * message, ... );
 
-void panic( char * message, ... );
+void bwpanic( char * message, ... );
 
 
 void todo_debug( int value, int channel ); 

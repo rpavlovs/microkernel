@@ -148,7 +148,7 @@ void uart1_sender_server() {
 
 				//bwprintf( COM2, "Before enqueueing\n"  ); 
 				//Put the character from the request to queue
-				enqueue_char_queue( request.ch, &cqueue );
+				char_queue_push( request.ch, &cqueue );
 				//bwprintf( COM2, "After enqueueing\n"  ); 
 				break;
 
@@ -162,7 +162,7 @@ void uart1_sender_server() {
 		
 		while( cqueue.size > 0){
 			request.type = UART1_SEND_NOTIFIER_REQUEST;
-			request.ch = dequeue_char_queue( &cqueue );
+			request.ch = char_queue_pop( &cqueue );
 			
 			Send( notifier_tid, (char *) &request, sizeof(request), (char *) 0, 0);
 		}
@@ -241,7 +241,7 @@ void uart1_receiver_server() {
 				//Enqueue received character
 				if ( iqueue.size > 0 ){
 					//todo_debug( 0x7, 1 );
-					enqueue_char_queue( request.ch, &cqueue );
+					char_queue_push( request.ch, &cqueue );
 					//todo_debug( 0x8, 1 );
 				}
 
@@ -262,7 +262,7 @@ void uart1_receiver_server() {
 			//Prepare the reply to the system function
 			target_tid = dequeue_int_queue( &iqueue );
 			reply.type = UART1_RECEIVE_REPLY;
-			reply.ch = dequeue_char_queue( &cqueue );
+			reply.ch = char_queue_pop( &cqueue );
 
 			//Perform the reply
 			//todo_debug( 0x11, 1 );

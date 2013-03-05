@@ -8,7 +8,7 @@
 void enqueue_msg_queue(int sender_tid, char *msg, int msglen,
 						char *reply, int replylen, Message_queue *mailbox) {
 
-	assert(mailbox->size < MSG_QUEUE_SIZE, "Message queue should not overflow");
+	bwassert(mailbox->size < MSG_QUEUE_SIZE, "Message queue should not overflow");
 
 	//Iterate the index
 	mailbox->size++;
@@ -24,7 +24,7 @@ void enqueue_msg_queue(int sender_tid, char *msg, int msglen,
 }
 
 void dequeue_msg_queue(Message_queue *mailbox){
-	assert(mailbox->size > 0, "Message queue should have items to dequeue");
+	bwassert(mailbox->size > 0, "Message queue should have items to dequeue");
 
 	if( ++(mailbox->oldest) >= MSG_QUEUE_SIZE ) mailbox->oldest = 0;
 	mailbox->size--;
@@ -40,7 +40,7 @@ void dequeue_msg_queue(Message_queue *mailbox){
 
 /*
 void enqueue_tqueue(Task_descriptor *td, Task_queue *q){
-	assert(q->size != MAX_NUM_TASKS, "Task queue should not overflow :)");
+	bwassert(q->size != MAX_NUM_TASKS, "Task queue should not overflow :)");
 
 	//Modifying the queue
 	q->size++;
@@ -49,7 +49,7 @@ void enqueue_tqueue(Task_descriptor *td, Task_queue *q){
 }
 
 Task_descriptor *dequeue_tqueue(Task_queue *q){
-	assert(q->size != 0, "Task queue should have items to dequeue");
+	bwassert(q->size != 0, "Task queue should have items to dequeue");
 
 	//Modifying the queue
 	q->size--;

@@ -29,13 +29,6 @@ void printf( int channel, char *format, ... );
 
 int sprintf( char * buffer, char *format, ... );
 
-void debug( int threshhold_lvl, char *message, ... );
-
-void assert( int condition, char * message, ... );
-
-void panic( char * message, ... );
-
-
 void todo_debug( int value, int channel ); 
 
 #endif

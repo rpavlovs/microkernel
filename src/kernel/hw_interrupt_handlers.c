@@ -29,7 +29,7 @@ void uart1_hwi_handler( Kern_Globals *GLOBALS ) {
 	Task_descriptor *waiting_task = 0;
 	Task_descriptor *waiting_task_init = 0; 
 	
-	debug( DBG_KERN, "UART1_HWI_HANDLER: interrupt recieved [%d]",
+	bwdebug( DBG_KERN, "UART1_HWI_HANDLER: interrupt recieved [%d]",
 			*uart1_common_interrupt );
 
 	//bwprintf( COM2, "UART1 INT RECEIVED \n" ); 
@@ -116,7 +116,7 @@ void uart2_hwi_handler( Kern_Globals *GLOBALS ){
 	Task_descriptor *waiting_task = 0;
 	int c;
 
-	debug( DBG_KERN, "UART2_HWI_HANDLER: interrupt recieved [%d]",
+	bwdebug( DBG_KERN, "UART2_HWI_HANDLER: interrupt recieved [%d]",
 			*uart2_common_interrupt );
 	
 	// Is there data to be received?

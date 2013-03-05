@@ -8,10 +8,11 @@
 #define CLI_PRINT_BUFFER_SIZE		1000	// Characters
 
 #define INVALID_TRAIN_ID			-1
-#define INVALID_SPEED			-2
-#define INVALID_SWITCH_ID		-3
+#define INVALID_SPEED				-2
+#define INVALID_SWITCH_ID			-3
 #define INVALID_SWITCH_STATE		-4
-#define INVALID_COMMAND_NAME	-5
+#define INVALID_COMMAND_NAME		-5
+#define INVALID_NUMBER_OF_ARGUMENTS -6
 
 typedef struct Input Input; 
 typedef	struct CLI_history CLI_history;

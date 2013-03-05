@@ -2,10 +2,10 @@
 
 void
 init_schedule( int first_task_priority, void (*first_task_code) ( ), Kern_Globals *GLOBALS ) {	
-	debug( DBG_KERN, "INIT_SCHEDULE: first task priority %d, address %d",
+	bwdebug( DBG_KERN, "INIT_SCHEDULE: first task priority %d, address %d",
 		first_task_priority, (int) first_task_code );
 
-	assert( first_task_priority < SCHED_NUM_PRIORITIES && first_task_priority >= 0,
+	bwassert( first_task_priority < SCHED_NUM_PRIORITIES && first_task_priority >= 0,
 		"first task should have priority between 0 and %d", SCHED_NUM_PRIORITIES - 1 );
 
 	//Initialize priority queues
@@ -38,8 +38,7 @@ init_schedule( int first_task_priority, void (*first_task_code) ( ), Kern_Global
 	
 	//Initializing hwi_watchers
 	int i;
-	for(i=0; i<HWI_NUM_EVENTS; i++)
-	{
+	for( i=0; i<HWI_NUM_EVENTS; i++ ) {
 		sched->hwi_watchers[i] = 0;
 	}
 }
@@ -47,16 +46,16 @@ init_schedule( int first_task_priority, void (*first_task_code) ( ), Kern_Global
 // Return:
 // tid of the next task to run
 int schedule( Kern_Globals * GLOBALS) {
-	debug( DBG_KERN, "SCHEDULE: entered. [last active: %d]",
+	bwdebug( DBG_KERN, "SCHEDULE: entered. [last active: %d]",
 		GLOBALS->scheduler.last_active_tid );
 
 	int p = SCHED_NUM_PRIORITIES - 1;
 
 	// If there are no tasks in all priority queues - PANIC
 	for( ; GLOBALS->scheduler.queues[p].size == 0; --p ) {
-		// if( p < 0 ) panic( "SCHEDULE: pririty queues are all empty." );
+		// if( p < 0 ) bwpanic( "SCHEDULE: pririty queues are all empty." );
 		if( p < 0 ) {
-			debug( DBG_SYS, "SCHEDULE: WARNING: pririty queues are all empty." );
+			bwdebug( DBG_SYS, "SCHEDULE: WARNING: pririty queues are all empty." );
 			break;
 		}
 	}
@@ -77,7 +76,7 @@ int schedule( Kern_Globals * GLOBALS) {
 // Return:
 // interrupt ID of the first recieved interrupt
 int activate( const int tid, Kern_Globals *GLOBALS ) {
-	debug( DBG_KERN, "ACTIVATE: entered [activating task %d]", tid );
+	bwdebug( DBG_KERN, "ACTIVATE: entered [activating task %d]", tid );
 
 	Task_descriptor *td = &(GLOBALS->tasks[tid]);
 
@@ -98,7 +97,7 @@ int activate( const int tid, Kern_Globals *GLOBALS ) {
 		}
 	}*/
 	
-	assert( td->state == READY_TASK, "It's only possible to activate a READY task. "
+	bwassert( td->state == READY_TASK, "It's only possible to activate a READY task. "
 		"[task state: %d task_id: %d]", td->state, td->tid );
 	
 	td->state = ACTIVE_TASK;
@@ -115,7 +114,7 @@ int activate( const int tid, Kern_Globals *GLOBALS ) {
 
 int getNextRequest( Kern_Globals *GLOBALS )
 {
-	debug( DBG_KERN, "GET_NEXT_REQUEST: entered" );
+	bwdebug( DBG_KERN, "GET_NEXT_REQUEST: entered" );
 	return activate( schedule( GLOBALS ), GLOBALS );
 }
 
@@ -134,7 +133,7 @@ int sched_get_free_tid( Kern_Globals *GLOBALS ) {
 	if( new_tid >= MAX_NUM_TASKS ) new_tid = 0;
 
 	while( GLOBALS->tasks[new_tid].state != FREE_TASK ) {
-		assert( ++new_tid < MAX_NUM_TASKS, 
+		bwassert( ++new_tid < MAX_NUM_TASKS, 
 			"sched_get_free_tid: Scheduler is out of task descriptors" );
 		if( new_tid >= MAX_NUM_TASKS ){
 			return -2;
@@ -156,7 +155,7 @@ void sched_add_td( Task_descriptor *td, Kern_Globals *GLOBALS ){
 	sched = &(GLOBALS->scheduler);
 	queue = &(sched->queues[td->priority]);
 
-	assert( queue->size < SCHED_QUEUE_LENGTH, "SYS_CREATE: Scheduler  queue must not be full" );
+	bwassert( queue->size < SCHED_QUEUE_LENGTH, "SYS_CREATE: Scheduler  queue must not be full" );
 
 	// If the queue is empty or the newest pointer is at the end of the td_ptrs buffer
 	// put the next td_ptr at the beginning on the buffer  
@@ -182,7 +181,7 @@ void sched_remove_td( Task_descriptor *td, Kern_Globals *GLOBALS ){
 	sched = &(GLOBALS->scheduler);
 	queue = &(sched->queues[td->priority]);
 
-	assert( queue->td_ptrs[queue->oldest] == td, "can only reschelude most recent task" );
+	bwassert( queue->td_ptrs[queue->oldest] == td, "can only reschelude most recent task" );
 
 	// Removing the first task from the corresponding queue
 	if( ++(queue->oldest) >= SCHED_QUEUE_LENGTH ) queue->oldest = 0;

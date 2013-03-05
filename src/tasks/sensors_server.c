@@ -56,7 +56,6 @@ void draw_sensor_history( Sensor_history *history ) {
 void receive_sensors( char *sensors ) {
 	printf( COM2, "requesting sensors\n" );
 	Putc( COM1, REQUEST_DATA_CODE );
-	printf( COM2, "recieving sensors\n" );
 
 	int i;
 	for( i = 0; i < 10; ++i ) {
@@ -73,13 +72,12 @@ void sensors_server() {
 	char s88s[10], s88s_prev[10];
 	Sensor_history sensor_history;
 
-	printf( COM2, "sensors_server: enter\n" );
-
 	// Initialization
 	init_sensor_history( &sensor_history );
 
 	// Reset sensors
 	Putc( COM1, RESET_CODE );
+	Delay( 500 );
 	receive_sensors( s88s_prev );
 	
 	FOREVER {

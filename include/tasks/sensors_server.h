@@ -6,7 +6,7 @@
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 #define SENSOR_HISTORY_LEN		14
 #define SENSORS_SERVER_NAME		"sensors_server"
-#define SENSOR_QUERY_FREQENCY	10 // Queries per second 	
+#define SENSOR_QUERY_FREQENCY	2 // Queries per second 	
 
 #define RESET_CODE				192
 #define REQUEST_DATA_CODE		133

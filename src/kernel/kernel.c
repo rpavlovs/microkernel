@@ -10,8 +10,11 @@ int main( ) {
 	FOREVER {
 		request = getNextRequest( &KERN_GLOBALS );
 
-		if( KERN_GLOBALS.scheduler.tasks_exited > 10 ) return 0;
+		if ( request == SHUTDOWN_EVENT_SYSCALL )
+			return 0; 
 		
 		handle_request( request, &KERN_GLOBALS );
+		
+		// if( KERN_GLOBALS.scheduler.tasks_exited > 10 ) return 0;
 	}
 }

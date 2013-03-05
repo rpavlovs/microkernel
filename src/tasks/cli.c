@@ -108,8 +108,6 @@ void send_command( int cmd_type, int element_id, int param, int server_tid ){
 	cmd_request.cmd.element_id = element_id; 
 	cmd_request.cmd.param = param; 
 	
-	bwprintf( COM2, "\033[%39;7HSending reverse command. Server: %  Train: %d Param: %d Cmd: %d \n", 
-		server_tid,  element_id, param, cmd_type ); 
 	Send( server_tid, ( char * ) &cmd_request, sizeof( cmd_request ), 0, 0  ); 
 }
 
@@ -150,8 +148,8 @@ int exec_rv( int train_id, Servers_tid_list *servers_list ) {
 }
 
 int exec_q( ) {
-	Exit();
-	return SUCCESS;
+	Shutdown(); 
+	return SUCCESS;	// This should never execute. 
 }
 
 void init_cli_history( CLI_history *h ) {

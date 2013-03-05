@@ -3,13 +3,14 @@
 
 #define CREATE_SYSCALL 			0
 #define MYTID_SYSCALL 			1
-#define MYPARENTTID_SYSCALL 	2
+#define MYPARENTTID_SYSCALL		2
 #define PASS_SYSCALL 			3
 #define EXIT_SYSCALL 			4
 #define SEND_SYSCALL 			5
-#define RECEIVE_SYSCALL 		6
+#define RECEIVE_SYSCALL			6
 #define REPLY_SYSCALL 			7
 #define AWAIT_EVENT_SYSCALL		8
+#define SHUTDOWN_EVENT_SYSCALL	9 
 #define TESTCALL_SYSCALL		99
 
 #define CREATE_ARGS 			2
@@ -192,6 +193,9 @@ int AwaitEvent( int eventid, int event );
 int Getc( int channel );
 int Putc( int channel, char ch );
 int Putstr( int channel, char* str );
+
+// Finishes the execution of our microkernel and returns control to RedBoot. 
+int Shutdown(); 
 
 int TestCall( int a, int b, int c, int d, int e, int f );
 

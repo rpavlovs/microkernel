@@ -44,6 +44,10 @@ int AwaitEvent( int eventid, int event ) {
 	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (AWAIT_EVENT_SYSCALL) );	
 }
 
+int Shutdown(){
+	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (SHUTDOWN_EVENT_SYSCALL) );
+}
+
 ////////////////////
 // Wrappers
 ////////////////////

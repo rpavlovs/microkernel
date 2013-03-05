@@ -200,8 +200,8 @@ void update_cli_view( CLI_history *h ) {
 	
 	// TODO: 
 	// For now just print the last command issued and the result. Later we will have a whole history feature. 
-	ptr += sprintf( ptr, "\033[%d;4H\033[K%s", history_row, history_record->command ); 
-	ptr += sprintf( ptr, "\033[%d;7H\033[K", history_row + 1 ); 
+	ptr += sprintf( ptr, "\033[%d;4H\033[K-%s", history_row + 1, history_record->command ); 
+	ptr += sprintf( ptr, "\033[%d;7H\033[K", history_row + 2 ); 
 	
 	switch( history_record->status ) {
 	case SUCCESS:

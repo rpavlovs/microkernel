@@ -92,7 +92,7 @@ asm(
 		"MOV	r1, lr"					"\n\t"	// This seems suspicious. 
 		"MRS	r2, spsr"						"\n\t"
 		"STR	r2, [ r0, #14*4 ]"				"\n\t"		// Store the retrieved SPSR in the stack. 
-		"LDMFD	sp!, { r4-r11 }"			"\n\t"	// CHANGED!!!!!!!!!!!!!!!!!!!!!
+		"LDMFD	sp!, { r4-r11 }"				"\n\t"
 
 		// Save the TD information. 
 		// R0 - Task stack pointer. 
@@ -336,7 +336,7 @@ execute_user_task( unsigned int task_sp, unsigned int task_lr, unsigned int task
 
 	// Store the TID
 	"STR		r2, [ sp, #0 ]"						"\n\t"
-	"STMFD	sp!, { r4-r11 }"					"\n\t"	// Store all the registers of the kernel ( fp, ip and lr were saved before). // This was modified
+	"STMFD	sp!, { r4-r11 }"						"\n\t"	// Store all the registers of the kernel ( fp, ip and lr were saved before). // This was modified
 
 	// Store information temporarily
 	//"ADD		sp, sp, #4"						"\n\t"
@@ -385,24 +385,8 @@ clean_system_state(){
 		"ORR		r0, r0, #4096"				"\n\t"		// Enable caches
 		"MCR		p15, 0, r0, c1, c0, 0"			"\n\t"		// Add the changes to the processor
 		
-	// TODO: Enable fast processor clocking
+		// TODO: Enable fast processor clocking
 	);
-	
-	/*
-	 	asm("MOV r10, #0");
-	asm("MCR p15, 0, r10, c7, c5, 0");
-	//Enable the Instruction Cache
-	asm("MRC p15, 0, r10, c1, c0, 0");	//get the current value of the register
-	asm("MOV r9, #1");
-	asm("MOV r9, r9, LSL#30");	//generate the proper bits in r9 for fast clock
-	asm("ORR r10, r10, #4096");	//or the bits for the instruction cache
-	asm("ORR r10, r10, r9");	//or the bits for the fast clock
-	//asm("ORR r10, r10, #2");	//or the bits for the data cache
-	asm("MCR p15, 0, r10, c1, c0, 0");
-	 
-	 */
-	
-	
 	
 	// Disable all HW interrupts. 
 	*( ( int * ) INT_CONTROL_BASE_1 + INT_ENABLE_OFFSET ) = INT_RESET_VALUE; 
@@ -436,15 +420,6 @@ initialize_interrupts(){
 	int initialInterruptsVIC1 = INT_RESET_VALUE;
 	int initialInterruptsVIC2 = INT_RESET_VALUE;
 	
-	/*
-	// Enable here the interrupts found in VIC1 ( The first 32 ). 
-	initialInterruptsVIC1 = initialInterruptsVIC1 | TIMER1_INT ;
-	*vic1EnablePointer = initialInterruptsVIC1; 
-	
-	// Enable here the interrupts found in VIC2 ( The last 32 ). 
-	initialInterruptsVIC2 = initialInterruptsVIC2 | UART1_INT | UART2_INT;
-	*vic2EnablePointer = initialInterruptsVIC2;
-	*/
 	initialInterruptsVIC1 = initialInterruptsVIC1;
 	*vic1EnablePointer = initialInterruptsVIC1; 
 	

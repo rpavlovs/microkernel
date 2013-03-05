@@ -139,8 +139,6 @@ int exec_rv( int train_id, Servers_tid_list *servers_list ) {
 	if( !is_train_id(train_id) )
 		return INVALID_TRAIN_ID;
 	
-	// TODO: Add a structure that allows to get the information of the train. 
-	
 	// Send message to command server. 
 	int cmd_server_tid = servers_list->items[CMD_SERVER_INDEX]; 
 	send_command( REVERSE_CMD_TYPE, train_id, CMD_PARAM_NOT_REQUIRED, cmd_server_tid ); 

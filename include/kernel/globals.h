@@ -60,7 +60,7 @@ typedef struct {
 } Message_queue;
 
 typedef struct {
-	char *eventBuffer; 
+	char *eventBuffer;
 	int bufferLength;
 } Await_event_info;
 

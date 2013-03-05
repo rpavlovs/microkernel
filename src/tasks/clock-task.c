@@ -3,8 +3,8 @@
 #define CLOCK_TASK_DELAY		10
 #define CLOCK_ROW_POS			4
 #define CLOCK_COL_POS			18
-#define CMD_ROW_POS			20
-#define CMD_COL_POS			10
+#define CMD_ROW_POS				20
+#define CMD_COL_POS				10
 
 void print_time( char *str_buff, int current_time_ticks ){
 	// Get the time in terms of minutes, seconds and tenths of seconds. 
@@ -22,7 +22,7 @@ void print_time( char *str_buff, int current_time_ticks ){
 	char *temp_buffer = str_buff; 
 	temp_buffer += hideCursor( temp_buffer );
 	temp_buffer += cursorPositioning( temp_buffer, CLOCK_ROW_POS, CLOCK_COL_POS );
-	temp_buffer += sprintf( temp_buffer, "%d:%d:%d ", minutes, seconds, tenths ); 
+	temp_buffer += sprintf( temp_buffer, "%0d:%0d:%0d ", minutes, seconds, tenths ); 
 	//temp_buffer += cursorPositioning( temp_buffer, CMD_ROW_POS, CMD_COL_POS );
 	temp_buffer += restoreCursor( temp_buffer ); 
 	//temp_buffer += showCursor( temp_buffer );

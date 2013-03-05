@@ -90,7 +90,7 @@ void init_switches( Switches_list *sw_list, int cmd_server_tid, char *buff ){
 
 void switchserver(){
 	// Initialization
-	debug( DBG_SYS, "SWITCHES SERVER: enters" );
+	bwdebug( DBG_SYS, "SWITCHES SERVER: enters" );
 	RegisterAs( SWITCHES_SERVER_NAME );
 
 	int sender_tid; 
@@ -101,17 +101,17 @@ void switchserver(){
 	// The cmd server is required for the initialization of this server. 
 	// Hence, the cmd server must have been previously created. 
 	int cmd_server_tid = WhoIs( COMMAND_SERVER_NAME );
-	assert( cmd_server_tid >= 0, "SWITCH SERVER: This task requires the command server to be able to operate." ); 
+	bwassert( cmd_server_tid >= 0, "SWITCH SERVER: This task requires the command server to be able to operate." ); 
  
 	Switches_list switches_list;
 	init_switches( &switches_list, cmd_server_tid, str_ptr ); 
 	
 	FOREVER{
-		debug( DBG_SYS, "SWITCHES SERVER: listening for a request" );
+		bwdebug( DBG_SYS, "SWITCHES SERVER: listening for a request" );
 		Receive( &sender_tid, ( char * ) &cmd_request, sizeof( cmd_request ) );
 		
 		if ( cmd_request.type == ADD_CMD_REQUEST && cmd_request.cmd.cmd_type == SWITCH_CMD_TYPE ){
-			debug( DBG_SYS, "SWITCHES SERVER: Received add command from [sender_tid: %d]",
+			bwdebug( DBG_SYS, "SWITCHES SERVER: Received add command from [sender_tid: %d]",
 					sender_tid ); 
 			Reply( sender_tid, 0, 0 ); 
 			
@@ -121,7 +121,7 @@ void switchserver(){
 			Putstr( COM2, str_ptr );
 		}
 		else{
-			debug( DBG_SYS, "COMMAND SERVER: Invalid cmd received from [sender_tid: %d cmd: %d]",
+			bwdebug( DBG_SYS, "COMMAND SERVER: Invalid cmd received from [sender_tid: %d cmd: %d]",
 					sender_tid, cmd_request.type );
 			Reply( sender_tid, 0, 0 ); 			
 		}

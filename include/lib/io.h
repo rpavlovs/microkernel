@@ -1,7 +1,7 @@
 #ifndef __IO_H__
 #define __IO_H__
 
-#define DBG_FATAL	 	0	// panic and assert only
+#define DBG_FATAL	 	0	// panic and bwassert only
 #define DBG_USR		 	1	// user tasks 
 #define DBG_SYS		 	2	// sytem/user tasks
 #define DBG_REQ		 	3	// kernel requests + sytem/user tasks
@@ -28,13 +28,6 @@ void putw( int channel, int n, char fc, char *bf );
 void printf( int channel, char *format, ... );
 
 int sprintf( char * buffer, char *format, ... );
-
-void debug( int threshhold_lvl, char *message, ... );
-
-void assert( int condition, char * message, ... );
-
-void panic( char * message, ... );
-
 
 void todo_debug( int value, int channel ); 
 

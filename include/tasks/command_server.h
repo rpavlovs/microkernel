@@ -11,7 +11,7 @@
 
 #define COMMAND_QUEUE_SIZE			100
 
-#define ADD_CMD_REQUEST			1			
+#define ADD_CMD_REQUEST				1			
 #define CMD_NOTIFIER_IDLE			2
 
 #define TRAIN_CMD_TYPE				1

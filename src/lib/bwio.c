@@ -253,11 +253,9 @@ void bwprintf( int channel, char *fmt, ... ) {
     va_end(va);
 }
 
-// void debug( int threshhold_dbg_lvl, char *fmt, ... ) {
-	/*
-	 * TODO: Make this work without busy wait. /
-    if( threshhold_dbg_lvl > DEBUG_LEVEL ) return;
-    va_list va;
+void bwdebug( int threshhold_dbg_lvl, char *fmt, ... ) {
+  if( threshhold_dbg_lvl > DEBUG_LEVEL ) return;
+  va_list va;
 
 	switch( threshhold_dbg_lvl ) {
 	case 0:
@@ -277,17 +275,14 @@ void bwprintf( int channel, char *fmt, ... ) {
 		bwprintf( COM2, " DEBUG: [?] ", threshhold_dbg_lvl );
 	}
 
-    va_start(va,fmt);
-    bwformat( COM2, fmt, va );
-    va_end(va);
-    
-    bwprintf( COM2, "\n" );
-	* */
-// }
+  va_start(va,fmt);
+  bwformat( COM2, fmt, va );
+  va_end(va);
+  
+  bwprintf( COM2, "\n" );
+}
 
-// void assert( int statement, char *fmt, ... ) {
-	/*
-	 * TODO: Make this work without busy wait. /
+void bwassert( int statement, char *fmt, ... ) {
 	if( statement ) return;
 	va_list va;
 
@@ -300,32 +295,18 @@ void bwprintf( int channel, char *fmt, ... ) {
 	bwprintf( COM2, "\n" );
 
 	for( ; ; );
-	* */
-// }
-
-// void panic( char *fmt, ... ) {
-// 	va_list va;
-// 	bwprintf( COM2, " PANIC: " );
-
-//     va_start(va,fmt);
-//     bwformat( COM2, fmt, va );
-//     va_end(va);
-
-// 	bwprintf( COM2, "\n" );
-
-// 	for( ; ; );
-// }
-
-/*
-void todo_debug( int value, int channel ) {
- 	int *ptr; 
- 	if ( channel == 0 ) {
- 		ptr = ( int * ) ( 0x01dffe50 );
- 	} else if( channel == 1 ) {
- 		ptr = ( int * ) ( 0x01dffe54 );
- 	} else {
- 		ptr = ( int * ) ( 0x01dffe58 );
- 	}
- 	*ptr = value; 
 }
-*/
+
+
+void bwpanic( char *fmt, ... ) {
+	va_list va;
+	bwprintf( COM2, " PANIC: " );
+
+    va_start(va,fmt);
+    bwformat( COM2, fmt, va );
+    va_end(va);
+
+	bwprintf( COM2, "\n" );
+
+	for( ; ; );
+}

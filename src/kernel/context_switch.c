@@ -23,7 +23,7 @@ asm(
 	// Debugging
 	// ------------------------------------------------------------------------
 	/*
-	 * This is a method used to debug assembly code. It uses bwputr, but does
+	 * This is a method used to bwdebug assembly code. It uses bwputr, but does
 	 * not modify the registers. Therefore, it doesn't corrupt the state. 
 	 * NOTE: This method prints the value in register 4 since it's never used. 
 	 */										
@@ -120,7 +120,7 @@ StoreTaskInformation( unsigned int taskSP, unsigned int lr, unsigned int activeT
 	
 	// Update the task descriptor
 	Task_descriptor *td = (Task_descriptor *) activeTD;
-	debug( DBG_KERN, "EXECUTE_CSWI_HANDLER: enters [return address: %d, tid: %d]", lr, td->tid );
+	bwdebug( DBG_KERN, "EXECUTE_CSWI_HANDLER: enters [return address: %d, tid: %d]", lr, td->tid );
 	td->sp = (int *) taskSP;
 	td->lr = (int *) lr;
 }
@@ -128,7 +128,7 @@ StoreTaskInformation( unsigned int taskSP, unsigned int lr, unsigned int activeT
 void
 handle_request( int request, Kern_Globals *GLOBALS ) {
 	
-	debug( DBG_KERN, "HANDLE_Request: entered [request id: %d]", request );
+	bwdebug( DBG_KERN, "HANDLE_Request: entered [request id: %d]", request );
 	if ( request < 0 ) {
 		handle_hwi( GLOBALS ); 
 	}
@@ -144,7 +144,7 @@ handle_hwi( Kern_Globals *GLOBALS ){
 	int *vic2_hw_interrupt = ( int * ) INT_CONTROL_BASE_2 + IRQ_STATUS_OFFSET;
 	
 	Task_descriptor *td = &(GLOBALS->tasks[GLOBALS->scheduler.last_active_tid]);
-	debug( DBG_KERN, "HANDLE_HWI: entered [VIC1 interrupt id: %d VIC2 interrupt id: %d caller: ]", 
+	bwdebug( DBG_KERN, "HANDLE_HWI: entered [VIC1 interrupt id: %d VIC2 interrupt id: %d caller: ]", 
 			*vic1_hw_interrupt, *vic2_hw_interrupt, td->tid );
 	
 	// There could be multiple interrupts enabled. Therefore this is handled
@@ -155,23 +155,23 @@ handle_hwi( Kern_Globals *GLOBALS ){
 		
 		// Timer
 		if ( *vic2_hw_interrupt & TIMER3_INT ){
-			debug( DBG_KERN, "TIMER_INTERRUPT: handling" );
+			bwdebug( DBG_KERN, "TIMER_INTERRUPT: handling" );
 			timer_hwi_handler( GLOBALS );
-			debug( DBG_KERN, "TIMER_INTERRUPT: handled" );
+			bwdebug( DBG_KERN, "TIMER_INTERRUPT: handled" );
 		}
 		
 		// UART 1
 		if ( *vic2_hw_interrupt & UART1_INT ){
-			debug( DBG_KERN, "UART1_INTERRUPT: handling" );
+			bwdebug( DBG_KERN, "UART1_INTERRUPT: handling" );
 			uart1_hwi_handler( GLOBALS ); 
-			debug( DBG_KERN, "UART1_INTERRUPT: handled" );
+			bwdebug( DBG_KERN, "UART1_INTERRUPT: handled" );
 		}
 		
 		// UART 2
 		if ( *vic2_hw_interrupt & UART2_INT ){
-			debug( DBG_KERN, "UART2_INTERRUPT: handling" );
+			bwdebug( DBG_KERN, "UART2_INTERRUPT: handling" );
 			uart2_hwi_handler( GLOBALS ); 
-			debug( DBG_KERN, "UART2_INTERRUPT: handled" );
+			bwdebug( DBG_KERN, "UART2_INTERRUPT: handled" );
 		}
 	}
 	
@@ -181,7 +181,7 @@ handle_hwi( Kern_Globals *GLOBALS ){
 
 void 
 handle_swi( int request, Kern_Globals *GLOBALS ){
-	debug( DBG_KERN, "HANDLE_SWI: entered [request id: %d]", request );
+	bwdebug( DBG_KERN, "HANDLE_SWI: entered [request id: %d]", request );
 	
 	// Create a placeholder for the arguments.
 	int sysCallArguments[MAX_NUM_ARGUMENTS];

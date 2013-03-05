@@ -266,85 +266,7 @@ int sprintf( char *buffer, char *fmt, ... ) {
     return size;
 }
 
-void debug( int threshhold_dbg_lvl, char *fmt, ... ) {
-//   if( threshhold_dbg_lvl > DEBUG_LEVEL ) return;
-//   va_list va;
-//
-//	switch( threshhold_dbg_lvl ) {
-//	case 0:
-//	case 1:
-//		bwprintf( COM2, " DEBUG: [U] ", threshhold_dbg_lvl );
-//		break;
-//	case 2:
-//		bwprintf( COM2, " DEBUG: [S] ", threshhold_dbg_lvl );
-//		break;
-//	case 3:
-//		bwprintf( COM2, " DEBUG: [R]  ", threshhold_dbg_lvl );
-//		break;
-//	case 4:
-//		bwprintf( COM2, " DEBUG: [K]   ", threshhold_dbg_lvl );
-//		break;
-//	default:
-//		bwprintf( COM2, " DEBUG: [?] ", threshhold_dbg_lvl );
-//	}
-//
-//   va_start(va,fmt);
-//   bwformat( COM2, fmt, va );
-//   va_end(va);
-//   
-//   bwprintf( COM2, "\n" );
-}
-
-void assert( int statement, char *fmt, ... ) {
-	if( statement ) 
-		return;
-	
-	va_list va;
-
-	bwprintf( COM2, "ASSERT: " );
-
-	va_start(va,fmt);
-	bwformat( COM2, fmt, va );
-	va_end(va);
-
-	bwprintf( COM2, "\n" );
-
-	for( ; ; );
-}
-
-void panic( char *fmt, ... ) {
-	
-//	va_list va;
-//	bwprintf( COM2, " PANIC: " );
-//
-//    va_start(va,fmt);
-//	Create( 7, task_cli );
-//    va_end(va);
-//
-//	bwprintf( COM2, "\n" );
-//
-//	for( ; ; );	
-}
-
 // dump -b 0x01dffe50 -l 4
-/*
-void todo_debug( int value, int channel ) {
-	int *ptr; 
-	if ( channel == 0 ) {
-		ptr = ( int * ) ( 0x01dffe50 );
-	} 
-	else if( channel == 1 ) {
-		ptr = ( int * ) ( 0x01dffe54 );
-	}
-	else if( channel == 2 ) {
-		ptr = ( int * ) ( 0x01dffe58 );
-	}
-	else if( channel == 3 ){
-		ptr = ( int * ) ( 0x01dffe5c );
-	}
-	*ptr = value;
-}*/
-
 void todo_debug( int value, int channel ) {
 	/*
 	int *ptr, addr;
@@ -355,7 +277,7 @@ void todo_debug( int value, int channel ) {
 	ptr = ( int * ) addr;
 
 	*ptr = value;
-	 * */
+	 	*/
 	if ( channel == 20 ){
 		int *ptr, addr;
 		addr = 0x01dffe50; 

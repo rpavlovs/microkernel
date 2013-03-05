@@ -16,11 +16,11 @@ typedef struct{
 	Train_status trains[ TRAIN_LIST_SIZE ];
 } Train_list;
 
-void init_train_list( Train_list *list ){
-	int i = 0; 
-	for( i = 0; i < TRAIN_LIST_SIZE; i++ ){
+void init_train_list( Train_list *list ) {
+	int i; 
+	for( i = 0; i < TRAIN_LIST_SIZE; i++ ) {
 		list->trains[ i ].id = -1; 
-		list->trains[ i ].speed = 0; 
+		list->trains[ i ].speed = 0;
 	}
 }
 
@@ -34,7 +34,7 @@ void init_cmd_queue(Command_queue *cmd_queue){
 }
 
 void enqueue_cmd( Command temp_cmd, Command_queue *cmd_queue ){
-	assert( cmd_queue->size != COMMAND_QUEUE_SIZE, "Command queue should not overflow" );
+	bwassert( cmd_queue->size != CHAR_QUEUE_SIZE, "Command queue should not overflow" );
 	
 	cmd_queue->size++; 
 	if ( ++(cmd_queue->newest) >= COMMAND_QUEUE_SIZE )
@@ -48,7 +48,7 @@ void enqueue_cmd( Command temp_cmd, Command_queue *cmd_queue ){
 }
 
 Command dequeue_cmd( Command_queue *cmd_queue ){
-	assert( cmd_queue >= 0, "Command queue should have items to dequeue." ); 
+	bwassert( cmd_queue->size >= 0, "dequeue_cmd: Command queue should not be empty." ); 
 	
 	cmd_queue->size--; 
 	Command cmd = cmd_queue->cmds[ cmd_queue->oldest ]; 
@@ -63,7 +63,7 @@ Command dequeue_cmd( Command_queue *cmd_queue ){
 // -- NOTE: The notifier requires time server to work properly. 
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 void command_notifier(){
-	debug( DBG_SYS, "COMMAND SERVER: enters" );
+	bwdebug( DBG_USR, "COMMAND SERVER: enters" );
 	
 	// Initialization
 	int cmd_server_tid; 
@@ -73,7 +73,7 @@ void command_notifier(){
 	Train_list train_list; 
 	init_train_list( &train_list ); 
 	
-	debug( DBG_SYS, "COMMAND SERVER: recieving init info" );
+	bwdebug( DBG_USR, "COMMAND SERVER: recieving init info" );
 	Receive( &cmd_server_tid, ( char * ) &initial_msg, sizeof( initial_msg ) );
 	Reply( cmd_server_tid, 0, 0 ); 
 	
@@ -85,6 +85,7 @@ void command_notifier(){
 			
 			switch( command.cmd_type ){
 				case TRAIN_CMD_TYPE:		// Train
+
 					// Keep track of the current speed. 
 					train_list.trains[ command.element_id ].id = command.element_id; 
 					train_list.trains[ command.element_id ].speed = command.param; 
@@ -121,7 +122,7 @@ void command_notifier(){
 						Putc( COM1, 34 );
 					}
 					else{
-						assert( 0, "COMMAND SERVER: Invalid switch position. " ); 
+						bwassert( 0, "COMMAND SERVER: Invalid switch position. " ); 
 					}
 					Putc( COM1, command.element_id );
 					
@@ -129,7 +130,7 @@ void command_notifier(){
 					Putc( COM1, 32 );
 					break; 
 				default: 
-					debug( DBG_SYS, "COMMAND SERVER: Invalid command. Cannot execute [ Cmd: %d ]", 
+					bwdebug( DBG_USR, "COMMAND SERVER: Invalid command. Cannot execute [ Cmd: %d ]", 
 							command.cmd_type ); 
 					bwprintf( COM2, "Reversing the train/0" ); 
 					break; 
@@ -149,14 +150,14 @@ void command_notifier(){
 // Command Server
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 void commandserver(){
-	debug( DBG_SYS, "COMMAND SERVER: enters" );
+	bwdebug( DBG_USR, "COMMAND SERVER: enters" );
 	RegisterAs( COMMAND_SERVER_NAME );
 	
 	// Initialization
 	int cmd_notifier_tid, sender_tid, notifier_idle = 0; 
 	
 	int time_server_tid = WhoIs( TIME_SERVER_NAME ); 
-	assert( time_server_tid >= 0, "COMMAND SERVER: This server can't work without the time server" ); 
+	bwassert( time_server_tid >= 0, "COMMAND SERVER: This server can't work without the time server" ); 
 	
 	Cmd_request cmd_request; 
 	Command_queue cmd_queue; 
@@ -164,7 +165,7 @@ void commandserver(){
 	
 	// Create and contact the notifier. 
 	cmd_notifier_tid = Create( COMMAND_NOTIFIER_PRIORITY, command_notifier ); 
-	debug( DBG_SYS, "COMMAND_SERVER: command_notifier created [tid: %d priority: %d]", 
+	bwdebug( DBG_USR, "COMMAND_SERVER: command_notifier created [tid: %d priority: %d]", 
 			cmd_notifier_tid, UART_SENDER_NOTIFIER_PRIORITY );
 	
 	Cmd_initial_msg initial_msg; 
@@ -172,22 +173,22 @@ void commandserver(){
 	Send( cmd_notifier_tid, ( char * ) &initial_msg, sizeof( initial_msg ), 0, 0  );  
 	
 	FOREVER{
-		debug( DBG_SYS, "COMMAND SERVER: listening for a request" );
+		bwdebug( DBG_USR, "COMMAND SERVER: listening for a request" );
 		Receive( &sender_tid, ( char * ) &cmd_request, sizeof( cmd_request ) );
 
 		switch( cmd_request.type ){
 			case ADD_CMD_REQUEST:
-				debug( DBG_SYS, "COMMAND SERVER: Added command from [sender_tid: %d]",
+				bwdebug( DBG_USR, "COMMAND SERVER: Added command from [sender_tid: %d]",
 					sender_tid );
 				enqueue_cmd( cmd_request.cmd, &cmd_queue ); 
 				Reply( sender_tid, 0, 0 ); 
 				break; 
 			case CMD_NOTIFIER_IDLE:
-				debug( DBG_SYS, "COMMAND SERVER: notifier is idle" );
+				bwdebug( DBG_USR, "COMMAND SERVER: notifier is idle" );
 				notifier_idle = 1; 
 				break; 
 			default: 
-				debug( DBG_SYS, "COMMAND SERVER: Invalid cmd received from [sender_tid: %d cmd: %d]",
+				bwdebug( DBG_USR, "COMMAND SERVER: Invalid cmd received from [sender_tid: %d cmd: %d]",
 					sender_tid, cmd_request.type );
 				Reply( sender_tid, 0, 0 ); 
 				break; 
@@ -195,7 +196,7 @@ void commandserver(){
 		 
 		if ( notifier_idle == 1 && cmd_queue.size > 0 ){
 			notifier_idle = 0; 
-			debug( DBG_SYS, "COMMAND SERVER: Waking up notifier" );
+			bwdebug( DBG_USR, "COMMAND SERVER: Waking up notifier" );
 			Reply( cmd_notifier_tid, 0, 0 ); 
 		}
 	}

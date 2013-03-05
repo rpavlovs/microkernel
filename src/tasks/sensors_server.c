@@ -3,110 +3,6 @@
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 // Sensors Server
 // -----------------------------------------------------------------------------------------------------------------------------------------------
-/*
-void initialize_sensors(){
-	
-}
-
-void sensors_server(){
-	debug( DBG_SYS, "SENSORS_SERVER: enters" );
-	RegisterAs( SENSORS_SERVER_NAME );
-	
-	// Initialization
-	char sensors[]; 
-	
-	int time_server_tid = WhoIs( TIME_SERVER_NAME ); 
-	assert( time_server_tid >= 0, "SENSORS_SERVER: This server can't work without the time server" ); 
-	
-}
- * */
-
-/*
-void sensors_server() {
-	// Data structures
-	int i, j;
-	//int timeserver_tid;
-	Msg_timeserver_request request;
-	Msg_timeserver_reply reply;
-	long delay_start_time, delay_end_time, delay_time;
-	char s80s[5], sensors[10];
-	Sensor_history sensor_history;
-
-	// Initialization
-	//timeserver_tid = WhoIs("timeserver");
-	request.type = TIME_REQUEST;
-	for(i = 0; i < 10; i++) 
-		sensors[i] = 0;
-	init_sensor_history( &sensor_history );
-	//TODO: refactor
-	s80s[0] = 'A';
-	s80s[1] = 'B';
-	s80s[2] = 'C';
-	s80s[3] = 'D';
-	s80s[4] = 'E';
-
-	/*
-	// Getting sensors request time
-	Putc( COM1, 133 );
-	Send(timeserver_tid, (char *) &request, sizeof(request), (char *) &reply, sizeof(reply));
-	delay_start_time = reply.num;
-
-	// Getting sensors response	time
-	Getc( COM1 );
-	Send(timeserver_tid, (char *) &request, sizeof(request), (char *) &reply, sizeof(reply));
-	delay_end_time = reply.num;
-	delay_time = delay_end_time - delay_start_time;
-	
-	bwprintf( COM2, "Delay time is: %d", delay_time);
-
-	// Receiving trash data from sensors
-	for( i = 0; i < 9; ++i ) {
-		Getc( COM1 );
-	}
-	bwprintf( COM2, "Trash received...\n");*/
-
-	//request_sensors_data( &train_buf );
-	//long wait_till = get_time() + SENSOR_CELAR_TIME;
-	//while (get_time() < wait_till) try_to_recieve_char( &train_recieve_buf, COM1 );
-	
-	//FOREVER {
-		/*
-		todo_debug( 0x0, 0 );
-		todo_debug( 0x0, 1 );
-		todo_debug( 0x0, 2 );
-		todo_debug( 0x0, 3 );
-		todo_debug( 0x0, 4 );
-		todo_debug( 0x0, 5 );
-		todo_debug( 0x0, 6 );
-		todo_debug( 0x0, 7 );
-		todo_debug( 0x0, 8 );
-		*
-		receive_sensors( sensors );
-
-		todo_debug( 0x5, 8 );
-
-		for( j = 0; j < 5; j++ ) {
-			if(sensors[2*j] & 0x80) 	update_sensor_history( s80s[j], '0', '1', &sensor_history );
-			if(sensors[2*j] & 0x40) 	update_sensor_history( s80s[j], '0', '2', &sensor_history );
-			if(sensors[2*j] & 0x20) 	update_sensor_history( s80s[j], '0', '3', &sensor_history );
-			if(sensors[2*j] & 0x10) 	update_sensor_history( s80s[j], '0', '4', &sensor_history );
-			if(sensors[2*j] & 0x8)		update_sensor_history( s80s[j], '0', '5', &sensor_history );
-			if(sensors[2*j] & 0x4)		update_sensor_history( s80s[j], '0', '6', &sensor_history );
-			if(sensors[2*j] & 0x2)		update_sensor_history( s80s[j], '0', '7', &sensor_history );
-			if(sensors[2*j] & 0x1)		update_sensor_history( s80s[j], '0', '8', &sensor_history );
-
-			if(sensors[2*j+1] & 0x80) 	update_sensor_history( s80s[j], '0', '9', &sensor_history );
-			if(sensors[2*j+1] & 0x40) 	update_sensor_history( s80s[j], '1', '0', &sensor_history );
-			if(sensors[2*j+1] & 0x20) 	update_sensor_history( s80s[j], '1', '1', &sensor_history );
-			if(sensors[2*j+1] & 0x10) 	update_sensor_history( s80s[j], '1', '2', &sensor_history );
-			if(sensors[2*j+1] & 0x8)	update_sensor_history( s80s[j], '1', '3', &sensor_history );
-			if(sensors[2*j+1] & 0x4)	update_sensor_history( s80s[j], '1', '4', &sensor_history );
-			if(sensors[2*j+1] & 0x2)	update_sensor_history( s80s[j], '1', '5', &sensor_history );
-			if(sensors[2*j+1] & 0x1)	update_sensor_history( s80s[j], '1', '6', &sensor_history );
-		}
-	}
-}
-*/
 
 void init_sensor_history( Sensor_history *history ) {
 	history->newest = -1;
@@ -158,22 +54,22 @@ void receive_sensors(char* sensors) {
 	reset = 192;
 	request = 133;
 
-	todo_debug( 0x1, 8 );
+	//todo_debug( 0x1, 8 );
 	
 	Putc( COM1, reset );				// NOTE: They don't add this reset message
 
-	todo_debug( 0x2, 8 );
+	//todo_debug( 0x2, 8 );
 
 	Putc( COM1, request );
 
 	//bwprintf( COM2, "Get sensors started...\n");
 	for( i = 0; i < 10; ++i ) {
 
-		todo_debug( 0x3, 8 );
+		//todo_debug( 0x3, 8 );
 
 		sensors[i] = Getc( COM1 );
 
-		todo_debug( 0x4, 8 );
+		//todo_debug( 0x4, 8 );
 	}
 	//bwprintf( COM2, "Get sensors ended...\n");
 }
@@ -226,20 +122,10 @@ void sensors_server() {
 	//while (get_time() < wait_till) try_to_recieve_char( &train_recieve_buf, COM1 );
 	
 	FOREVER {
-		/*
-		todo_debug( 0x0, 0 );
-		todo_debug( 0x0, 1 );
-		todo_debug( 0x0, 2 );
-		todo_debug( 0x0, 3 );
-		todo_debug( 0x0, 4 );
-		todo_debug( 0x0, 5 );
-		todo_debug( 0x0, 6 );
-		todo_debug( 0x0, 7 );
-		todo_debug( 0x0, 8 );
-		*/
+
 		receive_sensors( sensors );
 
-		todo_debug( 0x5, 8 );
+		//todo_debug( 0x5, 8 );
 
 		for( j = 0; j < 5; j++ ) {
 			if(sensors[2*j] & 0x80) 	update_sensor_history( s80s[j], '0', '1', &sensor_history );

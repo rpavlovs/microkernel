@@ -46,7 +46,7 @@ void init_wakeup_list( Wakeup_list *list ) {
 }
 
 void schedule_for_wakeup( Wakeup_list *list, int new_tid, int wakeup_time ) {
-	assert( list->size < TIMESERVER_WAKEUP_QUEUE_SIZE,
+	bwassert( list->size < TIMESERVER_WAKEUP_QUEUE_SIZE,
 		"Timeserver wakeup list should not overflow" );
 
 	//Note: task id is a position of a correspondong record in a record list
@@ -75,7 +75,7 @@ void schedule_for_wakeup( Wakeup_list *list, int new_tid, int wakeup_time ) {
 	}
 	
 	list->size++;
-	debug( DBG_SYS, "TIMESERVER: task %d is scheduled to run at %d ticks",
+	bwdebug( DBG_SYS, "TIMESERVER: task %d is scheduled to run at %d ticks",
 			new_tid, new_record->wakeup_time );
 }
 
@@ -85,10 +85,10 @@ int get_tid_to_wakeup( Wakeup_list *list, int current_time ) {
 		return -1;
 	}
 	
-	debug( DBG_SYS, "TIMESERVER: list->records = %d, list->first_to_wakeup = %d ",
+	bwdebug( DBG_SYS, "TIMESERVER: list->records = %d, list->first_to_wakeup = %d ",
 			list->records, list->first_to_wakeup );
 	int tid_to_wakeup = list->first_to_wakeup->tid; 
-	assert( tid_to_wakeup >= 0, "GET_TID_TO_WAKEUP: there is no magic in this world... :(" );
+	bwassert( tid_to_wakeup >= 0, "GET_TID_TO_WAKEUP: there is no magic in this world... :(" );
 	
 	list->first_to_wakeup = list->first_to_wakeup->next_to_wakeup;	
 	list->size--;
@@ -96,22 +96,22 @@ int get_tid_to_wakeup( Wakeup_list *list, int current_time ) {
 }
 
 void clock_tick_notifier() {
-	debug( DBG_SYS, "TICK_NOTIFIER: start with tid %d", MyTid() );
+	bwdebug( DBG_SYS, "TICK_NOTIFIER: start with tid %d", MyTid() );
 	int timeserver_tid = WhoIs( "timeserver" );
 	Msg_timeserver_request msg;
 	msg.type = TICK_NOTIFICATION;
 
 	FOREVER {
-		debug( DBG_SYS, "TICK_NOTIFIER: waiting for a tick " );
+		bwdebug( DBG_SYS, "TICK_NOTIFIER: waiting for a tick " );
 		AwaitEvent( TIMER1_INT_INDEX, 0 );
-		debug( DBG_SYS, "TICK_NOTIFIER: got a tick. Sending a poke to task %d",
+		bwdebug( DBG_SYS, "TICK_NOTIFIER: got a tick. Sending a poke to task %d",
 			timeserver_tid);
 		Send( timeserver_tid, (char *) &msg, sizeof(msg), (char *) 0, 0 );
 	}
 }
 
 void timeserver() {
-	debug( DBG_SYS, "TIMESERVER: start" );
+	bwdebug( DBG_SYS, "TIMESERVER: start" );
 	
 	start_timer();
 	
@@ -127,43 +127,43 @@ void timeserver() {
 	Create( 8, clock_tick_notifier );
 	
 	FOREVER {
-		debug( DBG_SYS, "TIMESERVER: listening as task %d...", mytid );
+		bwdebug( DBG_SYS, "TIMESERVER: listening as task %d...", mytid );
 		Receive( &sender_tid, (char *) &request, sizeof(request) );
 		switch( request.type ) {
 		case TICK_NOTIFICATION:
-			debug( DBG_SYS, "TIMESERVER: tick notification recieved from task %d. "
+			bwdebug( DBG_SYS, "TIMESERVER: tick notification recieved from task %d. "
 				"[it's been %d ticks since start]",
 				sender_tid , current_time);
 			current_time++;
 			tid_to_unblock = get_tid_to_wakeup( &list, current_time );
 			if( tid_to_unblock >= 0 ) {
-				debug( DBG_SYS, "TIMESERVER: unblocking task %d",
+				bwdebug( DBG_SYS, "TIMESERVER: unblocking task %d",
 					tid_to_unblock );
 				Reply( tid_to_unblock, (char *) 0, 0 );
 			}
-			debug( DBG_SYS, "TIMESERVER: tick notification reply dispatched" );
+			bwdebug( DBG_SYS, "TIMESERVER: tick notification reply dispatched" );
 			Reply( sender_tid, (char *) 0, 0 );
 			break;
 		case TIME_REQUEST:
-			debug( DBG_SYS, "TIMESERVER: time request recieved from task %d",
+			bwdebug( DBG_SYS, "TIMESERVER: time request recieved from task %d",
 				sender_tid );
 			reply.type = TIME_REPLY;
 			reply.num = current_time;
 			Reply( sender_tid, (char *) &reply, sizeof(reply) );
 			break;
 		case DELAY_REQUEST:
-			debug( DBG_SYS, "TIMESERVER: delay for %d ticks request recieved "
+			bwdebug( DBG_SYS, "TIMESERVER: delay for %d ticks request recieved "
 				"from task %d", request.num, sender_tid );
 			
 			schedule_for_wakeup( &list, sender_tid, current_time + request.num );
 			break;
 		case DELAY_UNTIL_REQUEST:
-			debug( DBG_SYS, "TIMESERVER: delay until %d ticks request recieved "
+			bwdebug( DBG_SYS, "TIMESERVER: delay until %d ticks request recieved "
 				"from task %d", request.num, sender_tid );
 			schedule_for_wakeup( &list, sender_tid, request.num );
 			break;
 		default:
-			debug( DBG_SYS, "TIMESERVER: *FATAL* unexpected message "
+			bwdebug( DBG_SYS, "TIMESERVER: *FATAL* unexpected message "
 				"[type: %d from: %d]", request.type, sender_tid );
 		}
 	}

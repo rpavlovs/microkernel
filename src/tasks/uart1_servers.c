@@ -238,11 +238,11 @@ void uart1_receiver_server() {
 				//todo_debug( 0x6, 1 );
 
 				//Enqueue received character
-				if ( iqueue.size > 0 ){
+				//if ( iqueue.size > 0 ){
 					//todo_debug( 0x7, 1 );
 					char_queue_push( request.ch, &cqueue );
 					//todo_debug( 0x8, 1 );
-				}
+				//}
 
 				break;
 			

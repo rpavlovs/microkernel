@@ -45,6 +45,8 @@ void enqueue_cmd( Command temp_cmd, Command_queue *cmd_queue ){
 	cmd->cmd_type = temp_cmd.cmd_type;
 	cmd->element_id = temp_cmd.element_id; 
 	cmd->param = temp_cmd.param; 
+	cmd->sender_tid = temp_cmd.sender_tid; 
+	cmd->sensors = temp_cmd.sensors; 
 }
 
 Command dequeue_cmd( Command_queue *cmd_queue ){
@@ -102,7 +104,7 @@ void command_notifier(){
 					// Stop train
 					Putc( COM1, 0 );				// Stop the train
 					Putc( COM1, command.element_id );
-					//Delay( INTER_CMD_DELAY ); 
+					Delay( REVERSE_CMD_DELAY );		// Wait some time to avoid damaging the trains. 
 					
 					// Reverse train
 					Putc( COM1, 15 );
@@ -137,11 +139,9 @@ void command_notifier(){
 					break; 
 				
 				case RESET_SENSORS_CMD_TYPE:
-					// Simply execute the reset code. 
+					// Simply execute the reset code.
 					Putc( COM1, RESET_CODE );
-					//bwprintf( COM2, "RESET_SENSORS_CMD_TYPE: Replying: %d \n", command.cmd_type ); 
-					//Reply( command.sender_tid, 0, 0 ); 
-					Reply( 18, 0, 0 ); 
+					Reply( command.sender_tid, 0, 0 ); 
 					break; 
 				case QUERY_SENSORS_CMD_TYPE:
 					bwdebug( DBG_USR, "COMMAND_NOTIFIER: query sensors" );
@@ -150,7 +150,6 @@ void command_notifier(){
 					char *sensors = command.sensors; 
 					
 					// First request the data
-					Putc( COM1, RESET_CODE );
 					Putc( COM1, REQUEST_DATA_CODE );
 
 					// Retrieve and return the sensors data. 
@@ -158,7 +157,7 @@ void command_notifier(){
 					for( i = 0; i < 10; ++i ) {
 						sensors[i] = Getc( COM1 );
 					}
-					Reply( 18, 0, 0 ); 
+					Reply( command.sender_tid, 0, 0 ); 
 					
 					break; 
 				default: 
@@ -166,8 +165,6 @@ void command_notifier(){
 							command.cmd_type ); 
 					break; 
 			}
-			
-			//Delay( INTER_CMD_DELAY ); // This adds the delay required between commands  
 		}
 		else{
 			// There are not commands left to send. Wait until one arrives. 
@@ -217,14 +214,9 @@ void commandserver(){
 				break; 
 			case QUERY_CMD_REQUEST:
 				bwdebug( DBG_USR, "COMMAND SERVER: Added query command from [sender_tid: %d]",
-					sender_tid );				
-				//bwprintf( COM2, "RECEIVED QUERY CMD: sender: %d type: %d", cmd_request.cmd.sender_tid, cmd_request.cmd.cmd_type ); 
-				//Command cmd = cmd_request.cmd; 
-				//cmd.sender_tid = sender_tid;
+					sender_tid );
 				enqueue_cmd( cmd_request.cmd, &cmd_queue ); 
-				
 				// NOTE: This command requires returning data. Hence, there's no reply here.
-				
 				break; 
 			case CMD_NOTIFIER_IDLE:
 				bwdebug( DBG_USR, "COMMAND SERVER: notifier is idle" );

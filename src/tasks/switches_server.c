@@ -77,7 +77,7 @@ void init_switches( Switches_list *sw_list, int cmd_server_tid, char *buff ){
 	Cmd_request cmd_request; 
 	cmd_request.type = ADD_CMD_REQUEST; 
 	cmd_request.cmd.cmd_type = SWITCH_CMD_TYPE; 
-	cmd_request.cmd.param = SWITCH_STRAIGHT_POS; 
+	cmd_request.cmd.param = SWITCH_CURVE_POS; 
 	
 	for( i = 0; i < NUM_SWITCHES; i++ ){
 		// Get the switch ID from its index

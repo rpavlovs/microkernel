@@ -24,16 +24,17 @@
 #define CMD_PARAM_NOT_REQUIRED		-1
 
 #define INTER_CMD_DELAY				30		// 300 ms
+#define REVERSE_CMD_DELAY			200		// 2s
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 // Structures
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 typedef struct{
+	int sender_tid;
 	int cmd_type; 
 	int element_id;			// This represents the ID of the element on which the command will be executed, like the train or switch number. 
 	int param;				// This element is used to give extra information, like speed. 
-	char *sensors;			// This element is used to transfer the sensor data. 
-	int sender_tid;	
+	char *sensors;			// This element is used to transfer the sensor data. 	
 }Command;
 
 typedef struct{
@@ -51,8 +52,8 @@ typedef struct{
 
 
 typedef struct{
-	int type; 
 	Command cmd; 
+	int type; 
 } Cmd_request;
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------

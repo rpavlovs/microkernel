@@ -83,41 +83,27 @@ void sensors_server() {
 	int cmd_server_tid = WhoIs( COMMAND_SERVER_NAME );
 	bwassert( cmd_server_tid >= 0, "SENSORS SERVER: This task requires the command server to be able to operate." ); 
 	
-	printf( COM2, "Retrieved CMD Server TID: %d FROM %d\n", cmd_server_tid, my_tid );
-	
-	// Send a cmd to the command server to reset the switches. 
-	
-	
+	// Send a cmd to the command server to reset the sensors. 
 	Cmd_request cmd_request; 
 	cmd_request.type = QUERY_CMD_REQUEST; 
 	cmd_request.cmd.cmd_type = RESET_SENSORS_CMD_TYPE; 	
 	cmd_request.cmd.sender_tid = my_tid; 
-	Send( cmd_server_tid, ( char * ) &cmd_request, sizeof( cmd_request ), 0, 0  ); 
-	printf( COM2, "Initialized sensors\n" );
+	Send( cmd_server_tid, ( char * ) &cmd_request, sizeof( cmd_request ), 0, 0  );
 	
 	// Receive trash. 
 	cmd_request.type = QUERY_CMD_REQUEST; 
 	cmd_request.cmd.cmd_type = QUERY_SENSORS_CMD_TYPE; 
 	cmd_request.cmd.sensors = s88s_prev; 
 	Send( cmd_server_tid, ( char * ) &cmd_request, sizeof( cmd_request ), 0, 0  ); 
-	printf( COM2, "Recieved sensors trash\n" );
-	// Reset sensors
-	//Delay( 200 ); 
-	//Putc( COM1, RESET_CODE );
-	//Delay( 1 );
-	//receive_sensors( s88s_prev );
 	
 	FOREVER {
 		
 		// Send the command server the request for getting the sensors. 
-		//receive_sensors( s88s );
-		printf( COM2, "Receiving\n" );
 		cmd_request.cmd.sensors = s88s; 
 		Send( cmd_server_tid, ( char * ) &cmd_request, sizeof( cmd_request ), 0, 0  ); 
 		last_recieved = Time();
 
 		// Parse sensors
-		printf( COM2, "Parsing sensors\n" );
 		for( s88_num = 0; s88_num < 5; ++s88_num ) {
 			for( bit_pos = 0; bit_pos < 8; ++bit_pos ) {
 				val = GET_BIT( s88s[s88_num*2], bit_pos );
@@ -134,7 +120,6 @@ void sensors_server() {
 		}
 
 		// Draw the result to the screen. 
-		printf( COM2, "Drawing sensors\n" );
 		draw_sensor_history( &sensor_history );
 
 		// Store the previously triggered sensors to compare the next time. 
@@ -144,6 +129,5 @@ void sensors_server() {
 		
 		///DelayUntil( last_recieved + 100 / SENSOR_QUERY_FREQENCY );
 		Delay( 10 ); 
-		printf( COM2, "Finished delay\n" );
 	}
 }

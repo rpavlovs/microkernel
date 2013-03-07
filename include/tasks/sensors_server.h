@@ -17,7 +17,7 @@ static const char s88_letters[5] = { 'A', 'B', 'C', 'D', 'E' };
 // Structures
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 typedef struct {
-	char sensors[SENSOR_HISTORY_LEN][4];
+	char sensors[SENSOR_HISTORY_LEN][5];
 	int newest_pos;
 	int size;
 } Sensor_history;

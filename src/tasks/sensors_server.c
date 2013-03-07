@@ -15,28 +15,29 @@ void init_sensor_history( Sensor_history *history ) {
 }
 
 void sensor_history_push( int s88_id, int pin_id, int val, Sensor_history *history ) {
-	if( history->newest_pos == -1 || history->newest_pos == SENSOR_HISTORY_LEN - 1 ) {
-		history->newest_pos = 0;
-	} else {
-		++history->newest_pos;
-	}
-
-	if( history->size < SENSOR_HISTORY_LEN ) ++history->size;
-
 	//Perform history update
-	if( val == 1 ) {
-		sprintf( history->sensors[history->newest_pos], "%c%d\0",
+	if( val >= 1 ) {
+		if( history->newest_pos == -1 || history->newest_pos == SENSOR_HISTORY_LEN - 1 ) {
+			history->newest_pos = 0;
+		} else {
+			++history->newest_pos;
+		}
+		
+		if( history->size < SENSOR_HISTORY_LEN ) 
+			++history->size;
+		char *str = ( pin_id > 9 ) ? "%c%d " : "%c%d  "; 
+
+		sprintf( history->sensors[history->newest_pos], str,
 			s88_letters[s88_id], pin_id );
 	}
 }
 
 void draw_sensor_history( Sensor_history *history ) {
-	char buf[100], *ptr;
+	char buf[1000], *ptr;
 	int i;
 	ptr = buf;
 	
 	int size = 0; 
-
 	size += sprintf( ptr, CURSOR_SAVE );
 	size += sprintf( ( ptr + size ), CURSOR_HIDE_STR );
 	size += cursorPositioning( ( ptr + size), 9, 4 );
@@ -46,11 +47,14 @@ void draw_sensor_history( Sensor_history *history ) {
 			size += cursorPositioning( ( ptr + size ), 10, 4 );
 
 		int pos = history->newest_pos - i;
-		if( pos < 0 ) pos %= SENSOR_HISTORY_LEN;
-		size += sprintf( ( ptr + size ), "%s ", history->sensors[pos] );
+		if( pos < 0 ) 
+			pos += SENSOR_HISTORY_LEN; 
+			//pos %= SENSOR_HISTORY_LEN;
+		
+		//sprintf( history->sensors[pos], "%c%d ", 'A', 10 ); 
+		size += sprintf( ( ptr + size ), "%s", history->sensors[pos] );
+		//size += sprintf( ( ptr + size ), "%d ",pos );
 	}
-
-	size += sprintf( ( ptr + size ), CURSOR_SHOW_STR );
 	size += sprintf( ( ptr + size ), CURSOR_RESTORE );
 	Putstr( COM2, ptr );
 }
@@ -73,7 +77,7 @@ void receive_sensors( char *sensors ) {
 void sensors_server() {
 	// Data structures
 	printf( COM2, "Sensors Server:\n" );
-	int i, s88_num, bit_pos, val, val_prev, last_recieved;
+	int i, s88_num, bit_pos, val, val_prev, last_recieved, sensor_id;
 	char s88s[10], s88s_prev[10];
 	Sensor_history sensor_history;
 	int my_tid = MyTid(); 
@@ -108,14 +112,18 @@ void sensors_server() {
 			for( bit_pos = 0; bit_pos < 8; ++bit_pos ) {
 				val = GET_BIT( s88s[s88_num*2], bit_pos );
 				val_prev = GET_BIT( s88s_prev[s88_num*2], bit_pos );
-				if( val != val_prev )
-					sensor_history_push( s88_num, bit_pos, val, &sensor_history );
+				if( val != val_prev ){
+					sensor_id = ( bit_pos * -1 ) + 8; 
+					sensor_history_push( s88_num, sensor_id, val, &sensor_history );
+				}
 			}
 			for( bit_pos = 0; bit_pos < 8; ++bit_pos ) {
 				val = GET_BIT( s88s[s88_num*2+1], bit_pos );
 				val_prev = GET_BIT( s88s_prev[s88_num*2+1], bit_pos );
-				if( val != val_prev )
-					sensor_history_push( s88_num, bit_pos + 8, val, &sensor_history );
+				if( val != val_prev ){
+					sensor_id = ( bit_pos * -1 ) + 8; 
+					sensor_history_push( s88_num, sensor_id + 8, val, &sensor_history );
+				}
 			}
 		}
 

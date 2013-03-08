@@ -20,12 +20,11 @@ void print_time( char *str_buff, int current_time_ticks ){
 	// Print time in right position and return to original cmd position.
 	// Put the clock and all the formatting information in a buffer. 
 	char *temp_buffer = str_buff; 
+	temp_buffer += saveCursor( temp_buffer ); 
 	temp_buffer += hideCursor( temp_buffer );
 	temp_buffer += cursorPositioning( temp_buffer, CLOCK_ROW_POS, CLOCK_COL_POS );
 	temp_buffer += sprintf( temp_buffer, "%0d:%0d:%0d ", minutes, seconds, tenths ); 
-	//temp_buffer += cursorPositioning( temp_buffer, CMD_ROW_POS, CMD_COL_POS );
 	temp_buffer += restoreCursor( temp_buffer ); 
-	//temp_buffer += showCursor( temp_buffer );
 	
 	// Print clock
 	Putstr( COM2, str_buff );

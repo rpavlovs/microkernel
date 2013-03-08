@@ -14,7 +14,6 @@ int is_train_id( int id ) {
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 int cursorPositioning( char *str_buff, int row, int column ){
 	int size = 0; 
-	size += sprintf( str_buff, CURSOR_SAVE ); 
 	size += sprintf( ( str_buff + size ), CURSOR_POS_STR, row, column ); 
 	return size; 
 }
@@ -24,6 +23,10 @@ int clearScreen( char *str_buff ){
 	size = sprintf( str_buff, CLEAR_SCREEN_STR ); 
 	size += sprintf( ( str_buff + size ), MOVE_CURSOR_UP_LEFT ); 
 	return size;
+}
+
+int saveCursor( char *str_buff ){
+	return sprintf( str_buff, CURSOR_SAVE ); 
 }
 
 int hideCursor( char *str_buff ){

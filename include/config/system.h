@@ -19,7 +19,7 @@
 #define UART1_RECEIVER_SERVER_PRIORITY		14
 
 
-#define FIRST_USER_TASK_NAME				train_control
+#define FIRST_USER_TASK_NAME				run_calibration_constant_velocity//train_control
 //#define FIRST_USER_TASK_NAME				stress_test_uart1_getc
 #define FIRST_USER_TASK_PRIORITY			8
 

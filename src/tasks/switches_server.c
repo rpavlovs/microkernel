@@ -61,7 +61,8 @@ int change_switch_position( Cmd_request cmd_request, Switches_list *sw_list, int
 	col = Switches_screen_pos[sw_index][1];  
 	
 	// Add the new switch position to the "screen buffer"
-	size = hideCursor( str_buff );						// Store the current cursor pos.  
+	size = saveCursor( str_buff );						 // Store the current cursor pos.  
+	size += hideCursor( ( str_buff + size ) );						
 	size += cursorPositioning( ( str_buff + size ), row, col );	// Position the cursor to the right position. 
 	size += sprintf( ( str_buff + size ), "%c ", pos );			// Show the new cursor position. 
 	size += restoreCursor( str_buff + size );				// Restore the cursor to its original pos. 
@@ -127,7 +128,7 @@ void switchserver(){
 		else{
 			bwdebug( DBG_USR, "COMMAND SERVER: Invalid cmd received from [sender_tid: %d cmd: %d]",
 					sender_tid, cmd_request.type );
-			Reply( sender_tid, 0, 0 ); 			
+			Reply( sender_tid, 0, 0 );
 		}
 	}	
 }

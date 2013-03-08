@@ -40,6 +40,12 @@ void first_task() {
 	bwdebug( DBG_SYS, "FIRST_TASK: creating command server" );
 	int cmd_server_tid = Create( COMMAND_SERVER_PRIORITY, commandserver );  
 	
+//	bwdebug( DBG_SYS, "FIRST_TASK: creating sensor server" );
+//	int sensor_server_tid = Create( SENSOR_SERVER_PRIORITY, sensors_server );
+//	
+//	bwdebug( DBG_SYS, "FIRST_TASK: creating switches server" );
+//	int switches_server_tid = Create( SWITCHES_SERVER_PRIORITY, switchserver );
+	
 	bwdebug( DBG_SYS, "FIRST_TASK: creating Idle task" );
 	int idle_tid = Create( 0, idle );
 
@@ -79,6 +85,12 @@ void first_task() {
 	bwdebug( DBG_SYS, "FIRST_TASK: command server task id  : %d, priority: %d, address: %d",
 		cmd_server_tid, COMMAND_SERVER_PRIORITY, commandserver );
 
+//	bwdebug( DBG_SYS, "FIRST_TASK: sensor server task id  : %d, priority: %d, address: %d",
+//		sensor_server_tid, SENSOR_SERVER_PRIORITY, sensors_server );
+//		
+//	bwdebug( DBG_SYS, "FIRST_TASK: switches server task id  : %d, priority: %d, address: %d",
+//		switches_server_tid, SWITCHES_SERVER_PRIORITY, switchserver );
+	
 	bwdebug( DBG_SYS, "FIRST_TASK: sys idle task id  : %d, priority: %d, address: %d",
 		idle_tid, 0, idle );
 	

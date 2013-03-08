@@ -2,6 +2,7 @@
 
 // User tasks
 #include "tasks/tests.h"
+#include "tasks/calibration_task.h"
 
 #include "tasks/a1.h"
 #include "tasks/RPS-game.h"

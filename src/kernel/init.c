@@ -124,6 +124,8 @@ void init_hardware() {
 
 void initialize( Kern_Globals *GLOBALS ) {
 
+	GLOBALS->kernel_loop_cnt = 0;
+
 	initialize_context_switching(); 
 	
 	init_hardware();
@@ -132,5 +134,5 @@ void initialize( Kern_Globals *GLOBALS ) {
 
 	init_task_descriptors( GLOBALS );
 
-	init_schedule( 15, first_task, GLOBALS );
+	init_scheduler( GLOBALS );
 }

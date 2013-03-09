@@ -1,9 +1,32 @@
 #ifndef __NAMESERVER_H__
 #define __NAMESERVER_H__
 
+#define TIMESERVER_WAKEUP_QUEUE_SIZE	100
+
+// ----------------------------------------------------------------------------------------
+// Time Server Structs
+// ----------------------------------------------------------------------------------------
+
+typedef struct Wakeup_record Wakeup_record;
+
+struct Wakeup_record {
+	int wakeup_time;
+	int tid; 
+	Wakeup_record *next_to_wakeup;
+};
+
+typedef struct {
+	Wakeup_record records[TIMESERVER_WAKEUP_QUEUE_SIZE];
+	Wakeup_record *first_to_wakeup;
+	int size;
+} Wakeup_list;
+
 void timeserver();
 
-// Messages
+
+// ----------------------------------------------------------------------------------------
+// Time Server Message Structs
+// ----------------------------------------------------------------------------------------
 
 typedef struct {
 	int type;

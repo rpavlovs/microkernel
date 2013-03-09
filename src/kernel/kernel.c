@@ -8,6 +8,8 @@ int main( ) {
 	int request;
 
 	FOREVER {
+		KERN_GLOBALS.kernel_loop_cnt++;
+
 		request = getNextRequest( &KERN_GLOBALS );
 
 		if ( request == SHUTDOWN_EVENT_SYSCALL )

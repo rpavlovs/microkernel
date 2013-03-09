@@ -7,11 +7,11 @@ int is_train_id( int num );
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 // CLI Helpers
 // -----------------------------------------------------------------------------------------------------------------------------------------------
-#define CURSOR_SAVE			"\033[s"
+#define CURSOR_SAVE				"\033[s"
 #define CURSOR_RESTORE			"\033[u"
 #define CURSOR_POS_STR			"\033[%d;%dH"
 #define CURSOR_HIDE_STR			"\033[?25l"
-#define CURSOR_SHOW_STR		"\033[?25h"
+#define CURSOR_SHOW_STR			"\033[?25h"
 #define CLEAR_SCREEN_STR		"\033[2J"
 #define MOVE_CURSOR_UP_LEFT		"\033[H"
 

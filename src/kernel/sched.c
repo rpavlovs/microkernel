@@ -1,11 +1,12 @@
 #include "kernelspace.h"
 
 void
-init_schedule( int first_task_priority, void (*first_task_code) ( ), Kern_Globals *GLOBALS ) {	
-	bwdebug( DBG_KERN, "INIT_SCHEDULE: first task priority %d, address %d",
-		first_task_priority, (int) first_task_code );
+init_scheduler( Kern_Globals *GLOBALS ) {	
+	bwdebug( DBG_KERN, "init_scheduler: first task priority %d, address %d",
+		FIRST_TASK_PRIORITY, (int) first_task );
 
-	bwassert( first_task_priority < SCHED_NUM_PRIORITIES && first_task_priority >= 0,
+	bwassert( FIRST_TASK_PRIORITY < SCHED_NUM_PRIORITIES &&
+		FIRST_TASK_PRIORITY >= 0,
 		"first task should have priority between 0 and %d", SCHED_NUM_PRIORITIES - 1 );
 
 	//Initialize priority queues
@@ -20,16 +21,14 @@ init_schedule( int first_task_priority, void (*first_task_code) ( ), Kern_Global
 	//Initialize the first task
 	Task_descriptor *first_td = &(GLOBALS->tasks[0]);
 	first_td->state = READY_TASK;
-	first_td->priority = first_task_priority;
-	first_td->lr = (int *)first_task_code;
-	//Setting the next instruction
-	// first_td->next_instruction = (unsigned int) first_task_code + ELF_START;
+	first_td->priority = FIRST_TASK_PRIORITY;
+	first_td->lr = (int *)first_task;
 	
 	//Updating the queue appropriately
-	sched->queues[first_task_priority].td_ptrs[0] = first_td;
-	sched->queues[first_task_priority].newest = 0;
-	sched->queues[first_task_priority].oldest = 0;
-	sched->queues[first_task_priority].size++;
+	sched->queues[FIRST_TASK_PRIORITY].td_ptrs[0] = first_td;
+	sched->queues[FIRST_TASK_PRIORITY].newest = 0;
+	sched->queues[FIRST_TASK_PRIORITY].oldest = 0;
+	sched->queues[FIRST_TASK_PRIORITY].size++;
 
 	//Updating the schedule appropriately
 	sched->last_issued_tid = 0;
@@ -79,29 +78,12 @@ int activate( const int tid, Kern_Globals *GLOBALS ) {
 	bwdebug( DBG_KERN, "ACTIVATE: entered [activating task %d]", tid );
 
 	Task_descriptor *td = &(GLOBALS->tasks[tid]);
-
-	//TODO: Check if we need this at all
-	/*if( td->state != READY_TASK ) {
-		int i = 0;
-		for( ; i < SCHED_NUM_PRIORITIES; ++i ) {
-			Task_queue *queue = &(GLOBALS->scheduler.queues[i]);
-			//bwprintf( COM2, "SCHEDULE: p[%d].size: %d", i,
-				//queue->size );
-			//if( queue->size != 0 ) {
-				//bwprintf( COM2, " oldest: %d newest: %d\n",
-				//queue->td_ptrs[queue->oldest]->tid,
-				//queue->td_ptrs[queue->newest]->tid );
-			//} else {
-			//	bwprintf( COM2, "\n");
-			//}
-		}
-	}*/
 	
 	bwassert( td->state == READY_TASK, "It's only possible to activate a READY task. "
 		"[task state: %d task_id: %d]", td->state, td->tid );
 	
 	td->state = ACTIVE_TASK;
-	//todo_debug( td->tid, 0 );
+	GLOBALS->scheduler.last_active_tid = tid;
 
 	unsigned int uisp = (unsigned int) td->sp;
 	unsigned int uilr = (unsigned int) td->lr;
@@ -146,7 +128,7 @@ int sched_get_free_tid( Kern_Globals *GLOBALS ) {
 	return new_tid;
 }
 
-void sched_add_td( Task_descriptor *td, Kern_Globals *GLOBALS ){
+void sched_add_td( Task_descriptor *td, Kern_Globals *GLOBALS ) {
 	// Utility variables
 	Scheduler *sched;
 	Task_queue *queue;
@@ -155,7 +137,8 @@ void sched_add_td( Task_descriptor *td, Kern_Globals *GLOBALS ){
 	sched = &(GLOBALS->scheduler);
 	queue = &(sched->queues[td->priority]);
 
-	bwassert( queue->size < SCHED_QUEUE_LENGTH, "SYS_CREATE: Scheduler  queue must not be full" );
+	bwassert( queue->size < SCHED_QUEUE_LENGTH,
+		"SYS_CREATE: Scheduler  queue must not be full" );
 
 	// If the queue is empty or the newest pointer is at the end of the td_ptrs buffer
 	// put the next td_ptr at the beginning on the buffer  

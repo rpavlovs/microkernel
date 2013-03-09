@@ -3,12 +3,11 @@
 
 #include "kernelspace.h"
 
-
 // Description:
 // Init schedule structure in the kernel globals.
 // Specify the first task to be executed and it's priority 
 
-void init_schedule( int, void (*) ( ), Kern_Globals * );
+void init_scheduler( Kern_Globals * );
 
 // Description:
 // Find an unused task descriptor

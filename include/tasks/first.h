@@ -1,7 +1,9 @@
-#ifndef __FIRST__
-#define __FIRST__
+#ifndef __FIRST_H__
+#define __FIRST_H__
 
 void first_task();
+
+void idle_task();
 
 void test_task();
 

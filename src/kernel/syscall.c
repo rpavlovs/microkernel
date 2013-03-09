@@ -48,6 +48,10 @@ int Shutdown(){
 	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (SHUTDOWN_EVENT_SYSCALL) );
 }
 
+void GetSysdata( System_data *data ){
+	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (SYSTEM_DATA_SYSCALL) );
+}
+
 ////////////////////
 // Wrappers
 ////////////////////

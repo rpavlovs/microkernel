@@ -73,14 +73,14 @@ void wait_for_sensor( Sensor_waiting_list *list, int new_tid, char sensor_group,
 	int sensor_index = get_sensor_index( sensor_group, pin_id ); 
 	Sensor_waiting_list *sensor_waiting_list = list + sensor_index; 
 	
-	bwprintf( COM2, "WAITING FOR SENSOR. TID: %d GROUP: %c PIN: %d SIZE: %d\n", 
-			new_tid, sensor_group, pin_id, sensor_waiting_list->size ); 
+	// bwprintf( COM2, "WAITING FOR SENSOR. TID: %d GROUP: %c PIN: %d SIZE: %d\n", 
+	// 		new_tid, sensor_group, pin_id, sensor_waiting_list->size ); 
 	bwassert( sensor_waiting_list->size < SENSOR_WAITING_QUEUE_SIZE, 
 			"Sensor waiting list should not overflow" ); 
 	sensor_waiting_list->waiting_tasks[ sensor_waiting_list->size ] = new_tid; 
 	sensor_waiting_list->size++; 
 	
-	bwdebug( DBG_SYS, "SENSOR_SERVER: task % is set to wait for sensor %c%d to be triggered.", 
+	bwdebug( DBG_USR, "SENSOR_SERVER: task % is set to wait for sensor %c%d to be triggered.", 
 			new_tid, sensor_group, pin_id ); 
 }
 
@@ -89,13 +89,13 @@ void awaken_sensor_waiting_tasks( Sensor_waiting_list *list, char sensor_group, 
 	sensor_index = get_sensor_index( sensor_group, pin_id ); 
 	Sensor_waiting_list *sensor_waiting_list = list + sensor_index;  
 
-	bwprintf( COM2, "AWAKENING. TID: GROUP: %c PIN: %d SIZE: %d INDEX: %d\n", 
-		sensor_group, pin_id, sensor_waiting_list->size, sensor_index ); 	
+	// bwprintf( COM2, "AWAKENING. TID: GROUP: %c PIN: %d SIZE: %d INDEX: %d\n", 
+	// 	sensor_group, pin_id, sensor_waiting_list->size, sensor_index ); 	
 	while( sensor_waiting_list->size > 0 ){
 		sensor_waiting_list->size--; 
 		tid = sensor_waiting_list->waiting_tasks[ sensor_waiting_list->size ]; 
 
-		bwdebug( DBG_SYS, "SENSOR_SERVER: Sensor  %c%d triggered. Awakening task %d", 
+		bwdebug( DBG_USR, "SENSOR_SERVER: Sensor  %c%d triggered. Awakening task %d", 
 			sensor_group, pin_id, tid ); 
 		Reply( tid, 0, 0 ); 
 	}

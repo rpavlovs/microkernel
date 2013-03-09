@@ -11,6 +11,10 @@
 
 #define DEBUG_LEVEL 						0
 
+#define FIRST_TASK_PRIORITY					15
+#define IDLE_TASK_PRIORITY					0
+
+#define CLOCK_TASK_PRIORITY					8
 #define NAMESERVER_TASK_PRIORITY			12
 #define TIMESERVER_TASK_PRIORITY			12
 #define UART2_SENDER_SERVER_PRIORITY		14
@@ -19,7 +23,8 @@
 #define UART1_RECEIVER_SERVER_PRIORITY		14
 
 
-#define FIRST_USER_TASK_NAME				run_calibration_constant_velocity//train_control
+// #define FIRST_USER_TASK_NAME				run_calibration_constant_velocity
+#define FIRST_USER_TASK_NAME				train_control
 //#define FIRST_USER_TASK_NAME				stress_test_uart1_getc
 #define FIRST_USER_TASK_PRIORITY			8
 

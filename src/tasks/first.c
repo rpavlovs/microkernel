@@ -1,14 +1,12 @@
 #include "userspace.h"
 
-void idle() {
+void idle_task() {
 	bwdebug( DBG_SYS, "IDLE: enters" );
 	FOREVER {
 		bwdebug( DBG_SYS, "IDLE: idling..." );
 		Pass();
 	}
 }
-
-#define CLOCK_TASK_PRIORITY		8
 
 
 void first_task() {
@@ -21,6 +19,9 @@ void first_task() {
 	int ns_tid = Create( NAMESERVER_TASK_PRIORITY, nameserver );
 	bwassert( ns_tid == 1, "FIRST_TASK: Nameserver should have task id of 1" );
 
+	bwdebug( DBG_SYS, "FIRST_TASK: creating Idle task" );
+	int idle_tid = Create( 0, idle_task );
+	bwassert( idle_tid == 2, "FIRST_TASK: Idle task should have task id of 2" );
 
 	bwdebug( DBG_SYS, "FIRST_TASK: creating Timeserver" );
 	int ts_tid = Create( TIMESERVER_TASK_PRIORITY, timeserver );
@@ -45,9 +46,6 @@ void first_task() {
 //	
 //	bwdebug( DBG_SYS, "FIRST_TASK: creating switches server" );
 //	int switches_server_tid = Create( SWITCHES_SERVER_PRIORITY, switchserver );
-	
-	bwdebug( DBG_SYS, "FIRST_TASK: creating Idle task" );
-	int idle_tid = Create( 0, idle );
 
 	bwdebug( DBG_SYS, "FIRST_TASK: creating first user task" );
 	int first_user_task_tid = Create( FIRST_USER_TASK_PRIORITY, FIRST_USER_TASK_NAME );
@@ -56,7 +54,7 @@ void first_task() {
 	// Debug Statements
 	// ---------------------------------------------------------------------------------------
 	bwdebug( DBG_SYS, "FIRST_TASK: setup is done." );
-	bwdebug( DBG_SYS, "FIRST_TASK: system bwdebug level: %d ", DEBUG_LEVEL );
+	bwdebug( DBG_SYS, "FIRST_TASK: system debug level: %d ", DEBUG_LEVEL );
 
 	bwdebug( DBG_SYS, "FIRST_TASK: nameserver task id: %d, priority: %d, address: %d",
 		ns_tid, NAMESERVER_TASK_PRIORITY, nameserver );
@@ -92,7 +90,7 @@ void first_task() {
 //		switches_server_tid, SWITCHES_SERVER_PRIORITY, switchserver );
 	
 	bwdebug( DBG_SYS, "FIRST_TASK: sys idle task id  : %d, priority: %d, address: %d",
-		idle_tid, 0, idle );
+		idle_tid, 0, idle_task );
 	
 	bwdebug( DBG_SYS, "FIRST_TASK: first user task id: %d, priority: %d, address: %d",
 		first_user_task_tid, FIRST_USER_TASK_PRIORITY, FIRST_USER_TASK_NAME );

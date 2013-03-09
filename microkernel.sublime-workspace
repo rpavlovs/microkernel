@@ -4,6 +4,18 @@
 		"selected_items":
 		[
 			[
+				"sen",
+				"sensor"
+			],
+			[
+				"comma",
+				"commandserver"
+			],
+			[
+				"switch",
+				"switch_state"
+			],
+			[
 				"Put",
 				"Putstr"
 			],
@@ -217,7 +229,7 @@
 			],
 			[
 				"init",
-				"init_schedule"
+				"init_scheduler"
 			],
 			[
 				"Tas",
@@ -502,52 +514,95 @@
 			[
 				"print_",
 				"print_r"
-			],
-			[
-				"target",
-				"target_domain"
-			],
-			[
-				"el",
-				"elseif	elseif …"
-			],
-			[
-				"url",
-				"urlorlink"
 			]
 		]
 	},
 	"buffers":
 	[
 		{
-			"file": "src/tasks/cli.c",
+			"file": "src/tasks/sensors_server.c",
 			"settings":
 			{
-				"buffer_size": 4870,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "src/tasks/train_control.c",
-			"settings":
-			{
-				"buffer_size": 2864,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "src/kernel/kernel.c",
-			"settings":
-			{
-				"buffer_size": 368,
+				"buffer_size": 2947,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "src/lib/io.c",
 			"settings":
 			{
-				"buffer_size": 6402,
+				"buffer_size": 0,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/kernel/syscall.c",
+			"settings":
+			{
+				"buffer_size": 6636,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/tasks/uart1_servers.c",
+			"settings":
+			{
+				"buffer_size": 7066,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/kernel/sysfuncs.c",
+			"settings":
+			{
+				"buffer_size": 7866,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "include/tasks/switches_server.h",
+			"settings":
+			{
+				"buffer_size": 2109,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "include/tasks/sensors_server.h",
+			"settings":
+			{
+				"buffer_size": 1394,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "include/lib/helpers.h",
+			"settings":
+			{
+				"buffer_size": 906,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "include/tasks/cli.h",
+			"settings":
+			{
+				"buffer_size": 2232,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "include/commonspace.h",
+			"settings":
+			{
+				"buffer_size": 3310,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "include/lib/queues.h",
+			"settings":
+			{
+				"buffer_size": 1314,
 				"line_ending": "Unix"
 			}
 		},
@@ -555,31 +610,15 @@
 			"file": "include/config/system.h",
 			"settings":
 			{
-				"buffer_size": 544,
+				"buffer_size": 611,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "include/kernel/globals.h",
+			"file": "include/userspace.h",
 			"settings":
 			{
-				"buffer_size": 2178,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "include/commonspace.h",
-			"settings":
-			{
-				"buffer_size": 3319,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "include/kernel/syscall.h",
-			"settings":
-			{
-				"buffer_size": 6156,
+				"buffer_size": 333,
 				"line_ending": "Unix"
 			}
 		}
@@ -784,52 +823,61 @@
 	},
 	"file_history":
 	[
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/.git/MERGE_MSG",
+		"/Users/rpavlovs/Dropbox/w13/cs452/a0/src/a0.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/train_control.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/ui.txt",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/tasks/switches_server.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/switches_server.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/command_server.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/lib/io.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/context_switch.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/track_a.txt",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/kernel.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/hw_interrupt_handlers.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/cli.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/clock-task.c",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/first.c",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/uart2_servers.c",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/sysfuncs.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/lib/bwio.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/microkernel.sublime-workspace",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/lib/io.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/config/system.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/tasks/timeserver.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/globals.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/tasks/command_server.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/lib/queues.h",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/commonspace.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/syscall.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/lib/bwio.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/sysfuncs.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/sched.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/lib/queues.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/lib/helpers.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/tests.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/sched.h",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/uart1_servers.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/queues.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/RPS-game.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/nameserver.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/timeserver.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/uart2_servers.c",
+		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/syscall.h",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/tasks/uart2_servers.h",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/tasks/cli.h",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/lib/io.h",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/syscall.h",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/ui.txt",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/globals.h",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/timeserver.c",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/lib/queues.h",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/lib/io.c",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/sched.c",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/context_switch.c",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/hw_interrupt_handlers.c",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/config/system.h",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/kernel.c",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/tasks/timeserver.h",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/tests.c",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/syscall.c",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/queues.c",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernelspace.h",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/nameserver.c",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/scheduler.h",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/tasks/first.h",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/init.c",
-		"/Users/rpavlovs/Dropbox/w13/cs452/a0/src/a0.c",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/train_control.c",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/lib/queues.c",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/lib/helpers.c",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/tasks/train_control.h",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/lib/helpers.h",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/config/ui.h",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/tasks/tests.h",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/userspace.h",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/.git/MERGE_MSG",
 		"/Volumes/MagicDraw UML 16.0 sp1/readme.txt",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/config/environment.h",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/track_a.txt",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/lib/stdlib.c",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/lib/stdlib.h",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/lib/string.c",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/lib/bwio.c",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/lib/bwio.h",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/microkernel.sublime-workspace",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/kernel/scheduler.c",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/tasks/test_uart.h",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/test_uart.c",
@@ -837,14 +885,12 @@
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/tasks/a3-game.h",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/a3-game.c",
 		"/Users/rpavlovs/Dropbox/w13/cs450/w450-assembler1-sample/README",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/kernel/sched.h",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/a1.c",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/tasks/test.h",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/tasks/a1.h",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/lib/string.h",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/Makefile",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/config/memory.h",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/tasks/RPS-game.c",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/config/build.h",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/include/string.h",
 		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/src/string.c",
@@ -904,14 +950,7 @@
 		"/Volumes/home/cs452/RTOS/include/kernel/syscall.h",
 		"/Volumes/home/cs452/RTOS/include/kernel/sched.h",
 		"/Volumes/home/cs452/RTOS/include/kernel/init.h",
-		"/Volumes/home/cs452/RTOS/include/lib/bwio.h",
-		"/Volumes/home/cs452/RTOS/include/kernel/kernel_globals.h",
-		"/Volumes/home/cs452/RTOS/include/kernel/helpers.h",
-		"/Users/rpavlovs/Dropbox/w13/cs452/microkernel/kernel/sysfunc.c",
-		"/Users/rpavlovs/Downloads/Movies/README.txt",
-		"/Volumes/home/cs452/RTOS/build/kernel.map",
-		"/Volumes/home/cs452/RTOS/kernel/contextsw.c",
-		"/Volumes/home/cs452/RTOS/include/kernel/sysfuncs.h"
+		"/Volumes/home/cs452/RTOS/include/lib/bwio.h"
 	],
 	"find":
 	{
@@ -931,6 +970,42 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"A12",
+			"s88s_old",
+			"newest",
+			"sensor",
+			"Sensor",
+			"sensor",
+			"s88s_prev",
+			"bit",
+			"i",
+			"sensors",
+			"j",
+			"AwaitEvent",
+			"UART1_SEND_READY",
+			"Putc",
+			"debug",
+			"assert",
+			"UART2_RECEIVER_SERVER_PRIORITY",
+			"DBG_SYS",
+			"send_command",
+			"debug",
+			"\\tdebug( ",
+			"debug",
+			" debug(",
+			" debug (",
+			" debug(",
+			"panic(",
+			"panic (",
+			"assert(",
+			"assert (",
+			"assert",
+			"dequeue_char_queue",
+			"char_queue_front_str",
+			"char_queue_peek",
+			"enqueue_str_to_char_queue",
+			"enqueue_char_queue",
+			"char_queue_pop_char",
 			"exit()",
 			"interrupt id",
 			"interrutp id",
@@ -1005,9 +1080,9 @@
 			"should",
 			"it should",
 			"It should only",
-			"bwdebug(D",
-			"bwdebug( ",
-			"bwdebug( DBG_CURR_LVL,",
+			"debug(D",
+			"debug( ",
+			"debug( DBG_CURR_LVL,",
 			"my_strcpy",
 			"str_cpy",
 			"DBG_KERN",
@@ -1022,43 +1097,7 @@
 			"timeserver",
 			"SWI",
 			"swi",
-			"execute_user_task",
-			"initialize_context_switching",
-			" *",
-			"handle_request",
-			"NAMESERVER_TID",
-			"__BWIO_H__",
-			"__COMMONSPACE__",
-			"__BWIO_H__",
-			"__COMMONSPACE__",
-			"__BWIO_H__",
-			"userspace",
-			"NAMESERVER_TID",
-			"DBG_KERN",
-			"KERNEL",
-			"DBG_LVL",
-			"bwdebug( DBG_LVL, KERNEL",
-			"bwdebug(DBG_LVL, KERNEL",
-			"bwdebug(",
-			"time",
-			"return",
-			"HELPERS",
-			"KERN_GLOBALS",
-			"handle_request",
-			"\"\n",
-			"context_switch",
-			"interrupt_handle",
-			"bwassert",
-			"													",
-			"size",
-			"printf",
-			"DEBUG: RPS Server:",
-			"clien",
-			"print",
-			"printf",
-			"prinf",
-			"reply_client",
-			"server"
+			"execute_user_task"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1066,6 +1105,18 @@
 		"regex": false,
 		"replace_history":
 		[
+			"bwdebug",
+			"bwassert",
+			"bwdebug",
+			" bwdebug(",
+			"bwpanic(",
+			"bwassert(",
+			"assert(",
+			"char_queue_pop",
+			"char_queue_peek_str",
+			"char_queue_front",
+			"char_queue_push_str",
+			"char_queue_push",
 			"UI",
 			"Send_info",
 			"mailbox",
@@ -1075,8 +1126,8 @@
 			".queues",
 			"Scheduler ",
 			"Scheduler",
-			"bwdebug(",
-			"bwdebug( ",
+			"debug(",
+			"debug( ",
 			"strcpy",
 			"DBG_REQ",
 			"reply",
@@ -1086,9 +1137,9 @@
 			"DBG_USR",
 			"DBG_KERN",
 			"DBG_CURR_LVL",
-			"bwdebug( DBG_LVL, KERNEL,",
-			"bwdebug( DBG_LVL, KERNEL",
-			"bwdebug(DBG_LVL, KERNEL",
+			"debug( DBG_LVL, KERNEL,",
+			"debug( DBG_LVL, KERNEL",
+			"debug(DBG_LVL, KERNEL",
 			"SCHED_QUEUE_LENGTH",
 			"busy_until_time",
 			"last_send_time",
@@ -1112,23 +1163,23 @@
 	"groups":
 	[
 		{
-			"selected": 2,
+			"selected": 3,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "src/tasks/cli.c",
+					"file": "src/tasks/sensors_server.c",
 					"settings":
 					{
-						"buffer_size": 4870,
+						"buffer_size": 2947,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								4634,
-								4661
+								2915,
+								2915
 							]
 						],
 						"settings":
@@ -1221,237 +1272,33 @@
 								"Ruby on Rails": "ruby"
 							},
 							"sublimelinter_wrap_find": true,
-							"syntax": "Packages/C++/C.tmLanguage"
+							"syntax": "Packages/C++/C.tmLanguage",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1876.0,
+						"translation.y": 476.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 1,
-					"file": "src/tasks/train_control.c",
 					"settings":
 					{
-						"buffer_size": 2864,
+						"buffer_size": 0,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2575,
-								2575
+								0,
+								0
 							]
 						],
 						"settings":
 						{
-							"annotations":
-							[
-								"TODO",
-								"README",
-								"FIXME"
-							],
-							"csslint_options":
-							{
-								"adjoining-classes": "warning",
-								"box-model": true,
-								"box-sizing": "warning",
-								"compatible-vendor-prefixes": "warning",
-								"display-property-grouping": true,
-								"duplicate-background-images": "warning",
-								"duplicate-properties": true,
-								"empty-rules": true,
-								"errors": true,
-								"fallback-colors": "warning",
-								"floats": "warning",
-								"font-faces": "warning",
-								"font-sizes": "warning",
-								"gradients": "warning",
-								"ids": "warning",
-								"import": "warning",
-								"important": "warning",
-								"known-properties": true,
-								"outline-none": "warning",
-								"overqualified-elements": "warning",
-								"qualified-headings": "warning",
-								"regex-selectors": "warning",
-								"rules-count": "warning",
-								"shorthand": "warning",
-								"star-property-hack": "warning",
-								"text-indent": "warning",
-								"underscore-property-hack": "warning",
-								"unique-headings": "warning",
-								"universal-selector": "warning",
-								"vendor-prefix": true,
-								"zero-units": "warning"
-							},
-							"gjslint_ignore":
-							[
-								110.0
-							],
-							"gjslint_options":
-							[
-							],
-							"javascript_linter": "jshint",
-							"jshint_options":
-							{
-								"browser": true,
-								"evil": true,
-								"regexdash": true,
-								"sub": true,
-								"trailing": true,
-								"wsh": true
-							},
-							"pep8": true,
-							"pep8_ignore":
-							[
-								"E501"
-							],
-							"perl_linter": "perlcritic",
-							"pyflakes_ignore":
-							[
-							],
-							"pyflakes_ignore_import_*": true,
-							"sublimelinter": true,
-							"sublimelinter_delay": 2.0,
-							"sublimelinter_disable":
-							[
-							],
-							"sublimelinter_executable_map":
-							{
-							},
-							"sublimelinter_fill_outlines": false,
-							"sublimelinter_gutter_marks": false,
-							"sublimelinter_mark_style": "outline",
-							"sublimelinter_notes": false,
-							"sublimelinter_objj_check_ascii": false,
-							"sublimelinter_popup_errors_on_save": false,
-							"sublimelinter_syntax_map":
-							{
-								"C++": "c",
-								"Python Django": "python",
-								"Ruby on Rails": "ruby"
-							},
-							"sublimelinter_wrap_find": true,
-							"syntax": "Packages/C++/C.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 16.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "src/kernel/kernel.c",
-					"settings":
-					{
-						"buffer_size": 368,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								304,
-								304
-							]
-						],
-						"settings":
-						{
-							"annotations":
-							[
-								"TODO",
-								"README",
-								"FIXME"
-							],
-							"csslint_options":
-							{
-								"adjoining-classes": "warning",
-								"box-model": true,
-								"box-sizing": "warning",
-								"compatible-vendor-prefixes": "warning",
-								"display-property-grouping": true,
-								"duplicate-background-images": "warning",
-								"duplicate-properties": true,
-								"empty-rules": true,
-								"errors": true,
-								"fallback-colors": "warning",
-								"floats": "warning",
-								"font-faces": "warning",
-								"font-sizes": "warning",
-								"gradients": "warning",
-								"ids": "warning",
-								"import": "warning",
-								"important": "warning",
-								"known-properties": true,
-								"outline-none": "warning",
-								"overqualified-elements": "warning",
-								"qualified-headings": "warning",
-								"regex-selectors": "warning",
-								"rules-count": "warning",
-								"shorthand": "warning",
-								"star-property-hack": "warning",
-								"text-indent": "warning",
-								"underscore-property-hack": "warning",
-								"unique-headings": "warning",
-								"universal-selector": "warning",
-								"vendor-prefix": true,
-								"zero-units": "warning"
-							},
-							"gjslint_ignore":
-							[
-								110.0
-							],
-							"gjslint_options":
-							[
-							],
-							"javascript_linter": "jshint",
-							"jshint_options":
-							{
-								"browser": true,
-								"evil": true,
-								"regexdash": true,
-								"sub": true,
-								"trailing": true,
-								"wsh": true
-							},
-							"pep8": true,
-							"pep8_ignore":
-							[
-								"E501"
-							],
-							"perl_linter": "perlcritic",
-							"pyflakes_ignore":
-							[
-							],
-							"pyflakes_ignore_import_*": true,
-							"sublimelinter": true,
-							"sublimelinter_delay": 2.0,
-							"sublimelinter_disable":
-							[
-							],
-							"sublimelinter_executable_map":
-							{
-							},
-							"sublimelinter_fill_outlines": false,
-							"sublimelinter_gutter_marks": false,
-							"sublimelinter_mark_style": "outline",
-							"sublimelinter_notes": false,
-							"sublimelinter_objj_check_ascii": false,
-							"sublimelinter_popup_errors_on_save": false,
-							"sublimelinter_syntax_map":
-							{
-								"C++": "c",
-								"Python Django": "python",
-								"Ruby on Rails": "ruby"
-							},
-							"sublimelinter_wrap_find": true,
-							"syntax": "Packages/C++/C.tmLanguage",
-							"translate_tabs_to_spaces": false
+							"syntax": "Packages/Text/Plain text.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -1460,19 +1307,19 @@
 					"type": "text"
 				},
 				{
-					"buffer": 3,
-					"file": "src/lib/io.c",
+					"buffer": 2,
+					"file": "src/kernel/syscall.c",
 					"settings":
 					{
-						"buffer_size": 6402,
+						"buffer_size": 6636,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3961,
-								3961
+								3893,
+								3898
 							]
 						],
 						"settings":
@@ -1569,7 +1416,352 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 2840.0,
+						"translation.y": 1434.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "src/tasks/uart1_servers.c",
+					"settings":
+					{
+						"buffer_size": 7066,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1100,
+								1100
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110.0
+							],
+							"gjslint_options":
+							[
+							],
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": true,
+							"sublimelinter_delay": 2.0,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": false,
+							"sublimelinter_mark_style": "outline",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syntax": "Packages/C++/C.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 1.0,
+						"translation.y": 3196.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "src/kernel/sysfuncs.c",
+					"settings":
+					{
+						"buffer_size": 7866,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								6094,
+								6094
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110.0
+							],
+							"gjslint_options":
+							[
+							],
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": true,
+							"sublimelinter_delay": 2.0,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": false,
+							"sublimelinter_mark_style": "outline",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syntax": "Packages/C++/C.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 134.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "include/tasks/switches_server.h",
+					"settings":
+					{
+						"buffer_size": 2109,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110.0
+							],
+							"gjslint_options":
+							[
+							],
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": true,
+							"sublimelinter_delay": 2.0,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": false,
+							"sublimelinter_mark_style": "outline",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1577,23 +1769,23 @@
 			]
 		},
 		{
-			"selected": 3,
+			"selected": 6,
 			"sheets":
 			[
 				{
-					"buffer": 4,
-					"file": "include/config/system.h",
+					"buffer": 6,
+					"file": "include/tasks/sensors_server.h",
 					"settings":
 					{
-						"buffer_size": 544,
+						"buffer_size": 1394,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								369,
-								369
+								474,
+								474
 							]
 						],
 						"settings":
@@ -1695,19 +1887,19 @@
 					"type": "text"
 				},
 				{
-					"buffer": 5,
-					"file": "include/kernel/globals.h",
+					"buffer": 7,
+					"file": "include/lib/helpers.h",
 					"settings":
 					{
-						"buffer_size": 2178,
+						"buffer_size": 906,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1366,
-								1366
+								474,
+								488
 							]
 						],
 						"settings":
@@ -1800,8 +1992,7 @@
 								"Ruby on Rails": "ruby"
 							},
 							"sublimelinter_wrap_find": true,
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"translate_tabs_to_spaces": false
+							"syntax": "Packages/C++/C++.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -1810,19 +2001,133 @@
 					"type": "text"
 				},
 				{
-					"buffer": 6,
+					"buffer": 8,
+					"file": "include/tasks/cli.h",
+					"settings":
+					{
+						"buffer_size": 2232,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								410,
+								410
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110.0
+							],
+							"gjslint_options":
+							[
+							],
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": true,
+							"sublimelinter_delay": 2.0,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": false,
+							"sublimelinter_mark_style": "outline",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 9,
 					"file": "include/commonspace.h",
 					"settings":
 					{
-						"buffer_size": 3319,
+						"buffer_size": 3310,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								207,
-								207
+								0,
+								0
 							]
 						],
 						"settings":
@@ -1925,19 +2230,247 @@
 					"type": "text"
 				},
 				{
-					"buffer": 7,
-					"file": "include/kernel/syscall.h",
+					"buffer": 10,
+					"file": "include/lib/queues.h",
 					"settings":
 					{
-						"buffer_size": 6156,
+						"buffer_size": 1314,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								177,
-								177
+								691,
+								691
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110.0
+							],
+							"gjslint_options":
+							[
+							],
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": true,
+							"sublimelinter_delay": 2.0,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": false,
+							"sublimelinter_mark_style": "outline",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "include/config/system.h",
+					"settings":
+					{
+						"buffer_size": 611,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								214,
+								214
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110.0
+							],
+							"gjslint_options":
+							[
+							],
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": true,
+							"sublimelinter_delay": 2.0,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": false,
+							"sublimelinter_mark_style": "outline",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 12,
+					"file": "include/userspace.h",
+					"settings":
+					{
+						"buffer_size": 333,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								223,
+								237
 							]
 						],
 						"settings":
@@ -2102,40 +2635,120 @@
 		"selected_items":
 		[
 			[
-				"sys",
-				"include/kernel/syscall.h"
+				"ui",
+				"ui.txt"
 			],
 			[
-				"glo",
-				"include/kernel/globals.h"
+				"hel",
+				"include/lib/helpers.h"
 			],
 			[
-				"que",
-				"include/lib/queues.h"
+				"swi",
+				"include/tasks/switches_server.h"
 			],
 			[
-				"com",
-				"include/commonspace.h"
+				"sw",
+				"src/tasks/switches_server.c"
 			],
 			[
-				"sched",
-				"src/kernel/sched.c"
-			],
-			[
-				"tim",
-				"include/tasks/timeserver.h"
+				"user",
+				"include/userspace.h"
 			],
 			[
 				"ker",
 				"src/kernel/kernel.c"
 			],
 			[
-				"ke",
-				"src/kernel/kernel.c"
+				"sy",
+				"src/kernel/sysfuncs.c"
+			],
+			[
+				"cont",
+				"src/kernel/context_switch.c"
+			],
+			[
+				"sys",
+				"src/kernel/sysfuncs.c"
+			],
+			[
+				"comm",
+				"src/tasks/command_server.c"
+			],
+			[
+				"swit",
+				"include/tasks/switches_server.h"
+			],
+			[
+				"io",
+				"src/lib/io.c"
+			],
+			[
+				"cli",
+				"src/tasks/cli.c"
+			],
+			[
+				"se",
+				"src/tasks/sensors_server.c"
+			],
+			[
+				"com",
+				"src/tasks/command_server.c"
+			],
+			[
+				"he",
+				"src/lib/helpers.c"
+			],
+			[
+				"que",
+				"src/lib/queues.c"
+			],
+			[
+				"clo",
+				"src/tasks/clock-task.c"
+			],
+			[
+				"test",
+				"src/tasks/tests.c"
 			],
 			[
 				"tra",
 				"src/tasks/train_control.c"
+			],
+			[
+				"glo",
+				"include/kernel/globals.h"
+			],
+			[
+				"sch",
+				"include/kernel/sched.h"
+			],
+			[
+				"bw",
+				"src/lib/bwio.c"
+			],
+			[
+				"time",
+				"include/tasks/timeserver.h"
+			],
+			[
+				"sysf",
+				"src/kernel/sysfuncs.c"
+			],
+			[
+				"sched",
+				"src/kernel/sched.c"
+			],
+			[
+				"context_switch",
+				"src/kernel/context_switch.c"
+			],
+			[
+				"tim",
+				"include/tasks/timeserver.h"
+			],
+			[
+				"ke",
+				"src/kernel/kernel.c"
 			],
 			[
 				"sche",
@@ -2146,20 +2759,8 @@
 				"src/tasks/nameserver.c"
 			],
 			[
-				"sch",
-				"src/kernel/sched.c"
-			],
-			[
 				"syst",
 				"include/config/system.h"
-			],
-			[
-				"ui",
-				"ui.txt"
-			],
-			[
-				"io",
-				"include/lib/io.h"
 			],
 			[
 				"fir",
@@ -2174,10 +2775,6 @@
 				"src/kernel/hw_interrupt_handlers.c"
 			],
 			[
-				"test",
-				"include/tasks/tests.h"
-			],
-			[
 				"use",
 				"include/userspace.h"
 			],
@@ -2190,24 +2787,12 @@
 				"include/lib/io.h"
 			],
 			[
-				"he",
-				"include/lib/helpers.h"
-			],
-			[
 				"std",
 				"include/lib/stdlib.h"
 			],
 			[
-				"cli",
-				"include/tasks/cli.h"
-			],
-			[
 				"io.c",
 				"src/lib/io.c"
-			],
-			[
-				"bw",
-				"src/lib/bwio.c"
 			],
 			[
 				"bwi",
@@ -2222,20 +2807,12 @@
 				"include/config/system.h"
 			],
 			[
-				"user",
-				"include/userspace.h"
-			],
-			[
 				"gae",
 				"include/tasks/a3-game.h"
 			],
 			[
 				"bwio",
 				"include/lib/bwio.h"
-			],
-			[
-				"sysf",
-				"src/kernel/sysfuncs.c"
 			],
 			[
 				"con",
@@ -2258,10 +2835,6 @@
 				"include/kernel/hw_interrupt_handlers.h"
 			],
 			[
-				"time",
-				"include/tasks/timeserver.h"
-			],
-			[
 				"shed",
 				"include/kernel/sched.h"
 			],
@@ -2276,10 +2849,6 @@
 			[
 				"helh",
 				"include/helpers.h"
-			],
-			[
-				"hel",
-				"src/helpers.c"
 			],
 			[
 				"init.c",

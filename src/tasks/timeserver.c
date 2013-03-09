@@ -1,10 +1,20 @@
 #include <userspace.h>
 
-#define TIMESERVER_WAKEUP_QUEUE_SIZE 100
+#define FSHIFT   	11           /* nr of bits of precision */
+#define FIXED_1  	(1<<FSHIFT)  /* 1.0 as fixed-point */
+#define LOAD_FREQ 	500   	     /* 5 sec intervals */
+#define EXP_1 		1884         /* 1/exp(5sec/1min) as fixed-point */
+#define EXP_5  		2014         /* 1/exp(5sec/5min) */
+#define EXP_15 		2037         /* 1/exp(5sec/15min) */
+ 
+#define CALC_LOAD(load,exp,n) \
+   load *= exp; \
+   load += n*(FIXED_1-exp); \
+   load >>= FSHIFT;
 
-// -----------------------------------------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------
 // Timer
-// -----------------------------------------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------
 void start_timer(){
 	// Initialization
 	int timerControlValue; 
@@ -17,30 +27,40 @@ void start_timer(){
 	// The timer is enabled and configured.
 	timerControlValue = *timerControl;
 	timerControlValue = timerControlValue | TIMER_ENABLE_FLAG | TIMER_MODE;
-	timerControlValue = timerControlValue & ~TIMER_CLKSEL;	// This enables the 2 kHz frequency. 
+	timerControlValue = timerControlValue & ~TIMER_CLKSEL; // Set 2 kHz frequency. 
 	*timerControl = timerControlValue;
 }
 
-// -----------------------------------------------------------------------------------------------------------------------------------------------
-// Time Server Structs
-// -----------------------------------------------------------------------------------------------------------------------------------------------
-typedef struct Wakeup_record Wakeup_record;
+// ----------------------------------------------------------------------------------------
+// Load average
+// ----------------------------------------------------------------------------------------
 
-struct Wakeup_record {
-	int wakeup_time;
-	int tid; 
-	Wakeup_record *next_to_wakeup;
-};
+static inline void calc_load( const unsigned long ticks, unsigned long *avenrun ) {
+	static int count = LOAD_FREQ;
+	static System_data sysdata;
 
-typedef struct {
-	Wakeup_record records[TIMESERVER_WAKEUP_QUEUE_SIZE];
-	Wakeup_record *first_to_wakeup;
-	int size;
-} Wakeup_list;
+	count--;
+	if (count < 0) {
+	  count += LOAD_FREQ;
 
-// -----------------------------------------------------------------------------------------------------------------------------------------------
+	  GetSysdata( &sysdata );
+
+	  CALC_LOAD(avenrun[0], EXP_1, sysdata.active_tasks);
+	  CALC_LOAD(avenrun[1], EXP_5, sysdata.active_tasks);
+	  CALC_LOAD(avenrun[2], EXP_15, sysdata.active_tasks);
+
+	  // avenrun[0] = 6000/LOAD_FREQ
+
+	  bwprintf( COM2, "\033[s\033[%d;%dHAverage cpu load: %d %d %d\033[u", 26, 1,
+	  	avenrun[0], avenrun[1], avenrun[2] );
+	  bwprintf( COM2, "\033[s\033[%d;%dHActive tasks: %d\033[u", 27, 1,
+	  	sysdata.active_tasks );
+	}
+}
+
+// ----------------------------------------------------------------------------------------
 // Time Server Methods
-// -----------------------------------------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------
 void init_wakeup_list( Wakeup_list *list ) {
 	list->size = 0;
 }
@@ -88,7 +108,6 @@ int get_tid_to_wakeup( Wakeup_list *list, int current_time ) {
 	bwdebug( DBG_SYS, "TIMESERVER: list->records = %d, list->first_to_wakeup = %d ",
 			list->records, list->first_to_wakeup );
 	int tid_to_wakeup = list->first_to_wakeup->tid; 
-	bwassert( tid_to_wakeup >= 0, "GET_TID_TO_WAKEUP: there is no magic in this world... :(" );
 	
 	list->first_to_wakeup = list->first_to_wakeup->next_to_wakeup;	
 	list->size--;
@@ -114,6 +133,8 @@ void timeserver() {
 	bwdebug( DBG_SYS, "TIMESERVER: start" );
 	
 	start_timer();
+
+	unsigned long avenrun[3] = {0};
 	
 	int mytid = MyTid();
 	RegisterAs( TIME_SERVER_NAME );
@@ -135,6 +156,7 @@ void timeserver() {
 				"[it's been %d ticks since start]",
 				sender_tid , current_time);
 			current_time++;
+			calc_load( current_time, avenrun );
 			tid_to_unblock = get_tid_to_wakeup( &list, current_time );
 			if( tid_to_unblock >= 0 ) {
 				bwdebug( DBG_SYS, "TIMESERVER: unblocking task %d",

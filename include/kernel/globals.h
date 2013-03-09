@@ -96,6 +96,7 @@ typedef struct {
 	int last_active_tid;
 	int tasks_alive;
 	int tasks_exited;
+	int cpu_load;
 	
 	Task_descriptor *hwi_watchers[HWI_NUM_EVENTS];
 } Scheduler;
@@ -105,6 +106,7 @@ typedef struct {
 typedef struct {
 	Task_descriptor tasks[MAX_NUM_TASKS];
 	Scheduler scheduler;
+	unsigned long kernel_loop_cnt;
 } Kern_Globals;
 
 #endif

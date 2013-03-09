@@ -58,6 +58,13 @@ void sys_unblock_receive(Task_descriptor *td, Kern_Globals *GLOBALS );
 
 int sys_await_event (int eventid, int event, Task_descriptor *, Kern_Globals *);
 
+// TODO: Description
+//
+
+void sys_get_system_data( System_data *, Task_descriptor *, Kern_Globals *);
+
+// TODO: Description
+//
 
 int sys_testcall(int a, int b, int c, int d, int e, int f);
 

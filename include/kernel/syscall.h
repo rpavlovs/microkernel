@@ -11,6 +11,7 @@
 #define REPLY_SYSCALL 			7
 #define AWAIT_EVENT_SYSCALL		8
 #define SHUTDOWN_EVENT_SYSCALL	9 
+#define SYSTEM_DATA_SYSCALL		10
 #define TESTCALL_SYSCALL		99
 
 #define CREATE_ARGS 			2
@@ -22,6 +23,7 @@
 #define RECEIVE_ARGS	 		3
 #define REPLY_ARGS 				3
 #define AWAIT_EVENT_ARGS		2
+#define SYSTEM_DATA_ARGS		1
 #define TESTCALL_ARGS 			6
 
 #define CREATE_RETURN 			1
@@ -45,6 +47,12 @@ typedef struct {
 	int ret; 							// fp - 16     		
 
 } Syscall_args;
+
+typedef struct {
+	int active_tasks;
+	int last_active_tid;
+	unsigned long kernel_loop_cnt;
+} System_data;
 
 
 // Description:
@@ -196,6 +204,8 @@ int Putstr( int channel, char* str );
 
 // Finishes the execution of our microkernel and returns control to RedBoot. 
 int Shutdown(); 
+
+void GetSysdata( System_data *data );
 
 int TestCall( int a, int b, int c, int d, int e, int f );
 

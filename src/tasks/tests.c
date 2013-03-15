@@ -85,7 +85,7 @@ void test_uart1_receive(){
 
 void task_test_uart2() {	
 	// CREATE THE UART2 RECEIVER SERVER. 
-	bwdebug( DBG_SYS, "FIRST_TASK: creating UART2 Receiver Server." );
+	bwdebug( DBG_SYS, TESTS_DEBUG_AREA, "FIRST_TASK: creating UART2 Receiver Server." );
 	////todo_debug( 0, 0 );
 	////todo_debug( 0, 1 );
 	////todo_debug( 0, 2 );

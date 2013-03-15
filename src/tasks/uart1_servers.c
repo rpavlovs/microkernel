@@ -1,6 +1,8 @@
 #include <userspace.h>
 
 void uart1_sender_notifier() {
+	bwdebug( DBG_SYS, UART1_SENDER_DEBUG_AREA, "UART1_SENDER_NOTIFIER: enters" );
+
 	int* uart_flags =	(int *)( UART1_BASE + UART_FLAG_OFFSET );
 	int* uart_data =	(int *)( UART1_BASE + UART_DATA_OFFSET );
 	int* modem_ctrl =	(int *)( UART1_BASE + UART_MDMCTL_OFFSET);
@@ -31,9 +33,12 @@ void uart1_sender_notifier() {
 
 	FOREVER {
 		//Get request with character from the uart1_sender_server
+		bwdebug( DBG_SYS, UART1_SENDER_DEBUG_AREA, "UART1_SENDER_NOTIFIER: Waiting for request..." );
 		Receive(&sender_tid, (char *) &request, sizeof(request));
 		//Reply, to unblock the uart1_sender_server
 		Reply(sender_tid, (char *) 0, 0);
+		bwdebug( DBG_SYS, UART1_SENDER_DEBUG_AREA, "UART1_SENDER_NOTIFIER: Received send request." );
+
 		//Reinitialize modem
 		//RTSn pin is set to low
 		//DTRn pin is set to low
@@ -49,12 +54,11 @@ void uart1_sender_notifier() {
 			//*uart_data = 'b';
 			//Wait until UART1 is ready to receive a character
 			if(txfe_state == 0 || first_iter) {
-				// bwprintf( COM2, "uart1_sender_notifier: AwaitEvent(UART1_INIT_SEND, 0)\n" );
+				bwdebug( DBG_SYS, UART1_SENDER_DEBUG_AREA, "UART1_SENDER_NOTIFIER: Waiting for INIT event." );
 				AwaitEvent(UART1_INIT_SEND, 0);
 			}
 			else {
-				//bwprintf( COM2, "EVENT02: UART1_SEND_READY\n");
-				// bwprintf( COM2, "uart1_sender_notifier: AwaitEvent(UART1_SEND_READY, 0)\n" );
+				bwdebug( DBG_SYS, UART1_SENDER_DEBUG_AREA, "UART1_SENDER_NOTIFIER: Waiting for SEND READY event." );
 				AwaitEvent(UART1_SEND_READY, 0);
 			}
 
@@ -118,11 +122,16 @@ void uart1_sender_notifier() {
 }
 
 void uart1_sender_server() {
+	bwdebug( DBG_SYS, UART1_SENDER_DEBUG_AREA, "UART1_SENDER_SERVER: enters" );
+
 	//Register the server
 	RegisterAs("uart1_sender");
 	
 	//Create the notifier
-	int notifier_tid = Create(UART1_SENDER_SERVER_PRIORITY, &uart1_sender_notifier);
+	int notifier_tid = Create(UART1_SENDER_NOTIFIER_PRIORITY, &uart1_sender_notifier);
+	bwdebug( DBG_SYS, UART1_SENDER_DEBUG_AREA, 
+		"UART1_SENDER_SERVER: uart1 sender server notifier created. [tid: %d priority: %d]",
+		notifier_tid, UART1_SENDER_NOTIFIER_PRIORITY );
 	
 	//Request & Reply
 	UART_request request;
@@ -134,13 +143,15 @@ void uart1_sender_server() {
 
 	FOREVER{
 		//Receive request from the system function (Putc)
+		bwdebug( DBG_SYS, UART1_SENDER_DEBUG_AREA, "UART1_SENDER_SERVER: listening for a request" );
 		int sender_tid = -1;
 		Receive(&sender_tid, (char *) &request, sizeof(request));
 
 		
 		switch(request.type){
 			case UART_SEND_REQUEST_PUTC:
-
+				bwdebug( DBG_SYS, UART1_SENDER_DEBUG_AREA, "UART1_SENDER_SERVER: Putc request from [sender_tid: %d]",
+					sender_tid );
 				//Reply to unblock the system function (Putc)
 				//reply.type = UART1_SEND_REPLY;
 				//reply.ch = 0;
@@ -153,6 +164,9 @@ void uart1_sender_server() {
 
 			default:
 				//Invalid request
+				bwdebug( DBG_SYS, UART1_SENDER_DEBUG_AREA, "UART1_SENDER_SERVER: Invalid request from [sender_tid: %d]",
+					sender_tid );
+				
 				reply.type = INVALID_REQUEST;
 				reply.ch = 0;
 				Reply(sender_tid, (char *) &reply, sizeof(reply));
@@ -163,6 +177,7 @@ void uart1_sender_server() {
 			request.type = UART1_SEND_NOTIFIER_REQUEST;
 			request.ch = char_queue_pop( &cqueue );
 			
+			bwdebug( DBG_SYS, UART1_SENDER_DEBUG_AREA, "UART1_SENDER_SERVER: Waking up notifier." );
 			Send( notifier_tid, (char *) &request, sizeof(request), 0, 0);
 		}
 	}
@@ -171,6 +186,8 @@ void uart1_sender_server() {
 
 
 void uart1_receiver_notifier() {
+	bwdebug( DBG_SYS, UART1_RECEIVER_DEBUG_AREA, "UART1_RECEIVER_NOTIFIER: enters" );
+
 	int server_tid = WhoIs("uart1_receiver");
 	UART_request request;
 	
@@ -179,27 +196,30 @@ void uart1_receiver_notifier() {
 
 	FOREVER {
 		//Wait until there is data in UART1
-		//todo_debug( 0x1, 2 );
+		bwdebug( DBG_SYS, UART1_RECEIVER_DEBUG_AREA, "UART1_RECEIVER_NOTIFIER: waiting for data" );
 		AwaitEvent( UART1_RECEIVE_READY, (int) &receive_buffer );
-		//todo_debug( 0x2, 2 );
+		bwdebug( DBG_SYS, UART1_RECEIVER_DEBUG_AREA, "UART1_RECEIVER_NOTIFIER: data received" );
 
 		//Configure the request
 		request.type = UART1_RECEIVE_NOTIFIER_REQUEST;
 		request.ch = receive_buffer;
 
 		//Send data to the server (uart1_receiver_server)
-		//todo_debug( 0x3, 2 );
 		Send(server_tid, (char *) &request, sizeof(request), (char *) 0, 0);
-		//todo_debug( 0x4, 2 );
 	}
 }
 
 void uart1_receiver_server() {
+	bwdebug( DBG_SYS, UART1_RECEIVER_DEBUG_AREA, "UART1_RECEIVER_SERVER: enters" );
+
 	//Register the server
 	RegisterAs("uart1_receiver");
 
 	//Create the notifier
-	Create(UART1_RECEIVER_NOTIFIER_PRIORITY, &uart1_receiver_notifier);
+	int notifier_tid = Create(UART1_RECEIVER_NOTIFIER_PRIORITY, &uart1_receiver_notifier);
+	bwdebug( DBG_SYS, UART1_RECEIVER_DEBUG_AREA, 
+		"UART1_RECEIVER_SERVER: uart1_receiver_server_notifier created. [tid: %d priority: %d]", 
+		notifier_tid, UART1_RECEIVER_NOTIFIER_PRIORITY );
 	
 	//Request & Reply
 	UART_request request;
@@ -219,23 +239,21 @@ void uart1_receiver_server() {
 		//Receive request from:
 		//	system function (Getc)
 		//	notifier (uart1_receiver_notifier)
-		//todo_debug( 0x1, 1 );
+		bwdebug( DBG_SYS, UART1_RECEIVER_DEBUG_AREA, "UART1_RECEIVER_SERVER: Waiting for request" );
 		Receive(&sender_tid, (char *) &request, sizeof(request));
-		//todo_debug( 0x2, 1 );
 
 		switch(request.type){
 			case UART1_RECEIVE_REQUEST:
 				//Enqueue the system function tid to reply later
-				//todo_debug( 0x3, 1 );
+				bwdebug( DBG_SYS, UART1_RECEIVER_DEBUG_AREA, "UART1_RECEIVER_SERVER: Getc request from [sender_tid: %d]"
+					, sender_tid );
 				enqueue_int_queue( sender_tid, &iqueue );
-				//todo_debug( 0x4, 1 );
 				break;
 				
 			case UART1_RECEIVE_NOTIFIER_REQUEST:
 				//Reply to unblock the notifier
-				//todo_debug( 0x5, 1 );
+				bwdebug( DBG_SYS, UART1_RECEIVER_DEBUG_AREA, "UART1_RECEIVER_SERVER: message received from notifier" );
 				Reply(sender_tid, (char *) 0, 0);
-				//todo_debug( 0x6, 1 );
 
 				//Enqueue received character
 				//if ( iqueue.size > 0 ){
@@ -247,11 +265,12 @@ void uart1_receiver_server() {
 				break;
 			
 			default:
+				// Invalid Request
+				bwdebug( DBG_SYS, UART1_RECEIVER_DEBUG_AREA, "UART1_RECEIVER_SERVER: invalid request from [sender_tid: %d]", 
+					sender_tid );
 				reply.type = INVALID_REQUEST;
 				reply.ch = 0;
-				//todo_debug( 0x9, 1 );
 				Reply(sender_tid, (char *) &reply, sizeof(reply));
-				//todo_debug( 0x10, 1 );
 				break;
 		}
 
@@ -264,9 +283,9 @@ void uart1_receiver_server() {
 			reply.ch = char_queue_pop( &cqueue );
 
 			//Perform the reply
-			//todo_debug( 0x11, 1 );
+			bwdebug( DBG_SYS, UART1_RECEIVER_DEBUG_AREA, "UART1_RECIEVER_SERVER: replying [to: %d with: %d]",
+								target_tid, reply.ch );
 			Reply(target_tid, (char *) &reply, sizeof(reply));
-			//todo_debug( 0x12, 1 );
 		}
 	}
 }

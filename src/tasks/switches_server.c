@@ -46,7 +46,7 @@ int get_switch_index( int sw_id ){
 }
 
 int change_switch_position( Cmd_request cmd_request, Switches_list *sw_list, int cmd_server_tid, char *str_buff ){	
-	bwdebug( DBG_USR, "CHANGE_SWITCH_POSITION: enters" );
+	bwdebug( DBG_USR, SWITCHES_SERVER_DEBUG_AREA, "CHANGE_SWITCH_POSITION: enters" );
 	// Send the command to the cmd_server.
 	Send( cmd_server_tid, ( char * ) &cmd_request, sizeof( cmd_request ), 0, 0  ); 
 	
@@ -67,12 +67,12 @@ int change_switch_position( Cmd_request cmd_request, Switches_list *sw_list, int
 	size += sprintf( ( str_buff + size ), "%c ", pos );			// Show the new cursor position. 
 	size += restoreCursor( str_buff + size );				// Restore the cursor to its original pos. 
 	
-	bwdebug( DBG_USR, "CHANGE_SWITCH_POSITION: exit" );
+	bwdebug( DBG_USR, SWITCHES_SERVER_DEBUG_AREA, "CHANGE_SWITCH_POSITION: exit" );
 	return size; 
 }
 
 void init_switches( Switches_list *sw_list, int cmd_server_tid, char *buff ){
-	bwdebug( DBG_USR, "INIT_SWITCHES: enters" );
+	bwdebug( DBG_USR, SWITCHES_SERVER_DEBUG_AREA, "INIT_SWITCHES: enters" );
 	int i, sw_id; 
 	char *str_buff = buff; 
 	Cmd_request cmd_request; 
@@ -90,12 +90,12 @@ void init_switches( Switches_list *sw_list, int cmd_server_tid, char *buff ){
 		change_switch_position( cmd_request, sw_list, cmd_server_tid, str_buff ); 
 		Putstr( COM2, str_buff );
 	}
-	bwdebug( DBG_USR, "INIT_SWITCHES: done" );
+	bwdebug( DBG_USR, SWITCHES_SERVER_DEBUG_AREA, "INIT_SWITCHES: done" );
 }
 
 void switchserver(){
 	// Initialization
-	bwdebug( DBG_USR, "SWITCHES SERVER: enters" );
+	bwdebug( DBG_USR, SWITCHES_SERVER_DEBUG_AREA, "SWITCHES SERVER: enters" );
 	RegisterAs( SWITCHES_SERVER_NAME );
 
 	int sender_tid; 
@@ -112,11 +112,11 @@ void switchserver(){
 	init_switches( &switches_list, cmd_server_tid, str_ptr ); 
 	
 	FOREVER{
-		bwdebug( DBG_USR, "SWITCHES SERVER: listening for a request" );
+		bwdebug( DBG_USR, SWITCHES_SERVER_DEBUG_AREA, "SWITCHES SERVER: listening for a request" );
 		Receive( &sender_tid, ( char * ) &cmd_request, sizeof( cmd_request ) );
 		
 		if ( cmd_request.type == ADD_CMD_REQUEST && cmd_request.cmd.cmd_type == SWITCH_CMD_TYPE ){
-			bwdebug( DBG_USR, "SWITCHES SERVER: Received add command from [sender_tid: %d]",
+			bwdebug( DBG_USR, SWITCHES_SERVER_DEBUG_AREA, "SWITCHES SERVER: Received add command from [sender_tid: %d]",
 					sender_tid ); 
 			Reply( sender_tid, 0, 0 ); 
 			
@@ -126,7 +126,7 @@ void switchserver(){
 			Putstr( COM2, str_ptr );
 		}
 		else{
-			bwdebug( DBG_USR, "COMMAND SERVER: Invalid cmd received from [sender_tid: %d cmd: %d]",
+			bwdebug( DBG_USR, SWITCHES_SERVER_DEBUG_AREA, "SWITCHES SERVER: Invalid cmd received from [sender_tid: %d cmd: %d]",
 					sender_tid, cmd_request.type );
 			Reply( sender_tid, 0, 0 );
 		}

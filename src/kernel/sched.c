@@ -2,7 +2,7 @@
 
 void
 init_scheduler( Kern_Globals *GLOBALS ) {	
-	bwdebug( DBG_KERN, "init_scheduler: first task priority %d, address %d",
+	bwdebug( DBG_KERN, SCHEDULER_DEBUG_AREA, "init_scheduler: first task priority %d, address %d",
 		FIRST_TASK_PRIORITY, (int) first_task );
 
 	bwassert( FIRST_TASK_PRIORITY < SCHED_NUM_PRIORITIES &&
@@ -45,7 +45,7 @@ init_scheduler( Kern_Globals *GLOBALS ) {
 // Return:
 // tid of the next task to run
 int schedule( Kern_Globals * GLOBALS) {
-	bwdebug( DBG_KERN, "SCHEDULE: entered. [last active: %d]",
+	bwdebug( DBG_KERN, SCHEDULER_DEBUG_AREA, "SCHEDULE: entered. [last active: %d]",
 		GLOBALS->scheduler.last_active_tid );
 
 	int p = SCHED_NUM_PRIORITIES - 1;
@@ -54,7 +54,7 @@ int schedule( Kern_Globals * GLOBALS) {
 	for( ; GLOBALS->scheduler.queues[p].size == 0; --p ) {
 		// if( p < 0 ) bwpanic( "SCHEDULE: pririty queues are all empty." );
 		if( p < 0 ) {
-			bwdebug( DBG_SYS, "SCHEDULE: WARNING: pririty queues are all empty." );
+			bwdebug( DBG_SYS, SCHEDULER_DEBUG_AREA, "SCHEDULE: WARNING: pririty queues are all empty." );
 			break;
 		}
 	}
@@ -75,7 +75,7 @@ int schedule( Kern_Globals * GLOBALS) {
 // Return:
 // interrupt ID of the first recieved interrupt
 int activate( const int tid, Kern_Globals *GLOBALS ) {
-	bwdebug( DBG_KERN, "ACTIVATE: entered [activating task %d]", tid );
+	bwdebug( DBG_KERN, SCHEDULER_DEBUG_AREA, "ACTIVATE: entered [activating task %d]", tid );
 
 	Task_descriptor *td = &(GLOBALS->tasks[tid]);
 	
@@ -96,7 +96,7 @@ int activate( const int tid, Kern_Globals *GLOBALS ) {
 
 int getNextRequest( Kern_Globals *GLOBALS )
 {
-	bwdebug( DBG_KERN, "GET_NEXT_REQUEST: entered" );
+	bwdebug( DBG_KERN, SCHEDULER_DEBUG_AREA, "GET_NEXT_REQUEST: entered" );
 	return activate( schedule( GLOBALS ), GLOBALS );
 }
 

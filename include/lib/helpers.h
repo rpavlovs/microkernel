@@ -15,6 +15,8 @@ int is_train_id( int num );
 #define CLEAR_SCREEN_STR		"\033[2J"
 #define MOVE_CURSOR_UP_LEFT		"\033[H"
 
+int saveCursor( char *str_buff ); 
+
 int cursorPositioning( char *str_buff, int row, int column ); 
 
 int clearScreen( char *str_buff ); 

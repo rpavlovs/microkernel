@@ -29,7 +29,7 @@ void run_calibration_constant_velocity(){
 		sensor_msg.pin_id = i; 
 		Send( sensor_server_tid, ( char * ) &sensor_msg, sizeof( sensor_msg ), 0, 0 ); 
 		
-		bwprintf( "Sensor %c%d triggered.  ", sensor_msg.sensor_group, i ); 
+		bwprintf( COM2, "Sensor %c%d triggered.  ", sensor_msg.sensor_group, i ); 
 	}
 }
 

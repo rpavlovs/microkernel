@@ -278,12 +278,13 @@ void todo_debug( int value, int channel ) {
 
 	*ptr = value;
 	 	*/
-	if ( channel == 20 ){
+	
+	/*if ( channel == 20 ){
 		int *ptr, addr;
 		addr = 0x01dffe50; 
 		ptr = ( int * ) addr;
 		*ptr = value; 
-	}
+	}*/
 }
 
 

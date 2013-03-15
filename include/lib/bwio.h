@@ -31,7 +31,7 @@ void bwputw( int channel, int n, char fc, char *bf );
 
 void bwprintf( int channel, char *format, ... );
 
-void bwdebug( int threshhold_lvl, char *message, ... );
+void bwdebug( int threshhold_lvl, int debug_area, char *message, ... );
 
 void bwassert( int condition, char * message, ... );
 

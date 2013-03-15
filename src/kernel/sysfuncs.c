@@ -2,7 +2,7 @@
 
 int
 sys_create( int priority, void (*code) ( ), Task_descriptor *td, Kern_Globals *GLOBALS ) {
-	bwdebug( DBG_KERN, "SYS_CREATE: entered" );
+	bwdebug( DBG_KERN, KERNEL_DEBUG_AREA, "SYS_CREATE: entered" );
 
 	// ERROR: Scheduler was given a wrong task priority.
 	if( priority < 0 || priority >= SCHED_NUM_PRIORITIES ) return -1;
@@ -31,27 +31,27 @@ sys_create( int priority, void (*code) ( ), Task_descriptor *td, Kern_Globals *G
 
 int
 sys_mytid( Task_descriptor *td, Kern_Globals *GLOBALS ) {
-	bwdebug( DBG_KERN, "SYS_MYTID: entered" );
+	bwdebug( DBG_KERN, KERNEL_DEBUG_AREA, "SYS_MYTID: entered" );
 	sys_reschedule( td, GLOBALS );
 	return td->tid;
 }
 
 int
 sys_myparenttid( Task_descriptor *td, Kern_Globals *GLOBALS ) {
-	bwdebug( DBG_KERN, "SYS_MYPARENTTID: entered");
+	bwdebug( DBG_KERN, KERNEL_DEBUG_AREA, "SYS_MYPARENTTID: entered");
 	sys_reschedule( td, GLOBALS );
 	return td->parent_tid;
 }
 
 void
 sys_pass(Task_descriptor *td, Kern_Globals *GLOBALS ) {
-	bwdebug( DBG_KERN, "SYS_PASS: entered" );
+	bwdebug( DBG_KERN, KERNEL_DEBUG_AREA, "SYS_PASS: entered" );
 	sys_reschedule( td, GLOBALS );
 }
 
 void
 sys_exit( Task_descriptor *td, Kern_Globals *GLOBALS ) {
-	bwdebug( DBG_KERN, "SYS_EXIT: entered" );
+	bwdebug( DBG_KERN, KERNEL_DEBUG_AREA, "SYS_EXIT: entered" );
 	
 	sched_remove_td( td, GLOBALS );
 
@@ -62,7 +62,7 @@ sys_exit( Task_descriptor *td, Kern_Globals *GLOBALS ) {
 
 void
 sys_reschedule( Task_descriptor *td, Kern_Globals *GLOBALS ) {
-	bwdebug( DBG_KERN, "SYS_RESCHEDULE: entered" );
+	bwdebug( DBG_KERN, SCHEDULER_DEBUG_AREA, "SYS_RESCHEDULE: entered" );
 
 	sched_remove_td( td, GLOBALS );
 	sched_add_td( td, GLOBALS );
@@ -74,7 +74,7 @@ sys_reschedule( Task_descriptor *td, Kern_Globals *GLOBALS ) {
 int
 sys_send( int receiver_tid, char *msg, int msglen, char *reply, int replylen,
 		Task_descriptor *sender_td, Kern_Globals *GLOBALS ) {
-	bwdebug( DBG_KERN, "SYS_SEND: entered" );
+	bwdebug( DBG_KERN, KERNEL_DEBUG_AREA, "SYS_SEND: entered" );
 	//todo_debug( 0x1, 4 );
 
 	// Utility variables
@@ -103,13 +103,13 @@ sys_send( int receiver_tid, char *msg, int msglen, char *reply, int replylen,
 int
 sys_receive( int *sender_tid, char *reciever_buf, const int reciever_buf_len,
 			Task_descriptor *receiver_td, Kern_Globals *GLOBALS ) {
-	bwdebug( DBG_KERN, "SYS_RECEIVE: entered" );
+	bwdebug( DBG_KERN, KERNEL_DEBUG_AREA, "SYS_RECEIVE: entered" );
 	//todo_debug( 0x1, 5 );
 
 	Message_queue *mailbox = &(receiver_td->mailbox);
 
 	if( mailbox->size > 0 ) {
-		bwdebug( DBG_KERN, "SYS_RECEIVE: Task not blocked. Mailbox not empty." );
+		bwdebug( DBG_KERN, KERNEL_DEBUG_AREA, "SYS_RECEIVE: Task not blocked. Mailbox not empty." );
 		//todo_debug( 0x3, 5 );
 
 		Send_info *send_info = &(mailbox->msg_infos[mailbox->oldest]);
@@ -136,7 +136,7 @@ sys_receive( int *sender_tid, char *reciever_buf, const int reciever_buf_len,
 		//todo_debug( 0x8, 5 );
 	}
 	else {
-		bwdebug( DBG_KERN, "SYS_RECEIVE: Task blocked. Mailbox is empty" );
+		bwdebug( DBG_KERN, KERNEL_DEBUG_AREA, "SYS_RECEIVE: Task blocked. Mailbox is empty" );
 		//todo_debug( 0x9, 5 );
 
 		//Save the current receive arguments
@@ -157,7 +157,7 @@ sys_receive( int *sender_tid, char *reciever_buf, const int reciever_buf_len,
 int
 sys_reply( int sender_tid, char *reply, int replylen, Task_descriptor *receiver_td,
 		Kern_Globals *GLOBALS ) {
-	bwdebug( DBG_KERN, "SYS_REPLY: entered [reply to %d from %d]",
+	bwdebug( DBG_KERN, KERNEL_DEBUG_AREA, "SYS_REPLY: entered [reply to %d from %d]",
 			sender_tid, receiver_td->tid );
 	//todo_debug( 0x1, 6 );
 
@@ -178,7 +178,7 @@ sys_reply( int sender_tid, char *reply, int replylen, Task_descriptor *receiver_
 
 void
 sys_unblock_receive( Task_descriptor *receiver_td, Kern_Globals *GLOBALS ) {
-	bwdebug( DBG_KERN, "SYS_UNBLOCK_RECEIVE: entered" );
+	bwdebug( DBG_KERN, KERNEL_DEBUG_AREA, "SYS_UNBLOCK_RECEIVE: entered" );
 	//todo_debug( 0x1, 7 );
 
 	Message_queue *mailbox = &(receiver_td->mailbox);
@@ -220,7 +220,7 @@ sys_unblock_receive( Task_descriptor *receiver_td, Kern_Globals *GLOBALS ) {
 
 int
 sys_await_event( int eventid, int buffer_addr, Task_descriptor *td, Kern_Globals *GLOBALS ) {
-	bwdebug( DBG_KERN, "SYS_AWAIT_EVENT: entered. [event id: %d, task id: %d]",
+	bwdebug( DBG_KERN, KERNEL_DEBUG_AREA, "SYS_AWAIT_EVENT: entered. [event id: %d, task id: %d]",
 		eventid, td->tid );
 	bwassert( eventid < HWI_NUM_EVENTS, "SYS_AWAIT_EVENT: eventid is invalid" );
 	
@@ -280,7 +280,7 @@ sys_await_event( int eventid, int buffer_addr, Task_descriptor *td, Kern_Globals
 
 void
 sys_get_system_data( System_data *data, Task_descriptor *td, Kern_Globals *GLOBALS ) {
-	bwdebug( DBG_KERN, "SYS_GET_SYSTEM_DATA: entered. [caller task id: %d]", td->tid );
+	bwdebug( DBG_KERN, KERNEL_DEBUG_AREA, "SYS_GET_SYSTEM_DATA: entered. [caller task id: %d]", td->tid );
 	data->active_tasks = GLOBALS->scheduler.tasks_alive;
 	data->last_active_tid = GLOBALS->scheduler.last_active_tid;
 	data->kernel_loop_cnt = GLOBALS->kernel_loop_cnt;

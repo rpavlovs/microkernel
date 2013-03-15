@@ -5,25 +5,25 @@ int Create( int priority, void (*code) ( ) ) {
 }
 
 int MyTid( ) {
-	bwdebug( DBG_REQ, "MY_TID: request recieved." );
+	bwdebug( DBG_REQ, KERNEL_DEBUG_AREA, "MY_TID: request recieved." );
 
 	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (MYTID_SYSCALL) );
 }
 
 int MyParentTid( ) {
-	bwdebug( DBG_REQ, "MY_PARENT_TID: request recieved." );
+	bwdebug( DBG_REQ, KERNEL_DEBUG_AREA, "MY_PARENT_TID: request recieved." );
 
 	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (MYPARENTTID_SYSCALL) );
 }
 
 void Pass( ) {
-	bwdebug( DBG_REQ, "PASS: request recieved." );
+	bwdebug( DBG_REQ, KERNEL_DEBUG_AREA, "PASS: request recieved." );
 
 	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (PASS_SYSCALL) );
 }
 
 void Exit( ) {
-	bwdebug( DBG_REQ, "EXIT: request recieved." );
+	bwdebug( DBG_REQ, KERNEL_DEBUG_AREA, "EXIT: request recieved." );
 
 	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (EXIT_SYSCALL) );
 }
@@ -57,7 +57,7 @@ void GetSysdata( System_data *data ){
 ////////////////////
  
 int RegisterAs( char *name ) {
-	bwdebug( DBG_REQ, "REGISTER_AS: request recieved. Register [%s]", name );
+	bwdebug( DBG_REQ, NAMESERVER_DEBUG_AREA, "REGISTER_AS: request recieved. Register [%s]", name );
 
 	Nameserver_request request;
 	Nameserver_reply reply;
@@ -79,12 +79,12 @@ int RegisterAs( char *name ) {
 			(char *) &reply, sizeof(reply) );
 
 	if( status == SEND_ERROR_TID_IMPOSSIBLE || status == SEND_ERROR_TID_HAS_NO_TASK ) {
-		bwdebug( DBG_REQ,
+		bwdebug( DBG_REQ, NAMESERVER_DEBUG_AREA,
 			"WhoIs: *ERROR* can't get rich of nameserver. Invalid task ID." );
 		return NS_ERROR_TID_IS_NOT_A_TASK;
 	}
 	if( status == SEND_ERROR_TRANSACTION_FAILED || status == ERROR_WRONG_MESSAGE_TYPE ) {
-		bwdebug( DBG_REQ,
+		bwdebug( DBG_REQ, NAMESERVER_DEBUG_AREA, 
 			"WhoIs: *ERROR* communication with nameserver failed." );
 		return NS_ERROR_TID_IS_NOT_A_NAMESERVER;
 	}
@@ -93,7 +93,7 @@ int RegisterAs( char *name ) {
 }
 
 int WhoIs( char *name ) {
-	bwdebug( DBG_REQ, "WHOIS: request recieved. Lookup [%s]", name );
+	bwdebug( DBG_REQ, NAMESERVER_DEBUG_AREA, "WHOIS: request recieved. Lookup [%s]", name );
 
 	Nameserver_request request;
 	Nameserver_reply reply;
@@ -115,12 +115,12 @@ int WhoIs( char *name ) {
 					(char *) &reply, sizeof(reply) );
 
 	if( status == SEND_ERROR_TID_IMPOSSIBLE || status == SEND_ERROR_TID_HAS_NO_TASK ) {
-		bwdebug( DBG_REQ,
+		bwdebug( DBG_REQ, NAMESERVER_DEBUG_AREA,
 			"WhoIs: *ERROR* can't get rich of nameserver." );
 		return NS_ERROR_TID_IS_NOT_A_TASK;
 	}
 	if( status == SEND_ERROR_TRANSACTION_FAILED || status == ERROR_WRONG_MESSAGE_TYPE ) {
-		bwdebug( DBG_REQ,
+		bwdebug( DBG_REQ, NAMESERVER_DEBUG_AREA, 
 			"WhoIs: *ERROR* communication with nameserver failed." );
 		return NS_ERROR_TID_IS_NOT_A_NAMESERVER;
 	}
@@ -128,7 +128,7 @@ int WhoIs( char *name ) {
 }
 
 int Time() {
-	bwdebug( DBG_REQ, "TIME: request recieved." );
+	bwdebug( DBG_REQ, TIMESERVER_DEBUG_AREA, "TIME: request recieved." );
 	Msg_timeserver_request request_msg;
 	Msg_timeserver_reply reply_msg;
 	request_msg.type = TIME_REQUEST;
@@ -142,7 +142,7 @@ int Time() {
 }
 
 int Delay( int ticks ) {
-	bwdebug( DBG_REQ, "DELAY: request recieved. Wait for %d ticks", ticks );
+	bwdebug( DBG_REQ, TIMESERVER_DEBUG_AREA, "DELAY: request recieved. Wait for %d ticks", ticks );
 	Msg_timeserver_request request_msg;
 	Msg_timeserver_reply reply_msg;
 	request_msg.type = DELAY_REQUEST;
@@ -153,7 +153,7 @@ int Delay( int ticks ) {
 }
 
 int DelayUntil( int ticks ) {
-	bwdebug( DBG_REQ, "DELAY_UNTIL: request recieved. Wait till %d'th "
+	bwdebug( DBG_REQ, TIMESERVER_DEBUG_AREA, "DELAY_UNTIL: request recieved. Wait till %d'th "
 		"tick from start", ticks );
 	Msg_timeserver_request request_msg;
 	Msg_timeserver_reply reply_msg;

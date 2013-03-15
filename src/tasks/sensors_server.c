@@ -4,7 +4,7 @@
 // Sensors Server Notifier
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 void sensors_server_notifier(){
-	bwdebug( DBG_SYS, "SENSORS_SERVER_NOTIFIER: enters" );
+	bwdebug( DBG_SYS, SENSORS_SERVER_DEBUG_AREA, "SENSORS_SERVER_NOTIFIER: enters" );
 	
 	// Initialization
 	Init_sensor_msg init_msg; 
@@ -13,7 +13,7 @@ void sensors_server_notifier(){
 	int sensor_server_tid, my_tid, last_recieved; 
 	char *sensor_data; 
 	
-	bwdebug( DBG_SYS, "UART2_SENDER_NOTIFIER: recieving init info" );
+	bwdebug( DBG_SYS, SENSORS_SERVER_DEBUG_AREA, "SENSORS_SERVER_NOTIFIER: recieving init info" );
 	Receive( &sensor_server_tid, (char *)&init_msg, sizeof(init_msg) );
 	//Reply( sensor_server_tid, 0, 0 );
 	sensor_data = init_msg.sensor_data_buff; 
@@ -47,7 +47,8 @@ void sensors_server_notifier(){
 		// Inform the sensor server that new data arrived
 		Send( sensor_server_tid, ( char * ) &sensor_msg, sizeof( sensor_msg ), 0, 0 ); 
 		
-		DelayUntil( last_recieved + 100 / SENSOR_QUERY_FREQENCY );
+		//DelayUntil( last_recieved + 100 / SENSOR_QUERY_FREQENCY );
+		DelayUntil( 10 );
 	}
 }
 
@@ -80,7 +81,7 @@ void wait_for_sensor( Sensor_waiting_list *list, int new_tid, char sensor_group,
 	sensor_waiting_list->waiting_tasks[ sensor_waiting_list->size ] = new_tid; 
 	sensor_waiting_list->size++; 
 	
-	bwdebug( DBG_USR, "SENSOR_SERVER: task % is set to wait for sensor %c%d to be triggered.", 
+	bwdebug( DBG_USR, SENSORS_SERVER_DEBUG_AREA, "SENSOR_SERVER: task % is set to wait for sensor %c%d to be triggered.", 
 			new_tid, sensor_group, pin_id ); 
 }
 
@@ -95,7 +96,7 @@ void awaken_sensor_waiting_tasks( Sensor_waiting_list *list, char sensor_group, 
 		sensor_waiting_list->size--; 
 		tid = sensor_waiting_list->waiting_tasks[ sensor_waiting_list->size ]; 
 
-		bwdebug( DBG_USR, "SENSOR_SERVER: Sensor  %c%d triggered. Awakening task %d", 
+		bwdebug( DBG_USR, SENSORS_SERVER_DEBUG_AREA, "SENSOR_SERVER: Sensor  %c%d triggered. Awakening task %d", 
 			sensor_group, pin_id, tid ); 
 		Reply( tid, 0, 0 ); 
 	}
@@ -187,7 +188,7 @@ void store_previous_sensors( char *s88s, char *s88s_prev ){
 }
 
 void sensors_server() {
-	bwdebug( DBG_SYS, "SENSORS_SERVER: enters" );
+	bwdebug( DBG_SYS, SENSORS_SERVER_DEBUG_AREA, "SENSORS_SERVER: enters" );
 	
 	// Data structures
 	int notifier_tid, sender_tid;
@@ -204,13 +205,13 @@ void sensors_server() {
 	init_msg.sensor_data_buff = s88s; 
 	init_msg.prev_sensor_data_buff = s88s_prev; 
 	notifier_tid = Create( SENSOR_NOTIFIER_PRIORITY, sensors_server_notifier ); 
-	bwdebug( DBG_SYS, "SENSORS_SERVER: sensors_server_notifier created [tid: %d priority: %d]", 
+	bwdebug( DBG_SYS, SENSORS_SERVER_DEBUG_AREA, "SENSORS_SERVER: sensors_server_notifier created [tid: %d priority: %d]", 
 			notifier_tid, SENSOR_NOTIFIER_PRIORITY );
 	Send( notifier_tid, ( char * ) &init_msg, sizeof( init_msg ), 0, 0 ); 
 	
 	FOREVER {
-		bwdebug( DBG_SYS, "SENSORS_SERVERR: listening for a request" );
-		Receive( &sender_tid, ( char * ) &sensor_msg, sizeof( sensor_msg )  ); 
+		bwdebug( DBG_SYS, SENSORS_SERVER_DEBUG_AREA, "SENSORS_SERVER: listening for a request" );
+		Receive( &sender_tid, ( char * ) &sensor_msg, sizeof( sensor_msg )  );
 		switch( sensor_msg.type ){
 			case SENSOR_DATA_RECEIVED_MSG:				
 				Reply( sender_tid, 0, 0 ); 
@@ -222,7 +223,7 @@ void sensors_server() {
 				wait_for_sensor( sensors_waiting_list, sender_tid, sensor_msg.sensor_group, sensor_msg.pin_id );
 				break; 
 			default:
-				bwdebug( DBG_SYS, "SENSORS_SERVER: Invalid request. [type: %d]", sensor_msg.type );
+				bwdebug( DBG_SYS, SENSORS_SERVER_DEBUG_AREA, "SENSORS_SERVER: Invalid request. [type: %d]", sensor_msg.type );
 				break; 
 		}
 	}

@@ -38,7 +38,7 @@ void setupScreen() {
 void train_control() {
 	
 	setupScreen();
-	Create( SENSOR_SERVER_PRIORITY, sensors_server );
+	//Create( SENSOR_SERVER_PRIORITY, sensors_server );
 	Create( SWITCHES_SERVER_PRIORITY, switchserver );
 	Create( 8, task_cli );
 	Create( 15, draw_clock );

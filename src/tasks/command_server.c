@@ -65,7 +65,7 @@ Command dequeue_cmd( Command_queue *cmd_queue ){
 // -- NOTE: The notifier requires time server to work properly. 
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 void command_notifier(){
-	bwdebug( DBG_USR, "COMMAND_NOTIFIER: enters" );
+	bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND_NOTIFIER: enters" );
 	
 	// Initialization
 	int cmd_server_tid; 
@@ -75,7 +75,7 @@ void command_notifier(){
 	Train_list train_list; 
 	init_train_list( &train_list ); 
 	
-	bwdebug( DBG_USR, "COMMAND SERVER: recieving init info" );
+	bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND SERVER: recieving init info" );
 	Receive( &cmd_server_tid, ( char * ) &initial_msg, sizeof( initial_msg ) );
 	Reply( cmd_server_tid, 0, 0 ); 
 	
@@ -87,7 +87,7 @@ void command_notifier(){
 			
 			switch( command.cmd_type ){
 				case TRAIN_CMD_TYPE:		// Train
-					bwdebug( DBG_USR, "COMMAND_NOTIFIER: send tr" );
+					bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND_NOTIFIER: send tr" );
 					
 					// Keep track of the current speed. 
 					train_list.trains[ command.element_id ].id = command.element_id; 
@@ -99,7 +99,7 @@ void command_notifier(){
 					
 					break; 
 				case REVERSE_CMD_TYPE:		// Reverse
-					bwdebug( DBG_USR, "COMMAND_NOTIFIER: send rv" );
+					bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND_NOTIFIER: send rv" );
 					
 					// Stop train
 					Putc( COM1, 0 );				// Stop the train
@@ -117,13 +117,13 @@ void command_notifier(){
 					
 					break; 
 				case SWITCH_CMD_TYPE:		// Switch
-					bwdebug( DBG_USR, "COMMAND_NOTIFIER: send sw" );
+					bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND_NOTIFIER: send sw" );
 
 					requested_pos = ( char ) command.param; 
 					if ( requested_pos == SWITCH_STRAIGHT_POS ){
-						bwdebug( DBG_USR, "COMMAND_NOTIFIER: Putc( COM1, 33 ) call" );
+						bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND_NOTIFIER: Putc( COM1, 33 ) call" );
 						Putc( COM1, 33 );
-						bwdebug( DBG_USR, "COMMAND_NOTIFIER: Putc( COM1, 33 ) done" );
+						bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND_NOTIFIER: Putc( COM1, 33 ) done" );
 
 					}
 					else if ( requested_pos == SWITCH_CURVE_POS ){
@@ -144,7 +144,7 @@ void command_notifier(){
 					Reply( command.sender_tid, 0, 0 ); 
 					break; 
 				case QUERY_SENSORS_CMD_TYPE:
-					bwdebug( DBG_USR, "COMMAND_NOTIFIER: query sensors" );
+					bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND_NOTIFIER: query sensors" );
 					
 					// Init
 					char *sensors = command.sensors; 
@@ -161,7 +161,7 @@ void command_notifier(){
 					
 					break; 
 				default: 
-					bwdebug( DBG_USR, "COMMAND SERVER: Invalid command. Cannot execute [ Cmd: %d ]", 
+					bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND SERVER: Invalid command. Cannot execute [ Cmd: %d ]", 
 							command.cmd_type ); 
 					break; 
 			}
@@ -169,7 +169,7 @@ void command_notifier(){
 		else{
 			// There are not commands left to send. Wait until one arrives. 
 			cmd_request.type = CMD_NOTIFIER_IDLE;
-			bwdebug( DBG_USR, "COMMAND_NOTIFIER: report idle" );
+			bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND_NOTIFIER: report idle" );
 			Send( cmd_server_tid, ( char * ) &cmd_request, sizeof( cmd_request ), 0, 0 ); 
 		}
 	}
@@ -179,7 +179,7 @@ void command_notifier(){
 // Command Server
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 void commandserver(){
-	bwdebug( DBG_USR, "COMMAND SERVER: enters" );
+	bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND SERVER: enters" );
 	RegisterAs( COMMAND_SERVER_NAME );
 	
 	// Initialization
@@ -194,7 +194,7 @@ void commandserver(){
 	
 	// Create and contact the notifier. 
 	cmd_notifier_tid = Create( COMMAND_NOTIFIER_PRIORITY, command_notifier ); 
-	bwdebug( DBG_USR, "COMMAND_SERVER: command_notifier created [tid: %d priority: %d]", 
+	bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND_SERVER: command_notifier created [tid: %d priority: %d]", 
 			cmd_notifier_tid, UART_SENDER_NOTIFIER_PRIORITY );
 	
 	Cmd_initial_msg initial_msg; 
@@ -202,28 +202,28 @@ void commandserver(){
 	Send( cmd_notifier_tid, ( char * ) &initial_msg, sizeof( initial_msg ), 0, 0  );  
 	
 	FOREVER{
-		bwdebug( DBG_USR, "COMMAND SERVER: listening for a request" );
+		bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND SERVER: listening for a request" );
 		Receive( &sender_tid, ( char * ) &cmd_request, sizeof( cmd_request ) );
 
 		switch( cmd_request.type ){
 			case ADD_CMD_REQUEST:
-				bwdebug( DBG_USR, "COMMAND SERVER: Added command from [sender_tid: %d]",
+				bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND SERVER: Added command from [sender_tid: %d]",
 					sender_tid );
 				enqueue_cmd( cmd_request.cmd, &cmd_queue ); 
 				Reply( sender_tid, 0, 0 ); 
 				break; 
 			case QUERY_CMD_REQUEST:
-				bwdebug( DBG_USR, "COMMAND SERVER: Added query command from [sender_tid: %d]",
+				bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND SERVER: Added query command from [sender_tid: %d]",
 					sender_tid );
 				enqueue_cmd( cmd_request.cmd, &cmd_queue ); 
 				// NOTE: This command requires returning data. Hence, there's no reply here.
 				break; 
 			case CMD_NOTIFIER_IDLE:
-				bwdebug( DBG_USR, "COMMAND SERVER: notifier is idle" );
+				bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND SERVER: notifier is idle" );
 				notifier_idle = 1; 
 				break; 
 			default: 
-				bwdebug( DBG_USR, "COMMAND SERVER: Invalid cmd received from [sender_tid: %d cmd: %d]",
+				bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND SERVER: Invalid cmd received from [sender_tid: %d cmd: %d]",
 					sender_tid, cmd_request.type );
 				Reply( sender_tid, 0, 0 ); 
 				break; 
@@ -231,7 +231,7 @@ void commandserver(){
 		 
 		if ( notifier_idle == 1 && cmd_queue.size > 0 ){
 			notifier_idle = 0; 
-			bwdebug( DBG_USR, "COMMAND SERVER: Waking up notifier" );
+			bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND SERVER: Waking up notifier" );
 			Reply( cmd_notifier_tid, 0, 0 ); 
 		}
 	}

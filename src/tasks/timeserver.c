@@ -95,7 +95,7 @@ void schedule_for_wakeup( Wakeup_list *list, int new_tid, int wakeup_time ) {
 	}
 	
 	list->size++;
-	bwdebug( DBG_SYS, "TIMESERVER: task %d is scheduled to run at %d ticks",
+	bwdebug( DBG_SYS, TIMESERVER_DEBUG_AREA, "TIMESERVER: task %d is scheduled to run at %d ticks",
 			new_tid, new_record->wakeup_time );
 }
 
@@ -105,7 +105,7 @@ int get_tid_to_wakeup( Wakeup_list *list, int current_time ) {
 		return -1;
 	}
 	
-	bwdebug( DBG_SYS, "TIMESERVER: list->records = %d, list->first_to_wakeup = %d ",
+	bwdebug( DBG_SYS, TIMESERVER_DEBUG_AREA, "TIMESERVER: list->records = %d, list->first_to_wakeup = %d ",
 			list->records, list->first_to_wakeup );
 	int tid_to_wakeup = list->first_to_wakeup->tid; 
 	
@@ -115,22 +115,22 @@ int get_tid_to_wakeup( Wakeup_list *list, int current_time ) {
 }
 
 void clock_tick_notifier() {
-	bwdebug( DBG_SYS, "TICK_NOTIFIER: start with tid %d", MyTid() );
+	bwdebug( DBG_SYS, TIMESERVER_DEBUG_AREA, "TICK_NOTIFIER: start with tid %d", MyTid() );
 	int timeserver_tid = WhoIs( "timeserver" );
 	Msg_timeserver_request msg;
 	msg.type = TICK_NOTIFICATION;
 
 	FOREVER {
-		bwdebug( DBG_SYS, "TICK_NOTIFIER: waiting for a tick " );
+		bwdebug( DBG_SYS, TIMESERVER_DEBUG_AREA, "TICK_NOTIFIER: waiting for a tick " );
 		AwaitEvent( TIMER1_INT_INDEX, 0 );
-		bwdebug( DBG_SYS, "TICK_NOTIFIER: got a tick. Sending a poke to task %d",
+		bwdebug( DBG_SYS, TIMESERVER_DEBUG_AREA, "TICK_NOTIFIER: got a tick. Sending a poke to task %d",
 			timeserver_tid);
 		Send( timeserver_tid, (char *) &msg, sizeof(msg), (char *) 0, 0 );
 	}
 }
 
 void timeserver() {
-	bwdebug( DBG_SYS, "TIMESERVER: start" );
+	bwdebug( DBG_SYS, TIMESERVER_DEBUG_AREA, "TIMESERVER: start" );
 	
 	start_timer();
 
@@ -148,44 +148,41 @@ void timeserver() {
 	Create( 8, clock_tick_notifier );
 	
 	FOREVER {
-		bwdebug( DBG_SYS, "TIMESERVER: listening as task %d...", mytid );
+		bwdebug( DBG_SYS, TIMESERVER_DEBUG_AREA, "TIMESERVER: listening as task %d...", mytid );
 		Receive( &sender_tid, (char *) &request, sizeof(request) );
 		switch( request.type ) {
 		case TICK_NOTIFICATION:
-			bwdebug( DBG_SYS, "TIMESERVER: tick notification recieved from task %d. "
-				"[it's been %d ticks since start]",
+			bwdebug( DBG_SYS, TIMESERVER_DEBUG_AREA, "TIMESERVER: tick notification recieved from task %d. [it's been %d ticks since start]",
 				sender_tid , current_time);
 			current_time++;
-			calc_load( current_time, avenrun );
+			// calc_load( current_time, avenrun );
 			tid_to_unblock = get_tid_to_wakeup( &list, current_time );
 			if( tid_to_unblock >= 0 ) {
-				bwdebug( DBG_SYS, "TIMESERVER: unblocking task %d",
+				bwdebug( DBG_SYS, TIMESERVER_DEBUG_AREA, "TIMESERVER: unblocking task %d",
 					tid_to_unblock );
 				Reply( tid_to_unblock, (char *) 0, 0 );
 			}
-			bwdebug( DBG_SYS, "TIMESERVER: tick notification reply dispatched" );
+			bwdebug( DBG_SYS, TIMESERVER_DEBUG_AREA, "TIMESERVER: tick notification reply dispatched" );
 			Reply( sender_tid, (char *) 0, 0 );
 			break;
 		case TIME_REQUEST:
-			bwdebug( DBG_SYS, "TIMESERVER: time request recieved from task %d",
+			bwdebug( DBG_SYS, TIMESERVER_DEBUG_AREA, "TIMESERVER: time request recieved from task %d",
 				sender_tid );
 			reply.type = TIME_REPLY;
 			reply.num = current_time;
 			Reply( sender_tid, (char *) &reply, sizeof(reply) );
 			break;
 		case DELAY_REQUEST:
-			bwdebug( DBG_SYS, "TIMESERVER: delay for %d ticks request recieved "
-				"from task %d", request.num, sender_tid );
+			bwdebug( DBG_SYS, TIMESERVER_DEBUG_AREA, "TIMESERVER: delay for %d ticks request recieved from task %d", request.num, sender_tid );
 			
 			schedule_for_wakeup( &list, sender_tid, current_time + request.num );
 			break;
 		case DELAY_UNTIL_REQUEST:
-			bwdebug( DBG_SYS, "TIMESERVER: delay until %d ticks request recieved "
-				"from task %d", request.num, sender_tid );
+			bwdebug( DBG_SYS, TIMESERVER_DEBUG_AREA, "TIMESERVER: delay until %d ticks request recieved from task %d", request.num, sender_tid );
 			schedule_for_wakeup( &list, sender_tid, request.num );
 			break;
 		default:
-			bwdebug( DBG_SYS, "TIMESERVER: *FATAL* unexpected message "
+			bwdebug( DBG_SYS, TIMESERVER_DEBUG_AREA, "TIMESERVER: *FATAL* unexpected message "
 				"[type: %d from: %d]", request.type, sender_tid );
 		}
 	}

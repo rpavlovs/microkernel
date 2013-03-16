@@ -1,11 +1,9 @@
 #include "userspace.h"
 
-#define CLOCK_TASK_DELAY		10
-#define CLOCK_ROW_POS			4
-#define CLOCK_COL_POS			18
-#define CMD_ROW_POS				20
-#define CMD_COL_POS				10
-
+// --------------------------------------------------------------------------------------
+// Clock Server
+// Methods
+// --------------------------------------------------------------------------------------
 void print_time( char *str_buff, int current_time_ticks ){
 	// Get the time in terms of minutes, seconds and tenths of seconds. 
 	int minutes, seconds, tenths, current_time; 

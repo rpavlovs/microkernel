@@ -63,6 +63,7 @@ static inline void calc_load( const unsigned long ticks, unsigned long *avenrun 
 // ----------------------------------------------------------------------------------------
 void init_wakeup_list( Wakeup_list *list ) {
 	list->size = 0;
+	list->first_to_wakeup = 0; 
 }
 
 void schedule_for_wakeup( Wakeup_list *list, int new_tid, int wakeup_time ) {
@@ -70,32 +71,46 @@ void schedule_for_wakeup( Wakeup_list *list, int new_tid, int wakeup_time ) {
 		"Timeserver wakeup list should not overflow" );
 
 	//Note: task id is a position of a correspondong record in a record list
+	bwdebug( DBG_SYS, TIMESERVER_DEBUG_AREA, "TIMESERVER: Adding wakeup record for task %d to run at %d",
+			new_tid, wakeup_time );
+	bwdebug( DBG_SYS, DELAY_DEBUG_AREA, "TIMESERVER: Adding wakeup record for task %d to run at %d",
+			new_tid, wakeup_time );
 	Wakeup_record *new_record = &(list->records[new_tid]);
 	new_record->wakeup_time = wakeup_time;
 	new_record->tid = new_tid; 
+	new_record->next_to_wakeup = 0; 
 
+	bwdebug( DBG_SYS, DELAY_DEBUG_AREA, "TIMESERVER: Adding wakeup beginning...\n" );
 	if( list->size == 0 || wakeup_time < list->first_to_wakeup->wakeup_time ) {
-		if ( list->first_to_wakeup )
+		bwdebug( DBG_SYS, DELAY_DEBUG_AREA, "TIMESERVER: Adding wakeup beginning of the list...\n" );
+		if ( list->size > 0 )
 			new_record->next_to_wakeup = list->first_to_wakeup; 
 		else
 			new_record->next_to_wakeup = 0;
 		list->first_to_wakeup = new_record;
-		
+		bwdebug( DBG_SYS, DELAY_DEBUG_AREA, "TIMESERVER: Adding wakeup beginning of the list ended ...\n" );
 	} else {
 		Wakeup_record *wake_before = list->first_to_wakeup;
 		Wakeup_record *wake_after = wake_before->next_to_wakeup; 
 		
+		bwdebug( DBG_SYS, DELAY_DEBUG_AREA, "TIMESERVER: Adding wakeup middle before: %d after: %d\n", wake_before, wake_after );
 		while( wake_after != 0 && wakeup_time > wake_after->wakeup_time ){
-			wake_before = wake_after; 
-			wake_after = wake_before->next_to_wakeup; 
+			
+			bwdebug( DBG_SYS, DELAY_DEBUG_AREA, "TIMESERVER: cycle WAKE BEFORE %d WAKE AFTER: %d",
+				wake_before, wake_after );
+			wake_after = wake_after->next_to_wakeup;
+			wake_before = wake_after;
 		}
-		
+
+		bwdebug( DBG_SYS, DELAY_DEBUG_AREA, "TIMESERVER: Adding wakeup middle before ended d\n" );
 		wake_before->next_to_wakeup = new_record; 
 		new_record->next_to_wakeup = wake_after; 
 	}
 	
 	list->size++;
 	bwdebug( DBG_SYS, TIMESERVER_DEBUG_AREA, "TIMESERVER: task %d is scheduled to run at %d ticks",
+			new_tid, new_record->wakeup_time );
+	bwdebug( DBG_SYS, DELAY_DEBUG_AREA, "TIMESERVER: task %d is scheduled to run at %d ticks",
 			new_tid, new_record->wakeup_time );
 }
 
@@ -107,6 +122,7 @@ int get_tid_to_wakeup( Wakeup_list *list, int current_time ) {
 	
 	bwdebug( DBG_SYS, TIMESERVER_DEBUG_AREA, "TIMESERVER: list->records = %d, list->first_to_wakeup = %d ",
 			list->records, list->first_to_wakeup );
+	
 	int tid_to_wakeup = list->first_to_wakeup->tid; 
 	
 	list->first_to_wakeup = list->first_to_wakeup->next_to_wakeup;	
@@ -145,7 +161,7 @@ void timeserver() {
 	Msg_timeserver_reply reply;
 	Wakeup_list list;
 	init_wakeup_list( &list );
-	Create( 8, clock_tick_notifier );
+	Create( CLOCK_TICK_NOTIFIER_PRIORITY, clock_tick_notifier );
 	
 	FOREVER {
 		bwdebug( DBG_SYS, TIMESERVER_DEBUG_AREA, "TIMESERVER: listening as task %d...", mytid );
@@ -160,6 +176,7 @@ void timeserver() {
 			if( tid_to_unblock >= 0 ) {
 				bwdebug( DBG_SYS, TIMESERVER_DEBUG_AREA, "TIMESERVER: unblocking task %d",
 					tid_to_unblock );
+
 				Reply( tid_to_unblock, (char *) 0, 0 );
 			}
 			bwdebug( DBG_SYS, TIMESERVER_DEBUG_AREA, "TIMESERVER: tick notification reply dispatched" );
@@ -174,7 +191,6 @@ void timeserver() {
 			break;
 		case DELAY_REQUEST:
 			bwdebug( DBG_SYS, TIMESERVER_DEBUG_AREA, "TIMESERVER: delay for %d ticks request recieved from task %d", request.num, sender_tid );
-			
 			schedule_for_wakeup( &list, sender_tid, current_time + request.num );
 			break;
 		case DELAY_UNTIL_REQUEST:

@@ -97,6 +97,7 @@ void command_notifier(){
 					Putc( COM1, command.param );
 					Putc( COM1, command.element_id );
 					
+					bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND_NOTIFIER: finished tr command" );
 					break; 
 				case REVERSE_CMD_TYPE:		// Reverse
 					bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND_NOTIFIER: send rv" );
@@ -109,22 +110,19 @@ void command_notifier(){
 					// Reverse train
 					Putc( COM1, 15 );
 					Putc( COM1, command.element_id ); 
-					//Delay( INTER_CMD_DELAY ); 
 					
 					// Restart train
 					Putc( COM1, train_list.trains[ command.element_id ].speed );
 					Putc( COM1, command.element_id ); 
 					
+					bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND_NOTIFIER: finished rv command" );
 					break; 
 				case SWITCH_CMD_TYPE:		// Switch
 					bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND_NOTIFIER: send sw" );
 
 					requested_pos = ( char ) command.param; 
 					if ( requested_pos == SWITCH_STRAIGHT_POS ){
-						bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND_NOTIFIER: Putc( COM1, 33 ) call" );
 						Putc( COM1, 33 );
-						bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND_NOTIFIER: Putc( COM1, 33 ) done" );
-
 					}
 					else if ( requested_pos == SWITCH_CURVE_POS ){
 						Putc( COM1, 34 );
@@ -136,12 +134,16 @@ void command_notifier(){
 					
 					// Reset the switch (so that the solenoid doesn't burn)
 					Putc( COM1, 32 );
+
+					bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND_NOTIFIER: finished sw command" );
 					break; 
-				
 				case RESET_SENSORS_CMD_TYPE:
 					// Simply execute the reset code.
+					bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND_NOTIFIER: reset sensors" );
+
 					Putc( COM1, RESET_CODE );
 					Reply( command.sender_tid, 0, 0 ); 
+					bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND_NOTIFIER: finished resettting sensors command" );
 					break; 
 				case QUERY_SENSORS_CMD_TYPE:
 					bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND_NOTIFIER: query sensors" );
@@ -159,6 +161,7 @@ void command_notifier(){
 					}
 					Reply( command.sender_tid, 0, 0 ); 
 					
+					bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND_NOTIFIER: finished query sensors command" );
 					break; 
 				default: 
 					bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND SERVER: Invalid command. Cannot execute [ Cmd: %d ]", 
@@ -207,8 +210,8 @@ void commandserver(){
 
 		switch( cmd_request.type ){
 			case ADD_CMD_REQUEST:
-				bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND SERVER: Added command from [sender_tid: %d]",
-					sender_tid );
+				bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND SERVER: Added command from [cmd: %d sender_tid: %d]",
+					cmd_request.cmd, sender_tid );
 				enqueue_cmd( cmd_request.cmd, &cmd_queue ); 
 				Reply( sender_tid, 0, 0 ); 
 				break; 

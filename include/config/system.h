@@ -10,8 +10,8 @@
 // 2 - sytem/user tasks
 // 3 - kernel requests + sytem/user tasks
 // 4 - all
-#define DEBUG_LEVEL 						1
-#define DEBUG_AREAS							0 | SENSORS_SERVER_DEBUG_AREA | SWITCHES_SERVER_DEBUG_AREA | COMMAND_SERVER_DEBUG_AREA
+#define DEBUG_LEVEL 						4
+#define DEBUG_AREAS							0 | COMMAND_SERVER_DEBUG_AREA
 
 // Do this in an enum? 
 #define KERNEL_DEBUG_AREA					1 << 0
@@ -33,26 +33,38 @@
 #define TESTS_DEBUG_AREA					1 << 16
 #define RPS_GAME_DEBUG_AREA					1 << 17
 
+#define DELAY_DEBUG_AREA					1 << 18
+
 // ------------------------------------------------------------------------------------------
 // Task priorities
 // ------------------------------------------------------------------------------------------
-#define FIRST_TASK_PRIORITY					15
-#define IDLE_TASK_PRIORITY					0
-
-#define CLOCK_TASK_PRIORITY					8
-#define NAMESERVER_TASK_PRIORITY			12
-#define TIMESERVER_TASK_PRIORITY			12
-#define UART2_SENDER_SERVER_PRIORITY		14
-#define UART2_RECEIVER_SERVER_PRIORITY		14
-#define UART1_SENDER_SERVER_PRIORITY		14
+#define NAMESERVER_TASK_PRIORITY			10			// NAMESERVER
+#define TIMESERVER_TASK_PRIORITY			10			// TIMESERVER
+#define CLOCK_TICK_NOTIFIER_PRIORITY		11
+#define UART2_SENDER_SERVER_PRIORITY		12			// UART2
+#define UART_SENDER_NOTIFIER_PRIORITY		13 
+#define UART2_RECEIVER_SERVER_PRIORITY		10
+#define UART_RECEIVER_NOTIFIER_PRIORITY		11 
+#define UART1_SENDER_SERVER_PRIORITY		10			// UART1
+#define UART1_SENDER_NOTIFIER_PRIORITY		11
 #define UART1_RECEIVER_SERVER_PRIORITY		14
+#define UART1_RECEIVER_NOTIFIER_PRIORITY	15
+#define COMMAND_SERVER_PRIORITY				10			// CMD SERVER
+#define COMMAND_NOTIFIER_PRIORITY			11
+#define SENSOR_SERVER_PRIORITY				12			// SENSOR SERVER
+#define SENSOR_NOTIFIER_PRIORITY			13
+#define SWITCHES_SERVER_PRIORITY			10			// SWITCHES SERVER
+#define CLOCK_TASK_PRIORITY					8			// CLOCK 
+#define CLI_PRIORITY						8			// CLI
+#define FIRST_TASK_PRIORITY					15			// FIRST TASK
+#define FIRST_USER_TASK_PRIORITY			8			// FIRST USER TASK
+#define IDLE_TASK_PRIORITY					0			// IDLE TASK
 
 // ------------------------------------------------------------------------------------------
 // Task execution
 // ------------------------------------------------------------------------------------------
-// #define FIRST_USER_TASK_NAME				run_calibration_constant_velocity
+// #define FIRST_USER_TASK_NAME				run_calibration_constant_velocity train_contol
 #define FIRST_USER_TASK_NAME				train_control
 //#define FIRST_USER_TASK_NAME				stress_test_uart1_getc
-#define FIRST_USER_TASK_PRIORITY			8
 
 #endif

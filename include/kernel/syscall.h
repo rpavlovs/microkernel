@@ -52,6 +52,7 @@ typedef struct {
 	int active_tasks;
 	int last_active_tid;
 	unsigned long kernel_loop_cnt;
+	unsigned long cpu_utilization;
 } System_data;
 
 

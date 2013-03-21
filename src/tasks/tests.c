@@ -47,9 +47,9 @@ void test_sensors_server(){
 	Exit();
 }
 
-void test_clock(){
-	int clk_tid = Create( 10, draw_clock ); 
-	bwprintf( COM2, "Clock task created: %d", clk_tid );
+void test_user_dashboard(){
+	int dashboard_tid = Create( 10, user_dashboard ); 
+	bwprintf( COM2, "Dashboard task created: %d", dashboard_tid );
 	
 	Exit(); 
 }

@@ -38,10 +38,12 @@
 
 #define COM1					0
 #define COM2					1
+#define COM3					2
 
 #define IRDA_BASE				0x808b0000
 #define UART1_BASE				0x808c0000
 #define UART2_BASE				0x808d0000
+#define UART3_BASE				0x808e0000
 
 // All the below registers for UART1
 // First nine registers (up to Ox28) for UART 2

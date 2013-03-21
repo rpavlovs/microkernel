@@ -19,7 +19,7 @@ void test_nameserver();
 
 void test_timeserver();
 
-void test_clock(); 
+void test_user_dashboard(); 
 
 void test_uart1_send();
 

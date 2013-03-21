@@ -10,8 +10,10 @@
 // 2 - sytem/user tasks
 // 3 - kernel requests + sytem/user tasks
 // 4 - all
-#define DEBUG_LEVEL 						1
+#define DEBUG_LEVEL 						0
 #define DEBUG_AREAS							0 | SENSORS_SERVER_DEBUG_AREA | SWITCHES_SERVER_DEBUG_AREA | COMMAND_SERVER_DEBUG_AREA
+
+#define SYSTEM_DATA_UPDATE_FREQ				2
 
 // Do this in an enum? 
 #define KERNEL_DEBUG_AREA					1 << 0

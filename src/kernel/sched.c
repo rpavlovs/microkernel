@@ -54,7 +54,8 @@ int schedule( Kern_Globals * GLOBALS) {
 	for( ; GLOBALS->scheduler.queues[p].size == 0; --p ) {
 		// if( p < 0 ) bwpanic( "SCHEDULE: pririty queues are all empty." );
 		if( p < 0 ) {
-			bwdebug( DBG_SYS, SCHEDULER_DEBUG_AREA, "SCHEDULE: WARNING: pririty queues are all empty." );
+			bwdebug( DBG_SYS, SCHEDULER_DEBUG_AREA,
+				"SCHEDULE: WARNING: pririty queues are all empty." );
 			break;
 		}
 	}
@@ -65,10 +66,30 @@ int schedule( Kern_Globals * GLOBALS) {
 	// TD of the task, which should run next
 	Task_descriptor *next_td = queue->td_ptrs[queue->oldest];
 
-	//Setting the last active task in the GLOBALS
-	GLOBALS->scheduler.last_active_tid = next_td->tid;
-
 	return next_td->tid;
+}
+
+void profile_system_performance( const int activating_tid, Kern_Globals *GLOBALS ) {
+	Scheduler *sched = &(GLOBALS->scheduler);
+	Profiling_data *profdata = &(GLOBALS->profdata);
+	unsigned long curr_time = get_dbg_time();
+
+	// if idle task is run the first time in the sequence, store current time
+	// else store for how long idle task was looping
+	if( activating_tid == IDLE_TASK_TID && sched->last_active_tid != IDLE_TASK_TID ) {
+		sched->latest_idle_task_seqence_activated_at = curr_time;
+	}
+	if( activating_tid != IDLE_TASK_TID && sched->last_active_tid == IDLE_TASK_TID ) {
+		profdata->idle_time_since_update +=
+						curr_time - sched->latest_idle_task_seqence_activated_at;
+	}
+
+	if( curr_time > profdata->updated_at + (1000 / SYSTEM_DATA_UPDATE_FREQ) ) {
+		profdata->cpu_utilization =
+			100 - (profdata->idle_time_since_update * 100) / (curr_time - profdata->updated_at);
+		profdata->idle_time_since_update = 0;
+		profdata->updated_at = curr_time;
+	}
 }
 
 // Start running the task with specified tid
@@ -76,11 +97,12 @@ int schedule( Kern_Globals * GLOBALS) {
 // interrupt ID of the first recieved interrupt
 int activate( const int tid, Kern_Globals *GLOBALS ) {
 	bwdebug( DBG_KERN, SCHEDULER_DEBUG_AREA, "ACTIVATE: entered [activating task %d]", tid );
-
 	Task_descriptor *td = &(GLOBALS->tasks[tid]);
 	
 	bwassert( td->state == READY_TASK, "It's only possible to activate a READY task. "
 		"[task state: %d task_id: %d]", td->state, td->tid );
+
+	profile_system_performance( tid, GLOBALS );
 	
 	td->state = ACTIVE_TASK;
 	GLOBALS->scheduler.last_active_tid = tid;

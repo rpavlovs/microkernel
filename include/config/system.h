@@ -12,7 +12,7 @@
 // 4 - all
 
 #define DEBUG_LEVEL 						0
-#define DEBUG_AREAS							0 | COMMAND_SERVER_DEBUG_AREA
+#define DEBUG_AREAS							0 | TESTS_DEBUG_AREA | DELAY_DEBUG_AREA
 
 #define SYSTEM_DATA_UPDATE_FREQ				2
 
@@ -68,6 +68,7 @@
 // ------------------------------------------------------------------------------------------
 // #define FIRST_USER_TASK_NAME				run_calibration_constant_velocity train_contol
 #define FIRST_USER_TASK_NAME				train_control
-//#define FIRST_USER_TASK_NAME				stress_test_uart1_getc
+// #define FIRST_USER_TASK_NAME				stress_test_uart1_getc
+// #define FIRST_USER_TASK_NAME				test_timeserver
 
 #endif

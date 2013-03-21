@@ -3,6 +3,9 @@
 //Testing SYSCALLS
 
 #define INT_CONTROL_BASE_1		0x800B0000		// VIC 1
+#define INT_CONTROL_BASE_2		0x800C0000		// VIC 2
+#define INT_ENABLE_OFFSET		0x10
+#define INT_RESET_VALUE			0x0
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 // Stress Tests
@@ -38,6 +41,35 @@ void stress_test_uart2_putc(){
 // Simple Tests
 // -- These tests are similar to unit tests, since they are very small and run fast. 
 // -----------------------------------------------------------------------------------------------------------------------------------------------
+void test_debug(){
+	// TURN INTERRUPTS OFF
+	int *vic1EnablePointer = ( int * )( INT_CONTROL_BASE_1 + INT_ENABLE_OFFSET );
+	int *vic2EnablePointer = ( int * )( INT_CONTROL_BASE_2 + INT_ENABLE_OFFSET );
+	
+	int initialInterruptsVIC1 = INT_RESET_VALUE;
+	int initialInterruptsVIC2 = INT_RESET_VALUE;
+
+	*vic1EnablePointer = initialInterruptsVIC1; 
+	*vic2EnablePointer = initialInterruptsVIC2; 
+
+	// Show the flag values
+	bwprintf( COM2, "FLAG: KERNEL_DEBUG_AREA Value: %d\n", KERNEL_DEBUG_AREA );				// Should be 1
+	bwprintf( COM2, "FLAG: SCHEDULER_DEBUG_AREA Value: %d\n", SCHEDULER_DEBUG_AREA );		// Should be 2
+	bwprintf( COM2, "FLAG: HWI_DEBUG_AREA Value: %d\n", HWI_DEBUG_AREA );					// Should be 4
+	bwprintf( COM2, "FLAG: RPS_GAME_DEBUG_AREA Value: %d\n", RPS_GAME_DEBUG_AREA );			// Should be ?
+
+	// Print a value that should be executed
+	bwdebug( DBG_SYS, UART1_SENDER_DEBUG_AREA, "TEST1: This should show.\n" );
+	bwdebug( DBG_SYS, UART1_SENDER_DEBUG_AREA, "TEST2: This should show.\n" );
+
+	// Print a value that shouldn't be executed. 
+	bwdebug( DBG_SYS, TIMESERVER_DEBUG_AREA, "TEST: This should NOT show.\n" );
+	bwdebug( DBG_SYS, TIMESERVER_DEBUG_AREA, "TEST: This should NOT show.\n" );
+
+	bwprintf( COM2, "VALUE TIMESERVER: %d \n", ( DEBUG_AREAS ) & ( TIMESERVER_DEBUG_AREA ) ); 
+	bwprintf( COM2, "VALUE: %d \n", ( DEBUG_AREAS ) & ( UART1_SENDER_DEBUG_AREA ) ); 
+}
+
 void test_sensors_server(){
 
 	bwprintf( COM2, "Sunshine Before! :)");

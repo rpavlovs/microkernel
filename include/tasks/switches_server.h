@@ -5,7 +5,6 @@
 // Constants
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 #define SWITCHES_SERVER_NAME	"switches_server"
-#define SWITCHES_SERVER_PRIORITY	12
 #define NUM_SWITCHES			22
 #define LAST_LOW_SWITCH_INDEX	18
 #define INIT_HIGH_SWITCH_INDEX	153

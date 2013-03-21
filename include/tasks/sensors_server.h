@@ -4,9 +4,6 @@
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 // Constants
 // -----------------------------------------------------------------------------------------------------------------------------------------------
-#define SENSOR_SERVER_PRIORITY		12
-#define SENSOR_NOTIFIER_PRIORITY		13
-
 #define SENSOR_HISTORY_LEN			14
 #define SENSORS_SERVER_NAME		"sensors_server"
 #define SENSOR_QUERY_FREQENCY		10 // Queries per second 	

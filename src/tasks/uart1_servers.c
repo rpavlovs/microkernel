@@ -111,10 +111,9 @@ void uart1_sender_notifier() {
 			//AND  Transmit has been reasserted
 			//THEN Send the character to UART1
 			if( cts_state == 2 && txfe_state == 1 ) {
-				// bwprintf( COM2, "STATE05: CTS: %d TXFE: %d\n", cts_state, txfe_state );
-				
 				*uart_data = (char) request.ch;
 				first_request = 0;
+				bwdebug( DBG_SYS, UART1_SENDER_DEBUG_AREA, "UART1_SENDER_NOTIFIER: Sending data" );
 				break;
 			}
 		}

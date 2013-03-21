@@ -6,8 +6,6 @@
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 #define COMMAND_SERVER_NAME		"command_server"
 #define COMMAND__NOTIFIER_NAME		"command_notifier"
-#define COMMAND_SERVER_PRIORITY		11
-#define COMMAND_NOTIFIER_PRIORITY	12
 
 #define COMMAND_QUEUE_SIZE			100
 

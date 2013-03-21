@@ -5,6 +5,4 @@ void first_task();
 
 void idle_task();
 
-void test_task();
-
 #endif

@@ -291,7 +291,7 @@ void bwprintf( int channel, char *fmt, ... ) {
 }
 
 void bwdebug( int threshhold_dbg_lvl, int debug_area, char *fmt, ... ) {
-  if( ( threshhold_dbg_lvl > DEBUG_LEVEL ) && ( DEBUG_AREAS & debug_area ) ) return;
+  if( ( threshhold_dbg_lvl > DEBUG_LEVEL ) || ( ( DEBUG_AREAS ) & ( debug_area ) ) == 0 ) return;
 
   va_list va;
 

@@ -21,7 +21,7 @@ void first_task() {
 		"FIRST_TASK: Nameserver should have task id of %d", NAMESERVER_TID );
 
 	bwdebug( DBG_SYS, IDLE_TASK_DEBUG_AREA, "FIRST_TASK: creating Idle task" );
-	int idle_tid = Create( 0, idle_task );
+	int idle_tid = Create( IDLE_TASK_PRIORITY, idle_task );
 	bwassert( idle_tid == IDLE_TASK_TID,
 		"FIRST_TASK: Idle task should have task id of %d", IDLE_TASK_TID );
 

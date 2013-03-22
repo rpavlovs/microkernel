@@ -168,6 +168,17 @@ int WhoIs( char * );
 
 int Time();
 
+// Time returns the number of ms since the clock server was created and
+// initialized.
+// 
+// Returns:
+// • non-negative integer – time in ms since the clock server initialized.
+// • -1 – if the clock server task id inside the wrapper is invalid.
+// • -2 – if the clock server task id inside the wrapper is not the task id of
+// 		  the clock server.
+
+int TimeInMs();
+
 // Delay returns after the given number of ticks has elapsed.
 // 
 // Returns:

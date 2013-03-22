@@ -195,9 +195,11 @@ void uart1_receiver_notifier() {
 
 	FOREVER {
 		//Wait until there is data in UART1
+		//bwprintf( COM2, "F\n" );
 		bwdebug( DBG_SYS, UART1_RECEIVER_DEBUG_AREA, "UART1_RECEIVER_NOTIFIER: waiting for data" );
 		AwaitEvent( UART1_RECEIVE_READY, (int) &receive_buffer );
 		bwdebug( DBG_SYS, UART1_RECEIVER_DEBUG_AREA, "UART1_RECEIVER_NOTIFIER: data received" );
+		//bwprintf( COM2, "G\n" );
 
 		//Configure the request
 		request.type = UART1_RECEIVE_NOTIFIER_REQUEST;
@@ -238,20 +240,23 @@ void uart1_receiver_server() {
 		//Receive request from:
 		//	system function (Getc)
 		//	notifier (uart1_receiver_notifier)
+		//bwprintf( COM2, "A\n" );
 		bwdebug( DBG_SYS, UART1_RECEIVER_DEBUG_AREA, "UART1_RECEIVER_SERVER: Waiting for request" );
 		Receive(&sender_tid, (char *) &request, sizeof(request));
 
 		switch(request.type){
 			case UART1_RECEIVE_REQUEST:
 				//Enqueue the system function tid to reply later
-				bwdebug( DBG_SYS, UART1_RECEIVER_DEBUG_AREA, "UART1_RECEIVER_SERVER: Getc request from [sender_tid: %d]"
-					, sender_tid );
+				bwdebug( DBG_SYS, UART1_RECEIVER_DEBUG_AREA, "UART1_RECEIVER_SERVER: Getc request from [sender_tid: %d]", 
+					sender_tid );
+				//bwprintf( COM2, "B\n" );
 				enqueue_int_queue( sender_tid, &iqueue );
 				break;
 				
 			case UART1_RECEIVE_NOTIFIER_REQUEST:
 				//Reply to unblock the notifier
 				bwdebug( DBG_SYS, UART1_RECEIVER_DEBUG_AREA, "UART1_RECEIVER_SERVER: message received from notifier" );
+				//bwprintf( COM2, "C\n" );
 				Reply(sender_tid, (char *) 0, 0);
 
 				//Enqueue received character
@@ -267,6 +272,7 @@ void uart1_receiver_server() {
 				// Invalid Request
 				bwdebug( DBG_SYS, UART1_RECEIVER_DEBUG_AREA, "UART1_RECEIVER_SERVER: invalid request from [sender_tid: %d]", 
 					sender_tid );
+				//bwprintf( COM2, "D\n" );
 				reply.type = INVALID_REQUEST;
 				reply.ch = 0;
 				Reply(sender_tid, (char *) &reply, sizeof(reply));
@@ -284,6 +290,7 @@ void uart1_receiver_server() {
 			//Perform the reply
 			bwdebug( DBG_SYS, UART1_RECEIVER_DEBUG_AREA, "UART1_RECIEVER_SERVER: replying [to: %d with: %d]",
 								target_tid, reply.ch );
+			//bwprintf( COM2, "E\n" ); 
 			Reply(target_tid, (char *) &reply, sizeof(reply));
 		}
 	}

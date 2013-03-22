@@ -34,9 +34,9 @@ void run_calibration_constant_velocity(){
 }
 
 void run_calibration_acceleration(){
-	int sensor_server_tid = initialization();
+	//int sensor_server_tid = initialization();
 }
 
 void run_calibration_stopping_distance(){
-	int sensor_server_tid = initialization();
+	//int sensor_server_tid = initialization();
 }

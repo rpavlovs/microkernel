@@ -10,6 +10,24 @@ void init_server_list( Servers_tid_list *servers_list ){
 	bwassert( cmd_server_tid >= 0, "CLI: This task requires the command server to work properly." );
 }
 
+void init_cli_data( CLI_data *cli_data, Servers_tid_list *servers_list ){
+	track_node *track; 
+	Train_mgr_init_msg init_msg;
+	Train_mgr_init_reply init_reply; 
+	int train_mgm_tid = Create( TRAIN_MGR_TASK_PRIORITY, train_manager ); 
+	servers_list->items[TRAIN_MGR_INDEX] = train_mgm_tid; 
+
+	// TODO: Temporal 
+	init_msg.track_id = 1; 
+
+	Send( train_mgm_tid, ( char * ) & init_msg, sizeof( init_msg ), 
+		( char * ) &init_reply, sizeof( init_reply ) );
+	track = init_reply.track; 
+
+	// TODO: TEMP -> ADD THE TRAIN DATA HERE. 
+	// TODO: SHOW THE CURRENT POSITION ON SCREEN. 
+}
+
 void task_cli() {
 
 	CLI_history history;
@@ -18,6 +36,10 @@ void task_cli() {
 	// Retrieve the tid of the tasks required for the CLI to work properly. 
 	Servers_tid_list servers_list; 
 	init_server_list( &servers_list ); 
+
+	// Create the CLI Data
+	CLI_data cli_data; 
+	init_cli_data( &cli_data, &servers_list ); 
 
 	Char_queue buf;
 	init_char_queue( &buf );
@@ -45,7 +67,7 @@ void task_cli() {
 			// Get and parses the executed command. 
 			char_queue_push( '\0', &buf );
 			char_queue_peek_str( &buf, cmd, CLI_COMMAND_MAX_LENGTH );
-			status = parse_and_exec_cmd( &buf, &servers_list );
+			status = parse_and_exec_cmd( &buf, &servers_list, &cli_data );
 			
 			// Shows the result of the command in the screen. It also shows the history of previously 
 			// executed commands.
@@ -65,7 +87,7 @@ void task_cli() {
 }
 
 // returns the execution status 
-int parse_and_exec_cmd( Char_queue *buf, Servers_tid_list *servers_list ) {
+int parse_and_exec_cmd( Char_queue *buf, Servers_tid_list *servers_list, CLI_data *cli_data ) {
 	char cmd_name[CLI_COMMAND_MAX_LENGTH];
 	char_queue_pop_word( buf, cmd_name, CLI_COMMAND_MAX_LENGTH );
 	printf( COM2, "%s\n", buf );
@@ -94,6 +116,17 @@ int parse_and_exec_cmd( Char_queue *buf, Servers_tid_list *servers_list ) {
 		char train_id_str[3];
 		char_queue_pop_word( buf, train_id_str, 3 );
 		return exec_rv( atoi(train_id_str), servers_list );
+	}
+	if( strcmp( cmd_name, "gt" ) == 0 ){
+		char train_id_str[3], landmark_name[3], offset[4]; 
+		char_queue_pop_word( buf, train_id_str, 3 );
+		char_queue_pop_word( buf, landmark_name, 3 );
+		char_queue_pop_word( buf, offset, 4 );
+
+		if( landmark_name == '\0' || offset == '\0' )
+			return INVALID_NUMBER_OF_ARGUMENTS;
+
+		return exec_gt( atoi(train_id_str), landmark_name, atoi( offset ), servers_list, cli_data ); 
 	}
 	if( strcmp( cmd_name, "q" ) == 0 ) {
 		return exec_q( );
@@ -143,6 +176,26 @@ int exec_rv( int train_id, Servers_tid_list *servers_list ) {
 	int cmd_server_tid = servers_list->items[CMD_SERVER_INDEX]; 
 	send_command( REVERSE_CMD_TYPE, train_id, CMD_PARAM_NOT_REQUIRED, cmd_server_tid ); 
 	return SUCCESS;
+}
+
+int exec_gt( int train_id, const char *landmark_name, int offset, Servers_tid_list *servers_list, CLI_data *cli_data ) {
+	track_node *track_node = get_location_node( landmark_name, cli_data->track );
+	if ( !track_node )
+		return INVALID_LANDMARK_NAME; 
+
+	// Send the message to the train server
+	int i; 
+	for( i = 0; i < NUM_TRAINS; i++ ){
+		if( cli_data->train_id[i] == train_id )
+			break; 
+	}
+
+	if( i == NUM_TRAINS )
+		return INVALID_TRAIN_ID; 
+
+	int train_tid = cli_data->train_id[i];
+	send_command( MOVE_TO_POSITION_CMD_TYPE, CMD_PARAM_NOT_REQUIRED, ( int ) track_node, train_tid );
+	return SUCCESS; 
 }
 
 int exec_q( ) {

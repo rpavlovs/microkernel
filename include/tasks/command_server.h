@@ -9,7 +9,7 @@
 
 #define COMMAND_QUEUE_SIZE			100
 
-#define ADD_CMD_REQUEST			1			
+#define ADD_CMD_REQUEST				1			
 #define CMD_NOTIFIER_IDLE			2
 #define QUERY_CMD_REQUEST			3
 
@@ -18,6 +18,9 @@
 #define SWITCH_CMD_TYPE				3
 #define QUERY_SENSORS_CMD_TYPE		4
 #define RESET_SENSORS_CMD_TYPE		5
+#define SWITCH_STATE_CMD_TYPE		6
+#define ALL_SWITCHES_STATE_CMD_TYPE	7
+#define MOVE_TO_POSITION_CMD_TYPE	8
 
 #define CMD_PARAM_NOT_REQUIRED		-1
 
@@ -47,7 +50,6 @@ typedef struct{
 typedef struct{
 	Command_queue *cmd_queue; 
 } Cmd_initial_msg;
-
 
 typedef struct{
 	Command cmd; 

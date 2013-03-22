@@ -11,7 +11,7 @@
 // 3 - kernel requests + sytem/user tasks
 // 4 - all
 #define DEBUG_LEVEL 						4
-#define DEBUG_AREAS							0 | COMMAND_SERVER_DEBUG_AREA
+#define DEBUG_AREAS							0 | COMMAND_SERVER_DEBUG_AREA // | UART1_SENDER_DEBUG_AREA
 
 // Do this in an enum? 
 #define KERNEL_DEBUG_AREA					1 << 0
@@ -32,8 +32,12 @@
 #define IDLE_TASK_DEBUG_AREA				1 << 15
 #define TESTS_DEBUG_AREA					1 << 16
 #define RPS_GAME_DEBUG_AREA					1 << 17
+#define COURIER_DEBUG_AREA					1 << 18
+#define TRAIN_SRV_DEBUG_AREA				1 << 19
+#define TRAIN_MGR_DEBUG_AREA				1 << 20
 
-#define DELAY_DEBUG_AREA					1 << 18
+// TODO: DELETE THIS DEBUG AREAS
+#define DELAY_DEBUG_AREA					1 << 21
 
 // ------------------------------------------------------------------------------------------
 // Task priorities
@@ -56,8 +60,13 @@
 #define SWITCHES_SERVER_PRIORITY			10			// SWITCHES SERVER
 #define CLOCK_TASK_PRIORITY					8			// CLOCK 
 #define CLI_PRIORITY						8			// CLI
+#define TRAIN_MGR_TASK_PRIORITY				8			// TRAIN MANAGER SERVER
+#define TRAIN_TASK_PRIORITY					9			// TRAIN SERVER
+#define TRAIN_WAIT_NOT_TASK_PRIORITY		10			
+#define TRAIN_SENSOR_NOT_TASK_PRIORITY		10
 #define FIRST_TASK_PRIORITY					15			// FIRST TASK
 #define FIRST_USER_TASK_PRIORITY			8			// FIRST USER TASK
+#define COURIER_TASK_PRIORITY				9			// COURIERS
 #define IDLE_TASK_PRIORITY					0			// IDLE TASK
 
 // ------------------------------------------------------------------------------------------

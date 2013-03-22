@@ -266,6 +266,16 @@ int sprintf( char *buffer, char *fmt, ... ) {
     return size;
 }
 
+/*
+int atoi( char *str ) {
+	int num = 0;
+	while ( *str ) {
+		num = ( num<<3 ) + ( num<<1 ) + ( *str ) - '0';
+		str++;
+	}
+	return num;
+}*/
+
 // dump -b 0x01dffe50 -l 4
 void todo_debug( int value, int channel ) {
 	/*

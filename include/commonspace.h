@@ -21,7 +21,6 @@
 #include <lib/helpers.h>
 
 // System tasks 
-
 #include "tasks/first.h"
 #include "tasks/nameserver.h"
 #include "tasks/timeserver.h"

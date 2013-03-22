@@ -17,3 +17,24 @@ int strcmp( const char *s1, const char *s2 ) {
 	return *s1 - *s2; 
 }
 
+
+char *substr( char *dest, const char *src, int initial_pos, int size ){
+	char *ret_val = dest;
+
+	// Move the src string to the position where it should start copying. 
+	while( initial_pos-- )
+		src++;
+
+	// Copy the contents
+	do
+	{
+		if ( !size-- )
+			return ret_val; 
+	} while( ( *dest++ = *src++ ) ); 
+
+	// Fill the extra space. 
+	while ( size-- )
+        *dest++ = 0;
+
+	return ret_val; 
+}

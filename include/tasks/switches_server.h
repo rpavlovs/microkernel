@@ -50,11 +50,20 @@ typedef struct{
 	Switch items[NUM_SWITCHES]; 
 } Switches_list;
 
+typedef struct{
+	int switch_id; 
+	char switch_position; 
+} Switch_query_reply; 
+
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 // Methods
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 void switchserver(); 
+
+int get_switch_index( int sw_id ); 
+
+int get_switch_id( int sw_index );
 
 #endif	/* SWITCHES_SERVER_H */
 

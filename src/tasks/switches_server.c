@@ -45,6 +45,26 @@ int get_switch_index( int sw_id ){
 	return sw_index; 
 }
 
+// -------------------------------------------------------------------
+// Query methods
+// -------------------------------------------------------------------
+char get_switch_position( int switch_id, Switches_list *sw_list ){
+	int switch_index = get_switch_index( switch_id ); 
+	if ( switch_index < 0 )
+		return 0; 
+
+	return sw_list->items[switch_index].position; 
+}
+
+
+void get_all_switches_positions( char *target_switches, Switches_list *sw_list ){
+	int i; 
+
+	for ( i = 0; i < NUM_SWITCHES; i++ ){
+		target_switches[i] = sw_list->items[i].position; 
+	}
+}
+
 int change_switch_position( Cmd_request cmd_request, Switches_list *sw_list, int cmd_server_tid, char *str_buff ){	
 	bwdebug( DBG_USR, SWITCHES_SERVER_DEBUG_AREA, "CHANGE_SWITCH_POSITION: enters" );
 	// Send the command to the cmd_server.
@@ -98,11 +118,12 @@ void switchserver(){
 	bwdebug( DBG_USR, SWITCHES_SERVER_DEBUG_AREA, "SWITCHES SERVER: enters" );
 	RegisterAs( SWITCHES_SERVER_NAME );
 
-	int sender_tid; 
+	int sender_tid, replied; 
 	char str_buff[ 1000 ]; 
 	char *str_ptr = str_buff; 
 	Cmd_request cmd_request;
-	
+	Switch_query_reply query_msg_reply; 
+
 	// The cmd server is required for the initialization of this server. 
 	// Hence, the cmd server must have been previously created. 
 	int cmd_server_tid = WhoIs( COMMAND_SERVER_NAME );
@@ -115,17 +136,52 @@ void switchserver(){
 		bwdebug( DBG_USR, SWITCHES_SERVER_DEBUG_AREA, "SWITCHES SERVER: listening for a request" );
 		Receive( &sender_tid, ( char * ) &cmd_request, sizeof( cmd_request ) );
 		
-		if ( cmd_request.type == ADD_CMD_REQUEST && cmd_request.cmd.cmd_type == SWITCH_CMD_TYPE ){
-			bwdebug( DBG_USR, SWITCHES_SERVER_DEBUG_AREA, "SWITCHES SERVER: Received add command from [sender_tid: %d]",
-					sender_tid ); 
-			Reply( sender_tid, 0, 0 ); 
+		replied = 0; 
+		switch( cmd_request.type ){
+			case ADD_CMD_REQUEST:
+				if ( cmd_request.cmd.cmd_type == SWITCH_CMD_TYPE ){
+
+					// Change the position of one switch
+					bwdebug( DBG_USR, SWITCHES_SERVER_DEBUG_AREA, "SWITCHES SERVER: Received add command from [sender_tid: %d]",
+						sender_tid ); 
+					Reply( sender_tid, 0, 0 ); 
 			
-			change_switch_position( cmd_request, &switches_list, cmd_server_tid, str_ptr ); 
+					change_switch_position( cmd_request, &switches_list, cmd_server_tid, str_ptr ); 
 			
-			// Update the change in the screen. 
-			Putstr( COM2, str_ptr );
+					// Update the change in the screen. 
+					Putstr( COM2, str_ptr );
+					replied = 1; 
+				}
+				break; 
+			case QUERY_CMD_REQUEST:
+				if( cmd_request.cmd.cmd_type == SWITCH_STATE_CMD_TYPE ){
+
+					// Query the position of one switch
+					bwdebug( DBG_USR, SWITCHES_SERVER_DEBUG_AREA, "SWITCHES SERVER: Received query command from [sender_tid: %d]",
+						sender_tid ); 
+					query_msg_reply.switch_id = cmd_request.cmd.element_id; 
+					query_msg_reply.switch_position = get_switch_position( query_msg_reply.switch_id, &switches_list ); 
+
+					Reply( sender_tid, (char *) &query_msg_reply, sizeof(query_msg_reply) );
+					replied = 1;
+				}
+				else if( cmd_request.cmd.cmd_type == ALL_SWITCHES_STATE_CMD_TYPE ){
+
+					// Query the position of all switches
+					bwdebug( DBG_USR, SWITCHES_SERVER_DEBUG_AREA, "SWITCHES SERVER: Received query all command from [sender_tid: %d]",
+						sender_tid ); 
+					
+					// We assume that the message contains the address of a char array where the switches positions will be stored. 
+					char *target_switches_arr = ( char * ) cmd_request.cmd.param; 
+					get_all_switches_positions( target_switches_arr, &switches_list ); 
+
+					Reply( sender_tid, 0, 0 ); 
+					replied = 1; 
+				}
+				break; 
 		}
-		else{
+
+		if ( !replied ){
 			bwdebug( DBG_USR, SWITCHES_SERVER_DEBUG_AREA, "SWITCHES SERVER: Invalid cmd received from [sender_tid: %d cmd: %d]",
 					sender_tid, cmd_request.type );
 			Reply( sender_tid, 0, 0 );

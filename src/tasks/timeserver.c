@@ -150,7 +150,7 @@ void timeserver() {
 	
 	start_timer();
 
-	unsigned long avenrun[3] = {0};
+	//unsigned long avenrun[3] = {0};
 	
 	int mytid = MyTid();
 	RegisterAs( TIME_SERVER_NAME );

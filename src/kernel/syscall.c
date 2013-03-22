@@ -141,6 +141,14 @@ int Time() {
 	return (status < 0 ? status : reply_msg.num);
 }
 
+int TimeInMs(){
+	int time = Time(); 
+	if ( time < 0 )
+		return time; 
+	else
+		return time * 10; 
+}
+
 int Delay( int ticks ) {
 	bwdebug( DBG_REQ, TIMESERVER_DEBUG_AREA, "DELAY: request recieved. Wait for %d ticks", ticks );
 	Msg_timeserver_request request_msg;

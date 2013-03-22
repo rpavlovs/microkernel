@@ -9,9 +9,12 @@
 
 #define COM1	0
 #define COM2	1
+#define COM3	2
 
-#define ON	1
-#define	OFF	0
+#define ON		1
+#define	OFF		0
+
+int bwsetenabled( int channel, int state );
 
 int bwsetfifo( int channel, int state );
 

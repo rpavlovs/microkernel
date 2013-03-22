@@ -96,17 +96,27 @@ typedef struct {
 	int last_active_tid;
 	int tasks_alive;
 	int tasks_exited;
-	int cpu_load;
-	
+	unsigned long latest_idle_task_seqence_activated_at;
+
 	Task_descriptor *hwi_watchers[HWI_NUM_EVENTS];
 } Scheduler;
+
+// System data
+
+typedef struct {
+	unsigned long updated_at;
+	unsigned long idle_time_since_update;
+	int cpu_load;
+	int cpu_utilization;
+	unsigned long kernel_loop_cnt;
+} Profiling_data;
 
 // Globals
 
 typedef struct {
 	Task_descriptor tasks[MAX_NUM_TASKS];
 	Scheduler scheduler;
-	unsigned long kernel_loop_cnt;
+	Profiling_data profdata;
 } Kern_Globals;
 
 #endif

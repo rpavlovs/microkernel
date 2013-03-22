@@ -109,22 +109,32 @@ void init_io() {
 	*fifo = temp & ~FEN_MASK;
 	
 	// NOTE: The actual interrupts (in the ICU) are enabled during 
-	// context switch initialization. 
+	// context switch initialization.
+
 }
 
 void init_hardware() {
-	
-	// Start Debug timer (Timer 4)
+	init_io(); 
+}
+
+void start_debug_timer() {
     int *hi = (int *)Timer4ValueHigh;
     *hi = (1 << 8);
-	
-	// TODO: Re-enable this when we stop using busy wait. 
-	init_io(); 
+}
+
+void init_profiling( Kern_Globals *GLOBALS ) {
+	Profiling_data *profdata = &(GLOBALS->profdata);
+	start_debug_timer();
+	profdata->updated_at = 0;
+	profdata->idle_time_since_update = 0;
+	profdata->cpu_load = 0;
+	profdata->cpu_utilization = 0;
+	profdata->kernel_loop_cnt = 0;
 }
 
 void initialize( Kern_Globals *GLOBALS ) {
 
-	GLOBALS->kernel_loop_cnt = 0;
+	init_profiling( GLOBALS );
 
 	initialize_context_switching(); 
 	
@@ -135,4 +145,5 @@ void initialize( Kern_Globals *GLOBALS ) {
 	init_task_descriptors( GLOBALS );
 
 	init_scheduler( GLOBALS );
+
 }

@@ -35,4 +35,5 @@
 #include "tasks/a1.h"
 #include "tasks/a3-game.h"
 #include "tasks/RPS-game.h"
+#include "tasks/user_dashboard.h"
 

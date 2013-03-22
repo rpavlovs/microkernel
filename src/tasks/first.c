@@ -17,11 +17,13 @@ void first_task() {
 	// ---------------------------------------------------------------------------------------
 	bwdebug( DBG_SYS, NAMESERVER_DEBUG_AREA, "FIRST_TASK: creating Nameserver" );
 	int ns_tid = Create( NAMESERVER_TASK_PRIORITY, nameserver );
-	bwassert( ns_tid == 1, "FIRST_TASK: Nameserver should have task id of 1" );
+	bwassert( ns_tid == NAMESERVER_TID,
+		"FIRST_TASK: Nameserver should have task id of %d", NAMESERVER_TID );
 
 	bwdebug( DBG_SYS, IDLE_TASK_DEBUG_AREA, "FIRST_TASK: creating Idle task" );
 	int idle_tid = Create( IDLE_TASK_PRIORITY, idle_task );
-	bwassert( idle_tid == 2, "FIRST_TASK: Idle task should have task id of 2" );
+	bwassert( idle_tid == IDLE_TASK_TID,
+		"FIRST_TASK: Idle task should have task id of %d", IDLE_TASK_TID );
 
 	bwdebug( DBG_SYS, TIMESERVER_DEBUG_AREA, "FIRST_TASK: creating Timeserver" );
 	int ts_tid = Create( TIMESERVER_TASK_PRIORITY, timeserver );
@@ -91,6 +93,6 @@ void first_task() {
 
 	bwdebug( DBG_SYS, KERNEL_DEBUG_AREA, "FIRST_TASK: exit" );
 	Exit();
-	bwpanic( "FIRST_TASK: Shoot the zombie!" );
+	bwpanic( "FIRST_TASK: I am zombie! I eat ur brains! Om nom nom" );
 }
 

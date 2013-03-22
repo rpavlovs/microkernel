@@ -11,7 +11,9 @@
 // 3 - kernel requests + sytem/user tasks
 // 4 - all
 #define DEBUG_LEVEL 						4
-#define DEBUG_AREAS							0 | COMMAND_SERVER_DEBUG_AREA // | UART1_SENDER_DEBUG_AREA
+#define DEBUG_AREAS							0 | COMMAND_SERVER_DEBUG_AREA // | UART1_SENDER_DEBUG_AREA // TESTS_DEBUG_AREA | DELAY_DEBUG_AREA
+
+#define SYSTEM_DATA_UPDATE_FREQ				2
 
 // Do this in an enum? 
 #define KERNEL_DEBUG_AREA					1 << 0
@@ -74,6 +76,7 @@
 // ------------------------------------------------------------------------------------------
 // #define FIRST_USER_TASK_NAME				run_calibration_constant_velocity train_contol
 #define FIRST_USER_TASK_NAME				train_control
-//#define FIRST_USER_TASK_NAME				stress_test_uart1_getc
+// #define FIRST_USER_TASK_NAME				stress_test_uart1_getc
+// #define FIRST_USER_TASK_NAME				test_timeserver
 
 #endif

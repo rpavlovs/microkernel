@@ -13,18 +13,43 @@
  * 	no parity
  * 	fifos enabled
  */
+int bwsetenabled( int channel, int state ) {
+	int *ctrl, buf;
+	switch( channel ) {
+	case COM1:
+		ctrl = (int *)( UART1_BASE + UART_CTLR_OFFSET );
+    	break;
+	case COM2:
+    	ctrl = (int *)( UART2_BASE + UART_CTLR_OFFSET );
+    	break;
+    case COM3:
+    	ctrl = (int *)( UART3_BASE + UART_CTLR_OFFSET );
+    	break;
+	default:
+    	return -1;
+    	break;
+	}
+	buf = *ctrl;
+	buf = state ? buf | UARTEN_MASK : buf & ~UARTEN_MASK;
+	*ctrl = buf;
+	return 0;
+}
+
 int bwsetfifo( int channel, int state ) {
 	int *line, buf;
 	switch( channel ) {
 	case COM1:
 		line = (int *)( UART1_BASE + UART_LCRH_OFFSET );
-    break;
+    	break;
 	case COM2:
-    line = (int *)( UART2_BASE + UART_LCRH_OFFSET );
-    break;
+    	line = (int *)( UART2_BASE + UART_LCRH_OFFSET );
+    	break;
+    case COM3:
+    	line = (int *)( UART3_BASE + UART_LCRH_OFFSET );
+    	break;
 	default:
-    return -1;
-    break;
+    	return -1;
+    	break;
 	}
 	buf = *line;
 	buf = state ? buf | FEN_MASK : buf & ~FEN_MASK;
@@ -38,14 +63,18 @@ int bwsetspeed( int channel, int speed ) {
 	case COM1:
 		mid = (int *)( UART1_BASE + UART_LCRM_OFFSET );
 		low = (int *)( UART1_BASE + UART_LCRL_OFFSET );
-	        break;
+	    break;
 	case COM2:
 		mid = (int *)( UART2_BASE + UART_LCRM_OFFSET );
 		low = (int *)( UART2_BASE + UART_LCRL_OFFSET );
-	        break;
+	    break;
+	case COM3:
+		mid = (int *)( UART3_BASE + UART_LCRM_OFFSET );
+		low = (int *)( UART3_BASE + UART_LCRL_OFFSET );
+	    break;
 	default:
-	        return -1;
-	        break;
+	    return -1;
+	    break;
 	}
 	switch( speed ) {
 	case 115200:
@@ -71,6 +100,10 @@ int bwputc( int channel, char c ) {
 	case COM2:
 		flags = (int *)( UART2_BASE + UART_FLAG_OFFSET );
 		data = (int *)( UART2_BASE + UART_DATA_OFFSET );
+		break;
+	case COM3:
+		flags = (int *)( UART3_BASE + UART_FLAG_OFFSET );
+		data = (int *)( UART3_BASE + UART_DATA_OFFSET );
 		break;
 	default:
 		return -1;
@@ -132,6 +165,10 @@ int bwgetc( int channel ) {
 	case COM2:
 		flags = (int *)( UART2_BASE + UART_FLAG_OFFSET );
 		data = (int *)( UART2_BASE + UART_DATA_OFFSET );
+		break;
+	case COM3:
+		flags = (int *)( UART3_BASE + UART_FLAG_OFFSET );
+		data = (int *)( UART3_BASE + UART_DATA_OFFSET );
 		break;
 	default:
 		return -1;

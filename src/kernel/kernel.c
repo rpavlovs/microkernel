@@ -8,7 +8,7 @@ int main( ) {
 	int request;
 
 	FOREVER {
-		KERN_GLOBALS.kernel_loop_cnt++;
+		++KERN_GLOBALS.profdata.kernel_loop_cnt;
 
 		request = getNextRequest( &KERN_GLOBALS );
 

@@ -287,7 +287,8 @@ sys_get_system_data( System_data *data, Task_descriptor *td, Kern_Globals *GLOBA
 	bwdebug( DBG_KERN, KERNEL_DEBUG_AREA, "SYS_GET_SYSTEM_DATA: entered. [caller task id: %d]", td->tid );
 	data->active_tasks = GLOBALS->scheduler.tasks_alive;
 	data->last_active_tid = GLOBALS->scheduler.last_active_tid;
-	data->kernel_loop_cnt = GLOBALS->kernel_loop_cnt;
+	data->kernel_loop_cnt = GLOBALS->profdata.kernel_loop_cnt;
+	data->cpu_utilization = GLOBALS->profdata.cpu_utilization;
 	sys_reschedule( td, GLOBALS );
 }
 

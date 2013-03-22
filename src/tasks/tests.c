@@ -41,6 +41,7 @@ void stress_test_uart2_putc(){
 // Simple Tests
 // -- These tests are similar to unit tests, since they are very small and run fast. 
 // -----------------------------------------------------------------------------------------------------------------------------------------------
+
 void test_debug(){
 	// TURN INTERRUPTS OFF
 	int *vic1EnablePointer = ( int * )( INT_CONTROL_BASE_1 + INT_ENABLE_OFFSET );
@@ -79,9 +80,9 @@ void test_sensors_server(){
 	Exit();
 }
 
-void test_clock(){
-	int clk_tid = Create( 10, draw_clock ); 
-	bwprintf( COM2, "Clock task created: %d", clk_tid );
+void test_user_dashboard(){
+	int dashboard_tid = Create( 10, user_dashboard ); 
+	bwprintf( COM2, "Dashboard task created: %d", dashboard_tid );
 	
 	Exit(); 
 }
@@ -210,6 +211,58 @@ void test_nameserver() {
 
 //Testing TIMESERVER
 
+void sub_delay_1() {
+	bwprintf( COM2, "sub_delay_1: enter. [time: %d]\n", Time() );
+	int start_time, end_time;
+	
+	start_time = Time();
+	Delay( 1 );
+	end_time = Time();
+
+	bwprintf( COM2, "sub_delay_1: delay took %d; exiting. [time: %d]\n",
+		 end_time - start_time, end_time );
+	Exit();
+}
+
+void sub_delay_10() {
+	bwprintf( COM2, "sub_delay_10: enter. [time: %d]\n", Time() );
+	int start_time, end_time;
+	
+	start_time = Time();
+	Delay( 10 );
+	end_time = Time();
+
+	bwprintf( COM2, "sub_delay_10: delay took %d; exiting. [time: %d]\n",
+		 end_time - start_time, end_time );
+	Exit();
+}
+
+void sub_delay_100() {
+	bwprintf( COM2, "sub_delay_100: enter. [time: %d]\n", Time() );
+	int start_time, end_time;
+	
+	start_time = Time();
+	Delay( 100 );
+	end_time = Time();
+
+	bwprintf( COM2, "sub_delay_100: delay took %d; exiting. [time: %d]\n",
+		 end_time - start_time, end_time );
+	Exit();
+}
+
+void sub_delay_1000() {
+	bwprintf( COM2, "sub_delay_1000: enter. [time: %d]\n", Time() );
+	int start_time, end_time;
+	
+	start_time = Time();
+	Delay( 1000 );
+	end_time = Time();
+
+	bwprintf( COM2, "sub_delay_1000: delay took %d; exiting. [time: %d]\n",
+		 end_time - start_time, end_time );
+	Exit();
+}
+
 void test_timeserver() {
 	bwprintf( COM2, "test_timeserver entered\n" );
 	int start_time, end_time;
@@ -226,6 +279,13 @@ void test_timeserver() {
 		end_time, end_time - start_time );
 	
 	// Test Delay
+	
+	bwprintf( COM2, "Starting background delay routines\n" ); 
+	Create( 10, sub_delay_1 );
+	Create( 10, sub_delay_10 );
+	Create( 10, sub_delay_100 );
+	Create( 10, sub_delay_1000 );
+	bwprintf( COM2, "Done creating background delay routines\n" );
 
 	bwprintf( COM2, "Recording time and calling Delay( 1 )\n" );
 	start_time = Time();

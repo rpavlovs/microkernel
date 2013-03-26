@@ -1,39 +1,34 @@
-#ifndef __TRAIN_HELP_DATA_H__
-#define __TRAIN_HELP_DATA_H__
+#ifndef __TRAIN_HELPERS_H__
+#define __TRAIN_HELPERS_H__
 
-#include "userspace.h"
+#include "train_data_structs.h"
 
 // -------------------------------------------------------------------
 // Constants
 // -------------------------------------------------------------------
-// Servers TIDs
-#define TH_SWITCH_SERVER_TID_INDEX			0
-#define TH_CMD_SERVER_TID_INDEX				1
-#define TH_ROUTE_SERVER_TID_INDEX			2
-
-// Train Data
-#define REVERSE_DEFAULT_OFFSET				100			// TODO: Review this value. It's in mm
+#define TRAIN_STATUS_ROW_POS		19
+#define TRAIN_STATUS_COL_POS		14
 
 // -------------------------------------------------------------------
 // Structs
 // -------------------------------------------------------------------
 
+
 // -------------------------------------------------------------------
 // Methods
 // -------------------------------------------------------------------
+int reverse_current_position( Train_status *train_status ); 
 
-// Speed Helpers
-int get_distance_traveled( int current_time, Train_status *train_status, Calibration_data *calibration_data );
+void print_train_status( Train_status *train_status ); 
 
-void update_train_position( int distance_since_update, Train_status *train_status, int *servers_list ); 
+void initialize_goal( Train_status *train_status ); 
 
-Train_speed calculate_speed_to_use( Train_status *status, Calibration_data *calibration_data );
+void request_new_path( Train_status *train_status, Train_server_data *server_data ); 
 
-int get_straight_distance( Train_status *status, int *requires_reverse );
+int get_short_distance( int train_speed, Speed_calibration_data *speed_calibration );
 
-// Path Helpers
-int request_new_path( Train_status *train_status, int *servers_list, track_node *track );
+int get_short_distance_stopping_time( int train_speed, Speed_calibration_data *speed_calibration );
 
-int reverse_current_position( Train_status *train_status );
+int get_short_distance_total_time( int train_speed, Speed_calibration_data *speed_calibration );
 
 #endif

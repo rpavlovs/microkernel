@@ -149,10 +149,10 @@ void command_notifier(){
 					bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND_NOTIFIER: query sensors" );
 					
 					// Init
-					char *sensors = command.sensors; 
+					//char *sensors = command.sensors; 
 					
 					// First request the data
-					Delay( 1 ); 
+					//Delay( 1 ); 
 					//Putc( COM1, REQUEST_DATA_CODE );
 
 					// Retrieve and return the sensors data. 

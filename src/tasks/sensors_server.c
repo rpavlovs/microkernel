@@ -70,6 +70,7 @@ int get_sensor_index( char sensor_group, int pin_id ){
 	return ( ( sensor_group - 'A' ) * 16 ) + pin_id; 
 }
 
+// -- Query for 1 sensor ------------------------------------
 void wait_for_sensor( Sensor_waiting_list *list, int new_tid, char sensor_group, int pin_id ){
 	int sensor_index = get_sensor_index( sensor_group, pin_id ); 
 	Sensor_waiting_list *sensor_waiting_list = list + sensor_index; 
@@ -100,6 +101,46 @@ void awaken_sensor_waiting_tasks( Sensor_waiting_list *list, char sensor_group, 
 			sensor_group, pin_id, tid ); 
 		Reply( tid, 0, 0 ); 
 	}
+}
+
+// -- Query for all sensors ------------------------------------
+void init_all_sensors_waiting_queue( All_sensors_waiting_queue *waiting_queue ){
+	waiting_queue->size = 0; 
+}
+
+void init_id_list_reply( Sensor_id_list_reply *reply_msg ){
+	int sensor_group, pin_id, sensor_index; 
+	for ( sensor_group = 0; sensor_group < 5; sensor_group++ ){
+		for ( pin_id = 0; pin_id < 8; pin_id++ ){
+			sensor_index = get_sensor_index( sensor_group, pin_id );
+			sprintf( reply_msg->sensors_name[sensor_index], "%c%d", 
+				'A' + sensor_group, pin_id );
+		}
+
+		for ( pin_id = 0; pin_id < 8; pin_id++ ){
+			sensor_index = get_sensor_index( sensor_group, pin_id + 8 );
+			sprintf( reply_msg->sensors_name[sensor_index], "%c%d", 
+				'A' + sensor_group, pin_id + 8 ); 
+		}
+	}
+}
+
+void wait_for_all_sensors( All_sensors_waiting_queue *waiting_queue, int tid ){
+	bwassert( waiting_queue->size + 1 < NUM_TASKS_WAITING_SENSORS, 
+		"SENSOR_SERVER: wait_for_all_sensors -> The waiting queue must not overflow" ); 
+
+	waiting_queue->waiting_tasks[ waiting_queue->size++ ] = tid; 
+}
+
+void wake_all_sensors_waiting_tasks( All_sensors_waiting_queue *waiting_queue, Sensor_update_reply *reply_msg ){
+	bwdebug( DBG_SYS, SENSORS_SERVER_DEBUG_AREA, 
+		"SENSORS_SERVER: Sensors update -> Waking up waiting tasks" );
+	int i, tid; 
+	for( i = 0; i < waiting_queue->size; i++ ){
+		tid = waiting_queue->waiting_tasks[i];
+		Reply( tid, ( char * ) reply_msg, sizeof( *reply_msg ) ); 
+	}
+	waiting_queue->size = 0; 
 }
 
 // -- Sensor history manipulation  methods ------------------------------------------------------------------------------------------
@@ -155,9 +196,15 @@ void draw_sensor_history( Sensor_history *history ) {
 	Putstr( COM2, ptr );
 }
 
-void parse_sensors( char *s88s, char *s88s_prev, Sensor_history *sensor_history, Sensor_waiting_list *waiting_list ){
-	int s88_num, bit_pos, val, val_prev, sensor_id; 
-	
+void parse_sensors( char *s88s, char *s88s_prev, Sensor_server_data *server_data ){
+	// Initialization
+	int s88_num, bit_pos, val, val_prev, sensor_id, send_update; 
+	send_update = 0; 
+
+	// Data structures
+	Sensor_history *sensor_history = server_data->sensor_history; 
+	Sensor_waiting_list *waiting_list = server_data->sensor_waiting_list; 
+
 	for( s88_num = 0; s88_num < 5; ++s88_num ) {
 		for( bit_pos = 0; bit_pos < 8; ++bit_pos ) {
 			val = GET_BIT( s88s[s88_num*2], bit_pos );
@@ -165,7 +212,8 @@ void parse_sensors( char *s88s, char *s88s_prev, Sensor_history *sensor_history,
 			if( val != val_prev ){
 				sensor_id = ( bit_pos * -1 ) + 8; 
 				sensor_history_push( s88_num, sensor_id, val, sensor_history );
-				awaken_sensor_waiting_tasks( waiting_list, 'A' + s88_num, sensor_id );
+				//awaken_sensor_waiting_tasks( waiting_list, 'A' + s88_num, sensor_id );
+				send_update = 1; 
 			}
 		}
 		for( bit_pos = 0; bit_pos < 8; ++bit_pos ) {
@@ -174,10 +222,17 @@ void parse_sensors( char *s88s, char *s88s_prev, Sensor_history *sensor_history,
 			if( val != val_prev ){
 				sensor_id = ( bit_pos * -1 ) + 8; 
 				sensor_history_push( s88_num, sensor_id + 8, val, sensor_history );
-				awaken_sensor_waiting_tasks( waiting_list, 'A' + s88_num, sensor_id + 8 );
+				//awaken_sensor_waiting_tasks( waiting_list, 'A' + s88_num, sensor_id + 8 );
+				send_update = 1; 
 			}
 		}
 	}
+
+	// If a sensor value changed, inform the tasks waiting to be informed. 
+	// TODO: Make sure that this doesn't take too long. If it does, move it to a notifier
+	if ( send_update )
+		wake_all_sensors_waiting_tasks( server_data->all_sensors_wait_queue, 
+			server_data->update_reply_msg );
 }
 
 void store_previous_sensors( char *s88s, char *s88s_prev ){
@@ -195,13 +250,24 @@ void sensors_server() {
 	char s88s[10], s88s_prev[10];
 	Sensor_history sensor_history;
 	Sensor_waiting_list sensors_waiting_list[ NUM_SENSORS ];
-	Init_sensor_msg init_msg; 
+	All_sensors_waiting_queue all_sensors_waiting_queue; 
+	Sensor_server_data server_data; 
+	server_data.sensor_history = &sensor_history; 
+	server_data.sensor_waiting_list = sensors_waiting_list; 
+	server_data.all_sensors_wait_queue = &all_sensors_waiting_queue; 
+
+	// Messages
 	Sensor_msg sensor_msg; 	
+	Init_sensor_msg init_msg; 
+	Sensor_update_reply sensor_update_reply; 
+	Sensor_id_list_reply sensor_id_list_reply; 
 	
 	// Initialization
 	init_sensor_history( &sensor_history );
 	init_sensor_waiting_lists( sensors_waiting_list ); 
-	
+	init_all_sensors_waiting_queue( &all_sensors_waiting_queue ); 
+	init_id_list_reply( &sensor_id_list_reply ); 
+
 	init_msg.sensor_data_buff = s88s; 
 	init_msg.prev_sensor_data_buff = s88s_prev; 
 	notifier_tid = Create( SENSOR_NOTIFIER_PRIORITY, sensors_server_notifier ); 
@@ -215,13 +281,21 @@ void sensors_server() {
 		switch( sensor_msg.type ){
 			case SENSOR_DATA_RECEIVED_MSG:				
 				Reply( sender_tid, 0, 0 ); 
-				parse_sensors( s88s, s88s_prev, &sensor_history, sensors_waiting_list ); // If this slows down the server put it in a different task. 
+				parse_sensors( s88s, s88s_prev, &server_data ); // If this slows down the server put it in a different task. 
 				draw_sensor_history( &sensor_history );	
 				store_previous_sensors( s88s, s88s_prev );
 				break; 
 			case WAIT_SENSOR_CHANGE_MSG:
+				// Wait for a particular sensor to be triggered
 				wait_for_sensor( sensors_waiting_list, sender_tid, sensor_msg.sensor_group, sensor_msg.pin_id );
 				break; 
+			case WAIT_ALL_SENSORS_CHANGE_MSG:
+				// Wait for any sensor to be triggered
+				wait_for_all_sensors( &all_sensors_waiting_queue, sender_tid ); 
+				break;
+			case GET_SENSOR_LIST_MSG:
+				// Get the list of sensors
+				Reply( sender_tid, ( char * ) &sensor_id_list_reply, sizeof( sensor_id_list_reply ) );
 			default:
 				bwdebug( DBG_SYS, SENSORS_SERVER_DEBUG_AREA, "SENSORS_SERVER: Invalid request. [type: %d]", sensor_msg.type );
 				break; 

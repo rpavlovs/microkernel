@@ -7,19 +7,18 @@
 // Communication
 #include "tasks/couriers.h"
 
-// Train
-#include "tasks/cli.h"
-#include "tasks/train_control.h"
-#include "tasks/clock-task.h"
-#include "tasks/train_manager_server.h"
-
 // Tests
 #include "tasks/tests.h"
 
-// User tasks libs
-#include "tasks/train_helpers.h"
+// Train
+#include "tasks/cli.h"
 #include "tasks/train_server.h"
+#include "tasks/train_control.h"
+#include "tasks/train_helpers.h"
 #include "tasks/train_movement_data.h"
+#include "tasks/train_manager_server.h"
+//#include "tasks/train_data_structs.h"
+#include "tasks/train_motion.h"
 
 // Servers
 #include "tasks/command_server.h"
@@ -36,4 +35,3 @@
 #include "tasks/a3-game.h"
 #include "tasks/RPS-game.h"
 #include "tasks/user_dashboard.h"
-

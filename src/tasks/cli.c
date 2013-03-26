@@ -17,7 +17,7 @@ void init_cli_data( CLI_data *cli_data, Servers_tid_list *servers_list ){
 	int train_mgm_tid = Create( TRAIN_MGR_TASK_PRIORITY, train_manager ); 
 	servers_list->items[TRAIN_MGR_INDEX] = train_mgm_tid; 
 
-	// TODO: Temporal 
+	// TODO: Temporal -> Add the track data manually
 	init_msg.track_id = 1; 
 
 	Send( train_mgm_tid, ( char * ) & init_msg, sizeof( init_msg ), 
@@ -25,6 +25,15 @@ void init_cli_data( CLI_data *cli_data, Servers_tid_list *servers_list ){
 	track = init_reply.track; 
 
 	// TODO: TEMP -> ADD THE TRAIN DATA HERE. 
+	Train_manager_msg msg; 
+	Train_manager_reply reply_msg; 
+	msg.msg_type = TRAIN_MGR_ADD_TRAIN_MSG; 
+	msg.element_id = 37;
+	msg.param = TRAIN_DIRECTION_FORWARD; 
+	Send( train_mgm_tid, ( char * ) & msg, sizeof( msg ), ( char * ) &reply_msg, sizeof( reply_msg ) ); 
+	cli_data->train_id[0] = 37; 
+	cli_data->train_tid[0] = reply_msg.train_tid; 
+
 	// TODO: SHOW THE CURRENT POSITION ON SCREEN. 
 }
 
@@ -100,7 +109,7 @@ int parse_and_exec_cmd( Char_queue *buf, Servers_tid_list *servers_list, CLI_dat
 			return INVALID_NUMBER_OF_ARGUMENTS;
 
 		// NOTE: If the speed is not specified it will default to 0. 
-		return exec_tr( atoi(train_id_str), atoi(speed_str), servers_list );
+		return exec_tr( atoi(train_id_str), atoi(speed_str), servers_list, cli_data );
 	}
 	if( strcmp( cmd_name, "sw" ) == 0 ) {
 		char switch_id_str[4], switch_state[2];
@@ -115,13 +124,13 @@ int parse_and_exec_cmd( Char_queue *buf, Servers_tid_list *servers_list, CLI_dat
 	if( strcmp( cmd_name, "rv" ) == 0 ) {
 		char train_id_str[3];
 		char_queue_pop_word( buf, train_id_str, 3 );
-		return exec_rv( atoi(train_id_str), servers_list );
+		return exec_rv( atoi(train_id_str), servers_list, cli_data );
 	}
 	if( strcmp( cmd_name, "gt" ) == 0 ){
-		char train_id_str[3], landmark_name[3], offset[4]; 
+		char train_id_str[3], landmark_name[6], offset[5]; 
 		char_queue_pop_word( buf, train_id_str, 3 );
-		char_queue_pop_word( buf, landmark_name, 3 );
-		char_queue_pop_word( buf, offset, 4 );
+		char_queue_pop_word( buf, landmark_name, 6 );
+		char_queue_pop_word( buf, offset, 5 );
 
 		if( landmark_name == '\0' || offset == '\0' )
 			return INVALID_NUMBER_OF_ARGUMENTS;
@@ -144,15 +153,33 @@ void send_command( int cmd_type, int element_id, int param, int server_tid ){
 	Send( server_tid, ( char * ) &cmd_request, sizeof( cmd_request ), 0, 0  ); 
 }
 
-int exec_tr( int train_id, int speed, Servers_tid_list *servers_list ) {
+int get_train_tid( int train_id, CLI_data *cli_data ){
+	int i; 
+	for( i = 0; i < NUM_TRAINS; i++ ){
+		if( cli_data->train_id[i] == train_id )
+			break; 
+	}
+
+	if( i == NUM_TRAINS )
+		return -1; 
+	else
+		return cli_data->train_tid[i]; 
+}
+
+int exec_tr( int train_id, int speed, Servers_tid_list *servers_list, CLI_data *cli_data ) {
 	if( !is_train_id(train_id) )
 		return INVALID_TRAIN_ID;
 	if( speed < 0 || speed > 14 ) 
 		return INVALID_SPEED;
 	
-	// Send message to command server.  
-	int cmd_server_tid = servers_list->items[CMD_SERVER_INDEX]; 
-	send_command( TRAIN_CMD_TYPE, train_id, speed, cmd_server_tid ); 
+	// Send the message to the train server
+	int train_tid = get_train_tid( train_id, cli_data ); 
+	if ( train_tid < 0 )
+		return INVALID_TRAIN_ID; 
+
+	bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, "CLI: TODO REMOVE -> Sending command [ train_id: %d speed: %d train_tid: %d ]", 
+		train_id, speed, train_tid );
+	send_command( TRAIN_CMD_TYPE, train_id, speed, train_tid ); 
 	return SUCCESS;
 }
 
@@ -168,13 +195,16 @@ int exec_sw( int switch_id, char state, Servers_tid_list *servers_list ) {
 	return SUCCESS;
 }
 
-int exec_rv( int train_id, Servers_tid_list *servers_list ) {
+int exec_rv( int train_id, Servers_tid_list *servers_list, CLI_data *cli_data  ) {
 	if( !is_train_id(train_id) )
 		return INVALID_TRAIN_ID;
 	
-	// Send message to command server. 
-	int cmd_server_tid = servers_list->items[CMD_SERVER_INDEX]; 
-	send_command( REVERSE_CMD_TYPE, train_id, CMD_PARAM_NOT_REQUIRED, cmd_server_tid ); 
+	// Send the message to the train server
+	int train_tid = get_train_tid( train_id, cli_data ); 
+	if ( train_tid < 0 )
+		return INVALID_TRAIN_ID; 
+
+	send_command( REVERSE_CMD_TYPE, train_id, CMD_PARAM_NOT_REQUIRED, train_tid );
 	return SUCCESS;
 }
 
@@ -184,16 +214,10 @@ int exec_gt( int train_id, const char *landmark_name, int offset, Servers_tid_li
 		return INVALID_LANDMARK_NAME; 
 
 	// Send the message to the train server
-	int i; 
-	for( i = 0; i < NUM_TRAINS; i++ ){
-		if( cli_data->train_id[i] == train_id )
-			break; 
-	}
-
-	if( i == NUM_TRAINS )
+	int train_tid = get_train_tid( train_id, cli_data ); 
+	if ( train_tid < 0 )
 		return INVALID_TRAIN_ID; 
 
-	int train_tid = cli_data->train_id[i];
 	send_command( MOVE_TO_POSITION_CMD_TYPE, CMD_PARAM_NOT_REQUIRED, ( int ) track_node, train_tid );
 	return SUCCESS; 
 }

@@ -34,6 +34,11 @@ void draw_screen() {
 		"##  3:  6:  9:  12:  15:  18:   ##       \\           \\         /              ##\n"
 		"##  153:   154:   155:   156:   ## _______3__________18_______5______________ ##\n"
 		"################################################################################\n"
+		"## Trains Position                                                            ##\n"
+		"## -Train 1: Id ->      Landmark ->        Offset ->                          ##\n"
+		"## -Train 2: Id ->      Landmark ->        Offset ->                          ##\n"
+		"## -Train 3: Id ->      Landmark ->        Offset ->                          ##\n"
+		"################################################################################\n"
 		"## Executed Command:\n"
 		"##\n"
 		"##\n"
@@ -78,7 +83,6 @@ void draw_cpu_util( char *str_buff, int cpu_util ){
 	ptr += cursorPositioning( ptr, CPU_UTIL_ROW_POS, CPU_UTIL_COL_POS );
 	ptr += sprintf( ptr, "%d ", cpu_util ); 
 	ptr += restoreCursor( ptr );
-	ptr += showCursor( ptr );
 	
 	// Print cpu_util
 	Putstr( COM2, str_buff );

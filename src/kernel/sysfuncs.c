@@ -168,8 +168,8 @@ sys_reply( int sender_tid, char *reply, int replylen, Task_descriptor *receiver_
 	Task_descriptor *sender_td = &(GLOBALS->tasks[sender_tid]);
 
 	// Set the return value of the replied task
-	unsigned int sender_sp = ( unsigned int ) sender_td->sp;
-	SetSysCallReturn( replylen, sender_sp );
+	//unsigned int sender_sp = ( unsigned int ) sender_td->sp;
+	//SetSysCallReturn( replylen, sender_sp );
 
 	//Rescheduling the task
 	sender_td->state = READY_TASK;

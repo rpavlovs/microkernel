@@ -6,6 +6,9 @@
 // -------------------------------------------------------------------
 // Constants
 // -------------------------------------------------------------------
+// Server data
+#define TRAIN_MANAGER_NAME					"Train_Manager"
+
 // Track data
 #define TRACK_ID_A							1
 #define TRACK_ID_B							2
@@ -16,6 +19,7 @@
 #define TRAIN_MGR_FIND_TRAIN_MSG			3
 
 #define NUM_TRAINS							3
+#define MAX_NUM_NODES_TRACK					145
 
 // -------------------------------------------------------------------
 // Structs

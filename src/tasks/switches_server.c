@@ -53,7 +53,8 @@ char get_switch_position( int switch_id, Switches_list *sw_list ){
 	if ( switch_index < 0 )
 		return 0; 
 
-	return sw_list->items[switch_index].position; 
+	char sw_position = sw_list->items[switch_index].position;
+	return sw_position; 
 }
 
 
@@ -163,6 +164,7 @@ void switchserver(){
 					query_msg_reply.switch_position = get_switch_position( query_msg_reply.switch_id, &switches_list ); 
 
 					Reply( sender_tid, (char *) &query_msg_reply, sizeof(query_msg_reply) );
+
 					replied = 1;
 				}
 				else if( cmd_request.cmd.cmd_type == ALL_SWITCHES_STATE_CMD_TYPE ){

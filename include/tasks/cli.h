@@ -68,11 +68,11 @@ void history_push( CLI_history *h, char * cmd, int status );
 
 void send_command( int cmd_type, int element_id, int param, int server_tid );
 
-int exec_tr( int train_id, int speed, Servers_tid_list *servers_list );
+int exec_tr( int train_id, int speed, Servers_tid_list *servers_list, CLI_data *cli_data );
 
 int exec_sw( int switch_id, char state, Servers_tid_list *servers_list ); 
 
-int exec_rv( int train_id, Servers_tid_list *servers_list );
+int exec_rv( int train_id, Servers_tid_list *servers_list, CLI_data *cli_data );
 
 int exec_gt( int train_id, const char *landmark_name, int offset, Servers_tid_list *servers_list, CLI_data *cli_data );
 

@@ -269,7 +269,7 @@ handle_swi( int request, Kern_Globals *GLOBALS ){
 		SetSysCallReturn( returnValue, taskSP );
 		break;
 	default:
-		bwpanic( "handle_swi: Unknown syscall" );
+		bwpanic( "handle_swi: Unknown syscall [ tid: %d request: %d ]", td->tid , request);
 	}
 }
 
@@ -386,13 +386,17 @@ clean_system_state(){
 		"MSR		cpsr, r0"					"\n\t"
 	
 		// Enable caches
-		"MOV	r0, #0"							"\n\t"
+		"MOV		r0, #0"						"\n\t"
 		"MCR		p15, 0, r0, c7, c5, 0"		"\n\t"	// Invalidate caches
 		"MRC		p15, 0, r0, c1, c0, 0"		"\n\t"	// Get the current value in the co-processor
 		"ORR		r0, r0, #4096"				"\n\t"	// Enable caches
+
+		// Enable fast processor clocking
+		"MOV		r1, #1"						"\n\t"	// TODO: Make sure this works fine
+		"MOV		r1, r1, LSL#30"				"\n\t"
+		"ORR		r0, r0, r1"					"\n\t"
+
 		"MCR		p15, 0, r0, c1, c0, 0"		"\n\t"	// Add the changes to the processor
-		
-		// TODO: Enable fast processor clocking
 	);
 	
 	// Disable all HW interrupts. 

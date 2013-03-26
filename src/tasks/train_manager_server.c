@@ -23,13 +23,17 @@ track_node *get_location_node( const char *location_name, track_node *track ){
 
 void train_manager(){
 	// Initialization
+	bwdebug( DBG_USR, TRAIN_MGR_DEBUG_AREA, "TRAIN_MANAGER: start" );
+	RegisterAs( TRAIN_MANAGER_NAME );
+
 	int track_id, num_trains, sender_tid;
 	num_trains = 0;							// Currently there are no trains
 	int trains_tids[ NUM_TRAINS ]; 
-	track_node *track; 
+	track_node track[ MAX_NUM_NODES_TRACK ]; 
 
 	// Messages
 	Train_manager_msg msg; 
+	Train_manager_reply msg_reply; 
 	Train_initialization_msg train_initialization; 
 
 	// Initialize the track data
@@ -40,6 +44,7 @@ void train_manager(){
 	Train_mgr_init_reply init_reply; 
 	Receive( &sender_tid, ( char * ) &init_msg, sizeof( init_msg ) );
 	track_id = init_msg.track_id;
+	
 	if ( track_id == TRACK_ID_A ) 
 		init_tracka( track ); 
 	else if ( track_id == TRACK_ID_B )
@@ -56,6 +61,7 @@ void train_manager(){
 
 		switch( msg.msg_type ){
 			case TRAIN_MGR_ADD_TRAIN_MSG:
+				// Create the train. 
 				if ( num_trains < NUM_TRAINS ){
 					int train_tid = Create( TRAIN_TASK_PRIORITY, train_server ); 
 					trains_tids[ num_trains ] = train_tid; 
@@ -66,8 +72,12 @@ void train_manager(){
 					train_initialization.train_id = msg.element_id; 
 					train_initialization.direction = msg.param; 
 					train_initialization.track = track;
-					Send( train_tid, ( char * ) &train_initialization, sizeof( train_initialization ), 0, 0  ); 
+					Send( train_tid, ( char * ) &train_initialization, sizeof( train_initialization ), 0, 0  );
+
+					msg_reply.train_tid = train_tid; 
+					Reply( sender_tid, ( char * ) &msg_reply, sizeof( msg_reply ) ); 
 				}
+				
 				break;
 			// TODO: Lost message -> Stop all trains, and only move 1 train
 			// TODO: Get track data

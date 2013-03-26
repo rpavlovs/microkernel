@@ -1,54 +1,111 @@
 #include "kernelspace.h"
 
+// -----------------------------------------------------------------------------------------
+// System Calls
+// -----------------------------------------------------------------------------------------
 int Create( int priority, void (*code) ( ) ) {
-	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (CREATE_SYSCALL) );
+	bwdebug( DBG_REQ, KERNEL_DEBUG_AREA, "CREATE: request recieved." );
+	return ker_Create( priority, code ); 
 }
 
 int MyTid( ) {
 	bwdebug( DBG_REQ, KERNEL_DEBUG_AREA, "MY_TID: request recieved." );
-
-	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (MYTID_SYSCALL) );
+	return ker_MyTid(); 
 }
 
 int MyParentTid( ) {
 	bwdebug( DBG_REQ, KERNEL_DEBUG_AREA, "MY_PARENT_TID: request recieved." );
-
-	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (MYPARENTTID_SYSCALL) );
+	return ker_MyParentTid(); 
 }
 
 void Pass( ) {
 	bwdebug( DBG_REQ, KERNEL_DEBUG_AREA, "PASS: request recieved." );
-
-	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (PASS_SYSCALL) );
+	ker_Pass(); 
 }
 
 void Exit( ) {
 	bwdebug( DBG_REQ, KERNEL_DEBUG_AREA, "EXIT: request recieved." );
-
-	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (EXIT_SYSCALL) );
+	ker_Exit(); 
 }
 
 int Send( int tid, char *msg, int msglen, char *reply, int replylen ) {
-	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (SEND_SYSCALL) );
+	bwdebug( DBG_REQ, KERNEL_DEBUG_AREA, "SEND: request recieved." );
+	return ker_Send( tid, msg, msglen, reply, replylen ); 
 }
 
 int Receive( int *tid, char *msg, int msglen ) {
-	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (RECEIVE_SYSCALL) );
+	bwdebug( DBG_REQ, KERNEL_DEBUG_AREA, "RECEIVE: request recieved." );
+	return ker_Receive( tid, msg, msglen ); 
 }
 
 int Reply( int tid, char *reply, int replylen ) {
-	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (REPLY_SYSCALL) );
+	bwdebug( DBG_REQ, KERNEL_DEBUG_AREA, "REPLY: request recieved." );
+	return ker_Reply( tid, reply, replylen ); 
 }
 
 int AwaitEvent( int eventid, int event ) {
-	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (AWAIT_EVENT_SYSCALL) );	
+	bwdebug( DBG_REQ, KERNEL_DEBUG_AREA, "AWAIT_EVENT: request recieved." );
+	return ker_AwaitEvent( eventid, event ); 
 }
 
 int Shutdown(){
-	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (SHUTDOWN_EVENT_SYSCALL) );
+	bwdebug( DBG_REQ, KERNEL_DEBUG_AREA, "SHUTDOWN: request recieved." );
+	return ker_Shutdown(); 
 }
 
 void GetSysdata( System_data *data ){
+	bwdebug( DBG_REQ, KERNEL_DEBUG_AREA, "GET_SYS_DATA: request recieved." );
+	ker_GetSysdata( data ); 
+}
+
+
+// For debugging there's an intermediate function call 
+
+// -----------------------------------------------------------------------------------------
+// Kernel Functions (They call directly SWI)
+// -----------------------------------------------------------------------------------------
+
+int ker_Create( int priority, void (*code) ( ) ) {
+	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (CREATE_SYSCALL) );
+}
+
+int ker_MyTid( ) {
+	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (MYTID_SYSCALL) );
+}
+
+int ker_MyParentTid( ) {
+	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (MYPARENTTID_SYSCALL) );
+}
+
+void ker_Pass( ) {
+	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (PASS_SYSCALL) );
+}
+
+void ker_Exit( ) {
+	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (EXIT_SYSCALL) );
+}
+
+int ker_Send( int tid, char *msg, int msglen, char *reply, int replylen ) {
+	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (SEND_SYSCALL) );
+}
+
+int ker_Receive( int *tid, char *msg, int msglen ) {
+	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (RECEIVE_SYSCALL) );
+}
+
+int ker_Reply( int tid, char *reply, int replylen ) {
+	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (REPLY_SYSCALL) );
+}
+
+int ker_AwaitEvent( int eventid, int event ) {
+	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (AWAIT_EVENT_SYSCALL) );	
+}
+
+int ker_Shutdown(){
+	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (SHUTDOWN_EVENT_SYSCALL) );
+}
+
+void ker_GetSysdata( System_data *data ){
 	asm( "SWI	%[call_id]" "\n\t" :: [call_id] "J" (SYSTEM_DATA_SYSCALL) );
 }
 

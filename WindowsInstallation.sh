@@ -11,7 +11,7 @@ REMOTE_SCRIPT_DIR="~/Documents/courses/cs652/code/"
 ### Execution
 # Copies the current folder to the "mounted" folder
 echo "Copying files..."
-scp -r `ls -1 . | grep -v .git` $USER@$UW:$REMOTE_DIR ## NOTE: This copies only files that are listed in the .git file. 
+scp -r `ls -1 . | grep -vE '.git|.sdf|.suo|.sln'` $USER@$UW:$REMOTE_DIR ## NOTE: This copies only files that are listed in the .git file. 
 
 # Execute the compilation in the remote machine. 
 echo "Compiling..."

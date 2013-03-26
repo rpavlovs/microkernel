@@ -13,9 +13,13 @@
 
 #define SENSOR_DATA_RECEIVED_MSG	1
 #define WAIT_SENSOR_CHANGE_MSG		2
+#define WAIT_ALL_SENSORS_CHANGE_MSG	3
+#define GET_SENSOR_LIST_MSG			4
 
-#define NUM_SENSORS				80
+#define SENSOR_NAME_SIZE			4
+#define NUM_SENSORS					80
 #define SENSOR_WAITING_QUEUE_SIZE	10
+#define NUM_TASKS_WAITING_SENSORS	10
 
 static const char s88_letters[5] = { 'A', 'B', 'C', 'D', 'E' };
 
@@ -36,13 +40,12 @@ typedef struct{
 	int size; 
 	char s88_group;
 	int waiting_tasks[ SENSOR_WAITING_QUEUE_SIZE ]; 
-} Sensor_waiting_list ;
+} Sensor_waiting_list;
 
-/*
 typedef struct{
+	int waiting_tasks[ NUM_TASKS_WAITING_SENSORS ];
 	int size; 
-	Sensor_waiting_record records[ NUM_SENSORS ]; 
-} Sensor_waiting_list; */
+} All_sensors_waiting_queue;
 
 // Messages
 typedef struct{
@@ -57,7 +60,21 @@ typedef struct{
 	int pin_id; 
 } Sensor_msg;
 
+typedef struct{
+	int sensors_value[NUM_SENSORS];
+} Sensor_update_reply;
 
+typedef struct{
+	char sensors_name[NUM_SENSORS][SENSOR_NAME_SIZE];
+} Sensor_id_list_reply; 
+
+// Server data
+typedef struct {
+	Sensor_history *sensor_history; 
+	Sensor_waiting_list *sensor_waiting_list; 
+	All_sensors_waiting_queue *all_sensors_wait_queue; 
+	Sensor_update_reply *update_reply_msg; 
+} Sensor_server_data;
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 // Methods

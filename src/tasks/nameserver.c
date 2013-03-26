@@ -24,7 +24,7 @@ void nameserver() {
 
 		switch( request.type ) {
 		case NAMESERVER_REGISTER_AS_REQUEST:
-			bwdebug( DBG_SYS, NAMESERVER_DEBUG_AREA, "NAMESERVER: RegisterAs request recived from %d", sender_tid );
+			bwdebug( DBG_SYS, NAMESERVER_DEBUG_AREA, "NAMESERVER: RegisterAs request recived. [ sender: %d name: %s]", sender_tid, request.ns_name );
 			pos = find_entry( request.ns_name, &table );
 			if ( pos == -1 ) {
 				bwdebug( DBG_SYS, NAMESERVER_DEBUG_AREA, "NAMESERVER: new ns record required" );
@@ -33,6 +33,7 @@ void nameserver() {
 			}
 			table.entrie[pos].tid = sender_tid;
 			reply.num = SUCCESS;
+
 			break;
 		case NAMESERVER_WHO_IS_REQUEST:
 			bwdebug( DBG_SYS, NAMESERVER_DEBUG_AREA, "NAMESERVER: WhoIs request recived from %d", sender_tid );

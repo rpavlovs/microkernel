@@ -158,7 +158,7 @@ void get_shortest_route(track_node* track, int* train_direction,
         for( i = 0; i < *route_length - 1; i++ ){
             get_edge_by_nodes(
                 route[i], route[i + 1],
-                edges[i]);
+                &edges[i]);
         }
         
         // Printing the route /////////////////////////////////////////////////

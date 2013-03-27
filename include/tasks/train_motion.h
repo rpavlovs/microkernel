@@ -27,12 +27,22 @@
 // ----------------------------------------------------------------------------------------------
 // Methods
 // ----------------------------------------------------------------------------------------------
-void update_train_status( Train_update_request *update_request, Train_status *train_status, 
-						 Train_server_data *server_data );
+void update_train_status( 
+	Train_update_request *update_request, Train_status *train_status, Train_server_data *server_data );
 
-void update_train_position( Train_status *train_status, Train_server_data *server_data ); 
+void update_train_position( 
+	Train_status *train_status, Train_server_data *server_data ); 
 
-void handle_update_request( Train_update_request *update_request, Train_status *train_status, 
-						   Train_server_data *server_data ); 
+void handle_update_request( 
+	Train_update_request *update_request, Train_status *train_status, Train_server_data *server_data ); 
+
+track_node *get_sensor_triggered( 
+	Train_server_data *server_data );
+
+int get_short_distance_traveled( 
+	int time_since_change, Train_status *train_status, Calibration_data *calibration_data );
+
+int get_long_distance_traveled( 
+	int time_since_change, Train_status *train_status, Calibration_data *calibration_data );
 
 #endif

@@ -19,6 +19,7 @@
 #define NORMAL_UPDATE							1		// Request to only update the current train information
 #define CHANGE_GOAL_UPDATE						2		// Request to change the goal where the train should move to
 #define MOVE_FREE_UPDATE						3		// Make the train move freely
+#define UPDATE_FROM_SENSOR						4		// The sensors value changed
 
 // Train state
 #define TRAIN_STATE_MOVE_FREE					1

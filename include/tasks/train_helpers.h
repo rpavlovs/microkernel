@@ -31,4 +31,6 @@ int get_short_distance_stopping_time( int train_speed, Speed_calibration_data *s
 
 int get_short_distance_total_time( int train_speed, Speed_calibration_data *speed_calibration );
 
+track_node *get_prev_node( Train_position *train_pos );
+
 #endif

@@ -99,7 +99,7 @@ void initialize_tasks_list( Train_server_data *train_server_data ){
 	/*
 	Sensor_notifier_init_msg init_msg; 
 	init_msg.sensor_server_tid = sensor_server_tid; 
-	init_msg.sensor_state = ( int ** ) &train_server_data->sensor_values;
+	init_msg.sensor_state = ( int ** ) &train_server_data->notifier_sensor_values;
 	tasks_tids[TR_SENSOR_NOTIFIER_TID_INDEX] = Create( TRAIN_SENSOR_NOT_TASK_PRIORITY, train_sensor_notifier ); 
     if ( tasks_tids[TR_SENSOR_NOTIFIER_TID_INDEX] < 0 ){
 		bwassert( 0, "TRAIN_SERVER: The train requires a sensor notifier to work properly." ); 
@@ -129,7 +129,7 @@ void retrieve_sensor_list( Train_server_data *train_server_data ){
 	Send( sensor_server_tid, ( char * ) &sensor_msg, sizeof( sensor_msg ), 
 		( char * ) &sensor_id_list_reply, sizeof( sensor_id_list_reply ) );
 
-	// Copy the values to the task's address space
+	// Copy the values to this task's address space
 	int i; 
 	for( i = 0; i < NUM_SENSORS; i++ ){
 		mem_cpy( sensor_id_list_reply.sensors_name[i], 
@@ -155,6 +155,8 @@ void initialize_train_status( Train_status *train_status, Train_initialization_m
 	train_status->train_id = init_info.train_id; 
 	train_status->train_direction = init_info.direction;
 	train_status->motion_state = TRAIN_STILL; 
+
+	train_status->motion_data.current_error = 0;
 	train_status->motion_data.train_speed = 0; 
 	train_status->motion_data.requires_reverse = 0; 
 	
@@ -212,15 +214,21 @@ void train_server(){
 				bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, 
 					"TRAIN_SERVER: Received sensor courier message [ sender_tid: %d ]", sender_tid );
 				
-				// TODO: Update state from sensor data.
+				// If one of the triggered sensors was in the attribution list, update.
+				track_node *triggered_sensor = get_sensor_triggered( &train_server_data ); 
+				if ( triggered_sensor ){
+					update_request.update_type = UPDATE_FROM_SENSOR; 
+					update = 1; 
+				}
+			}
+			else if( sender_tid == tasks_tids[TR_WAIT_NOT_COURIER_TID_INDEX] ){
+				update_request.update_type = NORMAL_UPDATE; 
+				update = 1; 
 			}
 			else{
 				bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, 
 					"TRAIN_SERVER: Received wait courier message [ sender_tid: %d ]", sender_tid );
 			}
-
-			update_request.update_type = NORMAL_UPDATE; 
-			update = 1; 
 		}
 		else {
 			// Server received a command message

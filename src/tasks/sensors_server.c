@@ -213,7 +213,10 @@ void parse_sensors( char *s88s, char *s88s_prev, Sensor_server_data *server_data
 				sensor_id = ( bit_pos * -1 ) + 8; 
 				sensor_history_push( s88_num, sensor_id, val, sensor_history );
 				//awaken_sensor_waiting_tasks( waiting_list, 'A' + s88_num, sensor_id );
-				send_update = 1; 
+				if ( val ){
+					// Only send an update if the sensor was triggered, not reset
+					send_update = 1; 
+				}
 			}
 		}
 		for( bit_pos = 0; bit_pos < 8; ++bit_pos ) {
@@ -223,7 +226,10 @@ void parse_sensors( char *s88s, char *s88s_prev, Sensor_server_data *server_data
 				sensor_id = ( bit_pos * -1 ) + 8; 
 				sensor_history_push( s88_num, sensor_id + 8, val, sensor_history );
 				//awaken_sensor_waiting_tasks( waiting_list, 'A' + s88_num, sensor_id + 8 );
-				send_update = 1; 
+				if ( val ){
+					// Only send an update if the sensor was triggered, not reset
+					send_update = 1; 
+				}
 			}
 		}
 	}
@@ -259,7 +265,6 @@ void sensors_server() {
 	// Messages
 	Sensor_msg sensor_msg; 	
 	Init_sensor_msg init_msg; 
-	Sensor_update_reply sensor_update_reply; 
 	Sensor_id_list_reply sensor_id_list_reply; 
 	
 	// Initialization

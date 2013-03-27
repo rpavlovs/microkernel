@@ -11,6 +11,8 @@
 // -------------------------------------------------------------------
 #define NUM_REQUIRED_TASKS_FOR_TRAIN			7		// The number of tis that we need to keep track of. 
 
+#define SENSOR_ATTR_LIST_SIZE					20		// The size of the sensor attribution list
+
 // -------------------------------------------------------------------
 // Structs
 // -------------------------------------------------------------------
@@ -31,6 +33,7 @@ typedef struct{
 	int requires_reverse; 
 	int original_train_speed;		// Only used for reversing without a goal. 
 	int time_accelerating; 
+	int current_error;				// The difference between the real position and the actual position.
 } Train_motion_data; 
 
 typedef struct{
@@ -65,6 +68,7 @@ struct Train_status_struct{
 
 struct Train_update_request_struct{
 	int update_type; 
+	track_node *triggered_sensor; 
 	// TODO: Add the position to go to. 
 	Command cmd; 
 }; 
@@ -80,6 +84,9 @@ typedef struct{
 	int *notifier_sensor_values; 
 	int sensor_values[ NUM_SENSORS ];
 	char sensor_names[ NUM_SENSORS ][ SENSOR_NAME_SIZE ];
+
+	track_node *sensor_attr_list[ SENSOR_ATTR_LIST_SIZE ];
+	int num_sensors_attr_list; 
 } Train_server_data;
 
 // -- Messages ------------------------------

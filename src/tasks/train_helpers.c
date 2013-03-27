@@ -72,3 +72,15 @@ int get_short_distance_stopping_time( int train_speed, Speed_calibration_data *s
 int get_short_distance_total_time( int train_speed, Speed_calibration_data *speed_calibration ){
 	return speed_calibration->calibrated_distances[ train_speed ][ CALIBRATED_TOTAL_TIME_INDEX ];
 }
+
+track_node *get_prev_node( Train_position *train_pos ){
+	int landmark_type = train_pos->landmark->type;
+	track_node* landmark = train_pos->landmark;
+	if ( landmark_type == NODE_SENSOR || landmark_type == NODE_EXIT || landmark_type == NODE_BRANCH ){
+		return landmark->reverse->edge[DIR_AHEAD].dest;
+	}
+	
+	// If the track node is an enter there's no previous node.
+	// If the track node is a merge, there's no way of knowing which is the right path. 
+	return 0; 
+}

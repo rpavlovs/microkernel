@@ -77,11 +77,11 @@ void initialize_tasks_list( Train_server_data *train_server_data ){
 
     int sw_server_tid = WhoIs( SWITCHES_SERVER_NAME );
     tasks_tids[ TR_SWITCH_SERVER_TID_INDEX ] = sw_server_tid; 
-    bwassert( cmd_server_tid >= 0, "TRAIN_SERVER: This task requires the command server to work properly." );
+    bwassert( sw_server_tid >= 0, "TRAIN_SERVER: This task requires the command server to work properly." );
 
 	int sensor_server_tid = WhoIs( SENSORS_SERVER_NAME ); 
 	tasks_tids[ TR_SENSOR_SERVER_TID_INDEX ] = sensor_server_tid; 
-	bwassert( cmd_server_tid >= 0, "TRAIN_SERVER: This task requires the sensor server to work properly." );
+	bwassert( sensor_server_tid >= 0, "TRAIN_SERVER: This task requires the sensor server to work properly." );
 
     // TODO: Add the route server
     // TR_ROUTE_SERVER_TID_INDEX
@@ -126,6 +126,9 @@ void retrieve_sensor_list( Train_server_data *train_server_data ){
 	Sensor_id_list_reply sensor_id_list_reply;
 
 	int sensor_server_tid = train_server_data->tasks_tids[ TR_SENSOR_SERVER_TID_INDEX ];
+	bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, "TRAIN_SERVER: Retrieving sensors list [ sensor_srv_tid: %d ]", 
+			sensor_server_tid );
+
 	Send( sensor_server_tid, ( char * ) &sensor_msg, sizeof( sensor_msg ), 
 		( char * ) &sensor_id_list_reply, sizeof( sensor_id_list_reply ) );
 

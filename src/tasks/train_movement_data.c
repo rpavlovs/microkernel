@@ -15,6 +15,8 @@ int get_train_group( int train_number ){
 
 void load_calibration_data( Calibration_data *calibration_data, int train_number ){
 	int train_group = get_train_group( train_number ); 
+	bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, "TRAIN_SERVER: Loading calibration data [ train: %d group: %d ]", 
+			train_number, train_group );
 
 	switch( train_group ){
 		case TRAIN_GROUP_1:
@@ -286,4 +288,7 @@ void load_calibration_data( Calibration_data *calibration_data, int train_number
 				"TRAIN_MOVEMENT_DATA: Cannot find calibration data for this train." ); 
 			break; 
 	}
+
+	bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, "TRAIN_SERVER: Calibration loaded successfully [ train: %d group: %d ]", 
+			train_number, train_group );
 }

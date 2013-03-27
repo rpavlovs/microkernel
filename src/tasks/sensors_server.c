@@ -5,7 +5,7 @@
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 void sensors_server_notifier(){
 	bwdebug( DBG_SYS, SENSORS_SERVER_DEBUG_AREA, "SENSORS_SERVER_NOTIFIER: enters" );
-	
+
 	// Initialization
 	Init_sensor_msg init_msg; 
 	Sensor_msg sensor_msg; 
@@ -250,6 +250,7 @@ void store_previous_sensors( char *s88s, char *s88s_prev ){
 
 void sensors_server() {
 	bwdebug( DBG_SYS, SENSORS_SERVER_DEBUG_AREA, "SENSORS_SERVER: enters" );
+	RegisterAs( SENSORS_SERVER_NAME );
 	
 	// Data structures
 	int notifier_tid, sender_tid;

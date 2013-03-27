@@ -23,7 +23,7 @@ void print_train_status( Train_status *train_status );
 
 void initialize_goal( Train_status *train_status ); 
 
-void request_new_path( Train_status *train_status, Train_server_data *server_data ); 
+int request_new_path( Train_status *train_status, Train_server_data *server_data ); 
 
 int get_short_distance( int train_speed, Speed_calibration_data *speed_calibration );
 

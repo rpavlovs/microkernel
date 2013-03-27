@@ -3,13 +3,47 @@
 // ----------------------------------------------------------------------------------------------
 // Train Helpers
 // ----------------------------------------------------------------------------------------------
-void request_new_path( Train_status *train_status, Train_server_data *server_data ){
+int request_new_path( Train_status *train_status, Train_server_data *server_data ){
+    // 1. Get the current state of all sensors
+	int switch_server_tid = server_data->tasks_tids[ TR_SWITCH_SERVER_TID_INDEX ];
+    Cmd_request cmd_request;
+    cmd_request.type = QUERY_CMD_REQUEST; 
+    cmd_request.cmd.cmd_type = ALL_SWITCHES_STATE_CMD_TYPE;
+    cmd_request.cmd.element_id = 0;
+    cmd_request.cmd.param = ( int ) &( train_status->route_data.switches_state ); // CAREFUL!!!
+    Send( switch_server_tid, ( char * ) &cmd_request, sizeof( cmd_request ), 0, 0  );
+
+	// 2. Send a request to the route server. 
 	Route_msg route_msg;
+	int route_found; 
+	
+	// Basic data
+	route_msg.type = GET_SHORTEST_ROUTE_MSG;
+	route_msg.track = server_data->track;
+	route_msg.train_direction = &train_status->train_direction; 
+	
+	// Current Position
 	route_msg.current_landmark = train_status->current_position.landmark; 
-	route_msg.type = GET_SHORTEST_ROUTE_MSG; 
+	route_msg.train_shift = train_status->current_position.offset; 
+	
+	// Goal
+	route_msg.target_node = train_status->current_goal.landmark; 
+	route_msg.target_shift = train_status->current_goal.offset; 
+
+	// Returned data	
+	route_msg.route_found = &route_found;
+	route_msg.edges = &train_status->route_data.edges; 
+	route_msg.switches = train_status->route_data.switches_state;
+	route_msg.num_landmarks = &train_status->route_data.num_landmarks;
+	route_msg.landmarks = &train_status->route_data.landmarks;
 
 	Send( server_data->tasks_tids[ TR_ROUTE_SERVER_TID_INDEX ], 
 		( char * ) &route_msg, sizeof( route_msg ), 0, 0 ); 
+
+	// 3. Make sure the route data state is correct
+	train_status->route_data.landmark_index = 0; 
+
+	return route_found; 
 }
 
 void print_train_status( Train_status *train_status ){

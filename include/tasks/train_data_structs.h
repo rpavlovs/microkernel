@@ -42,7 +42,7 @@ typedef struct{
     int landmark_index;             // The current landmark
     track_edge *edges;
     track_node *landmarks; 
-    char *switches_state; 
+    int *switches_state; 
 } Train_route_data;
 
 struct Train_status_struct{

@@ -141,13 +141,13 @@ void get_shortest_route(track_node* track, int* train_direction,
                 
                 if( route[i]->edge[DIR_STRAIGHT].dest == route[i + 1] ){
                     //Adjust switch to straight
-                    switches[get_switch_index( switch_num )] = 0;
+                    switches[get_switch_index( switch_num )] = SWITCH_STRAIGHT_POS;
                     ////printf("STRAIGHT SWITCH is found: %d\n", switch_num);
                 }
                 
                 else if( route[i]->edge[DIR_CURVED].dest == route[i + 1] ){
                     //Adjust switch to curved
-                    switches[get_switch_index( switch_num )] = 1;
+                    switches[get_switch_index( switch_num )] = SWITCH_CURVE_POS;
                     ////printf("CURVED SWITCH is found: %d\n", switch_num);
                 }
             }

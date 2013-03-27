@@ -5,7 +5,7 @@
 // -------------------------------------------------------------------
 void train_wait_notifier(){
 	// Initialization 
-	bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, "TRAIN_WAIT_NOTIFIER: Enters" );
+	bwdebug( DBG_USR, TRAIN_NOTIFIERS_DEBUG_AREA, "TRAIN_WAIT_NOTIFIER: Enters" );
 
 	// Variables
 	int sender_tid; 
@@ -13,7 +13,7 @@ void train_wait_notifier(){
 
 	FOREVER{
 		// Listening for a request
-		bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, "TRAIN_SERVER: listening for a request" );
+		bwdebug( DBG_USR, TRAIN_NOTIFIERS_DEBUG_AREA, "TRAIN_WAIT_NOTIFIER: listening for a request" );
 		Receive( &sender_tid, ( char * ) &courier_msg, sizeof( courier_msg ) );
 
 		// Delay for a certain amount of time
@@ -26,7 +26,7 @@ void train_wait_notifier(){
 
 void train_sensor_notifier(){
 	// Initialization
-	bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, "TRAIN_SENSOR_NOTIFIER: Enters" );
+	bwdebug( DBG_USR, TRAIN_NOTIFIERS_DEBUG_AREA, "TRAIN_SENSOR_NOTIFIER: Enters" );
 
 	// Variables
 	int sender_tid, sensor_server_tid; 
@@ -44,7 +44,7 @@ void train_sensor_notifier(){
 
 	FOREVER{
 		// Listening for a request
-		bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, "TRAIN_SENSOR_NOTIFIER: listening for a request" );
+		bwdebug( DBG_USR, TRAIN_NOTIFIERS_DEBUG_AREA, "TRAIN_SENSOR_NOTIFIER: listening for a request" );
 		Receive( &sender_tid, ( char * ) &courier_msg, sizeof( courier_msg ) );
 
 		// Wait for the sensors update
@@ -116,19 +116,23 @@ void initialize_tasks_list( Train_server_data *train_server_data ){
 	// Couriers
 	int my_tid = MyTid(); 
 	tasks_tids[TR_WAIT_NOT_COURIER_TID_INDEX] = create_courier( my_tid, tasks_tids[TR_WAIT_NOTIFIER_TID_INDEX], 0, 0 );
+	bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, "TRAIN_SERVER: Wait notifier courier created successfully [ tid: %d ]", 
+		tasks_tids[TR_WAIT_NOT_COURIER_TID_INDEX] );
+
 	/*
 	tasks_tids[TR_SENSOR_NOT_COURIER_TID_INDEX] = create_courier( my_tid, tasks_tids[TR_SENSOR_NOTIFIER_TID_INDEX], 0, 0 );
 	*/
 }
 
 void retrieve_sensor_list( Train_server_data *train_server_data ){
+	// Initialization
 	Sensor_msg sensor_msg;
 	Sensor_id_list_reply sensor_id_list_reply;
 
+	// Get the list of sensors
+	bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, "TRAIN_SERVER: Retrieving sensors list" );
+	sensor_msg.type = GET_SENSOR_LIST_MSG; 
 	int sensor_server_tid = train_server_data->tasks_tids[ TR_SENSOR_SERVER_TID_INDEX ];
-	bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, "TRAIN_SERVER: Retrieving sensors list [ sensor_srv_tid: %d ]", 
-			sensor_server_tid );
-
 	Send( sensor_server_tid, ( char * ) &sensor_msg, sizeof( sensor_msg ), 
 		( char * ) &sensor_id_list_reply, sizeof( sensor_id_list_reply ) );
 
@@ -138,6 +142,9 @@ void retrieve_sensor_list( Train_server_data *train_server_data ){
 		mem_cpy( sensor_id_list_reply.sensors_name[i], 
 			train_server_data->sensor_names[i], SENSOR_NAME_SIZE );
 	}
+
+	bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, "TRAIN_SERVER: Sensors retrieved succesfully [ sensor_srv_tid: %d ]", 
+			sensor_server_tid );
 }
 
 void initialize_train_server_data( Train_server_data *train_server_data, Train_initialization_msg init_info ){
@@ -155,14 +162,18 @@ void initialize_train_server_data( Train_server_data *train_server_data, Train_i
 }
 
 void initialize_train_status( Train_status *train_status, Train_initialization_msg init_info ){
+	bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, "TRAIN_SERVER: Initializing train information [ train_id: %d ]", init_info.train_id );
+
 	train_status->train_id = init_info.train_id; 
 	train_status->train_direction = init_info.direction;
+	train_status->train_state = TRAIN_STATE_MOVE_FREE; 
 	train_status->motion_state = TRAIN_STILL; 
+	train_status->is_reversing = 0; 
 
 	train_status->motion_data.current_error = 0;
 	train_status->motion_data.train_speed = 0; 
+	train_status->motion_data.original_train_speed = 0; 
 	train_status->motion_data.requires_reverse = 0; 
-	
 
 	initialize_goal( train_status );
 
@@ -178,6 +189,7 @@ void initialize_train_status( Train_status *train_status, Train_initialization_m
 void train_server(){
 	// Initialization
     bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, "TRAIN_SERVER: Start execution" );
+	bwdebug( DBG_USR, TEMP_DEBUG_AREA, "TRAIN_SERVER: TID: %d", MyTid() );
 	int sender_tid, update; 
 
 	// Get initialization data
@@ -205,6 +217,7 @@ void train_server(){
 		// Receive message
 		bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, "TRAIN_SERVER: listening for a request" );
 		Receive( &sender_tid, temp_msg_buffer, sizeof( char ) * COURIER_BUFFER_SIZE );
+		bwdebug( DBG_USR, TEMP_DEBUG_AREA, "TRAIN_SERVER: Received a request" );
 
 		// Determine how to handle the request
 		update = 0; 

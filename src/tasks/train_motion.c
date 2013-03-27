@@ -548,6 +548,8 @@ void update_train_status( Train_update_request *update_request, Train_status *tr
 
 void update_train_position( Train_status *train_status, Train_server_data *server_data ){
 
+	bwdebug( DBG_USR, TEMP_DEBUG_AREA, 
+		"TRAIN_MOTION: update_train_status. [ train_id: %d status: %d ]", train_status->train_id, train_status->motion_state );
 	if ( train_status->motion_state == TRAIN_STILL ){
 		// The train is still and the speed hasn't changed, so nothing to do here.
 		bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, 

@@ -41,10 +41,11 @@
 #define COURIER_DEBUG_AREA					1 << 18
 #define TRAIN_SRV_DEBUG_AREA				1 << 19
 #define TRAIN_MGR_DEBUG_AREA				1 << 20
+#define ROUTE_SRV_DEBUG_AREA				1 << 21
 
 // TODO: DELETE THIS DEBUG AREAS
-#define DELAY_DEBUG_AREA					1 << 21
-#define TEMP_DEBUG_AREA						1 << 22
+#define DELAY_DEBUG_AREA					1 << 22
+#define TEMP_DEBUG_AREA						1 << 23
 
 // ------------------------------------------------------------------------------------------
 // Task priorities

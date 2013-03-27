@@ -30,7 +30,7 @@ int get_switch_id( int sw_index ){
 	return sw_id; 
 }
 
-int get_switch_index( int sw_id ){
+int get_sw_index( int sw_id ){
 	// Invalid id? 
 	if ( (sw_id > LAST_LOW_SWITCH_INDEX && sw_id < INIT_HIGH_SWITCH_INDEX) || 
 			sw_id < 1 || sw_id > LAST_HIGH_SWITCH_INDEX )
@@ -49,7 +49,7 @@ int get_switch_index( int sw_id ){
 // Query methods
 // -------------------------------------------------------------------
 char get_switch_position( int switch_id, Switches_list *sw_list ){
-	int switch_index = get_switch_index( switch_id ); 
+	int switch_index = get_sw_index( switch_id ); 
 	if ( switch_index < 0 )
 		return 0; 
 
@@ -72,7 +72,7 @@ int change_switch_position( Cmd_request cmd_request, Switches_list *sw_list, int
 	Send( cmd_server_tid, ( char * ) &cmd_request, sizeof( cmd_request ), 0, 0  ); 
 	
 	// Update the switch position in the list. 
-	int sw_index = get_switch_index( cmd_request.cmd.element_id ); 
+	int sw_index = get_sw_index( cmd_request.cmd.element_id ); 
 	char pos = ( char ) cmd_request.cmd.param; 
 	sw_list->items[sw_index].position = pos;
 	

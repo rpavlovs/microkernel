@@ -4,7 +4,12 @@
 // Train Helpers
 // ----------------------------------------------------------------------------------------------
 void request_new_path( Train_status *train_status, Train_server_data *server_data ){
-	// TODO: Request new path. 
+	Route_msg route_msg;
+	route_msg.current_landmark = train_status->current_position.landmark; 
+	route_msg.type = GET_SHORTEST_ROUTE_MSG; 
+
+	Send( server_data->tasks_tids[ TR_ROUTE_SERVER_TID_INDEX ], 
+		( char * ) &route_msg, sizeof( route_msg ), 0, 0 ); 
 }
 
 void print_train_status( Train_status *train_status ){

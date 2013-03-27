@@ -21,11 +21,13 @@
 #include "tasks/train_motion.h"
 
 // Servers
+#include "tasks/route_server.h"
 #include "tasks/command_server.h"
 #include "tasks/sensors_server.h"
 #include "tasks/switches_server.h"
 
 // Track data
+#include "tasks/track_helpers.h"
 #include "tasks/track_node.h"
 #include "tasks/track_data.h"
 

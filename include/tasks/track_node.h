@@ -22,6 +22,11 @@ struct track_edge {
   track_edge *reverse;
   track_node *src, *dest;
   int dist;             /* in millimetres */
+  
+  //Reservation algorithm
+  int reservers[3];     //TODO: refactor reserved[TRAINS_NUMBER]
+  int start[3];         //TODO: refactor start[TRAINS_NUMBER]
+  int end[3];           //TODO: refactor start[TRAINS_NUMBER]
 };
 
 struct track_node {
@@ -30,6 +35,18 @@ struct track_node {
   int num;              /* sensor or switch number */
   track_node *reverse;  /* same location, but opposite direction */
   track_edge edge[2];
+  
+  //Dijkstra algorithm
+  int index;
+  int visited;
+  int label;
+  track_node* previous;
+  int neighbours_count;
+  track_node* neighbours[2];
+  int distances[2];
+  
+  //Reservation algorithm
+  //int reserved;
+  //int reserver;
 };
-
 #endif

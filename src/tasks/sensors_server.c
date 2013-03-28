@@ -48,7 +48,7 @@ void sensors_server_notifier(){
 		Send( sensor_server_tid, ( char * ) &sensor_msg, sizeof( sensor_msg ), 0, 0 ); 
 		
 		//DelayUntil( last_recieved + 100 / SENSOR_QUERY_FREQENCY );
-		Delay( 10 ); 
+		Delay( 20 );	// 10 
 	}
 }
 

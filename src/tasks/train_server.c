@@ -180,7 +180,8 @@ void initialize_train_status( Train_status *train_status, Train_initialization_m
 	// TODO: Temp
 	train_status->current_position.landmark = &init_info.track[24];  // "B9"
 	train_status->current_position.edge = &train_status->current_position.landmark->edge[DIR_AHEAD]; 
-	train_status->current_position.offset = 100; // 10 cm
+	//train_status->current_position.offset = 55; // 5.5 cm -> train 37
+	train_status->current_position.offset = 130; // 13 cm -> train 50
 }
 
 // -------------------------------------------------------------------

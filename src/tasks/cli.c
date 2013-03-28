@@ -18,7 +18,7 @@ void init_cli_data( CLI_data *cli_data, Servers_tid_list *servers_list ){
 	servers_list->items[TRAIN_MGR_INDEX] = train_mgm_tid; 
 
 	// TODO: Temporal -> Add the track data manually
-	init_msg.track_id = 1; 
+	init_msg.track_id = TRACK_ID_B; 
 
 	Send( train_mgm_tid, ( char * ) & init_msg, sizeof( init_msg ), 
 		( char * ) &init_reply, sizeof( init_reply ) );
@@ -28,10 +28,12 @@ void init_cli_data( CLI_data *cli_data, Servers_tid_list *servers_list ){
 	Train_manager_msg msg; 
 	Train_manager_reply reply_msg; 
 	msg.msg_type = TRAIN_MGR_ADD_TRAIN_MSG; 
-	msg.element_id = 37;
+	//msg.element_id = 37;
+	msg.element_id = 50;
 	msg.param = TRAIN_DIRECTION_FORWARD; 
 	Send( train_mgm_tid, ( char * ) & msg, sizeof( msg ), ( char * ) &reply_msg, sizeof( reply_msg ) ); 
-	cli_data->train_id[0] = 37; 
+	//cli_data->train_id[0] = 37; 
+	cli_data->train_id[0] = 50; 
 	cli_data->train_tid[0] = reply_msg.train_tid; 
 
 	// TODO: SHOW THE CURRENT POSITION ON SCREEN. 

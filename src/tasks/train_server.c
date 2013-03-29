@@ -83,8 +83,9 @@ void initialize_tasks_list( Train_server_data *train_server_data ){
 	tasks_tids[ TR_SENSOR_SERVER_TID_INDEX ] = sensor_server_tid; 
 	bwassert( sensor_server_tid >= 0, "TRAIN_SERVER: This task requires the sensor server to work properly." );
 
-    // TODO: Add the route server
-    // TR_ROUTE_SERVER_TID_INDEX
+	int route_srv_tid = WhoIs( ROUTE_SERVER_NAME );
+	tasks_tids[ TR_ROUTE_SERVER_TID_INDEX ] = route_srv_tid; 
+	bwassert( route_srv_tid >= 0, "TRAIN_SERVER: This task requires the route server to work properly." );
 
 	// WAIT Notifier
 	tasks_tids[TR_WAIT_NOTIFIER_TID_INDEX] = Create( TRAIN_WAIT_NOT_TASK_PRIORITY, train_wait_notifier ); 
@@ -190,7 +191,6 @@ void initialize_train_status( Train_status *train_status, Train_initialization_m
 void train_server(){
 	// Initialization
     bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, "TRAIN_SERVER: Start execution" );
-	bwdebug( DBG_USR, TEMP_DEBUG_AREA, "TRAIN_SERVER: TID: %d", MyTid() );
 	int sender_tid, update; 
 
 	// Get initialization data
@@ -218,7 +218,6 @@ void train_server(){
 		// Receive message
 		bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, "TRAIN_SERVER: listening for a request" );
 		Receive( &sender_tid, temp_msg_buffer, sizeof( char ) * COURIER_BUFFER_SIZE );
-		bwdebug( DBG_USR, TEMP_DEBUG_AREA, "TRAIN_SERVER: Received a request" );
 
 		// Determine how to handle the request
 		update = 0; 
@@ -261,7 +260,9 @@ void train_server(){
 			}
 			else if ( cmd_type == MOVE_TO_POSITION_CMD_TYPE ){
 				// A command was made to make the train move to a particular location
-				// TODO: How to inform the update? 
+				bwdebug( DBG_SYS, TEMP_DEBUG_AREA, "TRAIN_SERVER: Received cmd change request" );
+				update_request.update_type = CHANGE_GOAL_UPDATE; 
+				update_request.cmd = cmd_request.cmd;
 			}
 			else{
 				bwassert( 0, "TRAIN_SERVER: The received messages must be valid." );

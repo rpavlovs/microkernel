@@ -301,7 +301,6 @@ void sensors_server() {
 				break;
 			case GET_SENSOR_LIST_MSG:
 				// Get the list of sensors
-				bwdebug( DBG_SYS, TEMP_DEBUG_AREA, "SENSORS_SERVER: Received sensor list request" );
 				Reply( sender_tid, ( char * ) &sensor_id_list_reply, sizeof( sensor_id_list_reply ) );
 			default:
 				bwdebug( DBG_SYS, SENSORS_SERVER_DEBUG_AREA, "SENSORS_SERVER: Invalid request. [type: %d]", sensor_msg.type );

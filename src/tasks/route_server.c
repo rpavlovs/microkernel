@@ -80,7 +80,7 @@ void get_shortest_route(track_node* track, int* train_direction,
     train_node->label = 0;
     *route_found = 0;
     *route_length = 0;
-    
+
     //printf("INITIALIZED\n");
 
     // Main loop //////////////////////////////////////////////////////////////
@@ -168,12 +168,12 @@ void get_shortest_route(track_node* track, int* train_direction,
             //printf("%s; ", route[i]->name);
         }
     }
-    
     //printf("\nEXITED\n");
 }
 
 void route_server() {
 	bwdebug( DBG_SYS, ROUTE_SRV_DEBUG_AREA, "ROUTE_SERVER: enters" );
+	RegisterAs( ROUTE_SERVER_NAME ); 
 	
 	// Data structures
 	int sender_tid;
@@ -183,6 +183,9 @@ void route_server() {
 		bwdebug( DBG_SYS, ROUTE_SRV_DEBUG_AREA, "ROUTE_SERVER: listening for a request" );
 		Receive( &sender_tid, ( char * ) &route_msg, sizeof( route_msg )  );
 
+		bwdebug( DBG_SYS, ROUTE_SRV_DEBUG_AREA, "ROUTE_SERVER: Received request [ sender_tid: %d type: %d ]", 
+			sender_tid, route_msg.type );
+
 		switch( route_msg.type ){
 			//This message can arrive from:
 			//	Train A
@@ -190,16 +193,18 @@ void route_server() {
 			//	Train AI
 			case GET_SHORTEST_ROUTE_MSG:
 
-                                get_shortest_route(
-                                    route_msg.track, route_msg.train_direction,
-                                    route_msg.current_landmark, route_msg.train_shift,
-                                    route_msg.target_node, route_msg.target_shift,
-                                    route_msg.switches,
-                                    route_msg.route_found,
-                                    route_msg.landmarks,
-                                    route_msg.num_landmarks,
-                                    route_msg.edges);
+                get_shortest_route(
+                    route_msg.track, route_msg.train_direction,
+                    route_msg.current_landmark, route_msg.train_shift,
+                    route_msg.target_node, route_msg.target_shift,
+                    route_msg.switches,
+                    route_msg.route_found,
+                    route_msg.landmarks,
+                    route_msg.num_landmarks,
+                    route_msg.edges);
 
+				bwdebug( DBG_SYS, ROUTE_SRV_DEBUG_AREA, "ROUTE_SERVER: Replying request [ sender_tid: %d type: %d ]", 
+					sender_tid, route_msg.type );
 				Reply( sender_tid, 0, 0 );
 
 				break;

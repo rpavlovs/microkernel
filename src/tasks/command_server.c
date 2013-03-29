@@ -141,7 +141,7 @@ void command_notifier(){
 					// Simply execute the reset code.
 					bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND_NOTIFIER: reset sensors" );
 
-					//Putc( COM1, RESET_CODE );
+					Putc( COM1, RESET_CODE );
 					Reply( command.sender_tid, 0, 0 ); 
 					bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND_NOTIFIER: finished resettting sensors command" );
 					break; 

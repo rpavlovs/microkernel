@@ -2,9 +2,11 @@
 #define __TRAIN_STRUCT_H_
 
 #include "track_node.h"
+#include "track_data.h"
 #include "train_movement_data.h"
 #include "command_server.h"
 #include "sensors_server.h"
+#include "switches_server.h"
 
 // -------------------------------------------------------------------
 // Constants
@@ -40,9 +42,9 @@ typedef struct{
 	// Landmarks
     int num_landmarks;				// The number of landmarks we have to traverse + 1 (the landmark where the train is). 
     int landmark_index;             // The current landmark
-    track_edge *edges;
-    track_node *landmarks; 
-    int *switches_state; 
+    track_edge *edges[ TRACK_MAX ];
+    track_node *landmarks[ TRACK_MAX ]; 
+    int switches_state[ NUM_SWITCHES ]; 
 } Train_route_data;
 
 struct Train_status_struct{
@@ -68,8 +70,6 @@ struct Train_status_struct{
 
 struct Train_update_request_struct{
 	int update_type; 
-	track_node *triggered_sensor; 
-	// TODO: Add the position to go to. 
 	Command cmd; 
 }; 
 

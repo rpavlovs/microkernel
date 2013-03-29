@@ -9,7 +9,7 @@ track_node *get_location_node( const char *location_name, track_node *track ){
 	track_node *ptr = track;
 
 	do{
-		if( strcmp( location_name, track->name ) == 0 ){
+		if( strcmp( location_name, ptr->name ) == 0 ){
 			node_found = 1; 
 			break; 
 		}
@@ -25,6 +25,11 @@ void train_manager(){
 	// Initialization
 	bwdebug( DBG_USR, TRAIN_MGR_DEBUG_AREA, "TRAIN_MANAGER: start" );
 	RegisterAs( TRAIN_MANAGER_NAME );
+
+	// Create other necessary tasks
+	int route_srv_tid = Create( ROUTE_SERVER_PRIORITY, route_server ); 
+	bwdebug( DBG_USR, TRAIN_MGR_DEBUG_AREA, 
+		"TRAIN_MANAGER: Created route server successfully [ route_srv_tid: %d ]", route_srv_tid );
 
 	int track_id, num_trains, sender_tid;
 	num_trains = 0;							// Currently there are no trains
@@ -51,6 +56,9 @@ void train_manager(){
 		init_trackb( track );
 	else
 		bwassert( 0, "TRAIN_MANAGER_SERVER: The track id must be valid (A or B)" ); 
+
+	// Initialize route server data
+	init_track( track ); 
 
 	init_reply.track = track; 
 	Reply( sender_tid, ( char * ) &init_reply, sizeof( init_reply ) );

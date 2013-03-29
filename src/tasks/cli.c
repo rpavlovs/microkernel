@@ -11,7 +11,6 @@ void init_server_list( Servers_tid_list *servers_list ){
 }
 
 void init_cli_data( CLI_data *cli_data, Servers_tid_list *servers_list ){
-	track_node *track; 
 	Train_mgr_init_msg init_msg;
 	Train_mgr_init_reply init_reply; 
 	int train_mgm_tid = Create( TRAIN_MGR_TASK_PRIORITY, train_manager ); 
@@ -22,7 +21,7 @@ void init_cli_data( CLI_data *cli_data, Servers_tid_list *servers_list ){
 
 	Send( train_mgm_tid, ( char * ) & init_msg, sizeof( init_msg ), 
 		( char * ) &init_reply, sizeof( init_reply ) );
-	track = init_reply.track; 
+	cli_data->track = init_reply.track; 
 
 	// TODO: TEMP -> ADD THE TRAIN DATA HERE. 
 	Train_manager_msg msg; 
@@ -218,9 +217,9 @@ int exec_gt( int train_id, const char *landmark_name, int offset, Servers_tid_li
 	// Send the message to the train server
 	int train_tid = get_train_tid( train_id, cli_data ); 
 	if ( train_tid < 0 )
-		return INVALID_TRAIN_ID; 
+		return INVALID_TRAIN_ID;
 
-	send_command( MOVE_TO_POSITION_CMD_TYPE, CMD_PARAM_NOT_REQUIRED, ( int ) track_node, train_tid );
+	send_command( MOVE_TO_POSITION_CMD_TYPE, ( int ) track_node, offset, train_tid );
 	return SUCCESS; 
 }
 

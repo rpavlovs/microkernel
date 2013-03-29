@@ -152,6 +152,139 @@ static const int Speed_acc_table[ NUM_SPEEDS ][ NUM_CALIBRATED_DISTANCES ][3] = 
 	}
 }; 
 
+static const int Speed_acc_table_group2[ NUM_SPEEDS ][ NUM_CALIBRATED_DISTANCES ][3] = { 
+	/* This array contains: 
+		1. Distance traveled in a short time
+		2. The moment when the stopping command was issued. 
+		3. The total time the trip took. 
+	*/
+
+	// Speed 1
+	{
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+	}, 
+
+	// Speed 2
+	{
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+	},
+
+	// Speed 3
+	{
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+	},
+
+	// Speed 4
+	{
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+	},
+
+	// Speed 5
+	{
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+	},
+
+	// Speed 6
+	{
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+	},
+
+	// Speed 7
+	{
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+	},
+
+	// Speed 8
+	{
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+	},
+
+	// Speed 9
+	{
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+	},
+
+	// Speed 10
+	{
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+	},
+
+	// Speed 11
+	{
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+	},
+
+	// Speed 12
+	{
+		{ 0, 1000, 0 },	// The stopping time is invented
+		{ 0, 2000, 0 },	// The stopping time is invented
+		{ 0, 3000, 0 },	// The stopping time is invented
+		{ 0, 4000, 0 },	// The stopping time is invented
+		{ 0, 5000, 0 },	// The stopping time is invented
+	},
+
+	// Speed 13
+	{
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+	},
+
+	// Speed 14
+	{
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+	}
+}; 
 
 // -------------------------------------------------------------------
 // Structs

@@ -8,7 +8,6 @@
 int initialization(){
 	// Create tasks
 	int sensor_server_tid = Create( SENSOR_SERVER_PRIORITY, sensors_server );
-	Create( SWITCHES_SERVER_PRIORITY, switchserver );
 	
 	// Clear the screen and position the cursor. 
 	printf( COM2, "\033[2J\033[;H" ); 

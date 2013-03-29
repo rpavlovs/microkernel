@@ -32,13 +32,25 @@ int request_new_path( Train_status *train_status, Train_server_data *server_data
 
 	// Returned data	
 	route_msg.route_found = &route_found;
-	route_msg.edges = &train_status->route_data.edges; 
 	route_msg.switches = train_status->route_data.switches_state;
 	route_msg.num_landmarks = &train_status->route_data.num_landmarks;
-	route_msg.landmarks = &train_status->route_data.landmarks;
+	route_msg.edges = ( track_edge ** ) train_status->route_data.edges; 
+	route_msg.landmarks = ( track_node ** ) train_status->route_data.landmarks;
 
 	Send( server_data->tasks_tids[ TR_ROUTE_SERVER_TID_INDEX ], 
 		( char * ) &route_msg, sizeof( route_msg ), 0, 0 ); 
+
+	// Temp
+	/*
+	int j; 
+	for ( j = 0; j < *route_msg.num_landmarks; j++ ){
+		//bwprintf( COM2, "%s:%d ", route_msg.landmarks[j]->name, route_msg.edges[j]->dist );
+		bwprintf( COM2, "%s:%d ", train_status->route_data.landmarks[j]->name, train_status->route_data.edges[j]->dist );
+	}
+
+	while( 1 )
+		;
+		*/
 
 	// 3. Make sure the route data state is correct
 	train_status->route_data.landmark_index = 0; 

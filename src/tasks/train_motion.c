@@ -19,6 +19,7 @@ void send_train_move_command( int tr_speed, Train_status *train_status, Train_se
 	bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, "TRAIN_SERVER: Sending TR command. [ train_id: %d speed: %d]", 
 		train_status->train_id, tr_speed );
 	send_command( TRAIN_CMD_TYPE, train_status->train_id, tr_speed, cmd_server_tid );
+	bwprintf( COM2, "SENDING TR [ TRAIN_ID: %d SPEED: %d ]", train_status->train_id, tr_speed ); 
 
 	int current_time = TimeInMs(); 
 	 
@@ -247,9 +248,9 @@ int get_straight_distance( Train_status *status, int *requires_reverse ){
         track_edge *edge = ( track_edge * ) &( status->route_data.edges[ landmark_index ] ); 
         track_node *landmark = ( track_node * ) &( status->route_data.landmarks[ landmark_index ] ); 
 
-        // The first edge distance must be added only if it has more than one landmark left in the route. 
+        // The first edge distance must be added only if it has more than one landmark left in the route.
         if ( landmark_index + 1 < num_landmarks )
-                total_straight_distance = status->route_data.edges[ landmark_index ].dist; 
+                total_straight_distance = status->route_data.edges[ landmark_index ]->dist; 
 
         // Remove the distance that the train has already moved from the initial landmark. 
         total_straight_distance -= status->current_position.offset; 
@@ -258,8 +259,8 @@ int get_straight_distance( Train_status *status, int *requires_reverse ){
         // NOTE: Here we only count FULL edges; the final offset will be considered later. That's the reason
         // why we are comparing the num_landmarks to landmark_index + 2. 
         while( landmark_index + 2 < num_landmarks ){
-                landmark = ( track_node * ) &( status->route_data.landmarks[ landmark_index + 1 ] ); 
-                edge = ( track_edge * ) &( status->route_data.edges[ landmark_index + 1 ] ); 
+                landmark = status->route_data.landmarks[ landmark_index + 1 ]; 
+                edge = status->route_data.edges[ landmark_index + 1 ]; 
 
                 // Is the next node in the edge the reverse of the current landmark?
                 if ( landmark->reverse == edge->dest ){
@@ -267,7 +268,7 @@ int get_straight_distance( Train_status *status, int *requires_reverse ){
                         break; 
                 }
 
-                total_straight_distance = edge->dist; 
+                total_straight_distance += edge->dist; 
                 landmark_index++; 
         }
 
@@ -293,7 +294,11 @@ int get_straight_distance( Train_status *status, int *requires_reverse ){
   - The best speed to use to reach a requested location. It also says if it is a "short" or
     "long" distance. 
 */
-void calculate_speed_to_use( Train_status *status, Calibration_data *calibration_data ){
+int calculate_speed_to_use( Train_status *status, Calibration_data *calibration_data ){
+
+	bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, 
+		"TRAIN_MOTION: Starting calculation of speed to use. [ train_id: %d ]", status->train_id );
+
 	// Initialization
 	int speed_to_use, index, speed_found, distance_in_speed; 
 	Speed_calibration_data *speed_data; 
@@ -346,7 +351,6 @@ void calculate_speed_to_use( Train_status *status, Calibration_data *calibration
                         index--;
 
                 // TODO: If the distance is not completely precise, should we calculate an interpolation? 
-				status->motion_data.train_speed = speed_to_use + 1; 
             }
         }
     }
@@ -363,10 +367,11 @@ void calculate_speed_to_use( Train_status *status, Calibration_data *calibration
                         speed_found = 1; 
         }
 
-		status->motion_data.train_speed = speed_to_use + 1; 
-		bwassert( status->motion_data.train_speed > 0, 
+		bwassert( speed_to_use + 1 > 0, 
                 "TRAIN_MOTION: calculate_speed_to_use -> The train must move; the speed cannot be less than 1." ); 
     }
+
+	return speed_to_use + 1; 
 }
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -443,9 +448,9 @@ void update_train_position_landmark( int distance_since_update, Train_status *tr
 
 		if( train_status->train_state == TRAIN_STATE_MOVE_TO_GOAL ){
             // There's a goal, so update it's landmark index. 
-            train_status->route_data.landmark_index++;
-            bwassert( train_status->route_data.landmark_index < train_status->route_data.num_landmarks, 
-                    "TRAIN_MOTION: update_train_position -> The landmark index must be less than the num of landmarks." ); 
+			if ( train_status->route_data.landmark_index < train_status->route_data.num_landmarks ){
+				train_status->route_data.landmark_index++;
+			}
         }
 
         train_status->current_position.offset = distance_from_landmark - distance_to_landmark; 
@@ -496,9 +501,8 @@ void update_train_status( Train_update_request *update_request, Train_status *tr
 				else{
 					int speed_to_use = 0; 
 					if ( train_status->train_state == TRAIN_STATE_MOVE_TO_GOAL ){
-						calculate_speed_to_use( train_status, &server_data->calibration_data ); 
-						speed_to_use = train_status->motion_data.train_speed; 
-						send_train_move_command( speed_to_use, train_status, server_data );  
+						speed_to_use = calculate_speed_to_use( train_status, &server_data->calibration_data ); 
+						send_train_move_command( speed_to_use, train_status, server_data );
 					}
 					else if ( train_status->train_state == TRAIN_STATE_MOVE_FREE && train_status->motion_data.original_train_speed != 0 ){
 						speed_to_use = train_status->motion_data.original_train_speed; 
@@ -509,7 +513,7 @@ void update_train_status( Train_update_request *update_request, Train_status *tr
 			break; 
         case TRAIN_ACCELERATING:
 		case TRAIN_CONSTANT_SPEED:
-		case TRAIN_DEACCELERATING:
+		//case TRAIN_DEACCELERATING:
 			if ( train_status->train_state == TRAIN_STATE_MOVE_TO_GOAL ){
 				// Should the train start de-accelerating?
 				stop_train = 0;
@@ -526,7 +530,7 @@ void update_train_status( Train_update_request *update_request, Train_status *tr
 					int stopping_distance = server_data->calibration_data.speed_data[ train_status->motion_data.train_speed - 1 ].stopping_distance; 
 
                     // TODO: Should we add a buffer here, so that it starts de-accelerating before? 
-                    if ( distance_to_travel <= stopping_distance )
+					if ( train_status->distance_since_speed_change >  distance_to_travel - stopping_distance )
                             stop_train = 1; 
                  }
 
@@ -581,10 +585,12 @@ void handle_update_request( Train_update_request *update_request, Train_status *
 		switch( cmd_type ){
 			case TRAIN_CMD_TYPE:
 				train_status->motion_data.original_train_speed = 0;
+				train_status->motion_data.distance_type = LONG_DISTANCE; 
 				send_train_move_command( update_request->cmd.param, train_status, server_data ); 
 				break; 
 			case REVERSE_CMD_TYPE:
 				train_status->motion_data.original_train_speed = train_status->motion_data.train_speed; 
+				train_status->motion_data.distance_type = LONG_DISTANCE; 
 				send_train_move_command( TRAIN_STOP_CMD_SPEED, train_status, server_data );
 				train_status->is_reversing = 1; 
 				break; 
@@ -599,11 +605,18 @@ void handle_update_request( Train_update_request *update_request, Train_status *
 		// 1. Erase previous goal information 
 		initialize_goal( train_status ); 
 
-		// 2. Set the state of the train to GOAL
-		train_status->train_state = TRAIN_STATE_MOVE_TO_GOAL; 
+		// 2. Get a new path
+		// NOTE: For the edge we always consider straight line. If the user wants to move to a curve branch, 
+		// then he needs to give another landmark. 
+		train_status->current_goal.landmark = ( track_node * ) update_request->cmd.element_id;	// CAREFUL!!!
+		train_status->current_goal.offset = update_request->cmd.param;
+		train_status->current_goal.edge = &( train_status->current_goal.landmark->edge[ DIR_AHEAD ] ); 
 
-		// 3. Get a new path
-		request_new_path( train_status, server_data );
+		int path_found = request_new_path( train_status, server_data );
+		bwassert( path_found, "TRAIN_MOTION: Path couldn't be found" ); 
+
+		// 3. Now the train has a goal. Update the status accordingly.
+		train_status->train_state = TRAIN_STATE_MOVE_TO_GOAL; 
 
         // 4. Update the detective. 
         // TODO: Update the detective to only track the sensors in the new route.

@@ -21,7 +21,7 @@ int create_courier( int client_id, int notifier_id, int message_type_client, int
 
 	// Create the courier
 	courier_tid = Create( COURIER_TASK_PRIORITY, courier_exec ); 
-	bwdebug( DBG_USR, COURIER_DEBUG_AREA, "Courier created [ tid: %d client_tid: %d notifier_tid: %d ]", 
+	bwdebug( DBG_USR, COURIER_DEBUG_AREA, "COURIER: Courier created [ tid: %d client_tid: %d notifier_tid: %d ]", 
 		courier_tid, client_id, notifier_id ); 
 
 	// Provide the courier with initialization info.
@@ -37,14 +37,19 @@ void courier_exec(){
 	Courier_msg msg; 
 	Courier_init_msg init_msg; 
 
+	bwdebug( DBG_USR, COURIER_DEBUG_AREA, "COURIER: Waiting for initialization info" ); 
 	Receive( &tid, ( char * ) &init_msg, sizeof( init_msg ) );
 	Reply( tid, 0, 0 ); 
+	bwdebug( DBG_USR, COURIER_DEBUG_AREA, "COURIER: Received init. info [ sender_tid: %d ]", tid ); 
+
 	client_tid = init_msg.client_tid; 
 	notifier_tid = init_msg.notifier_tid; 
 
 	FOREVER{
 		// Will always fetch something from the notifier, and send it to the client. 
+		bwdebug( DBG_USR, COURIER_DEBUG_AREA, "COURIER: Sending request for data [ notifier_tid: %d ]", tid );
 		reply_length = Send( notifier_tid, ( char * ) &msg, sizeof( msg ), courier_buffer, COURIER_BUFFER_SIZE );
 		Send( client_tid, courier_buffer, reply_length, 0, 0 );
+		bwdebug( DBG_USR, COURIER_DEBUG_AREA, "COURIER: Returned data to client [ client_tid: %d ]", client_tid );
 	}
 }

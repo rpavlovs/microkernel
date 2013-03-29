@@ -181,13 +181,13 @@ void init_node_neighbours( track_node* node ){
 //      1 - when the edge IS found
 int get_edge_by_nodes(
         track_node* src, track_node* dest,
-        track_edge* edge){
+        track_edge **edge){
     
     int i;
     for( i = 0; i < 2; i++ ){
         if( src->edge[i].dest == dest ){
             //Edge is found
-            edge = &(src->edge[i]);
+            *edge = &(src->edge[i]);
             return 1;
         }
     }

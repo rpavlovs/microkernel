@@ -128,7 +128,7 @@ void command_notifier(){
 						Putc( COM1, 34 );
 					}
 					else{
-						bwassert( 0, "COMMAND SERVER: Invalid switch position. " ); 
+						bwassert( 0, "COMMAND SERVER: Invalid switch position. [ pos: %c ]", requested_pos ); 
 					}
 					Putc( COM1, command.element_id );
 					

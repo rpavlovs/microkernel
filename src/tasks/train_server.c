@@ -260,7 +260,6 @@ void train_server(){
 			}
 			else if ( cmd_type == MOVE_TO_POSITION_CMD_TYPE ){
 				// A command was made to make the train move to a particular location
-				bwdebug( DBG_SYS, TEMP_DEBUG_AREA, "TRAIN_SERVER: Received cmd change request" );
 				update_request.update_type = CHANGE_GOAL_UPDATE; 
 				update_request.cmd = cmd_request.cmd;
 			}

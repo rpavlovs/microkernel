@@ -157,7 +157,7 @@ void switchserver(){
 			case QUERY_CMD_REQUEST:
 				if( cmd_request.cmd.cmd_type == SWITCH_STATE_CMD_TYPE ){
 
-					// Query the position of one switch
+					// Query the position of one switch 
 					bwdebug( DBG_USR, SWITCHES_SERVER_DEBUG_AREA, "SWITCHES SERVER: Received query command from [sender_tid: %d]",
 						sender_tid ); 
 					query_msg_reply.switch_id = cmd_request.cmd.element_id; 

@@ -13,7 +13,8 @@ void send_train_move_command( int tr_speed, Train_status *train_status, Train_se
 
 	// Is velocity enabled?
 	if ( tr_speed != TRAIN_STOP_CMD_SPEED && !server_data->calibration_data.speed_data[ tr_speed - 1 ].velocity_enabled )
-		bwassert( 0, "TRAIN_MOTION: Velocity not enabled." ); 
+		bwassert( 0, "TRAIN_MOTION: Velocity not enabled. [ speed: %d distance_type: %d ]", 
+			tr_speed, train_status->motion_data.distance_type ); 
 
 	// Send the command to the server
 	bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, "TRAIN_SERVER: Sending TR command. [ train_id: %d speed: %d]", 
@@ -308,8 +309,9 @@ int calculate_speed_to_use( Train_status *status, Calibration_data *calibration_
     int total_straight_distance = get_straight_distance( status, &requires_reverse );
     if ( total_straight_distance <= 0 ){
 		// The train doesn't have to move. 
-		status->motion_data.distance_type = SHORT_DISTANCE;
-		status->motion_data.train_speed = 0; 
+		//status->motion_data.distance_type = SHORT_DISTANCE;
+		//status->motion_data.train_speed = 0; 
+		return 0; 
     }
 
     // Set the distance that this speed will cover. 
@@ -359,11 +361,13 @@ int calculate_speed_to_use( Train_status *status, Calibration_data *calibration_
         speed_to_use = MAX_SPEED; 
         speed_found = 0;
 
+		int distance_to_travel; 
         while( speed_to_use > 0 && !speed_found ){
                 // Iterate from the highest speed to the lowest
                 speed_data = &( calibration_data->speed_data[ --speed_to_use ] ); 
 
-                if ( speed_data->stopping_distance + speed_data->distance_during_acceleration < total_straight_distance )
+				distance_to_travel = speed_data->stopping_distance + speed_data->distance_during_acceleration;
+				if ( speed_data->velocity_enabled && distance_to_travel < total_straight_distance )
                         speed_found = 1; 
         }
 
@@ -477,44 +481,54 @@ void update_train_status( Train_update_request *update_request, Train_status *tr
 	int stop_train = 0; 
 	switch( train_status->motion_state ){
 		case TRAIN_STILL:
-			if ( train_status->is_reversing ){
-				// Send the reverse command
-				send_reverse_command( train_status, server_data ); 
-
-				// The reversing is completed. 
-				train_status->is_reversing = 0; 
-			}
-			else if ( has_train_arrived( train_status ) ){
+			if ( has_train_arrived( train_status ) ){
 				// The train has reached its destination
                 // Remove the current goal
 				initialize_goal( train_status ); 
 
 				// TODO: Remove the sensor tracking of this part of the track 
+				break;
 			}
-			else{
-				// The train hasn't started moving. 
-				if ( original_train_direction != train_status->train_direction ){
-					// The train needs to move in the opposite direction -> execute reverse.
-					train_status->train_direction = original_train_direction;	// TODO: Check if Pavel is chaning the direction. If not remove this hack. 
-					send_reverse_command( train_status, server_data ); 
+
+			int cmd_delay = 0; 
+			if ( train_status->is_reversing || original_train_direction != train_status->train_direction ){
+				if ( original_train_direction != train_status->train_direction )
+					train_status->train_direction = original_train_direction;		// Pavel is never changing the direction himself, so this shouldn't happen.
+
+				// Send the reverse command
+				send_reverse_command( train_status, server_data ); 
+
+				// The reversing is completed. 
+				train_status->is_reversing = 0; 
+
+				// TODO: Add delay added by the reverse command. 
+			}
+
+			int speed_to_use = 0; 
+			if ( train_status->train_state == TRAIN_STATE_MOVE_TO_GOAL ){
+				speed_to_use = calculate_speed_to_use( train_status, &server_data->calibration_data ); 
+
+				// Is there a switch to move?  -> Add the delay of moving a switch. 
+				int switch_moved = check_next_sw_pos( speed_to_use, train_status, server_data );
+				if ( switch_moved ){
+					// TODO: Add delay added by the switch command. 
 				}
-				else{
-					int speed_to_use = 0; 
-					if ( train_status->train_state == TRAIN_STATE_MOVE_TO_GOAL ){
-						speed_to_use = calculate_speed_to_use( train_status, &server_data->calibration_data ); 
-						send_train_move_command( speed_to_use, train_status, server_data );
-					}
-					else if ( train_status->train_state == TRAIN_STATE_MOVE_FREE && train_status->motion_data.original_train_speed != 0 ){
-						speed_to_use = train_status->motion_data.original_train_speed; 
-						send_train_move_command( speed_to_use, train_status, server_data );  
-					}
-				}
+				
+				send_train_move_command( speed_to_use, train_status, server_data );
+			}
+			else if ( train_status->train_state == TRAIN_STATE_MOVE_FREE && train_status->motion_data.original_train_speed != 0 ){
+				speed_to_use = train_status->motion_data.original_train_speed; 
+				send_train_move_command( speed_to_use, train_status, server_data );  
 			}
 			break; 
         case TRAIN_ACCELERATING:
 		case TRAIN_CONSTANT_SPEED:
 		//case TRAIN_DEACCELERATING:
 			if ( train_status->train_state == TRAIN_STATE_MOVE_TO_GOAL ){
+				// Should we move a switch? 
+				// TODO: Do we need to check the switches during deacceleration too? 
+				check_next_sw_pos( train_status->motion_data.train_speed, train_status, server_data );
+
 				// Should the train start de-accelerating?
 				stop_train = 0;
 				int current_time; 

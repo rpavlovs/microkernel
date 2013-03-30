@@ -200,12 +200,12 @@ void load_calibration_data( Calibration_data *calibration_data, int train_number
 			calibration_data->speed_data[4].calibrated_distances = ( int ** ) Speed_acc_table_group2[4];
 
 			// Speed 6
-			calibration_data->speed_data[5].velocity_enabled = 0;
+			calibration_data->speed_data[5].velocity_enabled = 1;
 			calibration_data->speed_data[5].velocity = 0.252198937;
-			calibration_data->speed_data[5].time_to_constant_speed = 0; 
-			calibration_data->speed_data[5].distance_during_acceleration = 0; 
-			calibration_data->speed_data[5].stopping_distance = 0; 
-			calibration_data->speed_data[5].stopping_time = 0; 
+			calibration_data->speed_data[5].time_to_constant_speed = 2804;			// Check if this is correct 
+			calibration_data->speed_data[5].distance_during_acceleration = 299;		// Check if this is correct
+			calibration_data->speed_data[5].stopping_distance = 299; 
+			calibration_data->speed_data[5].stopping_time = 2804; 
 			calibration_data->speed_data[5].calibrated_distances = ( int ** ) Speed_acc_table_group2[5];
 
 			// Speed 7
@@ -227,12 +227,12 @@ void load_calibration_data( Calibration_data *calibration_data, int train_number
 			calibration_data->speed_data[7].calibrated_distances = ( int ** ) Speed_acc_table_group2[7];
 
 			// Speed 9
-			calibration_data->speed_data[8].velocity_enabled = 0;
+			calibration_data->speed_data[8].velocity_enabled = 1;
 			calibration_data->speed_data[8].velocity = 0.4051387;
-			calibration_data->speed_data[8].time_to_constant_speed = 0; 
-			calibration_data->speed_data[8].distance_during_acceleration = 0; 
-			calibration_data->speed_data[8].stopping_distance = 0; 
-			calibration_data->speed_data[8].stopping_time = 0; 
+			calibration_data->speed_data[8].time_to_constant_speed = 3415;			// Check if this is correct 
+			calibration_data->speed_data[8].distance_during_acceleration = 481;		// Check if this is correct 
+			calibration_data->speed_data[8].stopping_distance = 481; 
+			calibration_data->speed_data[8].stopping_time = 3415; 
 			calibration_data->speed_data[8].calibrated_distances = ( int ** ) Speed_acc_table_group2[8];
 
 			// Speed 10

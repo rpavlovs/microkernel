@@ -33,4 +33,6 @@ int get_short_distance_total_time( int train_speed, Speed_calibration_data *spee
 
 track_node *get_prev_node( Train_position *train_pos );
 
+int check_next_sw_pos( int current_speed, Train_status *train_status, Train_server_data *server_data ); 
+
 #endif

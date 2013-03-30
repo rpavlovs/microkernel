@@ -22,7 +22,7 @@
 
 #define TRAIN_STOP_CMD_SPEED				0
 
-#define REVERSE_DEFAULT_OFFSET				100				// TODO: Review this value
+#define REVERSE_DEFAULT_OFFSET				0				// TODO: Review this value
 
 // ----------------------------------------------------------------------------------------------
 // Methods

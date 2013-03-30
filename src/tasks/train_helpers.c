@@ -173,8 +173,7 @@ int check_next_sw_pos( int speed_to_use, Train_status *train_status, Train_serve
 				real_sw_pos = query_msg_reply.switch_position;
 			}
 			else{
-				// Is the position of the switch in the direction the train is coming from? 
-				bwassert( edge->dist >= 0, "TRAIN_HELPERS: check_next_sw_pos -> The edges must always be defined." ); 
+				// Is the position of the switch in the direction the train is coming from?
 				expected_sw_pos = ( node->reverse->edge[DIR_STRAIGHT].reverse == edge ) ? SWITCH_STRAIGHT_POS : SWITCH_CURVE_POS; 
 				real_sw_pos = query_msg_reply.switch_position; 
 			}
@@ -193,8 +192,8 @@ int check_next_sw_pos( int speed_to_use, Train_status *train_status, Train_serve
 			}
 		}
 
-		if ( landmark_index + 1 < train_status->route_data.num_landmarks )
-			distance_to_check -= edge->dist; 
+		if ( landmark_index + 1 < train_status->route_data.num_landmarks && edge )
+			distance_to_check -= edge->dist;
 		landmark_index++; 
 	}
 

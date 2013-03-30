@@ -240,47 +240,48 @@ int get_straight_distance( Train_status *status, int *requires_reverse ){
         // Initialization
         int is_reverse = 0; 
         int total_straight_distance = 0; 
+		track_edge *edge; 
+        track_node *landmark, *next_landmark; 
         int landmark_index = status->route_data.landmark_index; 
         int num_landmarks = status->route_data.num_landmarks; 
 
         bwassert( landmark_index < num_landmarks, 
                 "TRAIN_MOTION: get_straight_distance -> The landmark index must be less than the num of landmarks." ); 
 
-        track_edge *edge = ( track_edge * ) &( status->route_data.edges[ landmark_index ] ); 
-        track_node *landmark = ( track_node * ) &( status->route_data.landmarks[ landmark_index ] ); 
-
-        // The first edge distance must be added only if it has more than one landmark left in the route.
-        if ( landmark_index + 1 < num_landmarks )
-                total_straight_distance = status->route_data.edges[ landmark_index ]->dist; 
-
         // Remove the distance that the train has already moved from the initial landmark. 
         total_straight_distance -= status->current_position.offset; 
 
         // Get the distance of the next landmarks without reverse (reverse would require the train to stop).
-        // NOTE: Here we only count FULL edges; the final offset will be considered later. That's the reason
-        // why we are comparing the num_landmarks to landmark_index + 2. 
-        while( landmark_index + 2 < num_landmarks ){
-                landmark = status->route_data.landmarks[ landmark_index + 1 ]; 
-                edge = status->route_data.edges[ landmark_index + 1 ]; 
+        // NOTE: Here we only count FULL edges; the final offset will be considered later.
+        while( landmark_index + 1 < num_landmarks ){
 
-                // Is the next node in the edge the reverse of the current landmark?
-                if ( landmark->reverse == edge->dest ){
-                        is_reverse = 1; 
-                        break; 
-                }
+			edge = status->route_data.edges[ landmark_index ];
+            landmark = status->route_data.landmarks[ landmark_index ]; 
+			next_landmark = status->route_data.landmarks[ landmark_index + 1 ];
 
-                total_straight_distance += edge->dist; 
-                landmark_index++; 
+			// Is there a reverse? 
+			if ( next_landmark->reverse == landmark ){
+				is_reverse = 1;
+				break; 
+			}
+	
+			total_straight_distance += edge->dist;
+            landmark_index++; 
         }
 
         // Add the offset from the last landmark
         if ( is_reverse ){
-                total_straight_distance += REVERSE_DEFAULT_OFFSET; 
+			total_straight_distance += REVERSE_DEFAULT_OFFSET;
         }
         else{
-                // The offset is the offset of the goal. 
-                total_straight_distance += status->current_goal.offset; 
+			// The offset is the offset of the goal. 
+			// NOTE: This offset is only added if we need to travel in a straight line to the goal
+			total_straight_distance += status->current_goal.offset; 
         }
+
+		// In case the only landmarks were for a reverse, then the distance to travel is 0. 
+		if ( total_straight_distance < 0 )
+			total_straight_distance = 0; 
 
         *requires_reverse = is_reverse; 
         return total_straight_distance; 
@@ -313,6 +314,8 @@ int calculate_speed_to_use( Train_status *status, Calibration_data *calibration_
 		//status->motion_data.train_speed = 0; 
 		return 0; 
     }
+
+	bwdebug( DBG_USR, TEMP_DEBUG_AREA, "TOTAL_STRAIGHT_DISTANCE: %d", total_straight_distance ); 
 
     // Set the distance that this speed will cover. 
 	status->motion_data.distance_to_travel = total_straight_distance; 
@@ -514,6 +517,9 @@ void update_train_status( Train_update_request *update_request, Train_status *tr
 					// TODO: Add delay added by the switch command. 
 				}
 				
+				// TODO: Before sending the actual command ask for a reservation ( acceleration_dist + stopping_dist )
+				// -- If we are handed the reservation move, otherwise wait. 
+
 				send_train_move_command( speed_to_use, train_status, server_data );
 			}
 			else if ( train_status->train_state == TRAIN_STATE_MOVE_FREE && train_status->motion_data.original_train_speed != 0 ){
@@ -525,6 +531,8 @@ void update_train_status( Train_update_request *update_request, Train_status *tr
 		case TRAIN_CONSTANT_SPEED:
 		//case TRAIN_DEACCELERATING:
 			if ( train_status->train_state == TRAIN_STATE_MOVE_TO_GOAL ){
+				// Calculate what's going to happen before the next 
+
 				// Should we move a switch? 
 				// TODO: Do we need to check the switches during deacceleration too? 
 				check_next_sw_pos( train_status->motion_data.train_speed, train_status, server_data );

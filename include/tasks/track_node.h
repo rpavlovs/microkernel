@@ -1,6 +1,10 @@
 #ifndef TRACK_NODE_H
 #define	TRACK_NODE_H
 
+#define MAX_CHARS_PER_EDGE  20
+#define POS                 0
+#define COL                 1
+
 typedef enum {
   NODE_NONE,
   NODE_SENSOR,
@@ -23,6 +27,8 @@ struct track_edge {
   track_node *src, *dest;
   int dist;             /* in millimetres */
   
+  int ui_pc[2]; // ui position and column
+
   //Reservation algorithm
   int reservers[3];     //TODO: refactor reserved[TRAINS_NUMBER]
   int start[3];         //TODO: refactor start[TRAINS_NUMBER]

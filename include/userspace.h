@@ -30,6 +30,7 @@
 #include "tasks/track_helpers.h"
 #include "tasks/track_node.h"
 #include "tasks/track_data.h"
+#include "tasks/track_display.h"
 
 // Others
 #include "tasks/calibration_task.h"

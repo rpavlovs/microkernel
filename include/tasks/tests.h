@@ -31,4 +31,6 @@ void task_test_uart2();
 
 void test_sensors_server(); 
 
+void test_track_display();
+
 #endif

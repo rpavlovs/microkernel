@@ -27,7 +27,7 @@ struct track_edge {
   track_node *src, *dest;
   int dist;             /* in millimetres */
   
-  int ui_pos, ui_col; // ui position and column
+  int ui_line, ui_col, ui_len; // ui start line, column and length
 
   //Reservation algorithm
   int reservers[3];     //TODO: refactor reserved[TRAINS_NUMBER]

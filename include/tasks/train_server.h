@@ -1,6 +1,8 @@
 #ifndef __TRAIN_SERVER_H__
 #define __TRAIN_SERVER_H__
 
+#include "train_data_structs.h"
+
 // ----------------------------------------------------------------------------------------------
 // Constants
 // ----------------------------------------------------------------------------------------------
@@ -14,6 +16,7 @@
 #define TR_SENSOR_NOTIFIER_TID_INDEX			5
 #define TR_WAIT_NOT_COURIER_TID_INDEX			6
 #define TR_SENSOR_NOT_COURIER_TID_INDEX			7
+#define TR_CMD_NOT_TID_INDEX					8
 
 // Train update types
 #define NORMAL_UPDATE							1		// Request to only update the current train information
@@ -36,5 +39,7 @@
 // Methods
 // ----------------------------------------------------------------------------------------------
 void train_server(); 
+
+void initialize_train_cmd_notifier( Train_server_data *server_data );
 
 #endif

@@ -19,6 +19,7 @@
 #include "tasks/train_manager_server.h"
 //#include "tasks/train_data_structs.h"
 #include "tasks/train_motion.h"
+#include "tasks/train_cmd_notifier.h"
 
 // Servers
 #include "tasks/route_server.h"

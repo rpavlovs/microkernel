@@ -59,6 +59,11 @@ int request_new_path( Train_status *train_status, Train_server_data *server_data
 	return route_found; 
 }
 
+int reserve_distance( int distance_to_reserve, Train_status *train_status, Train_server_data *server_data ){
+	// TODO: Add the reservation code here. 
+	return 1; 
+}
+
 void print_train_status( Train_status *train_status ){
 	// Initialization
 	bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, 
@@ -80,7 +85,7 @@ void print_train_status( Train_status *train_status ){
 	temp_buffer += restoreCursor( temp_buffer );
 
 	// Send the string to UART 2. 
-	Putstr( COM2, buff );
+	//Putstr( COM2, buff );
 }
 
 /*
@@ -89,7 +94,7 @@ void print_train_status( Train_status *train_status ){
 int reverse_current_position( Train_status *train_status ){
 
 	// 1. Change the landmark from the source to the destination. 
-	train_status->current_position.landmark = train_status->current_position.edge->dest; 
+	train_status->current_position.landmark = train_status->current_position.edge->dest->reverse; 
         
 	// 2. Update the offset. 
 	int offset = train_status->current_position.offset; 
@@ -103,6 +108,20 @@ int reverse_current_position( Train_status *train_status ){
 	return 0; 
 }
 
+void clear_train_motion_data( Train_status *train_status ){
+	// TODO: Check if this is correct. 
+	train_status->is_reversing = 0; 
+	train_status->distance_since_speed_change = 0; 
+	train_status->distance_before_deacceleration = 0; 
+
+	train_status->motion_data.train_speed = 0; 
+	train_status->motion_data.current_error = 0; 
+	train_status->motion_data.distance_to_travel = 0; 
+	train_status->motion_data.original_train_speed = 0; 
+	train_status->motion_data.distance_type = LONG_DISTANCE; 
+	train_status->motion_data.time_since_deacceleration = 0; 
+}
+
 void initialize_goal( Train_status *train_status ){
 	// If there was a goal, erase it. 
 	train_status->train_state = TRAIN_STATE_MOVE_FREE; 
@@ -110,19 +129,39 @@ void initialize_goal( Train_status *train_status ){
 	// Make sure that the current "goal" is empty
 	train_status->current_goal.edge = 0; 
     train_status->current_goal.landmark = 0; 
-    train_status->current_goal.offset = 0; 
+    train_status->current_goal.offset = 0;
+
+	clear_train_motion_data( train_status ); 
 }
 
-int check_next_sw_pos( int speed_to_use, Train_status *train_status, Train_server_data *server_data ){
-	bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, "TRAIN_HELPERS: check_next_sw_pos Checking if a sw needs to be switched" );
+int requires_reversing( Train_status *train_status ){
+	track_node *current_node, *next_node;
 
+	int num_landmarks = train_status->route_data.num_landmarks; 
+	int landmarks_index = train_status->route_data.landmark_index; 
+
+	if ( landmarks_index + 1 < num_landmarks ){
+		// Two nodes are required to mark reverse. 
+		current_node = train_status->route_data.landmarks[ landmarks_index ];
+		next_node = train_status->route_data.landmarks[ landmarks_index + 1 ];
+
+		if ( current_node->reverse == next_node )
+			return 1; 
+	}
+
+	return 0; 
+}
+
+int check_next_sw_pos( int distance_to_check, Train_status *train_status, Train_server_data *server_data ){
+	bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, "TRAIN_HELPERS: check_next_sw_pos Checking if a sw needs to be switched" );
+	
 	// Initialization
 	char temp_str[10];
 	track_node *node; 
 	track_edge *edge; 
 	char expected_sw_pos, real_sw_pos; 
-	int num_sw_changed, distance_to_check, stopping_distance;
-	int distance_to_sw, landmark_index, curr_sw_index; 
+	int num_sw_changed;
+	int landmark_index, curr_sw_index; 
 	
 	// Messages
 	Cmd_request cmd_request;
@@ -137,12 +176,6 @@ int check_next_sw_pos( int speed_to_use, Train_status *train_status, Train_serve
 
 	// Servers
 	int sw_server_tid = server_data->tasks_tids[TR_SWITCH_SERVER_TID_INDEX]; 
-
-	// Get the distance that needs to be checked. 
-	// NOTE: When we add reservation the distance will be distance reserved, not stopping distance
-	stopping_distance = server_data->calibration_data.speed_data[ speed_to_use - 1 ].stopping_distance;
-	distance_to_check = train_status->motion_data.distance_to_travel - train_status->distance_since_speed_change;
-	distance_to_check = ( distance_to_check > stopping_distance ) ? stopping_distance : distance_to_check; 
 	
 	// Remove the distance that we have already traveled. 
 	landmark_index = train_status->route_data.landmark_index;
@@ -150,13 +183,17 @@ int check_next_sw_pos( int speed_to_use, Train_status *train_status, Train_serve
 
 	// Is there a switch in our route within the reserved distance?
 	landmark_index++; 
+	//bwprintf( COM2, "--------------------------------------------------------------------\n" ); 
+	//bwprintf( COM2, "CHECK_NEXT_SW_POS: distance_to_check: %d current_landmark: %s pos: %d -\n", 
+	//	distance_to_check, train_status->current_position.landmark->name, train_status->current_position.offset ); 
 	while( distance_to_check > 0 && landmark_index < train_status->route_data.num_landmarks ){
-
+		//bwdebug( DBG_USR, TEMP_DEBUG_AREA, "SW num_landmarks: %d landmark_index: %d distance_to_check: %d", 
+		//	train_status->route_data.num_landmarks, landmark_index, distance_to_check ); 
 		// Get the next node and edge
 		node = train_status->route_data.landmarks[landmark_index]; 
 		edge = train_status->route_data.edges[ landmark_index - 1 ];
 
-		// The switch can be represented by two types of nodes: BRANCH and MERGE.
+		// A switch can be represented by two types of nodes: BRANCH and MERGE.
 		// Both need to be considered
 		if ( node->type == NODE_BRANCH || node->type == NODE_MERGE ){
 			// Query the current state of the switch
@@ -184,6 +221,9 @@ int check_next_sw_pos( int speed_to_use, Train_status *train_status, Train_serve
 					"TRAIN_HELPERS: check_next_sw_pos -> SW needs to be changed [ sw_id: %d current_pos: %c pos: %c ]", 
 					switch_id, real_sw_pos, expected_sw_pos );
 
+				//bwprintf( COM2, "SW_POS: SW needs change [ sw_id: %d current_pos: %c pos: %c NODE: %d Index: %d ]\n", 
+				//	switch_id, real_sw_pos, expected_sw_pos, node->type, landmark_index ); 
+
 				change_request.cmd.element_id = switch_id;
 				change_request.cmd.param = expected_sw_pos; 
 				Send( sw_server_tid, ( char * ) &change_request, sizeof( change_request ), 0, 0 ); 
@@ -192,11 +232,12 @@ int check_next_sw_pos( int speed_to_use, Train_status *train_status, Train_serve
 			}
 		}
 
+		edge = train_status->route_data.edges[ landmark_index ];
 		if ( landmark_index + 1 < train_status->route_data.num_landmarks && edge )
 			distance_to_check -= edge->dist;
 		landmark_index++; 
 	}
-
+	
 	return num_sw_changed; 
 }
 
@@ -222,4 +263,91 @@ track_node *get_prev_node( Train_position *train_pos ){
 	// If the track node is an enter there's no previous node.
 	// If the track node is a merge, there's no way of knowing which is the right path. 
 	return 0; 
+}
+
+/*
+	This method returns the moment in time when a train will reach constant speed. 
+*/
+int get_time_to_constant_speed( Train_status *train_status, Train_server_data *server_data ){
+	int time_to_speed, train_speed; 
+	
+	time_to_speed = 0; 
+	train_speed = train_status->motion_data.train_speed;
+	if ( train_speed > 0 ){
+		time_to_speed = 
+			server_data->calibration_data.speed_data[ train_speed - 1 ].time_to_constant_speed; //+ train_status->time_speed_change;
+
+		bwassert( time_to_speed > 0, 
+			"TRAIN_HELPERS: time_to_reach_constant_speed -> The time to get a constant speed must always be more than 0" ); 
+	}
+
+	return time_to_speed; 
+}
+
+int get_time_to_start_deaccelerating( Train_status *train_status, Train_server_data *server_data ){
+	// Variables declaration
+	int result; 
+	int train_speed, distance_to_travel, stopping_distance, acceleration_distance;
+
+	float distance_in_constant_speed, time_in_constant_speed; 
+
+	// When is the train supposed to start de-accelerating? 
+	train_speed = train_status->motion_data.train_speed;
+	distance_to_travel = train_status->motion_data.distance_to_travel; 
+	stopping_distance = get_train_stopping_distance( train_speed, server_data ); 
+	acceleration_distance = get_train_acceleration_distance( train_speed, server_data );
+	distance_in_constant_speed = distance_to_travel - stopping_distance - acceleration_distance;
+	time_in_constant_speed = get_time_for_distance( distance_in_constant_speed, train_speed, server_data );
+	result = round_decimal_up( get_time_to_constant_speed( train_status, server_data ) + time_in_constant_speed );
+
+	/*
+	bwprintf( COM2, "TIME_TO_DEACCELERATE ->\n" ); 
+	bwprintf( COM2, "   -dist_travel: %d speed_ch: %d \n   -stop_dist: %d dist_csp: %d \n", 
+		distance_to_travel, train_status->time_speed_change, stopping_distance, ( int ) distance_in_constant_speed ); 
+	bwprintf( COM2, "   -time_csp: %d time_to_csp: %d \n   -result: %d dist_so_far: %d\n", 
+		( int ) time_in_constant_speed, 
+		get_time_to_constant_speed( train_status, server_data ),
+		result, train_status->distance_since_speed_change ); 
+	*/
+	/*
+	bwdebug( DBG_USR, TEMP_DEBUG_AREA, 
+		"TIME_TO_DEACCELERATE [ distance_travel: %d stopping_distance: %d distance_csp: %d time_in_csp: %d time_to_csp: %d result: %d ]", 
+		distance_to_travel, stopping_distance, ( int ) distance_in_constant_speed, ( int ) time_in_constant_speed, 
+		get_time_to_constant_speed( train_status, server_data ),
+		result );
+		*/
+
+	return result; 
+}
+
+inline int get_next_update_time( int current_time ){
+	return current_time + ( WAIT_NOTIFIER_DELAY * 10 );
+}
+
+inline int get_train_stopping_distance( int train_speed, Train_server_data *server_data ){
+	return server_data->calibration_data.speed_data[ train_speed - 1 ].stopping_distance; 
+}
+
+inline int get_train_acceleration_distance( int train_speed, Train_server_data *server_data ){
+	return server_data->calibration_data.speed_data[ train_speed - 1 ].distance_during_acceleration; 
+}
+
+inline int get_reservation_distance_buffer( Train_server_data *server_data ){
+	// TODO: It might be a good idea to make this flag configurable from the CLI.
+	return RESERVATION_DISTANCE_BUFFER; 
+}
+
+inline int get_sw_delay_time( Train_server_data *server_data ){
+	// TODO: It might be a good idea to make this flag configurable from the CLI.
+	return SW_CHANGE_DELAY;
+}
+
+inline int get_reverse_delay_time( Train_server_data *server_data ){
+	// TODO: It might be a good idea to make this flag configurable from the CLI.
+	return REVERSE_CMD_DELAY;
+}
+
+inline int round_decimal_up( float value ){
+	value += .9999; // It works more like a roof than a rounding function. 
+	return ( int ) value; 
 }

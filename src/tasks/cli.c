@@ -17,7 +17,7 @@ void init_cli_data( CLI_data *cli_data, Servers_tid_list *servers_list ){
 	servers_list->items[TRAIN_MGR_INDEX] = train_mgm_tid; 
 
 	// TODO: Temporal -> Add the track data manually
-	init_msg.track_id = TRACK_ID_B; 
+	init_msg.track_id = TRACK_ID_A; 
 
 	Send( train_mgm_tid, ( char * ) & init_msg, sizeof( init_msg ), 
 		( char * ) &init_reply, sizeof( init_reply ) );

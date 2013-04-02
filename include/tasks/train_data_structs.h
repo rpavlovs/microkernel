@@ -11,9 +11,14 @@
 // -------------------------------------------------------------------
 // Constants
 // -------------------------------------------------------------------
-#define NUM_REQUIRED_TASKS_FOR_TRAIN			7		// The number of tis that we need to keep track of. 
+#define NUM_REQUIRED_TASKS_FOR_TRAIN			8		// The number of tis that we need to keep track of. 
 
 #define SENSOR_ATTR_LIST_SIZE					20		// The size of the sensor attribution list
+
+#define RESERVATION_DISTANCE_BUFFER				0		// The extra distance to add as a safety buffer after each reservation
+#define SW_CHANGE_DELAY							0		// 200 ms. 
+
+#define TRAIN_COMMAND_QUEUE_SIZE				20		// The number of train commands waiting to be sent
 
 // -------------------------------------------------------------------
 // Structs
@@ -22,6 +27,19 @@ typedef struct Train_status_struct Train_status;
 typedef struct Train_update_request_struct Train_update_request;
 //typedef struct Train_server_data_struct Train_server_data;
 
+// -- Cmd Queue ------------------------------
+typedef struct{
+	int delay_until; 
+	Cmd_request request; 
+} Train_cmd; 
+
+typedef struct{
+	Train_cmd commands[ TRAIN_COMMAND_QUEUE_SIZE ];
+	int newest, oldest; 
+	int size; 
+} Train_cmd_queue;
+
+// -- Train Data ------------------------------
 typedef struct{
 	track_node *landmark;			// Which node has the train last reached. 
 	track_edge *edge;				// The "path" from the last node that the train took. 
@@ -32,9 +50,8 @@ typedef struct{
 	int train_speed;				// The current speed in terms of the "train" notation (1-14)
 	int distance_type;				// The type of distance, short or long. 
 	int distance_to_travel;			
-	int requires_reverse; 
 	int original_train_speed;		// Only used for reversing without a goal. 
-	int time_accelerating; 
+	int time_since_deacceleration; 
 	int current_error;				// The difference between the real position and the actual position.
 } Train_motion_data; 
 
@@ -57,7 +74,6 @@ struct Train_status_struct{
 	int motion_state;
 	int train_direction; 
 	int time_speed_change; 
-	int total_time_in_speed; 
 	int	distance_since_speed_change;
 	int distance_before_deacceleration; 
 
@@ -73,8 +89,6 @@ struct Train_update_request_struct{
 	Command cmd; 
 }; 
 
-
-
 typedef struct{
 	track_node *track;
 	Calibration_data calibration_data; 
@@ -87,6 +101,10 @@ typedef struct{
 
 	track_node *sensor_attr_list[ SENSOR_ATTR_LIST_SIZE ];
 	int num_sensors_attr_list; 
+
+	// Command Notifier
+	int is_cmd_notifier_idle; 
+	Train_cmd_queue train_cmd_queue; 
 } Train_server_data;
 
 // -- Messages ------------------------------
@@ -95,6 +113,11 @@ typedef struct {
 	int direction; 
 	track_node *track; 
 } Train_initialization_msg;
+
+typedef struct {
+	int type;
+	Train_cmd_queue *queue; 
+} Train_cmd_notifier_msg; 
 
 typedef struct {
 	int **sensor_state;	// A pointer to the array in the notifier's address space

@@ -203,7 +203,7 @@ void parse_sensors( char *s88s, char *s88s_prev, Sensor_server_data *server_data
 
 	// Data structures
 	Sensor_history *sensor_history = server_data->sensor_history; 
-	Sensor_waiting_list *waiting_list = server_data->sensor_waiting_list; 
+	//Sensor_waiting_list *waiting_list = server_data->sensor_waiting_list; 
 
 	for( s88_num = 0; s88_num < 5; ++s88_num ) {
 		for( bit_pos = 0; bit_pos < 8; ++bit_pos ) {

@@ -70,6 +70,12 @@ void initialize_tasks_list( Train_server_data *train_server_data ){
 	// Initialization
 	int *tasks_tids = train_server_data->tasks_tids;
 
+	// Initialize all tids
+	int i; 
+	for( i = 0; i < NUM_REQUIRED_TASKS_FOR_TRAIN; i++ ){
+		tasks_tids[i] = 0; 
+	}
+
 	// Servers
     int cmd_server_tid = WhoIs( COMMAND_SERVER_NAME ); 
     tasks_tids[ TR_CMD_SERVER_TID_INDEX ] = cmd_server_tid; 
@@ -86,6 +92,14 @@ void initialize_tasks_list( Train_server_data *train_server_data ){
 	int route_srv_tid = WhoIs( ROUTE_SERVER_NAME );
 	tasks_tids[ TR_ROUTE_SERVER_TID_INDEX ] = route_srv_tid; 
 	bwassert( route_srv_tid >= 0, "TRAIN_SERVER: This task requires the route server to work properly." );
+
+	// Train Cmd Notifier
+	tasks_tids[TR_CMD_NOT_TID_INDEX] = Create( TRAIN_CMD_NOT_TASK_PRIORITY, train_cmd_notifier ); 
+	if ( tasks_tids[TR_CMD_NOT_TID_INDEX] < 0 )
+		bwassert( 0, "TRAIN_SERVER: The train requires a train command notifier to work properly." ); 
+	else
+		bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, "TRAIN_SERVER: Train command notifier created successfully [ tid: %d ]", 
+			tasks_tids[TR_CMD_NOT_TID_INDEX] );
 
 	// WAIT Notifier
 	tasks_tids[TR_WAIT_NOTIFIER_TID_INDEX] = Create( TRAIN_WAIT_NOT_TASK_PRIORITY, train_wait_notifier ); 
@@ -155,11 +169,31 @@ void initialize_train_server_data( Train_server_data *train_server_data, Train_i
 	// Get track data -> It's a pointer to the train manager server address space -> DON'T MODIFY!
 	train_server_data->track = init_info.track; 
 
+	// Initialize the train command notifier
+	initialize_train_cmd_notifier( train_server_data );
+
 	// Get calibration data
 	load_calibration_data( &( train_server_data->calibration_data ), init_info.train_id );
 
 	// Get sensor initialization list
 	retrieve_sensor_list( train_server_data );
+}
+
+void initialize_train_cmd_notifier( Train_server_data *server_data ){
+	bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, "TRAIN_SERVER: Initializing train command notifier" );
+
+	// The train notifier is not idle.
+	server_data->is_cmd_notifier_idle = 0; 
+
+	// Initialize the queue
+	//bwprintf( COM2, "TRAIN_SERVER: Initializing train command notifier\n" );
+	init_train_cmd_queue( &server_data->train_cmd_queue ); 
+	//TR_CMD_NOT_TID_INDEXbwprintf( COM2, "TRAIN_SERVER: tRAIN CMD QUEUE SIZE: %d Location %d\n", server_data->train_cmd_queue.size, &server_data->train_cmd_queue.size );
+
+	// Send the initialization info
+	Train_cmd_notifier_msg msg;
+	msg.queue = &( server_data->train_cmd_queue ); 
+	Send( server_data->tasks_tids[TR_CMD_NOT_TID_INDEX], ( char * ) &msg, sizeof( msg ), 0, 0 );
 }
 
 void initialize_train_status( Train_status *train_status, Train_initialization_msg init_info ){
@@ -174,7 +208,6 @@ void initialize_train_status( Train_status *train_status, Train_initialization_m
 	train_status->motion_data.current_error = 0;
 	train_status->motion_data.train_speed = 0; 
 	train_status->motion_data.original_train_speed = 0; 
-	train_status->motion_data.requires_reverse = 0; 
 
 	initialize_goal( train_status );
 
@@ -191,7 +224,7 @@ void initialize_train_status( Train_status *train_status, Train_initialization_m
 void train_server(){
 	// Initialization
     bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, "TRAIN_SERVER: Start execution" );
-	int sender_tid, update; 
+	int sender_tid, update, cmd_notifier_idle; 
 
 	// Get initialization data
 	Train_initialization_msg train_initialization; 
@@ -210,6 +243,7 @@ void train_server(){
 	// Messages
 	Courier_msg courier_msg; 
 	Cmd_request cmd_request;
+	Train_cmd_notifier_msg cmd_notifier_msg;
 	char temp_msg_buffer[ COURIER_BUFFER_SIZE ];
 
 	Train_update_request update_request;
@@ -221,6 +255,7 @@ void train_server(){
 
 		// Determine how to handle the request
 		update = 0; 
+		cmd_notifier_idle = 0; 
 		if ( sender_tid == tasks_tids[TR_WAIT_NOT_COURIER_TID_INDEX] || sender_tid == tasks_tids[TR_SENSOR_NOT_COURIER_TID_INDEX] ){
 			// Server received a courier message
 			mem_cpy( temp_msg_buffer, ( char * ) &courier_msg, sizeof( courier_msg ) );
@@ -246,6 +281,19 @@ void train_server(){
 					"TRAIN_SERVER: Received wait courier message [ sender_tid: %d ]", sender_tid );
 			}
 		}
+		else if ( sender_tid == tasks_tids[TR_CMD_NOT_TID_INDEX] ){
+			// Server received a message from the command notifier. It's probably idle
+			mem_cpy( temp_msg_buffer, ( char * ) &cmd_notifier_msg, sizeof( cmd_notifier_msg ) ); 
+			bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, 
+				"TRAIN_SERVER: Received cmd notifier msg [ sender_tid: %d cmd_type: %d ]", sender_tid, cmd_notifier_msg.type );
+
+			if ( cmd_notifier_msg.type == TRAIN_CMD_IDLE_MSG_TYPE ){
+				// Notifier is idle. 
+				train_server_data.is_cmd_notifier_idle = 1;
+			}
+
+			cmd_notifier_idle = 1; 
+		}
 		else {
 			// Server received a command message
 			mem_cpy( temp_msg_buffer, ( char * ) &cmd_request, sizeof( cmd_request ) ); 
@@ -264,21 +312,26 @@ void train_server(){
 				update_request.cmd = cmd_request.cmd;
 			}
 			else{
-				bwassert( 0, "TRAIN_SERVER: The received messages must be valid." );
+				bwassert( 0, "TRAIN_SERVER: The received messages must be valid. [ Sender_Tid: %d ]", sender_tid );
 			}
 
 			update = 1; 
 		}
 		
 		// Reply the sender to unblock it. 
-		Reply( sender_tid, 0, 0 ); 
+		if ( !cmd_notifier_idle )
+			Reply( sender_tid, 0, 0 ); 
 
 		// Should the train information be updated? 
 		if ( update ){
 			update_train_status( &update_request, &train_status, &train_server_data );
 		}
-		else{
-			bwassert( 0, "TRAIN_SERVER: The received messages must be valid." );
+
+		// Is the train notifier idle?
+		if ( train_server_data.is_cmd_notifier_idle && train_server_data.train_cmd_queue.size > 0 ){
+			//bwprintf( COM2, "UNBLOCKING TRAIN SERVER: train_server: idle: %d queue size: %d ", 
+			//	train_server_data.is_cmd_notifier_idle, train_server_data.train_cmd_queue.size ); 
+			Reply( train_server_data.tasks_tids[TR_CMD_NOT_TID_INDEX], 0, 0 );
 		}
 	}
 }

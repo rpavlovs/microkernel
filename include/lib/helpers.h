@@ -26,6 +26,8 @@ int is_train_id( int num );
 #define CURSOR_SHOW_STR			"\033[?25h"
 #define CLEAR_SCREEN_STR		"\033[2J"
 #define MOVE_CURSOR_UP_LEFT		"\033[H"
+#define MOVE_CURSOR_ONE_DOWN	"\033[B"
+
 
 int saveCursor( char *str_buff ); 
 
@@ -38,5 +40,9 @@ int hideCursor( char *str_buff );
 int showCursor( char *str_buff );
 
 int restoreCursor( char *str_buff );
+
+int horizontal_line( char *str_buff, int length );
+
+int vertical_line( char *str_buff, int length );
 
 #endif

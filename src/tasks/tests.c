@@ -44,36 +44,36 @@ void stress_test_uart2_putc(){
 
 void test_track_display() {
 	int display_tid;
+	int i, j;
 	msg_init_track_disp init_msg;
 	msg_display_request req_msg;
 	track_node track[ MAX_NUM_NODES_TRACK ];
 
-	printf( COM2, "test_track_display: initializing track data\n" );
+	Create( 14, user_dashboard );
+
+
 	init_tracka( track );
 	init_msg.type = MSG_TYPE_INIT_TRACK_DISP;
 	init_msg.track = track;
 
-
-	printf( COM2, "test_track_display: creating track display\n" );
 	display_tid = Create( 9, track_display );
-
-	printf( COM2, "test_track_display: initializing track display\n" );
 	Send( display_tid, (char *)&init_msg, sizeof(init_msg), 0, 0 );
 
-	int i;
-	for( i = 80; i < 123; ++i ) {
-		if( i%2 == 1 ) continue;
-		// printf( COM2,
-		// 	"test_track_display: requesting track display to show train at 10mm past %d\n", i);
-		req_msg.type = MSG_TYPE_DISP_TRAIN;
-		req_msg.landmark = i; // B1
-		req_msg.dir = DIR_CURVED; // B1
-		req_msg.offset = 10;
-		Send( display_tid, (char *)&req_msg, sizeof(req_msg), 0, 0 );
-	}
-	
+	req_msg.type = MSG_TYPE_DISP_TRAIN;
+	req_msg.dir = DIR_STRAIGHT;
+	req_msg.train_id = 50;
 
-	printf( COM2, "test_track_display: exit\n" );
+	for( i = 0; i < 120; ++i ) {
+		req_msg.landmark = i;
+		
+		for( j = 0; j < init_msg.track[i].edge[DIR_STRAIGHT].dist; j += 20 ) {
+			req_msg.offset = j;
+			Send( display_tid, (char *)&req_msg, sizeof(req_msg), 0, 0 );
+			Delay( 25 );
+		}
+	}
+
+	// printf( COM2, "test_track_display: exit\n" );
 	Exit();
 }
 

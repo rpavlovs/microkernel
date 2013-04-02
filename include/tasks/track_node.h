@@ -5,6 +5,8 @@
 #define POS                 0
 #define COL                 1
 
+#define MAX_TRAIN_ID        60
+
 typedef enum {
   NODE_NONE,
   NODE_SENSOR,

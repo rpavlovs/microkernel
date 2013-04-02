@@ -1,36 +1,60 @@
 #include "userspace.h"
 
 void init_track_layout( char *layout );
-void draw_train( int landmark, int direction, int offset, char *layout, track_node *track );
-int get_ui_edge_length( track_edge *e, char *layout, track_node *track );
+void draw_track( char *layout );
+int traverse_edge( track_edge *e, int length, train_position *train_pos,
+		char *layout, track_node *track );
+void draw_train( int train_id, train_position *train_pos );
+void erase_train( train_position *train_pos, char *layout);
 
 void track_display() {
-	// printf( COM2, "track_display: start\n" );
-	char layout[LAYOUT_HEIGHT][LAYOUT_WIDTH];
+	//printf( COM2, "track_display: start\n" );
+	char layout[TRACK_HEIGHT][TRACK_WIDTH];
+	int layout_distance;
 	int sender_tid;
+	int i;
+	
+	train_position train_posns[MAX_TRAIN_ID+1];
 	msg_init_track_disp init_msg;
 	track_node *track;
+	track_edge *edge;
 	msg_display_request req;
 
 	RegisterAs( "track_display" );
-	// printf( COM2, "track_display: initializing track layout\n" );
+	
 	init_track_layout( (char *)layout );
-	// printf( COM2, "track_display: listening for init message with track data location\n" );
+	draw_track( (char *)layout );
+	for( i = 0; i < MAX_TRAIN_ID+1; ++i ) {
+		train_posns[i].row = 0;
+		train_posns[i].col = 0;
+	}
+
 	Receive( &sender_tid, (char *)&init_msg, sizeof(init_msg) );
 	bwassert( init_msg.type == MSG_TYPE_INIT_TRACK_DISP,
 		"track_display: first recieved message should be the initialization message" );
 	track = init_msg.track;
 	Reply( sender_tid, 0, 0 );
-	// printf( COM2, "track_display: got track_data location\n" );
 
 	FOREVER {
-		// printf( COM2, "track_display: listening for requests..\n" );
 		Receive( &sender_tid, (char *)&req, sizeof(init_msg) );
 
 		switch( req.type ) {
 		case MSG_TYPE_DISP_TRAIN:
 			// printf( COM2, "track_display: show train request recieved\n" );
-			draw_train( req.landmark, req.dir, req.offset, (char *)layout, track );
+			bwassert( !(req.dir == DIR_CURVED && track[req.landmark].type != NODE_BRANCH),
+				"draw_train: can go curved only on a branch" );
+
+			edge = &track[req.landmark].edge[req.dir];
+			layout_distance = (edge->ui_len * req.offset) / edge->dist; 
+
+			if( train_posns[req.train_id].row != 0 && train_posns[req.train_id].col != 0 )
+				erase_train( &train_posns[req.train_id], (char *)layout );
+
+			traverse_edge( edge, layout_distance, &train_posns[req.train_id],
+				(char *)layout, track );
+
+			draw_train( req.train_id, &train_posns[req.train_id] );
+
 			break;
 		case MSG_TYPE_DISP_SWITCH:
 			// printf( COM2, "track_display: show switch request recieved\n" );
@@ -45,95 +69,34 @@ void track_display() {
 
 }
 
-void draw_train( int landmark, int direction, int offset, char *layout, track_node *track ) {
-	// printf( COM2, "draw_train: start\n" );
-	track_edge *edge;
-	int egde_path_length = 0;
-	char ch;
+int traverse_edge( track_edge *e, int length, train_position *train_pos,
+		char *layout, track_node *track ) {
 
-	switch( track[landmark].type ) {
-	case NODE_SENSOR:
-		bwassert( direction == DIR_AHEAD, "draw_train: cant go curved on a sensor" );
-		// printf( COM2, "draw_train: landmark %d is a sensor\n", landmark );
-		edge = &track[landmark].edge[DIR_AHEAD];
-		// printf( COM2, "draw_train: line %d, col %d\n", edge->ui_line, edge->ui_col );
-		ch = *(layout + edge->ui_line*LAYOUT_WIDTH + edge->ui_col);
-		// printf( COM2, "draw_train: ch \"%c\"\n", ch );
-
-		break;
-	case NODE_BRANCH:
-		// printf( COM2, "draw_train: landmark is a branch\n" );
-		edge = &track[landmark].edge[direction];
-		// printf( COM2, "draw_train: line %d, col %d\n", edge->ui_line, edge->ui_col );
-		ch = *(layout + edge->ui_line*LAYOUT_WIDTH + edge->ui_col);
-		// printf( COM2, "draw_train: ch \"%c\"\n", ch );
-
-		break;
-	case NODE_MERGE:
-		bwassert( direction == DIR_AHEAD, "draw_train: cant go curved on a merge" );
-		// printf( COM2, "draw_train: landmark is a merge\n" );
-		edge = &track[landmark].edge[DIR_AHEAD];
-		// printf( COM2, "draw_train: line %d, col %d\n", edge->ui_line, edge->ui_col );
-		ch = *(layout + edge->ui_line*LAYOUT_WIDTH + edge->ui_col);
-		// printf( COM2, "draw_train: ch \"%c\"\n", ch );
-
-		break;
-	case NODE_ENTER:
-		bwassert( direction == DIR_AHEAD, "draw_train: cant go curved on an entry" );
-		// printf( COM2, "draw_train: landmark is an entry point\n" );
-		edge = &track[landmark].edge[DIR_AHEAD];
-		// printf( COM2, "draw_train: line %d, col %d\n", edge->ui_line, edge->ui_col );
-		ch = *(layout + edge->ui_line*LAYOUT_WIDTH + edge->ui_col);
-		// printf( COM2, "draw_train: ch \"%c\"\n", ch );
-
-		break;
-	case NODE_EXIT:
-		return;
-		break;
-	default:
-		bwpanic( "draw_train: Landmark type in not supported" );
-	}
-
-	egde_path_length = get_ui_edge_length( edge, layout, track );
-	printf( COM2, "draw_train: landmark %d edge length is %d\n", landmark, egde_path_length );
-}
-
-int get_ui_edge_length( track_edge *e, char *layout, track_node *track ) {
-	// printf( COM2, "get_ui_edge_length: start\n" );
 	char ch, ch_tl, ch_tc, ch_tr, ch_cl, ch_cr, ch_bl, ch_bc, ch_br;
 	int dest_line, dest_col;
 	int curr_line, curr_col;
-	int path_length = 0;
+	int length_traversed = 0;
 	
-	// if( e->dest->reverse->type = NODE_BRANCH
-	// 		&& e->dest->reverse->edge[1].dest->num == e->src->num ) {
-	// 	dest_line = e->dest->reverse->edge[1].ui_line;
-	// 	dest_col = e->dest->reverse->edge[1].ui_col;
-	// } else {
-		dest_line = e->reverse->ui_line;
-		dest_col = e->reverse->ui_col;
-	// }
+	dest_line = e->reverse->ui_line;
+	dest_col = e->reverse->ui_col;
 
 	curr_line = e->ui_line;
 	curr_col = e->ui_col;
 
-	// printf( COM2, "get_ui_edge_length: src (%d, %d) dest(%d, %d)\n",
-		// curr_line, curr_col, dest_line, dest_col );
-
-
-	while( curr_col != dest_col || curr_line != dest_line ) {
-		++path_length;
-		// printf( COM2, "get_ui_edge_length: length %d ", path_length );
+	while( length_traversed < length ) {
+		bwassert( !(curr_col == dest_col && curr_line == dest_line),
+			"should not go beyond the end of the edge" );
+		++length_traversed;
 			
-		ch = *(layout + curr_line*LAYOUT_WIDTH + curr_col);
-		ch_tl = *(layout + (curr_line-1)*LAYOUT_WIDTH + curr_col-1);
-		ch_tc = *(layout + (curr_line-1)*LAYOUT_WIDTH + curr_col);
-		ch_tr = *(layout + (curr_line-1)*LAYOUT_WIDTH + curr_col+1);
-		ch_cl = *(layout + curr_line*LAYOUT_WIDTH + curr_col-1);
-		ch_cr = *(layout + curr_line*LAYOUT_WIDTH + curr_col+1);
-		ch_bl = *(layout + (curr_line+1)*LAYOUT_WIDTH + curr_col-1);
-		ch_bc = *(layout + (curr_line+1)*LAYOUT_WIDTH + curr_col);
-		ch_br = *(layout + (curr_line+1)*LAYOUT_WIDTH + curr_col+1);
+		ch = *(layout + curr_line*TRACK_WIDTH + curr_col);
+		ch_tl = *(layout + (curr_line-1)*TRACK_WIDTH + curr_col-1);
+		ch_tc = *(layout + (curr_line-1)*TRACK_WIDTH + curr_col);
+		ch_tr = *(layout + (curr_line-1)*TRACK_WIDTH + curr_col+1);
+		ch_cl = *(layout + curr_line*TRACK_WIDTH + curr_col-1);
+		ch_cr = *(layout + curr_line*TRACK_WIDTH + curr_col+1);
+		ch_bl = *(layout + (curr_line+1)*TRACK_WIDTH + curr_col-1);
+		ch_bc = *(layout + (curr_line+1)*TRACK_WIDTH + curr_col);
+		ch_br = *(layout + (curr_line+1)*TRACK_WIDTH + curr_col+1);
 
 		if( curr_col <= dest_col && curr_line <= dest_line ) {
 			// printf( COM2, "go right-down " );
@@ -237,46 +200,108 @@ int get_ui_edge_length( track_edge *e, char *layout, track_node *track ) {
 			default:
 				bwpanic( "get_ui_edge_length: wrong edge ui position coordinates" );
 			}
-
-			// printf( COM2, "(%d, %d)\n", curr_line, curr_col );
 		}
 	}
-	return path_length;
+
+	train_pos->row = curr_line;
+	train_pos->col = curr_col;
+
+
+	if( !(curr_col == dest_col && curr_line == dest_line) ) {
+		switch( ch ) {
+		case '_':
+			train_pos->dir = ( curr_col < dest_col ? GO_RIGHT : GO_LEFT );
+			break;
+		case '|':
+		case '\\':
+		case '/':
+			train_pos->dir = ( curr_line > dest_line ? GO_UP : GO_DOWN );
+		}
+	}
+
+	return length_traversed;
+}
+
+void draw_track( char *layout ) {
+	char buff[TRACK_WIDTH*TRACK_HEIGHT + 100*TRACK_HEIGHT], *ptr;
+	int i;
+
+	ptr = buff;
+	ptr += hideCursor( ptr );
+	ptr += saveCursor( ptr );
+
+	for( i = 1; i <= TRACK_HEIGHT; ++i ) {
+		ptr += cursorPositioning( ptr, TRACK_POS_LINE + i-1, TRACK_POS_COL );
+		ptr += sprintf( ptr, (layout + i*TRACK_WIDTH) );
+	}
+
+	ptr += restoreCursor( ptr );
+	ptr += showCursor( ptr );
+
+	Putstr( COM2, buff );
+}
+
+void draw_train( int train_id, train_position *train_pos) {
+	// printf( COM2, "draw_train: start\n" );
+	char buff[50];
+	char *ptr = buff;
+
+	ptr += hideCursor( ptr );
+	ptr += saveCursor( ptr );
+	ptr += cursorPositioning( ptr,
+		TRACK_POS_LINE + train_pos->row - 1, TRACK_POS_COL + train_pos->col );
+	ptr += sprintf( ptr, "%c", train_pos->dir );
+	ptr += restoreCursor( ptr );
+	ptr += showCursor( ptr );
+	
+	Putstr( COM2, buff );
+	// printf( COM2, "draw_train: landmark %d edge length is %d\n", landmark, egde_path_length );
+}
+
+void erase_train( train_position *train_pos, char *layout ) {
+	char buff[50];
+	char *ptr = buff;
+
+	ptr += hideCursor( ptr );
+	ptr += saveCursor( ptr );
+	ptr += cursorPositioning( ptr,
+		TRACK_POS_LINE + train_pos->row - 1, TRACK_POS_COL + train_pos->col );
+	ptr += sprintf( ptr, "%c", *(layout + (train_pos->row)*TRACK_WIDTH + train_pos->col) );
+	ptr += restoreCursor( ptr );
+	ptr += showCursor( ptr );
+	
+	Putstr( COM2, buff );
 }
 
 void init_track_layout( char *layout ) {
-	// printf( COM2, "init_track_layout: start\n" );
-	mem_cpy( " __________________________________________________________________________________________________________                ", layout + 1*LAYOUT_WIDTH, LAYOUT_WIDTH );
-	mem_cpy( "                           ______/ 12  _____/ 11                                                           \\____           ", layout + 2*LAYOUT_WIDTH, LAYOUT_WIDTH );
-	mem_cpy( " _________________________/        ___/  __________________________________________________________________     \\__        ", layout + 3*LAYOUT_WIDTH, LAYOUT_WIDTH );
-	mem_cpy( "                    _____/4       / ____/           13 \\______                       ______/  10           \\___    \\_      ", layout + 4*LAYOUT_WIDTH, LAYOUT_WIDTH );
-	mem_cpy( "  _________________/            _/ /                          \\                     /                          \\__   \\     ", layout + 5*LAYOUT_WIDTH, LAYOUT_WIDTH );
-	mem_cpy( "                               /__/                            \\___             ___/                              \\_  \\    ", layout + 6*LAYOUT_WIDTH, LAYOUT_WIDTH );
-	mem_cpy( "                              //                                   \\           /                                    \\  \\   ", layout + 7*LAYOUT_WIDTH, LAYOUT_WIDTH );
-	mem_cpy( "                          14 /                                      \\_   |   _/                                      \\  \\  ", layout + 8*LAYOUT_WIDTH, LAYOUT_WIDTH );
-	mem_cpy( "                            /                                         \\  |  /                                         \\  \\ ", layout + 9*LAYOUT_WIDTH, LAYOUT_WIDTH );
-	mem_cpy( "                           /                                           | | |                                           \\  |", layout + 10*LAYOUT_WIDTH, LAYOUT_WIDTH );
-	mem_cpy( "                          |                                         9C | | | 9B                                         \\ |", layout + 11*LAYOUT_WIDTH, LAYOUT_WIDTH );
-	mem_cpy( "                          |                                            | |/                                              \\|", layout + 12*LAYOUT_WIDTH, LAYOUT_WIDTH );
-	mem_cpy( "                          |                                             \\|                                               9|", layout + 13*LAYOUT_WIDTH, LAYOUT_WIDTH );
-	mem_cpy( "                          |                                              |                                                |", layout + 14*LAYOUT_WIDTH, LAYOUT_WIDTH );
-	mem_cpy( "                          |                                              |                                                |", layout + 15*LAYOUT_WIDTH, LAYOUT_WIDTH );
-	mem_cpy( "                          |                                              | 9A                                             |", layout + 16*LAYOUT_WIDTH, LAYOUT_WIDTH );
-	mem_cpy( "                          |                                           99 |\\                                              8|", layout + 17*LAYOUT_WIDTH, LAYOUT_WIDTH );
-	mem_cpy( "                          |                                             /| |                                             /|", layout + 18*LAYOUT_WIDTH, LAYOUT_WIDTH );
-	mem_cpy( "                           \\                                           | | |                                            / |", layout + 19*LAYOUT_WIDTH, LAYOUT_WIDTH );
-	mem_cpy( "                            \\                                          | | |                                           /  |", layout + 20*LAYOUT_WIDTH, LAYOUT_WIDTH );
-	mem_cpy( "                             \\                                      __/  |  \\__                                       /  / ", layout + 21*LAYOUT_WIDTH, LAYOUT_WIDTH );
-	mem_cpy( "                              \\                                    /     |     \\                                    _/  /  ", layout + 22*LAYOUT_WIDTH, LAYOUT_WIDTH );
-	mem_cpy( "   ____________                \\                                __/             \\___                              _/   /   ", layout + 23*LAYOUT_WIDTH, LAYOUT_WIDTH );
-	mem_cpy( "               \\______       15 \\\\___                       ___/                    \\___                       __/   _/    ", layout + 24*LAYOUT_WIDTH, LAYOUT_WIDTH );
-	mem_cpy( "  ____________________\\          \\__ \\_____________________/____________________________\\_____________________/     /      ", layout + 25*LAYOUT_WIDTH, LAYOUT_WIDTH );
-	mem_cpy( "                     1 \\_______     \\___                  16                            17                      ___/       ", layout + 26*LAYOUT_WIDTH, LAYOUT_WIDTH );
-	mem_cpy( "  _____________________________\\        \\______________________________________________________________________/           ", layout + 27*LAYOUT_WIDTH, LAYOUT_WIDTH );
-	mem_cpy( "                              2 \\________            6 \\_____                          _____/ 7                            ", layout + 28*LAYOUT_WIDTH, LAYOUT_WIDTH );
-	mem_cpy( "  _______________________________________\\___________________\\________________________/__________________________          ", layout + 29*LAYOUT_WIDTH, LAYOUT_WIDTH );
-	mem_cpy( "                                           3              18                             5                                 ", layout + 30*LAYOUT_WIDTH, LAYOUT_WIDTH );
-	// printf( COM2, "init_track_layout: end\n" );
-
-	// printf( COM2, "\n" );
+	mem_cpy( " __________________________________________________________________________________________________________                ", layout + 1*TRACK_WIDTH, TRACK_WIDTH );
+	mem_cpy( "                           ______/ 12  _____/ 11                                                           \\____           ", layout + 2*TRACK_WIDTH, TRACK_WIDTH );
+	mem_cpy( " _________________________/        ___/  __________________________________________________________________     \\__        ", layout + 3*TRACK_WIDTH, TRACK_WIDTH );
+	mem_cpy( "                    _____/4       / ____/           13 \\______                       ______/  10           \\___    \\_      ", layout + 4*TRACK_WIDTH, TRACK_WIDTH );
+	mem_cpy( "  _________________/            _/ /                          \\                     /                          \\__   \\     ", layout + 5*TRACK_WIDTH, TRACK_WIDTH );
+	mem_cpy( "                               /__/                            \\___             ___/                              \\_  \\    ", layout + 6*TRACK_WIDTH, TRACK_WIDTH );
+	mem_cpy( "                              //                                   \\           /                                    \\  \\   ", layout + 7*TRACK_WIDTH, TRACK_WIDTH );
+	mem_cpy( "                          14 /                                      \\_   |   _/                                      \\  \\  ", layout + 8*TRACK_WIDTH, TRACK_WIDTH );
+	mem_cpy( "                            /                                         \\  |  /                                         \\  \\ ", layout + 9*TRACK_WIDTH, TRACK_WIDTH );
+	mem_cpy( "                           /                                           | | |                                           \\  |", layout + 10*TRACK_WIDTH, TRACK_WIDTH );
+	mem_cpy( "                          |                                         9C | | | 9B                                         \\ |", layout + 11*TRACK_WIDTH, TRACK_WIDTH );
+	mem_cpy( "                          |                                            | |/                                              \\|", layout + 12*TRACK_WIDTH, TRACK_WIDTH );
+	mem_cpy( "                          |                                             \\|                                               9|", layout + 13*TRACK_WIDTH, TRACK_WIDTH );
+	mem_cpy( "                          |                                              |                                                |", layout + 14*TRACK_WIDTH, TRACK_WIDTH );
+	mem_cpy( "                          |                                              |                                                |", layout + 15*TRACK_WIDTH, TRACK_WIDTH );
+	mem_cpy( "                          |                                              | 9A                                             |", layout + 16*TRACK_WIDTH, TRACK_WIDTH );
+	mem_cpy( "                          |                                           99 |\\                                              8|", layout + 17*TRACK_WIDTH, TRACK_WIDTH );
+	mem_cpy( "                          |                                             /| |                                             /|", layout + 18*TRACK_WIDTH, TRACK_WIDTH );
+	mem_cpy( "                           \\                                           | | |                                            / |", layout + 19*TRACK_WIDTH, TRACK_WIDTH );
+	mem_cpy( "                            \\                                          | | |                                           /  |", layout + 20*TRACK_WIDTH, TRACK_WIDTH );
+	mem_cpy( "                             \\                                      __/  |  \\__                                       /  / ", layout + 21*TRACK_WIDTH, TRACK_WIDTH );
+	mem_cpy( "                              \\                                    /     |     \\                                    _/  /  ", layout + 22*TRACK_WIDTH, TRACK_WIDTH );
+	mem_cpy( "   ____________                \\                                __/             \\___                              _/   /   ", layout + 23*TRACK_WIDTH, TRACK_WIDTH );
+	mem_cpy( "               \\______       15 \\\\___                       ___/                    \\___                       __/   _/    ", layout + 24*TRACK_WIDTH, TRACK_WIDTH );
+	mem_cpy( "  ____________________\\          \\__ \\_____________________/____________________________\\_____________________/     /      ", layout + 25*TRACK_WIDTH, TRACK_WIDTH );
+	mem_cpy( "                     1 \\_______     \\___                  16                            17                      ___/       ", layout + 26*TRACK_WIDTH, TRACK_WIDTH );
+	mem_cpy( "  _____________________________\\        \\______________________________________________________________________/           ", layout + 27*TRACK_WIDTH, TRACK_WIDTH );
+	mem_cpy( "                              2 \\________            6 \\_____                          _____/ 7                            ", layout + 28*TRACK_WIDTH, TRACK_WIDTH );
+	mem_cpy( "  _______________________________________\\___________________\\________________________/__________________________          ", layout + 29*TRACK_WIDTH, TRACK_WIDTH );
+	mem_cpy( "                                           3              18                             5                                 ", layout + 30*TRACK_WIDTH, TRACK_WIDTH );
 }

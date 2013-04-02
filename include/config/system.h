@@ -86,9 +86,9 @@
 // Task execution
 // ------------------------------------------------------------------------------------------
 // #define FIRST_USER_TASK_NAME				run_calibration_constant_velocity train_contol
-// #define FIRST_USER_TASK_NAME				train_control
+#define FIRST_USER_TASK_NAME				train_control
 // #define FIRST_USER_TASK_NAME				stress_test_uart1_getc
 // #define FIRST_USER_TASK_NAME				test_timeserver
-#define FIRST_USER_TASK_NAME				test_track_display
+//#define FIRST_USER_TASK_NAME				test_track_display
 
 #endif

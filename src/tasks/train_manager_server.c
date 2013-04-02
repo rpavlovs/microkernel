@@ -63,7 +63,7 @@ void train_manager(){
 	init_reply.track = track; 
 	Reply( sender_tid, ( char * ) &init_reply, sizeof( init_reply ) );
 
-	FOREVER{
+	FOREVER {
 		bwdebug( DBG_USR, TRAIN_MGR_DEBUG_AREA, "TRAIN_MANAGER_SERVER: listening for a request" );
 		Receive( &sender_tid, ( char * ) &msg, sizeof( msg ) );
 

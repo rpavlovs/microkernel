@@ -332,6 +332,7 @@ void bwassert( int statement, char *fmt, ... ) {
 
 	bwprintf( COM2, "\n" );
 
+	Shutdown();
 	for( ; ; );
 }
 
@@ -346,5 +347,6 @@ void bwpanic( char *fmt, ... ) {
 
 	bwprintf( COM2, "\n" );
 
+	Shutdown();
 	for( ; ; );
 }

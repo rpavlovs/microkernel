@@ -42,6 +42,71 @@ void stress_test_uart2_putc(){
 // -- These tests are similar to unit tests, since they are very small and run fast. 
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 
+void test_track_display() {
+	int display_tid;
+	int i, j;
+	msg_init_track_disp init_msg;
+	msg_display_request req_msg;
+	track_node track[ MAX_NUM_NODES_TRACK ];
+
+	Create( 14, user_dashboard );
+
+
+	init_tracka( track );
+	init_msg.type = MSG_TYPE_INIT_TRACK_DISP;
+	init_msg.track = track;
+
+	display_tid = Create( 9, track_display );
+	Send( display_tid, (char *)&init_msg, sizeof(init_msg), 0, 0 );
+
+
+	// flip switches
+	req_msg.type = MSG_TYPE_DISP_SWITCH;
+	req_msg.state = DIR_CURVED;
+	for( i = 80; i < 123; ++i ) {
+		if( i % 2 == 1 ) continue;
+		req_msg.switch_id = i;		
+		Send( display_tid, (char *)&req_msg, sizeof(req_msg), 0, 0 );
+	}
+
+	Delay( 100 );
+	req_msg.switch_id = 80;
+	req_msg.state = DIR_STRAIGHT;
+	Send( display_tid, (char *)&req_msg, sizeof(req_msg), 0, 0 );
+
+	Delay( 100 );
+	req_msg.switch_id = 82;
+	req_msg.state = DIR_STRAIGHT;
+	Send( display_tid, (char *)&req_msg, sizeof(req_msg), 0, 0 );
+
+	Delay( 100 );
+	req_msg.switch_id = 84;
+	req_msg.state = DIR_STRAIGHT;
+	Send( display_tid, (char *)&req_msg, sizeof(req_msg), 0, 0 );
+
+	Delay( 100 );
+	req_msg.switch_id = 82;
+	req_msg.state = DIR_CURVED;
+	Send( display_tid, (char *)&req_msg, sizeof(req_msg), 0, 0 );
+
+	// run around the track
+	req_msg.type = MSG_TYPE_DISP_TRAIN;
+	req_msg.dir = DIR_STRAIGHT;
+	req_msg.train_id = 50;
+	for( i = 0; i < 120; ++i ) {
+		req_msg.landmark = i;
+		
+		for( j = 0; j < init_msg.track[i].edge[DIR_STRAIGHT].dist; j += 20 ) {
+			req_msg.offset = j;
+			Send( display_tid, (char *)&req_msg, sizeof(req_msg), 0, 0 );
+			Delay( 25 );
+		}
+	}
+
+	// printf( COM2, "test_track_display: exit\n" );
+	Exit();
+}
+
 void test_debug(){
 	// TURN INTERRUPTS OFF
 	int *vic1EnablePointer = ( int * )( INT_CONTROL_BASE_1 + INT_ENABLE_OFFSET );

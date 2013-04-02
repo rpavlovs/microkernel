@@ -45,9 +45,9 @@ void first_task() {
 	
 	bwdebug( DBG_SYS, SENSORS_SERVER_DEBUG_AREA, "FIRST_TASK: creating sensor server" );
 	int sensor_server_tid = Create( SENSOR_SERVER_PRIORITY, sensors_server );
-//	
-//	bwdebug( DBG_SYS, "FIRST_TASK: creating switches server" );
-//	int switches_server_tid = Create( SWITCHES_SERVER_PRIORITY, switchserver );
+	
+	bwdebug( DBG_SYS, SWITCHES_SERVER_DEBUG_AREA, "FIRST_TASK: creating switches server" );
+	int switches_server_tid = Create( SWITCHES_SERVER_PRIORITY, switchserver );
 
 	bwdebug( DBG_SYS, KERNEL_DEBUG_AREA, "FIRST_TASK: creating first user task" );
 	int first_user_task_tid = Create( FIRST_USER_TASK_PRIORITY, FIRST_USER_TASK_NAME );
@@ -81,9 +81,9 @@ void first_task() {
 
 	bwdebug( DBG_SYS, SENSORS_SERVER_DEBUG_AREA, "FIRST_TASK: sensor server task id  : %d, priority: %d, address: %d",
 		sensor_server_tid, SENSOR_SERVER_PRIORITY, sensors_server );
-//		
-//	bwdebug( DBG_SYS, "FIRST_TASK: switches server task id  : %d, priority: %d, address: %d",
-//		switches_server_tid, SWITCHES_SERVER_PRIORITY, switchserver );
+		
+	bwdebug( DBG_SYS, SWITCHES_SERVER_DEBUG_AREA, "FIRST_TASK: switches server task id  : %d, priority: %d, address: %d",
+		switches_server_tid, SWITCHES_SERVER_PRIORITY, switchserver );
 	
 	bwdebug( DBG_SYS, IDLE_TASK_DEBUG_AREA, "FIRST_TASK: sys idle task id  : %d, priority: %d, address: %d",
 		idle_tid, 0, idle_task );

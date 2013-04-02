@@ -44,3 +44,19 @@ int showCursor( char *str_buff ){
 int restoreCursor( char *str_buff ){
 	return sprintf( str_buff, CURSOR_RESTORE ); 
 }
+
+int horizontal_line( char *str_buff, int length ) {
+	char *ptr = str_buff;
+
+	while( length --> 0 ) ptr += sprintf( ptr, "#" );
+
+	return (ptr - str_buff);	
+}
+
+int vertical_line( char *str_buff, int length ) {
+	char *ptr = str_buff;
+
+	while( length --> 0 ) ptr += sprintf( ptr, "##\033[B\033[2D" );
+
+	return (ptr - str_buff);	
+}

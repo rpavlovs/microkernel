@@ -5,7 +5,6 @@
 #include <config/ts7200.h>
 #include <config/system.h>
 #include <config/environment.h>
-#include <config/ui.h>
 
 // System calls
 

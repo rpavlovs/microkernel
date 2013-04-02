@@ -3,6 +3,23 @@
 
 #include "userspace.h"
 
+
+#define CLI_ROW_POS						38
+#define CLI_COL_POS						3
+
+#define CLI_HEIGHT						21
+#define CLI_WIDTH 						155
+
+#define UI_CLI_HISTORY_HEIGHT 			CLI_HEIGHT - 1
+#define UI_CLI_HISTORY_TOP_ROW 			CLI_ROW_POS
+#define UI_CLI_HISTORY_BOTTOM_ROW 		CLI_ROW_POS + CLI_HEIGHT - 1
+
+// Computed
+
+#define CLI_CURSOR_POS					CLI_ROW_POS + CLI_HEIGHT, CLI_COL_POS + 4
+#define UI_CLI_CMD_LINE_ROW				CLI_ROW_POS + CLI_HEIGHT
+#define UI_CLI_CMD_LINE_WIDTH			CLI_WIDTH - 9
+
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 // Constants
 // -----------------------------------------------------------------------------------------------------------------------------------------------

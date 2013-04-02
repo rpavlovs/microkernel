@@ -5,6 +5,8 @@
 #define POS                 0
 #define COL                 1
 
+#define MAX_TRAIN_ID        60
+
 typedef enum {
   NODE_NONE,
   NODE_SENSOR,
@@ -27,7 +29,7 @@ struct track_edge {
   track_node *src, *dest;
   int dist;             /* in millimetres */
   
-  int ui_pc[2]; // ui position and column
+  int ui_line, ui_col, ui_len; // ui start line, column and length
 
   //Reservation algorithm
   int reservers[3];     //TODO: refactor reserved[TRAINS_NUMBER]

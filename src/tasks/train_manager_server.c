@@ -22,8 +22,11 @@ track_node *get_location_node( const char *location_name, track_node *track ){
 }
 
 void train_manager(){
-	// Initialization
 	bwdebug( DBG_USR, TRAIN_MGR_DEBUG_AREA, "TRAIN_MANAGER: start" );
+	// Initialization
+	int display_tid, i;
+	msg_init_track_disp init_display_msg;
+	msg_display_request req_msg;
 	RegisterAs( TRAIN_MANAGER_NAME );
 
 	// Create other necessary tasks
@@ -31,7 +34,7 @@ void train_manager(){
 	bwdebug( DBG_USR, TRAIN_MGR_DEBUG_AREA, 
 		"TRAIN_MANAGER: Created route server successfully [ route_srv_tid: %d ]", route_srv_tid );
 
-	int track_id, num_trains, sender_tid;
+	int num_trains, sender_tid;
 	num_trains = 0;							// Currently there are no trains
 	int trains_tids[ NUM_TRAINS ]; 
 	track_node track[ MAX_NUM_NODES_TRACK ]; 
@@ -48,17 +51,26 @@ void train_manager(){
 	Train_mgr_init_msg init_msg;
 	Train_mgr_init_reply init_reply; 
 	Receive( &sender_tid, ( char * ) &init_msg, sizeof( init_msg ) );
-	track_id = init_msg.track_id;
 	
-	if ( track_id == TRACK_ID_A ) 
-		init_tracka( track ); 
-	else if ( track_id == TRACK_ID_B )
-		init_trackb( track );
-	else
-		bwassert( 0, "TRAIN_MANAGER_SERVER: The track id must be valid (A or B)" ); 
+	bwassert( init_msg.track_id == TRACK_ID_A || init_msg.track_id == TRACK_ID_B,
+		"train_manager: track id is unknown" );
+	( init_msg.track_id == TRACK_ID_A ? init_tracka( track ) : init_trackb( track ) );
 
 	// Initialize route server data
-	init_track( track ); 
+	init_track( track );
+
+	init_display_msg.type = MSG_TYPE_INIT_TRACK_DISP;
+	init_display_msg.track = track;
+	display_tid = Create( 9, track_display );
+	Send( display_tid, (char *)&init_display_msg, sizeof(init_display_msg), 0, 0 );
+
+	req_msg.type = MSG_TYPE_DISP_SWITCH;
+	req_msg.state = DIR_CURVED;
+	for( i = 80; i < 123; ++i ) {
+		if( i % 2 == 1 ) continue;
+		req_msg.switch_id = i;		
+		Send( display_tid, (char *)&req_msg, sizeof(req_msg), 0, 0 );
+	}
 
 	init_reply.track = track; 
 	Reply( sender_tid, ( char * ) &init_reply, sizeof( init_reply ) );

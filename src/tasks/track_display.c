@@ -89,7 +89,7 @@ int traverse_edge( track_edge *e, int length, train_position *train_pos,
 
 	while( length_traversed < length ) {
 		bwassert( !(curr_col == dest_col && curr_line == dest_line),
-			"should not go beyond the end of the edge" );
+			"traverse_edge: should not go beyond the end of the edge" );
 		++length_traversed;
 			
 		ch = *(layout + curr_line*TRACK_WIDTH + curr_col);

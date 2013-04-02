@@ -29,6 +29,7 @@ struct msg_init_track_disp {
 
 struct msg_display_request {
 	int type;
+	
 	int landmark;
 	int dir;
 	int offset;

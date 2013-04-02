@@ -59,10 +59,40 @@ void test_track_display() {
 	display_tid = Create( 9, track_display );
 	Send( display_tid, (char *)&init_msg, sizeof(init_msg), 0, 0 );
 
+
+	// flip switches
+	req_msg.type = MSG_TYPE_DISP_SWITCH;
+	req_msg.state = DIR_CURVED;
+	for( i = 80; i < 123; ++i ) {
+		if( i % 2 == 1 ) continue;
+		req_msg.switch_id = i;		
+		Send( display_tid, (char *)&req_msg, sizeof(req_msg), 0, 0 );
+	}
+
+	Delay( 100 );
+	req_msg.switch_id = 80;
+	req_msg.state = DIR_STRAIGHT;
+	Send( display_tid, (char *)&req_msg, sizeof(req_msg), 0, 0 );
+
+	Delay( 100 );
+	req_msg.switch_id = 82;
+	req_msg.state = DIR_STRAIGHT;
+	Send( display_tid, (char *)&req_msg, sizeof(req_msg), 0, 0 );
+
+	Delay( 100 );
+	req_msg.switch_id = 84;
+	req_msg.state = DIR_STRAIGHT;
+	Send( display_tid, (char *)&req_msg, sizeof(req_msg), 0, 0 );
+
+	Delay( 100 );
+	req_msg.switch_id = 82;
+	req_msg.state = DIR_CURVED;
+	Send( display_tid, (char *)&req_msg, sizeof(req_msg), 0, 0 );
+
+	// run around the track
 	req_msg.type = MSG_TYPE_DISP_TRAIN;
 	req_msg.dir = DIR_STRAIGHT;
 	req_msg.train_id = 50;
-
 	for( i = 0; i < 120; ++i ) {
 		req_msg.landmark = i;
 		

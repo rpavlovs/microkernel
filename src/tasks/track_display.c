@@ -1,9 +1,10 @@
 #include "userspace.h"
 
 void init_track_layout( char *layout );
-void draw_track( char *layout );
 int traverse_edge( track_edge *e, int length, train_position *train_pos,
 		char *layout, track_node *track );
+void draw_track( char *layout );
+void draw_branch( track_node *branch, int state, char *layout );
 void draw_train( int train_id, train_position *train_pos );
 void erase_train( train_position *train_pos, char *layout);
 
@@ -58,6 +59,10 @@ void track_display() {
 			break;
 		case MSG_TYPE_DISP_SWITCH:
 			// printf( COM2, "track_display: show switch request recieved\n" );
+			bwassert( track[req.switch_id].type == NODE_BRANCH,
+				"Has to recieve a branch id" );
+
+			draw_branch( &track[req.switch_id], req.state, (char *)layout );
 
 			break;
 		default:
@@ -66,7 +71,6 @@ void track_display() {
 
 		Reply( sender_tid, 0, 0 );
 	}
-
 }
 
 int traverse_edge( track_edge *e, int length, train_position *train_pos,
@@ -241,8 +245,28 @@ void draw_track( char *layout ) {
 	Putstr( COM2, buff );
 }
 
+void draw_branch( track_node *branch, int state, char *layout ) {
+	char buff[50];
+	char *ptr = buff;
+
+	ptr += hideCursor( ptr );
+	ptr += saveCursor( ptr );
+	ptr += cursorPositioning( ptr,
+		TRACK_POS_LINE + branch->edge[state].ui_line - 1,
+		TRACK_POS_COL + branch->edge[state].ui_col );
+	ptr += sprintf( ptr, "%c",
+		*(layout + (branch->edge[state].ui_line)*TRACK_WIDTH + branch->edge[state].ui_col) );
+	ptr += cursorPositioning( ptr,
+		TRACK_POS_LINE + branch->edge[!state].ui_line - 1,
+		TRACK_POS_COL + branch->edge[!state].ui_col );
+	ptr += sprintf( ptr, "*" );
+	ptr += restoreCursor( ptr );
+	ptr += showCursor( ptr );
+	
+	Putstr( COM2, buff );
+}
+
 void draw_train( int train_id, train_position *train_pos) {
-	// printf( COM2, "draw_train: start\n" );
 	char buff[50];
 	char *ptr = buff;
 
@@ -255,7 +279,6 @@ void draw_train( int train_id, train_position *train_pos) {
 	ptr += showCursor( ptr );
 	
 	Putstr( COM2, buff );
-	// printf( COM2, "draw_train: landmark %d edge length is %d\n", landmark, egde_path_length );
 }
 
 void erase_train( train_position *train_pos, char *layout ) {

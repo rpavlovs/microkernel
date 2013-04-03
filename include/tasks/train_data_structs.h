@@ -47,6 +47,7 @@ typedef struct{
 } Train_position;
 
 typedef struct{
+	int calibrated_dist_index;		// Only used for short distances. 
 	int train_speed;				// The current speed in terms of the "train" notation (1-14)
 	int distance_type;				// The type of distance, short or long. 
 	int distance_to_travel;			
@@ -67,6 +68,7 @@ typedef struct{
 struct Train_status_struct{
 	// Train Info
 	int train_id;
+	int train_num;						// The index in the manager server (used for displaying the info about the train in the right line). 
 
 	// Current State
 	int train_state;
@@ -110,6 +112,7 @@ typedef struct{
 // -- Messages ------------------------------
 typedef struct {
 	int train_id; 
+	int train_num; 
 	int direction; 
 	track_node *track; 
 } Train_initialization_msg;

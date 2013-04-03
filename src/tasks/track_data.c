@@ -6,7 +6,8 @@ static void *memset(void *s, int c, unsigned int n) {
   return s;
 }
 
-void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_node));
+void init_tracka(track_node *track) {
+  memset(track, 0, TRACK_MAX*sizeof(track_node));
   track[0].name = "A1";
   track[0].type = NODE_SENSOR;
   track[0].num = 0;
@@ -14,7 +15,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[0].edge[DIR_AHEAD].reverse = &track[102].edge[DIR_STRAIGHT];
   track[0].edge[DIR_AHEAD].src = &track[0];
   track[0].edge[DIR_AHEAD].dest = &track[103];
-  track[0].edge[DIR_AHEAD].dist = 218;
+  track[0].edge[DIR_AHEAD].dist = 231;
   track[0].edge[DIR_AHEAD].ui_line = 1; 
   track[0].edge[DIR_AHEAD].ui_col = 28;
   track[0].edge[DIR_AHEAD].ui_len = 5;
@@ -26,7 +27,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[1].edge[DIR_AHEAD].reverse = &track[132].edge[DIR_AHEAD];
   track[1].edge[DIR_AHEAD].src = &track[1];
   track[1].edge[DIR_AHEAD].dest = &track[133];
-  track[1].edge[DIR_AHEAD].dist = 500;
+  track[1].edge[DIR_AHEAD].dist = 504;
   track[1].edge[DIR_AHEAD].ui_line = 1; 
   track[1].edge[DIR_AHEAD].ui_col = 27;
   track[1].edge[DIR_AHEAD].ui_len = 26;
@@ -38,7 +39,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[2].edge[DIR_AHEAD].reverse = &track[107].edge[DIR_AHEAD];
   track[2].edge[DIR_AHEAD].src = &track[2];
   track[2].edge[DIR_AHEAD].dest = &track[106];
-  track[2].edge[DIR_AHEAD].dist = 62;
+  track[2].edge[DIR_AHEAD].dist = 43;
   track[2].edge[DIR_AHEAD].ui_line = 9; 
   track[2].edge[DIR_AHEAD].ui_col = 28;
   track[2].edge[DIR_AHEAD].ui_len = 1;
@@ -50,7 +51,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[3].edge[DIR_AHEAD].reverse = &track[30].edge[DIR_AHEAD];
   track[3].edge[DIR_AHEAD].src = &track[3];
   track[3].edge[DIR_AHEAD].dest = &track[31];
-  track[3].edge[DIR_AHEAD].dist = 440;
+  track[3].edge[DIR_AHEAD].dist = 437;
   track[3].edge[DIR_AHEAD].ui_line = 10; 
   track[3].edge[DIR_AHEAD].ui_col = 27;
   track[3].edge[DIR_AHEAD].ui_len = 10;
@@ -62,7 +63,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[4].edge[DIR_AHEAD].reverse = &track[84].edge[DIR_STRAIGHT];
   track[4].edge[DIR_AHEAD].src = &track[4];
   track[4].edge[DIR_AHEAD].dest = &track[85];
-  track[4].edge[DIR_AHEAD].dist = 216;
+  track[4].edge[DIR_AHEAD].dist = 231;
   track[4].edge[DIR_AHEAD].ui_line = 29; 
   track[4].edge[DIR_AHEAD].ui_col = 38;
   track[4].edge[DIR_AHEAD].ui_len = 2;
@@ -74,7 +75,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[5].edge[DIR_AHEAD].reverse = &track[24].edge[DIR_AHEAD];
   track[5].edge[DIR_AHEAD].src = &track[5];
   track[5].edge[DIR_AHEAD].dest = &track[25];
-  track[5].edge[DIR_AHEAD].dist = 649;
+  track[5].edge[DIR_AHEAD].dist = 642;
   track[5].edge[DIR_AHEAD].ui_line = 29; 
   track[5].edge[DIR_AHEAD].ui_col = 37;
   track[5].edge[DIR_AHEAD].ui_len = 32;
@@ -86,7 +87,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[6].edge[DIR_AHEAD].reverse = &track[26].edge[DIR_AHEAD];
   track[6].edge[DIR_AHEAD].src = &track[6];
   track[6].edge[DIR_AHEAD].dest = &track[27];
-  track[6].edge[DIR_AHEAD].dist = 473;
+  track[6].edge[DIR_AHEAD].dist = 470;
   track[6].edge[DIR_AHEAD].ui_line = 27; 
   track[6].edge[DIR_AHEAD].ui_col = 28;
   track[6].edge[DIR_AHEAD].ui_len = 23;
@@ -98,7 +99,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[7].edge[DIR_AHEAD].reverse = &track[82].edge[DIR_CURVED];
   track[7].edge[DIR_AHEAD].src = &track[7];
   track[7].edge[DIR_AHEAD].dest = &track[83];
-  track[7].edge[DIR_AHEAD].dist = 211;
+  track[7].edge[DIR_AHEAD].dist = 229;
   track[7].edge[DIR_AHEAD].ui_line = 27; 
   track[7].edge[DIR_AHEAD].ui_col = 29;
   track[7].edge[DIR_AHEAD].ui_len = 1;
@@ -122,7 +123,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[9].edge[DIR_AHEAD].reverse = &track[80].edge[DIR_CURVED];
   track[9].edge[DIR_AHEAD].src = &track[9];
   track[9].edge[DIR_AHEAD].dest = &track[81];
-  track[9].edge[DIR_AHEAD].dist = 210;
+  track[9].edge[DIR_AHEAD].dist = 229;
   track[9].edge[DIR_AHEAD].ui_line = 25; 
   track[9].edge[DIR_AHEAD].ui_col = 20;
   track[9].edge[DIR_AHEAD].ui_len = 1;
@@ -134,7 +135,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[10].edge[DIR_AHEAD].reverse = &track[80].edge[DIR_STRAIGHT];
   track[10].edge[DIR_AHEAD].src = &track[10];
   track[10].edge[DIR_AHEAD].dest = &track[81];
-  track[10].edge[DIR_AHEAD].dist = 410;
+  track[10].edge[DIR_AHEAD].dist = 518;
   track[10].edge[DIR_AHEAD].ui_line = 23; 
   track[10].edge[DIR_AHEAD].ui_col = 5;
   track[10].edge[DIR_AHEAD].ui_len = 17;
@@ -146,7 +147,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[11].edge[DIR_AHEAD].reverse = &track[138].edge[DIR_AHEAD];
   track[11].edge[DIR_AHEAD].src = &track[11];
   track[11].edge[DIR_AHEAD].dest = &track[139];
-  track[11].edge[DIR_AHEAD].dist = 60;
+  track[11].edge[DIR_AHEAD].dist = 43;
   track[11].edge[DIR_AHEAD].ui_line = 23; 
   track[11].edge[DIR_AHEAD].ui_col = 4;
   track[11].edge[DIR_AHEAD].ui_len = 1;
@@ -158,7 +159,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[12].edge[DIR_AHEAD].reverse = &track[86].edge[DIR_CURVED];
   track[12].edge[DIR_AHEAD].src = &track[12];
   track[12].edge[DIR_AHEAD].dest = &track[87];
-  track[12].edge[DIR_AHEAD].dist = 215;
+  track[12].edge[DIR_AHEAD].dist = 236;
   track[12].edge[DIR_AHEAD].ui_line = 3; 
   track[12].edge[DIR_AHEAD].ui_col = 18;
   track[12].edge[DIR_AHEAD].ui_len = 7;
@@ -170,7 +171,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[13].edge[DIR_AHEAD].reverse = &track[130].edge[DIR_AHEAD];
   track[13].edge[DIR_AHEAD].src = &track[13];
   track[13].edge[DIR_AHEAD].dest = &track[131];
-  track[13].edge[DIR_AHEAD].dist = 320;
+  track[13].edge[DIR_AHEAD].dist = 325;
   track[13].edge[DIR_AHEAD].ui_line = 3; 
   track[13].edge[DIR_AHEAD].ui_col = 17;
   track[13].edge[DIR_AHEAD].ui_len = 16;
@@ -182,7 +183,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[14].edge[DIR_AHEAD].reverse = &track[134].edge[DIR_AHEAD];
   track[14].edge[DIR_AHEAD].src = &track[14];
   track[14].edge[DIR_AHEAD].dest = &track[135];
-  track[14].edge[DIR_AHEAD].dist = 145;
+  track[14].edge[DIR_AHEAD].dist = 144;
   track[14].edge[DIR_AHEAD].ui_line = 5; 
   track[14].edge[DIR_AHEAD].ui_col = 8;
   track[14].edge[DIR_AHEAD].ui_len = 6;
@@ -194,7 +195,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[15].edge[DIR_AHEAD].reverse = &track[86].edge[DIR_STRAIGHT];
   track[15].edge[DIR_AHEAD].src = &track[15];
   track[15].edge[DIR_AHEAD].dest = &track[87];
-  track[15].edge[DIR_AHEAD].dist = 394;
+  track[15].edge[DIR_AHEAD].dist = 417;
   track[15].edge[DIR_AHEAD].ui_line = 5; 
   track[15].edge[DIR_AHEAD].ui_col = 9;
   track[15].edge[DIR_AHEAD].ui_len = 16;
@@ -206,7 +207,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[16].edge[DIR_AHEAD].reverse = &track[60].edge[DIR_AHEAD];
   track[16].edge[DIR_AHEAD].src = &track[16];
   track[16].edge[DIR_AHEAD].dest = &track[61];
-  track[16].edge[DIR_AHEAD].dist = 398;
+  track[16].edge[DIR_AHEAD].dist = 404;
   track[16].edge[DIR_AHEAD].ui_line = 25; 
   track[16].edge[DIR_AHEAD].ui_col = 63;
   track[16].edge[DIR_AHEAD].ui_len = 21;
@@ -218,7 +219,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[17].edge[DIR_AHEAD].reverse = &track[110].edge[DIR_STRAIGHT];
   track[17].edge[DIR_AHEAD].src = &track[17];
   track[17].edge[DIR_AHEAD].dest = &track[111];
-  track[17].edge[DIR_AHEAD].dist = 225;
+  track[17].edge[DIR_AHEAD].dist = 231;
   track[17].edge[DIR_AHEAD].ui_line = 25; 
   track[17].edge[DIR_AHEAD].ui_col = 62;
   track[17].edge[DIR_AHEAD].ui_len = 2;
@@ -230,7 +231,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[18].edge[DIR_AHEAD].reverse = &track[32].edge[DIR_AHEAD];
   track[18].edge[DIR_AHEAD].src = &track[18];
   track[18].edge[DIR_AHEAD].dest = &track[33];
-  track[18].edge[DIR_AHEAD].dist = 230;
+  track[18].edge[DIR_AHEAD].dist = 201;
   track[18].edge[DIR_AHEAD].ui_line = 24; 
   track[18].edge[DIR_AHEAD].ui_col = 63;
   track[18].edge[DIR_AHEAD].ui_len = 6;
@@ -242,7 +243,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[19].edge[DIR_AHEAD].reverse = &track[110].edge[DIR_CURVED];
   track[19].edge[DIR_AHEAD].src = &track[19];
   track[19].edge[DIR_AHEAD].dest = &track[111];
-  track[19].edge[DIR_AHEAD].dist = 220;
+  track[19].edge[DIR_AHEAD].dist = 239;
   track[19].edge[DIR_AHEAD].ui_line = 24; 
   track[19].edge[DIR_AHEAD].ui_col = 62;
   track[19].edge[DIR_AHEAD].ui_len = 3;
@@ -254,7 +255,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[20].edge[DIR_AHEAD].reverse = &track[51].edge[DIR_AHEAD];
   track[20].edge[DIR_AHEAD].src = &track[20];
   track[20].edge[DIR_AHEAD].dest = &track[50];
-  track[20].edge[DIR_AHEAD].dist = 405;
+  track[20].edge[DIR_AHEAD].dist = 404;
   track[20].edge[DIR_AHEAD].ui_line = 3; 
   track[20].edge[DIR_AHEAD].ui_col = 63;
   track[20].edge[DIR_AHEAD].ui_len = 21;
@@ -266,7 +267,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[21].edge[DIR_AHEAD].reverse = &track[104].edge[DIR_STRAIGHT];
   track[21].edge[DIR_AHEAD].src = &track[21];
   track[21].edge[DIR_AHEAD].dest = &track[105];
-  track[21].edge[DIR_AHEAD].dist = 214;
+  track[21].edge[DIR_AHEAD].dist = 231;
   track[21].edge[DIR_AHEAD].ui_line = 3; 
   track[21].edge[DIR_AHEAD].ui_col = 62;
   track[21].edge[DIR_AHEAD].ui_len = 7;
@@ -290,7 +291,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[23].edge[DIR_AHEAD].reverse = &track[136].edge[DIR_AHEAD];
   track[23].edge[DIR_AHEAD].src = &track[23];
   track[23].edge[DIR_AHEAD].dest = &track[137];
-  track[23].edge[DIR_AHEAD].dist = 60;
+  track[23].edge[DIR_AHEAD].dist = 43;
   track[23].edge[DIR_AHEAD].ui_line = 25; 
   track[23].edge[DIR_AHEAD].ui_col = 4;
   track[23].edge[DIR_AHEAD].ui_len = 2;
@@ -302,7 +303,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[24].edge[DIR_AHEAD].reverse = &track[5].edge[DIR_AHEAD];
   track[24].edge[DIR_AHEAD].src = &track[24];
   track[24].edge[DIR_AHEAD].dest = &track[4];
-  track[24].edge[DIR_AHEAD].dist = 649;
+  track[24].edge[DIR_AHEAD].dist = 642;
   track[24].edge[DIR_AHEAD].ui_line = 29; 
   track[24].edge[DIR_AHEAD].ui_col = 5;
   track[24].edge[DIR_AHEAD].ui_len = 32;
@@ -314,7 +315,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[25].edge[DIR_AHEAD].reverse = &track[140].edge[DIR_AHEAD];
   track[25].edge[DIR_AHEAD].src = &track[25];
   track[25].edge[DIR_AHEAD].dest = &track[141];
-  track[25].edge[DIR_AHEAD].dist = 70;
+  track[25].edge[DIR_AHEAD].dist = 50;
   track[25].edge[DIR_AHEAD].ui_line = 29; 
   track[25].edge[DIR_AHEAD].ui_col = 4;
   track[25].edge[DIR_AHEAD].ui_len = 2;
@@ -326,7 +327,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[26].edge[DIR_AHEAD].reverse = &track[6].edge[DIR_AHEAD];
   track[26].edge[DIR_AHEAD].src = &track[26];
   track[26].edge[DIR_AHEAD].dest = &track[7];
-  track[26].edge[DIR_AHEAD].dist = 473;
+  track[26].edge[DIR_AHEAD].dist = 470;
   track[26].edge[DIR_AHEAD].ui_line = 27; 
   track[26].edge[DIR_AHEAD].ui_col = 5;
   track[26].edge[DIR_AHEAD].ui_len = 23;
@@ -338,7 +339,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[27].edge[DIR_AHEAD].reverse = &track[142].edge[DIR_AHEAD];
   track[27].edge[DIR_AHEAD].src = &track[27];
   track[27].edge[DIR_AHEAD].dest = &track[143];
-  track[27].edge[DIR_AHEAD].dist = 70;
+  track[27].edge[DIR_AHEAD].dist = 50;
   track[27].edge[DIR_AHEAD].ui_line = 27; 
   track[27].edge[DIR_AHEAD].ui_col = 4;
   track[27].edge[DIR_AHEAD].ui_len = 2;
@@ -350,7 +351,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[28].edge[DIR_AHEAD].reverse = &track[118].edge[DIR_CURVED];
   track[28].edge[DIR_AHEAD].src = &track[28];
   track[28].edge[DIR_AHEAD].dest = &track[119];
-  track[28].edge[DIR_AHEAD].dist = 224;
+  track[28].edge[DIR_AHEAD].dist = 239;
   track[28].edge[DIR_AHEAD].ui_line = 21; 
   track[28].edge[DIR_AHEAD].ui_col = 76;
   track[28].edge[DIR_AHEAD].ui_len = 4;
@@ -362,7 +363,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[29].edge[DIR_AHEAD].reverse = &track[62].edge[DIR_AHEAD];
   track[29].edge[DIR_AHEAD].src = &track[29];
   track[29].edge[DIR_AHEAD].dest = &track[63];
-  track[29].edge[DIR_AHEAD].dist = 202;
+  track[29].edge[DIR_AHEAD].dist = 201;
   track[29].edge[DIR_AHEAD].ui_line = 21; 
   track[29].edge[DIR_AHEAD].ui_col = 77;
   track[29].edge[DIR_AHEAD].ui_len = 7;
@@ -374,7 +375,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[30].edge[DIR_AHEAD].reverse = &track[3].edge[DIR_AHEAD];
   track[30].edge[DIR_AHEAD].src = &track[30];
   track[30].edge[DIR_AHEAD].dest = &track[2];
-  track[30].edge[DIR_AHEAD].dist = 440;
+  track[30].edge[DIR_AHEAD].dist = 437;
   track[30].edge[DIR_AHEAD].ui_line = 20; 
   track[30].edge[DIR_AHEAD].ui_col = 28;
   track[30].edge[DIR_AHEAD].ui_len = 10;
@@ -386,7 +387,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[31].edge[DIR_AHEAD].reverse = &track[109].edge[DIR_AHEAD];
   track[31].edge[DIR_AHEAD].src = &track[31];
   track[31].edge[DIR_AHEAD].dest = &track[108];
-  track[31].edge[DIR_AHEAD].dist = 70;
+  track[31].edge[DIR_AHEAD].dist = 50;
   track[31].edge[DIR_AHEAD].ui_line = 21; 
   track[31].edge[DIR_AHEAD].ui_col = 29;
   track[31].edge[DIR_AHEAD].ui_len = 2;
@@ -398,7 +399,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[32].edge[DIR_AHEAD].reverse = &track[18].edge[DIR_AHEAD];
   track[32].edge[DIR_AHEAD].src = &track[32];
   track[32].edge[DIR_AHEAD].dest = &track[19];
-  track[32].edge[DIR_AHEAD].dist = 230;
+  track[32].edge[DIR_AHEAD].dist = 201;
   track[32].edge[DIR_AHEAD].ui_line = 21; 
   track[32].edge[DIR_AHEAD].ui_col = 69;
   track[32].edge[DIR_AHEAD].ui_len = 6;
@@ -410,7 +411,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[33].edge[DIR_AHEAD].reverse = &track[116].edge[DIR_CURVED];
   track[33].edge[DIR_AHEAD].src = &track[33];
   track[33].edge[DIR_AHEAD].dest = &track[117];
-  track[33].edge[DIR_AHEAD].dist = 228;
+  track[33].edge[DIR_AHEAD].dist = 246;
   track[33].edge[DIR_AHEAD].ui_line = 21; 
   track[33].edge[DIR_AHEAD].ui_col = 70;
   track[33].edge[DIR_AHEAD].ui_len = 3;
@@ -422,7 +423,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[34].edge[DIR_AHEAD].reverse = &track[128].edge[DIR_AHEAD];
   track[34].edge[DIR_AHEAD].src = &track[34];
   track[34].edge[DIR_AHEAD].dest = &track[129];
-  track[34].edge[DIR_AHEAD].dist = 410;
+  track[34].edge[DIR_AHEAD].dist = 514;
   track[34].edge[DIR_AHEAD].ui_line = 29; 
   track[34].edge[DIR_AHEAD].ui_col = 89;
   track[34].edge[DIR_AHEAD].ui_len = 23;
@@ -434,7 +435,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[35].edge[DIR_AHEAD].reverse = &track[88].edge[DIR_STRAIGHT];
   track[35].edge[DIR_AHEAD].src = &track[35];
   track[35].edge[DIR_AHEAD].dest = &track[89];
-  track[35].edge[DIR_AHEAD].dist = 226;
+  track[35].edge[DIR_AHEAD].dist = 239;
   track[35].edge[DIR_AHEAD].ui_line = 29; 
   track[35].edge[DIR_AHEAD].ui_col = 90;
   track[35].edge[DIR_AHEAD].ui_len = 3;
@@ -446,7 +447,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[36].edge[DIR_AHEAD].reverse = &track[91].edge[DIR_AHEAD];
   track[36].edge[DIR_AHEAD].src = &track[36];
   track[36].edge[DIR_AHEAD].dest = &track[90];
-  track[36].edge[DIR_AHEAD].dist = 79;
+  track[36].edge[DIR_AHEAD].dist = 61;
   track[36].edge[DIR_AHEAD].ui_line = 27; 
   track[36].edge[DIR_AHEAD].ui_col = 47;
   track[36].edge[DIR_AHEAD].ui_len = 7;
@@ -458,7 +459,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[37].edge[DIR_AHEAD].reverse = &track[108].edge[DIR_STRAIGHT];
   track[37].edge[DIR_AHEAD].src = &track[37];
   track[37].edge[DIR_AHEAD].dest = &track[109];
-  track[37].edge[DIR_AHEAD].dist = 411;
+  track[37].edge[DIR_AHEAD].dist = 433;
   track[37].edge[DIR_AHEAD].ui_line = 27; 
   track[37].edge[DIR_AHEAD].ui_col = 46;
   track[37].edge[DIR_AHEAD].ui_len = 14;
@@ -470,7 +471,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[38].edge[DIR_AHEAD].reverse = &track[114].edge[DIR_STRAIGHT];
   track[38].edge[DIR_AHEAD].src = &track[38];
   track[38].edge[DIR_AHEAD].dest = &track[115];
-  track[38].edge[DIR_AHEAD].dist = 215;
+  track[38].edge[DIR_AHEAD].dist = 231;
   track[38].edge[DIR_AHEAD].ui_line = 29; 
   track[38].edge[DIR_AHEAD].ui_col = 56;
   track[38].edge[DIR_AHEAD].ui_len = 4;
@@ -482,7 +483,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[39].edge[DIR_AHEAD].reverse = &track[85].edge[DIR_AHEAD];
   track[39].edge[DIR_AHEAD].src = &track[39];
   track[39].edge[DIR_AHEAD].dest = &track[84];
-  track[39].edge[DIR_AHEAD].dist = 145;
+  track[39].edge[DIR_AHEAD].dist = 128;
   track[39].edge[DIR_AHEAD].ui_line = 29; 
   track[39].edge[DIR_AHEAD].ui_col = 57;
   track[39].edge[DIR_AHEAD].ui_len = 15;
@@ -494,7 +495,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[40].edge[DIR_AHEAD].reverse = &track[108].edge[DIR_CURVED];
   track[40].edge[DIR_AHEAD].src = &track[40];
   track[40].edge[DIR_AHEAD].dest = &track[109];
-  track[40].edge[DIR_AHEAD].dist = 305;
+  track[40].edge[DIR_AHEAD].dist = 326;
   track[40].edge[DIR_AHEAD].ui_line = 25; 
   track[40].edge[DIR_AHEAD].ui_col = 43;
   track[40].edge[DIR_AHEAD].ui_len = 10;
@@ -506,7 +507,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[41].edge[DIR_AHEAD].reverse = &track[111].edge[DIR_AHEAD];
   track[41].edge[DIR_AHEAD].src = &track[41];
   track[41].edge[DIR_AHEAD].dest = &track[110];
-  track[41].edge[DIR_AHEAD].dist = 146;
+  track[41].edge[DIR_AHEAD].dist = 128;
   track[41].edge[DIR_AHEAD].ui_line = 25; 
   track[41].edge[DIR_AHEAD].ui_col = 44;
   track[41].edge[DIR_AHEAD].ui_len = 14;
@@ -518,7 +519,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[42].edge[DIR_AHEAD].reverse = &track[105].edge[DIR_AHEAD];
   track[42].edge[DIR_AHEAD].src = &track[42];
   track[42].edge[DIR_AHEAD].dest = &track[104];
-  track[42].edge[DIR_AHEAD].dist = 140;
+  track[42].edge[DIR_AHEAD].dist = 120;
   track[42].edge[DIR_AHEAD].ui_line = 3; 
   track[42].edge[DIR_AHEAD].ui_col = 44;
   track[42].edge[DIR_AHEAD].ui_len = 10;
@@ -530,7 +531,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[43].edge[DIR_AHEAD].reverse = &track[106].edge[DIR_CURVED];
   track[43].edge[DIR_AHEAD].src = &track[43];
   track[43].edge[DIR_AHEAD].dest = &track[107];
-  track[43].edge[DIR_AHEAD].dist = 314;
+  track[43].edge[DIR_AHEAD].dist = 333;
   track[43].edge[DIR_AHEAD].ui_line = 3; 
   track[43].edge[DIR_AHEAD].ui_col = 43;
   track[43].edge[DIR_AHEAD].ui_len = 12;
@@ -542,7 +543,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[44].edge[DIR_AHEAD].reverse = &track[71].edge[DIR_AHEAD];
   track[44].edge[DIR_AHEAD].src = &track[44];
   track[44].edge[DIR_AHEAD].dest = &track[70];
-  track[44].edge[DIR_AHEAD].dist = 877;
+  track[44].edge[DIR_AHEAD].dist = 875;
   track[44].edge[DIR_AHEAD].ui_line = 1; 
   track[44].edge[DIR_AHEAD].ui_col = 53;
   track[44].edge[DIR_AHEAD].ui_len = 46;
@@ -554,7 +555,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[45].edge[DIR_AHEAD].reverse = &track[101].edge[DIR_AHEAD];
   track[45].edge[DIR_AHEAD].src = &track[45];
   track[45].edge[DIR_AHEAD].dest = &track[100];
-  track[45].edge[DIR_AHEAD].dist = 60;
+  track[45].edge[DIR_AHEAD].dist = 43;
   track[45].edge[DIR_AHEAD].ui_line = 1; 
   track[45].edge[DIR_AHEAD].ui_col = 52;
   track[45].edge[DIR_AHEAD].ui_len = 7;
@@ -566,7 +567,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[46].edge[DIR_AHEAD].reverse = &track[58].edge[DIR_AHEAD];
   track[46].edge[DIR_AHEAD].src = &track[46];
   track[46].edge[DIR_AHEAD].dest = &track[59];
-  track[46].edge[DIR_AHEAD].dist = 405;
+  track[46].edge[DIR_AHEAD].dist = 404;
   track[46].edge[DIR_AHEAD].ui_line = 27; 
   track[46].edge[DIR_AHEAD].ui_col = 63;
   track[46].edge[DIR_AHEAD].ui_len = 21;
@@ -578,7 +579,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[47].edge[DIR_AHEAD].reverse = &track[90].edge[DIR_STRAIGHT];
   track[47].edge[DIR_AHEAD].src = &track[47];
   track[47].edge[DIR_AHEAD].dest = &track[91];
-  track[47].edge[DIR_AHEAD].dist = 223;
+  track[47].edge[DIR_AHEAD].dist = 239;
   track[47].edge[DIR_AHEAD].ui_line = 27; 
   track[47].edge[DIR_AHEAD].ui_col = 62;
   track[47].edge[DIR_AHEAD].ui_len = 7;
@@ -590,7 +591,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[48].edge[DIR_AHEAD].reverse = &track[120].edge[DIR_CURVED];
   track[48].edge[DIR_AHEAD].src = &track[48];
   track[48].edge[DIR_AHEAD].dest = &track[121];
-  track[48].edge[DIR_AHEAD].dist = 227;
+  track[48].edge[DIR_AHEAD].dist = 246;
   track[48].edge[DIR_AHEAD].ui_line = 9; 
   track[48].edge[DIR_AHEAD].ui_col = 76;
   track[48].edge[DIR_AHEAD].ui_len = 3;
@@ -602,7 +603,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[49].edge[DIR_AHEAD].reverse = &track[66].edge[DIR_AHEAD];
   track[49].edge[DIR_AHEAD].src = &track[49];
   track[49].edge[DIR_AHEAD].dest = &track[67];
-  track[49].edge[DIR_AHEAD].dist = 200;
+  track[49].edge[DIR_AHEAD].dist = 201;
   track[49].edge[DIR_AHEAD].ui_line = 8; 
   track[49].edge[DIR_AHEAD].ui_col = 77;
   track[49].edge[DIR_AHEAD].ui_len = 7;
@@ -614,7 +615,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[50].edge[DIR_AHEAD].reverse = &track[98].edge[DIR_STRAIGHT];
   track[50].edge[DIR_AHEAD].src = &track[50];
   track[50].edge[DIR_AHEAD].dest = &track[99];
-  track[50].edge[DIR_AHEAD].dist = 223;
+  track[50].edge[DIR_AHEAD].dist = 239;
   track[50].edge[DIR_AHEAD].ui_line = 3; 
   track[50].edge[DIR_AHEAD].ui_col = 85;
   track[50].edge[DIR_AHEAD].ui_len = 6;
@@ -626,7 +627,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[51].edge[DIR_AHEAD].reverse = &track[20].edge[DIR_AHEAD];
   track[51].edge[DIR_AHEAD].src = &track[51];
   track[51].edge[DIR_AHEAD].dest = &track[21];
-  track[51].edge[DIR_AHEAD].dist = 405;
+  track[51].edge[DIR_AHEAD].dist = 404;
   track[51].edge[DIR_AHEAD].ui_line = 3; 
   track[51].edge[DIR_AHEAD].ui_col = 84;
   track[51].edge[DIR_AHEAD].ui_len = 21;
@@ -638,7 +639,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[52].edge[DIR_AHEAD].reverse = &track[68].edge[DIR_AHEAD];
   track[52].edge[DIR_AHEAD].src = &track[52];
   track[52].edge[DIR_AHEAD].dest = &track[69];
-  track[52].edge[DIR_AHEAD].dist = 375;
+  track[52].edge[DIR_AHEAD].dist = 376;
   track[52].edge[DIR_AHEAD].ui_line = 7; 
   track[52].edge[DIR_AHEAD].ui_col = 116;
   track[52].edge[DIR_AHEAD].ui_len = 16;
@@ -650,7 +651,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[53].edge[DIR_AHEAD].reverse = &track[96].edge[DIR_CURVED];
   track[53].edge[DIR_AHEAD].src = &track[53];
   track[53].edge[DIR_AHEAD].dest = &track[97];
-  track[53].edge[DIR_AHEAD].dist = 213;
+  track[53].edge[DIR_AHEAD].dist = 239;
   track[53].edge[DIR_AHEAD].ui_line = 8; 
   track[53].edge[DIR_AHEAD].ui_col = 117;
   track[53].edge[DIR_AHEAD].ui_len = 4;
@@ -662,7 +663,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[54].edge[DIR_AHEAD].reverse = &track[96].edge[DIR_STRAIGHT];
   track[54].edge[DIR_AHEAD].src = &track[54];
   track[54].edge[DIR_AHEAD].dest = &track[97];
-  track[54].edge[DIR_AHEAD].dist = 290;
+  track[54].edge[DIR_AHEAD].dist = 309;
   track[54].edge[DIR_AHEAD].ui_line = 6; 
   track[54].edge[DIR_AHEAD].ui_col = 118;
   track[54].edge[DIR_AHEAD].ui_len = 6;
@@ -674,7 +675,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[55].edge[DIR_AHEAD].reverse = &track[70].edge[DIR_AHEAD];
   track[55].edge[DIR_AHEAD].src = &track[55];
   track[55].edge[DIR_AHEAD].dest = &track[71];
-  track[55].edge[DIR_AHEAD].dist = 375;
+  track[55].edge[DIR_AHEAD].dist = 384;
   track[55].edge[DIR_AHEAD].ui_line = 5; 
   track[55].edge[DIR_AHEAD].ui_col = 117;
   track[55].edge[DIR_AHEAD].ui_len = 17;
@@ -686,7 +687,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[56].edge[DIR_AHEAD].reverse = &track[74].edge[DIR_AHEAD];
   track[56].edge[DIR_AHEAD].src = &track[56];
   track[56].edge[DIR_AHEAD].dest = &track[75];
-  track[56].edge[DIR_AHEAD].dist = 361;
+  track[56].edge[DIR_AHEAD].dist = 369;
   track[56].edge[DIR_AHEAD].ui_line = 25; 
   track[56].edge[DIR_AHEAD].ui_col = 116;
   track[56].edge[DIR_AHEAD].ui_len = 16;
@@ -698,7 +699,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[57].edge[DIR_AHEAD].reverse = &track[94].edge[DIR_STRAIGHT];
   track[57].edge[DIR_AHEAD].src = &track[57];
   track[57].edge[DIR_AHEAD].dest = &track[95];
-  track[57].edge[DIR_AHEAD].dist = 291;
+  track[57].edge[DIR_AHEAD].dist = 316;
   track[57].edge[DIR_AHEAD].ui_line = 24; 
   track[57].edge[DIR_AHEAD].ui_col = 117;
   track[57].edge[DIR_AHEAD].ui_len = 7;
@@ -710,7 +711,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[58].edge[DIR_AHEAD].reverse = &track[46].edge[DIR_AHEAD];
   track[58].edge[DIR_AHEAD].src = &track[58];
   track[58].edge[DIR_AHEAD].dest = &track[47];
-  track[58].edge[DIR_AHEAD].dist = 405;
+  track[58].edge[DIR_AHEAD].dist = 404;
   track[58].edge[DIR_AHEAD].ui_line = 27; 
   track[58].edge[DIR_AHEAD].ui_col = 84;
   track[58].edge[DIR_AHEAD].ui_len = 21;
@@ -722,7 +723,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[59].edge[DIR_AHEAD].reverse = &track[92].edge[DIR_STRAIGHT];
   track[59].edge[DIR_AHEAD].src = &track[59];
   track[59].edge[DIR_AHEAD].dest = &track[93];
-  track[59].edge[DIR_AHEAD].dist = 220;
+  track[59].edge[DIR_AHEAD].dist = 231;
   track[59].edge[DIR_AHEAD].ui_line = 27; 
   track[59].edge[DIR_AHEAD].ui_col = 85;
   track[59].edge[DIR_AHEAD].ui_len = 7;
@@ -734,7 +735,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[60].edge[DIR_AHEAD].reverse = &track[16].edge[DIR_AHEAD];
   track[60].edge[DIR_AHEAD].src = &track[60];
   track[60].edge[DIR_AHEAD].dest = &track[17];
-  track[60].edge[DIR_AHEAD].dist = 398;
+  track[60].edge[DIR_AHEAD].dist = 404;
   track[60].edge[DIR_AHEAD].ui_line = 25; 
   track[60].edge[DIR_AHEAD].ui_col = 84;
   track[60].edge[DIR_AHEAD].ui_len = 21;
@@ -746,7 +747,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[61].edge[DIR_AHEAD].reverse = &track[112].edge[DIR_STRAIGHT];
   track[61].edge[DIR_AHEAD].src = &track[61];
   track[61].edge[DIR_AHEAD].dest = &track[113];
-  track[61].edge[DIR_AHEAD].dist = 225;
+  track[61].edge[DIR_AHEAD].dist = 239;
   track[61].edge[DIR_AHEAD].ui_line = 25; 
   track[61].edge[DIR_AHEAD].ui_col = 85;
   track[61].edge[DIR_AHEAD].ui_len = 2;
@@ -758,7 +759,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[62].edge[DIR_AHEAD].reverse = &track[29].edge[DIR_AHEAD];
   track[62].edge[DIR_AHEAD].src = &track[62];
   track[62].edge[DIR_AHEAD].dest = &track[28];
-  track[62].edge[DIR_AHEAD].dist = 202;
+  track[62].edge[DIR_AHEAD].dist = 201;
   track[62].edge[DIR_AHEAD].ui_line = 24; 
   track[62].edge[DIR_AHEAD].ui_col = 84;
   track[62].edge[DIR_AHEAD].ui_len = 7;
@@ -770,7 +771,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[63].edge[DIR_AHEAD].reverse = &track[112].edge[DIR_CURVED];
   track[63].edge[DIR_AHEAD].src = &track[63];
   track[63].edge[DIR_AHEAD].dest = &track[113];
-  track[63].edge[DIR_AHEAD].dist = 230;
+  track[63].edge[DIR_AHEAD].dist = 246;
   track[63].edge[DIR_AHEAD].ui_line = 24; 
   track[63].edge[DIR_AHEAD].ui_col = 85;
   track[63].edge[DIR_AHEAD].ui_len = 3;
@@ -782,7 +783,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[64].edge[DIR_AHEAD].reverse = &track[122].edge[DIR_CURVED];
   track[64].edge[DIR_AHEAD].src = &track[64];
   track[64].edge[DIR_AHEAD].dest = &track[123];
-  track[64].edge[DIR_AHEAD].dist = 222;
+  track[64].edge[DIR_AHEAD].dist = 239;
   track[64].edge[DIR_AHEAD].ui_line = 10; 
   track[64].edge[DIR_AHEAD].ui_col = 71;
   track[64].edge[DIR_AHEAD].ui_len = 3;
@@ -794,7 +795,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[65].edge[DIR_AHEAD].reverse = &track[79].edge[DIR_AHEAD];
   track[65].edge[DIR_AHEAD].src = &track[65];
   track[65].edge[DIR_AHEAD].dest = &track[78];
-  track[65].edge[DIR_AHEAD].dist = 203;
+  track[65].edge[DIR_AHEAD].dist = 201;
   track[65].edge[DIR_AHEAD].ui_line = 9; 
   track[65].edge[DIR_AHEAD].ui_col = 70;
   track[65].edge[DIR_AHEAD].ui_len = 7;
@@ -806,7 +807,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[66].edge[DIR_AHEAD].reverse = &track[49].edge[DIR_AHEAD];
   track[66].edge[DIR_AHEAD].src = &track[66];
   track[66].edge[DIR_AHEAD].dest = &track[48];
-  track[66].edge[DIR_AHEAD].dist = 200;
+  track[66].edge[DIR_AHEAD].dist = 201;
   track[66].edge[DIR_AHEAD].ui_line = 5; 
   track[66].edge[DIR_AHEAD].ui_col = 84;
   track[66].edge[DIR_AHEAD].ui_len = 7;
@@ -818,7 +819,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[67].edge[DIR_AHEAD].reverse = &track[98].edge[DIR_CURVED];
   track[67].edge[DIR_AHEAD].src = &track[67];
   track[67].edge[DIR_AHEAD].dest = &track[99];
-  track[67].edge[DIR_AHEAD].dist = 220;
+  track[67].edge[DIR_AHEAD].dist = 239;
   track[67].edge[DIR_AHEAD].ui_line = 4; 
   track[67].edge[DIR_AHEAD].ui_col = 85;
   track[67].edge[DIR_AHEAD].ui_len = 6;
@@ -830,7 +831,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[68].edge[DIR_AHEAD].reverse = &track[52].edge[DIR_AHEAD];
   track[68].edge[DIR_AHEAD].src = &track[68];
   track[68].edge[DIR_AHEAD].dest = &track[53];
-  track[68].edge[DIR_AHEAD].dist = 375;
+  track[68].edge[DIR_AHEAD].dist = 376;
   track[68].edge[DIR_AHEAD].ui_line = 3; 
   track[68].edge[DIR_AHEAD].ui_col = 100;
   track[68].edge[DIR_AHEAD].ui_len = 16;
@@ -842,7 +843,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[69].edge[DIR_AHEAD].reverse = &track[99].edge[DIR_AHEAD];
   track[69].edge[DIR_AHEAD].src = &track[69];
   track[69].edge[DIR_AHEAD].dest = &track[98];
-  track[69].edge[DIR_AHEAD].dist = 74;
+  track[69].edge[DIR_AHEAD].dist = 50;
   track[69].edge[DIR_AHEAD].ui_line = 3; 
   track[69].edge[DIR_AHEAD].ui_col = 99;
   track[69].edge[DIR_AHEAD].ui_len = 7;
@@ -854,7 +855,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[70].edge[DIR_AHEAD].reverse = &track[55].edge[DIR_AHEAD];
   track[70].edge[DIR_AHEAD].src = &track[70];
   track[70].edge[DIR_AHEAD].dest = &track[54];
-  track[70].edge[DIR_AHEAD].dist = 375;
+  track[70].edge[DIR_AHEAD].dist = 384;
   track[70].edge[DIR_AHEAD].ui_line = 1; 
   track[70].edge[DIR_AHEAD].ui_col = 100;
   track[70].edge[DIR_AHEAD].ui_len = 17;
@@ -866,7 +867,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[71].edge[DIR_AHEAD].reverse = &track[44].edge[DIR_AHEAD];
   track[71].edge[DIR_AHEAD].src = &track[71];
   track[71].edge[DIR_AHEAD].dest = &track[45];
-  track[71].edge[DIR_AHEAD].dist = 877;
+  track[71].edge[DIR_AHEAD].dist = 875;
   track[71].edge[DIR_AHEAD].ui_line = 1; 
   track[71].edge[DIR_AHEAD].ui_col = 99;
   track[71].edge[DIR_AHEAD].ui_len = 46;
@@ -878,7 +879,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[72].edge[DIR_AHEAD].reverse = &track[94].edge[DIR_CURVED];
   track[72].edge[DIR_AHEAD].src = &track[72];
   track[72].edge[DIR_AHEAD].dest = &track[95];
-  track[72].edge[DIR_AHEAD].dist = 215;
+  track[72].edge[DIR_AHEAD].dist = 239;
   track[72].edge[DIR_AHEAD].ui_line = 22; 
   track[72].edge[DIR_AHEAD].ui_col = 117;
   track[72].edge[DIR_AHEAD].ui_len = 4;
@@ -890,7 +891,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[73].edge[DIR_AHEAD].reverse = &track[77].edge[DIR_AHEAD];
   track[73].edge[DIR_AHEAD].src = &track[73];
   track[73].edge[DIR_AHEAD].dest = &track[76];
-  track[73].edge[DIR_AHEAD].dist = 375;
+  track[73].edge[DIR_AHEAD].dist = 376;
   track[73].edge[DIR_AHEAD].ui_line = 22; 
   track[73].edge[DIR_AHEAD].ui_col = 116;
   track[73].edge[DIR_AHEAD].ui_len = 16;
@@ -902,7 +903,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[74].edge[DIR_AHEAD].reverse = &track[56].edge[DIR_AHEAD];
   track[74].edge[DIR_AHEAD].src = &track[74];
   track[74].edge[DIR_AHEAD].dest = &track[57];
-  track[74].edge[DIR_AHEAD].dist = 361;
+  track[74].edge[DIR_AHEAD].dist = 369;
   track[74].edge[DIR_AHEAD].ui_line = 27; 
   track[74].edge[DIR_AHEAD].ui_col = 100;
   track[74].edge[DIR_AHEAD].ui_len = 16;
@@ -914,7 +915,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[75].edge[DIR_AHEAD].reverse = &track[93].edge[DIR_AHEAD];
   track[75].edge[DIR_AHEAD].src = &track[75];
   track[75].edge[DIR_AHEAD].dest = &track[92];
-  track[75].edge[DIR_AHEAD].dist = 65;
+  track[75].edge[DIR_AHEAD].dist = 50;
   track[75].edge[DIR_AHEAD].ui_line = 27; 
   track[75].edge[DIR_AHEAD].ui_col = 99;
   track[75].edge[DIR_AHEAD].ui_len = 6;
@@ -926,7 +927,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[76].edge[DIR_AHEAD].reverse = &track[113].edge[DIR_AHEAD];
   track[76].edge[DIR_AHEAD].src = &track[76];
   track[76].edge[DIR_AHEAD].dest = &track[112];
-  track[76].edge[DIR_AHEAD].dist = 62;
+  track[76].edge[DIR_AHEAD].dist = 43;
   track[76].edge[DIR_AHEAD].ui_line = 25; 
   track[76].edge[DIR_AHEAD].ui_col = 99;
   track[76].edge[DIR_AHEAD].ui_len = 10;
@@ -938,7 +939,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[77].edge[DIR_AHEAD].reverse = &track[73].edge[DIR_AHEAD];
   track[77].edge[DIR_AHEAD].src = &track[77];
   track[77].edge[DIR_AHEAD].dest = &track[72];
-  track[77].edge[DIR_AHEAD].dist = 375;
+  track[77].edge[DIR_AHEAD].dist = 376;
   track[77].edge[DIR_AHEAD].ui_line = 25; 
   track[77].edge[DIR_AHEAD].ui_col = 100;
   track[77].edge[DIR_AHEAD].ui_len = 16;
@@ -950,7 +951,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[78].edge[DIR_AHEAD].reverse = &track[104].edge[DIR_CURVED];
   track[78].edge[DIR_AHEAD].src = &track[78];
   track[78].edge[DIR_AHEAD].dest = &track[105];
-  track[78].edge[DIR_AHEAD].dist = 230;
+  track[78].edge[DIR_AHEAD].dist = 246;
   track[78].edge[DIR_AHEAD].ui_line = 5; 
   track[78].edge[DIR_AHEAD].ui_col = 62;
   track[78].edge[DIR_AHEAD].ui_len = 7;
@@ -962,7 +963,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[79].edge[DIR_AHEAD].reverse = &track[65].edge[DIR_AHEAD];
   track[79].edge[DIR_AHEAD].src = &track[79];
   track[79].edge[DIR_AHEAD].dest = &track[64];
-  track[79].edge[DIR_AHEAD].dist = 203;
+  track[79].edge[DIR_AHEAD].dist = 201;
   track[79].edge[DIR_AHEAD].ui_line = 6; 
   track[79].edge[DIR_AHEAD].ui_col = 63;
   track[79].edge[DIR_AHEAD].ui_len = 7;
@@ -974,14 +975,14 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[80].edge[DIR_STRAIGHT].reverse = &track[10].edge[DIR_AHEAD];
   track[80].edge[DIR_STRAIGHT].src = &track[80];
   track[80].edge[DIR_STRAIGHT].dest = &track[11];
-  track[80].edge[DIR_STRAIGHT].dist = 410;
+  track[80].edge[DIR_STRAIGHT].dist = 518;
   track[80].edge[DIR_STRAIGHT].ui_line = 25; 
   track[80].edge[DIR_STRAIGHT].ui_col = 22;
   track[80].edge[DIR_STRAIGHT].ui_len = 17;
   track[80].edge[DIR_CURVED].reverse = &track[9].edge[DIR_AHEAD];
   track[80].edge[DIR_CURVED].src = &track[80];
   track[80].edge[DIR_CURVED].dest = &track[8];
-  track[80].edge[DIR_CURVED].dist = 210;
+  track[80].edge[DIR_CURVED].dist = 229;
   track[80].edge[DIR_CURVED].ui_line = 25; 
   track[80].edge[DIR_CURVED].ui_col = 21;
   track[80].edge[DIR_CURVED].ui_len = 1;
@@ -993,7 +994,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[81].edge[DIR_AHEAD].reverse = &track[82].edge[DIR_STRAIGHT];
   track[81].edge[DIR_AHEAD].src = &track[81];
   track[81].edge[DIR_AHEAD].dest = &track[83];
-  track[81].edge[DIR_AHEAD].dist = 191;
+  track[81].edge[DIR_AHEAD].dist = 188;
   track[81].edge[DIR_AHEAD].ui_line = 26; 
   track[81].edge[DIR_AHEAD].ui_col = 23;
   track[81].edge[DIR_AHEAD].ui_len = 8;
@@ -1005,14 +1006,14 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[82].edge[DIR_STRAIGHT].reverse = &track[81].edge[DIR_AHEAD];
   track[82].edge[DIR_STRAIGHT].src = &track[82];
   track[82].edge[DIR_STRAIGHT].dest = &track[80];
-  track[82].edge[DIR_STRAIGHT].dist = 191;
+  track[82].edge[DIR_STRAIGHT].dist = 188;
   track[82].edge[DIR_STRAIGHT].ui_line = 27; 
   track[82].edge[DIR_STRAIGHT].ui_col = 31;
   track[82].edge[DIR_STRAIGHT].ui_len = 8;
   track[82].edge[DIR_CURVED].reverse = &track[7].edge[DIR_AHEAD];
   track[82].edge[DIR_CURVED].src = &track[82];
   track[82].edge[DIR_CURVED].dest = &track[6];
-  track[82].edge[DIR_CURVED].dist = 211;
+  track[82].edge[DIR_CURVED].dist = 229;
   track[82].edge[DIR_CURVED].ui_line = 27; 
   track[82].edge[DIR_CURVED].ui_col = 30;
   track[82].edge[DIR_CURVED].ui_len = 1;
@@ -1024,7 +1025,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[83].edge[DIR_AHEAD].reverse = &track[84].edge[DIR_CURVED];
   track[83].edge[DIR_AHEAD].src = &track[83];
   track[83].edge[DIR_AHEAD].dest = &track[85];
-  track[83].edge[DIR_AHEAD].dist = 182;
+  track[83].edge[DIR_AHEAD].dist = 185;
   track[83].edge[DIR_AHEAD].ui_line = 28; 
   track[83].edge[DIR_AHEAD].ui_col = 32;
   track[83].edge[DIR_AHEAD].ui_len = 9;
@@ -1036,14 +1037,14 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[84].edge[DIR_STRAIGHT].reverse = &track[4].edge[DIR_AHEAD];
   track[84].edge[DIR_STRAIGHT].src = &track[84];
   track[84].edge[DIR_STRAIGHT].dest = &track[5];
-  track[84].edge[DIR_STRAIGHT].dist = 216;
+  track[84].edge[DIR_STRAIGHT].dist = 231;
   track[84].edge[DIR_STRAIGHT].ui_line = 29; 
   track[84].edge[DIR_STRAIGHT].ui_col = 40;
   track[84].edge[DIR_STRAIGHT].ui_len = 2;
   track[84].edge[DIR_CURVED].reverse = &track[83].edge[DIR_AHEAD];
   track[84].edge[DIR_CURVED].src = &track[84];
   track[84].edge[DIR_CURVED].dest = &track[82];
-  track[84].edge[DIR_CURVED].dist = 182;
+  track[84].edge[DIR_CURVED].dist = 185;
   track[84].edge[DIR_CURVED].ui_line = 29; 
   track[84].edge[DIR_CURVED].ui_col = 41;
   track[84].edge[DIR_CURVED].ui_len = 9;
@@ -1055,7 +1056,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[85].edge[DIR_AHEAD].reverse = &track[39].edge[DIR_AHEAD];
   track[85].edge[DIR_AHEAD].src = &track[85];
   track[85].edge[DIR_AHEAD].dest = &track[38];
-  track[85].edge[DIR_AHEAD].dist = 145;
+  track[85].edge[DIR_AHEAD].dist = 128;
   track[85].edge[DIR_AHEAD].ui_line = 29; 
   track[85].edge[DIR_AHEAD].ui_col = 42;
   track[85].edge[DIR_AHEAD].ui_len = 15;
@@ -1067,14 +1068,14 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[86].edge[DIR_STRAIGHT].reverse = &track[15].edge[DIR_AHEAD];
   track[86].edge[DIR_STRAIGHT].src = &track[86];
   track[86].edge[DIR_STRAIGHT].dest = &track[14];
-  track[86].edge[DIR_STRAIGHT].dist = 394;
+  track[86].edge[DIR_STRAIGHT].dist = 417;
   track[86].edge[DIR_STRAIGHT].ui_line = 4; 
   track[86].edge[DIR_STRAIGHT].ui_col = 25;
   track[86].edge[DIR_STRAIGHT].ui_len = 16;
   track[86].edge[DIR_CURVED].reverse = &track[12].edge[DIR_AHEAD];
   track[86].edge[DIR_CURVED].src = &track[86];
   track[86].edge[DIR_CURVED].dest = &track[13];
-  track[86].edge[DIR_CURVED].dist = 215;
+  track[86].edge[DIR_CURVED].dist = 236;
   track[86].edge[DIR_CURVED].ui_line = 3; 
   track[86].edge[DIR_CURVED].ui_col = 25;
   track[86].edge[DIR_CURVED].ui_len = 7;
@@ -1098,14 +1099,14 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[88].edge[DIR_STRAIGHT].reverse = &track[35].edge[DIR_AHEAD];
   track[88].edge[DIR_STRAIGHT].src = &track[88];
   track[88].edge[DIR_STRAIGHT].dest = &track[34];
-  track[88].edge[DIR_STRAIGHT].dist = 226;
+  track[88].edge[DIR_STRAIGHT].dist = 239;
   track[88].edge[DIR_STRAIGHT].ui_line = 29; 
   track[88].edge[DIR_STRAIGHT].ui_col = 87;
   track[88].edge[DIR_STRAIGHT].ui_len = 3;
   track[88].edge[DIR_CURVED].reverse = &track[92].edge[DIR_CURVED];
   track[88].edge[DIR_CURVED].src = &track[88];
   track[88].edge[DIR_CURVED].dest = &track[93];
-  track[88].edge[DIR_CURVED].dist = 334;
+  track[88].edge[DIR_CURVED].dist = 371;
   track[88].edge[DIR_CURVED].ui_line = 29; 
   track[88].edge[DIR_CURVED].ui_col = 86;
   track[88].edge[DIR_CURVED].ui_len = 6;
@@ -1117,7 +1118,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[89].edge[DIR_AHEAD].reverse = &track[115].edge[DIR_AHEAD];
   track[89].edge[DIR_AHEAD].src = &track[89];
   track[89].edge[DIR_AHEAD].dest = &track[114];
-  track[89].edge[DIR_AHEAD].dist = 187;
+  track[89].edge[DIR_AHEAD].dist = 155;
   track[89].edge[DIR_AHEAD].ui_line = 29; 
   track[89].edge[DIR_AHEAD].ui_col = 85;
   track[89].edge[DIR_AHEAD].ui_len = 23;
@@ -1129,14 +1130,14 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[90].edge[DIR_STRAIGHT].reverse = &track[47].edge[DIR_AHEAD];
   track[90].edge[DIR_STRAIGHT].src = &track[90];
   track[90].edge[DIR_STRAIGHT].dest = &track[46];
-  track[90].edge[DIR_STRAIGHT].dist = 223;
+  track[90].edge[DIR_STRAIGHT].dist = 239;
   track[90].edge[DIR_STRAIGHT].ui_line = 27; 
   track[90].edge[DIR_STRAIGHT].ui_col = 55;
   track[90].edge[DIR_STRAIGHT].ui_len = 7;
   track[90].edge[DIR_CURVED].reverse = &track[114].edge[DIR_CURVED];
   track[90].edge[DIR_CURVED].src = &track[90];
   track[90].edge[DIR_CURVED].dest = &track[115];
-  track[90].edge[DIR_CURVED].dist = 338;
+  track[90].edge[DIR_CURVED].dist = 371;
   track[90].edge[DIR_CURVED].ui_line = 28; 
   track[90].edge[DIR_CURVED].ui_col = 55;
   track[90].edge[DIR_CURVED].ui_len = 6;
@@ -1148,7 +1149,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[91].edge[DIR_AHEAD].reverse = &track[36].edge[DIR_AHEAD];
   track[91].edge[DIR_AHEAD].src = &track[91];
   track[91].edge[DIR_AHEAD].dest = &track[37];
-  track[91].edge[DIR_AHEAD].dist = 79;
+  track[91].edge[DIR_AHEAD].dist = 61;
   track[91].edge[DIR_AHEAD].ui_line = 27; 
   track[91].edge[DIR_AHEAD].ui_col = 54;
   track[91].edge[DIR_AHEAD].ui_len = 7;
@@ -1160,14 +1161,14 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[92].edge[DIR_STRAIGHT].reverse = &track[59].edge[DIR_AHEAD];
   track[92].edge[DIR_STRAIGHT].src = &track[92];
   track[92].edge[DIR_STRAIGHT].dest = &track[58];
-  track[92].edge[DIR_STRAIGHT].dist = 220;
+  track[92].edge[DIR_STRAIGHT].dist = 231;
   track[92].edge[DIR_STRAIGHT].ui_line = 27; 
   track[92].edge[DIR_STRAIGHT].ui_col = 92;
   track[92].edge[DIR_STRAIGHT].ui_len = 7;
   track[92].edge[DIR_CURVED].reverse = &track[88].edge[DIR_CURVED];
   track[92].edge[DIR_CURVED].src = &track[92];
   track[92].edge[DIR_CURVED].dest = &track[89];
-  track[92].edge[DIR_CURVED].dist = 334;
+  track[92].edge[DIR_CURVED].dist = 371;
   track[92].edge[DIR_CURVED].ui_line = 28; 
   track[92].edge[DIR_CURVED].ui_col = 92;
   track[92].edge[DIR_CURVED].ui_len = 6;
@@ -1179,7 +1180,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[93].edge[DIR_AHEAD].reverse = &track[75].edge[DIR_AHEAD];
   track[93].edge[DIR_AHEAD].src = &track[93];
   track[93].edge[DIR_AHEAD].dest = &track[74];
-  track[93].edge[DIR_AHEAD].dist = 65;
+  track[93].edge[DIR_AHEAD].dist = 50;
   track[93].edge[DIR_AHEAD].ui_line = 27; 
   track[93].edge[DIR_AHEAD].ui_col = 93;
   track[93].edge[DIR_AHEAD].ui_len = 6;
@@ -1191,14 +1192,14 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[94].edge[DIR_STRAIGHT].reverse = &track[57].edge[DIR_AHEAD];
   track[94].edge[DIR_STRAIGHT].src = &track[94];
   track[94].edge[DIR_STRAIGHT].dest = &track[56];
-  track[94].edge[DIR_STRAIGHT].dist = 291;
+  track[94].edge[DIR_STRAIGHT].dist = 316;
   track[94].edge[DIR_STRAIGHT].ui_line = 18; 
   track[94].edge[DIR_STRAIGHT].ui_col = 122;
   track[94].edge[DIR_STRAIGHT].ui_len = 7;
   track[94].edge[DIR_CURVED].reverse = &track[72].edge[DIR_AHEAD];
   track[94].edge[DIR_CURVED].src = &track[94];
   track[94].edge[DIR_CURVED].dest = &track[73];
-  track[94].edge[DIR_CURVED].dist = 215;
+  track[94].edge[DIR_CURVED].dist = 239;
   track[94].edge[DIR_CURVED].ui_line = 18; 
   track[94].edge[DIR_CURVED].ui_col = 121;
   track[94].edge[DIR_CURVED].ui_len = 4;
@@ -1210,7 +1211,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[95].edge[DIR_AHEAD].reverse = &track[97].edge[DIR_AHEAD];
   track[95].edge[DIR_AHEAD].src = &track[95];
   track[95].edge[DIR_AHEAD].dest = &track[96];
-  track[95].edge[DIR_AHEAD].dist = 193;
+  track[95].edge[DIR_AHEAD].dist = 155;
   track[95].edge[DIR_AHEAD].ui_line = 17; 
   track[95].edge[DIR_AHEAD].ui_col = 122;
   track[95].edge[DIR_AHEAD].ui_len = 4;
@@ -1222,14 +1223,14 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[96].edge[DIR_STRAIGHT].reverse = &track[54].edge[DIR_AHEAD];
   track[96].edge[DIR_STRAIGHT].src = &track[96];
   track[96].edge[DIR_STRAIGHT].dest = &track[55];
-  track[96].edge[DIR_STRAIGHT].dist = 290;
+  track[96].edge[DIR_STRAIGHT].dist = 309;
   track[96].edge[DIR_STRAIGHT].ui_line = 12; 
   track[96].edge[DIR_STRAIGHT].ui_col = 122;
   track[96].edge[DIR_STRAIGHT].ui_len = 6;
   track[96].edge[DIR_CURVED].reverse = &track[53].edge[DIR_AHEAD];
   track[96].edge[DIR_CURVED].src = &track[96];
   track[96].edge[DIR_CURVED].dest = &track[52];
-  track[96].edge[DIR_CURVED].dist = 213;
+  track[96].edge[DIR_CURVED].dist = 239;
   track[96].edge[DIR_CURVED].ui_line = 12; 
   track[96].edge[DIR_CURVED].ui_col = 121;
   track[96].edge[DIR_CURVED].ui_len = 4;
@@ -1241,7 +1242,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[97].edge[DIR_AHEAD].reverse = &track[95].edge[DIR_AHEAD];
   track[97].edge[DIR_AHEAD].src = &track[97];
   track[97].edge[DIR_AHEAD].dest = &track[94];
-  track[97].edge[DIR_AHEAD].dist = 193;
+  track[97].edge[DIR_AHEAD].dist = 155;
   track[97].edge[DIR_AHEAD].ui_line = 13; 
   track[97].edge[DIR_AHEAD].ui_col = 122;
   track[97].edge[DIR_AHEAD].ui_len = 4;
@@ -1253,14 +1254,14 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[98].edge[DIR_STRAIGHT].reverse = &track[50].edge[DIR_AHEAD];
   track[98].edge[DIR_STRAIGHT].src = &track[98];
   track[98].edge[DIR_STRAIGHT].dest = &track[51];
-  track[98].edge[DIR_STRAIGHT].dist = 223;
+  track[98].edge[DIR_STRAIGHT].dist = 239;
   track[98].edge[DIR_STRAIGHT].ui_line = 3; 
   track[98].edge[DIR_STRAIGHT].ui_col = 91;
   track[98].edge[DIR_STRAIGHT].ui_len = 6;
   track[98].edge[DIR_CURVED].reverse = &track[67].edge[DIR_AHEAD];
   track[98].edge[DIR_CURVED].src = &track[98];
   track[98].edge[DIR_CURVED].dest = &track[66];
-  track[98].edge[DIR_CURVED].dist = 220;
+  track[98].edge[DIR_CURVED].dist = 239;
   track[98].edge[DIR_CURVED].ui_line = 4; 
   track[98].edge[DIR_CURVED].ui_col = 91;
   track[98].edge[DIR_CURVED].ui_len = 6;
@@ -1272,7 +1273,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[99].edge[DIR_AHEAD].reverse = &track[69].edge[DIR_AHEAD];
   track[99].edge[DIR_AHEAD].src = &track[99];
   track[99].edge[DIR_AHEAD].dest = &track[68];
-  track[99].edge[DIR_AHEAD].dist = 74;
+  track[99].edge[DIR_AHEAD].dist = 50;
   track[99].edge[DIR_AHEAD].ui_line = 3; 
   track[99].edge[DIR_AHEAD].ui_col = 92;
   track[99].edge[DIR_AHEAD].ui_len = 7;
@@ -1284,14 +1285,14 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[100].edge[DIR_STRAIGHT].reverse = &track[103].edge[DIR_AHEAD];
   track[100].edge[DIR_STRAIGHT].src = &track[100];
   track[100].edge[DIR_STRAIGHT].dest = &track[102];
-  track[100].edge[DIR_STRAIGHT].dist = 190;
+  track[100].edge[DIR_STRAIGHT].dist = 188;
   track[100].edge[DIR_STRAIGHT].ui_line = 1; 
   track[100].edge[DIR_STRAIGHT].ui_col = 44;
   track[100].edge[DIR_STRAIGHT].ui_len = 10;
   track[100].edge[DIR_CURVED].reverse = &track[106].edge[DIR_STRAIGHT];
   track[100].edge[DIR_CURVED].src = &track[100];
   track[100].edge[DIR_CURVED].dest = &track[107];
-  track[100].edge[DIR_CURVED].dist = 445;
+  track[100].edge[DIR_CURVED].dist = 495;
   track[100].edge[DIR_CURVED].ui_line = 2; 
   track[100].edge[DIR_CURVED].ui_col = 44;
   track[100].edge[DIR_CURVED].ui_len = 14;
@@ -1303,7 +1304,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[101].edge[DIR_AHEAD].reverse = &track[45].edge[DIR_AHEAD];
   track[101].edge[DIR_AHEAD].src = &track[101];
   track[101].edge[DIR_AHEAD].dest = &track[44];
-  track[101].edge[DIR_AHEAD].dist = 60;
+  track[101].edge[DIR_AHEAD].dist = 43;
   track[101].edge[DIR_AHEAD].ui_line = 1; 
   track[101].edge[DIR_AHEAD].ui_col = 45;
   track[101].edge[DIR_AHEAD].ui_len = 7;
@@ -1315,7 +1316,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[102].edge[DIR_STRAIGHT].reverse = &track[0].edge[DIR_AHEAD];
   track[102].edge[DIR_STRAIGHT].src = &track[102];
   track[102].edge[DIR_STRAIGHT].dest = &track[1];
-  track[102].edge[DIR_STRAIGHT].dist = 218;
+  track[102].edge[DIR_STRAIGHT].dist = 231;
   track[102].edge[DIR_STRAIGHT].ui_line = 1; 
   track[102].edge[DIR_STRAIGHT].ui_col = 33;
   track[102].edge[DIR_STRAIGHT].ui_len = 5;
@@ -1334,7 +1335,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[103].edge[DIR_AHEAD].reverse = &track[100].edge[DIR_STRAIGHT];
   track[103].edge[DIR_AHEAD].src = &track[103];
   track[103].edge[DIR_AHEAD].dest = &track[101];
-  track[103].edge[DIR_AHEAD].dist = 190;
+  track[103].edge[DIR_AHEAD].dist = 188;
   track[103].edge[DIR_AHEAD].ui_line = 1; 
   track[103].edge[DIR_AHEAD].ui_col = 34;
   track[103].edge[DIR_AHEAD].ui_len = 10;
@@ -1346,14 +1347,14 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[104].edge[DIR_STRAIGHT].reverse = &track[21].edge[DIR_AHEAD];
   track[104].edge[DIR_STRAIGHT].src = &track[104];
   track[104].edge[DIR_STRAIGHT].dest = &track[20];
-  track[104].edge[DIR_STRAIGHT].dist = 214;
+  track[104].edge[DIR_STRAIGHT].dist = 231;
   track[104].edge[DIR_STRAIGHT].ui_line = 3; 
   track[104].edge[DIR_STRAIGHT].ui_col = 55;
   track[104].edge[DIR_STRAIGHT].ui_len = 7;
   track[104].edge[DIR_CURVED].reverse = &track[78].edge[DIR_AHEAD];
   track[104].edge[DIR_CURVED].src = &track[104];
   track[104].edge[DIR_CURVED].dest = &track[79];
-  track[104].edge[DIR_CURVED].dist = 230;
+  track[104].edge[DIR_CURVED].dist = 246;
   track[104].edge[DIR_CURVED].ui_line = 4; 
   track[104].edge[DIR_CURVED].ui_col = 55;
   track[104].edge[DIR_CURVED].ui_len = 7;
@@ -1365,7 +1366,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[105].edge[DIR_AHEAD].reverse = &track[42].edge[DIR_AHEAD];
   track[105].edge[DIR_AHEAD].src = &track[105];
   track[105].edge[DIR_AHEAD].dest = &track[43];
-  track[105].edge[DIR_AHEAD].dist = 140;
+  track[105].edge[DIR_AHEAD].dist = 120;
   track[105].edge[DIR_AHEAD].ui_line = 3; 
   track[105].edge[DIR_AHEAD].ui_col = 54;
   track[105].edge[DIR_AHEAD].ui_len = 10;
@@ -1377,14 +1378,14 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[106].edge[DIR_STRAIGHT].reverse = &track[100].edge[DIR_CURVED];
   track[106].edge[DIR_STRAIGHT].src = &track[106];
   track[106].edge[DIR_STRAIGHT].dest = &track[101];
-  track[106].edge[DIR_STRAIGHT].dist = 445;
+  track[106].edge[DIR_STRAIGHT].dist = 495;
   track[106].edge[DIR_STRAIGHT].ui_line = 7; 
   track[106].edge[DIR_STRAIGHT].ui_col = 30;
   track[106].edge[DIR_STRAIGHT].ui_len = 14;
   track[106].edge[DIR_CURVED].reverse = &track[43].edge[DIR_AHEAD];
   track[106].edge[DIR_CURVED].src = &track[106];
   track[106].edge[DIR_CURVED].dest = &track[42];
-  track[106].edge[DIR_CURVED].dist = 314;
+  track[106].edge[DIR_CURVED].dist = 333;
   track[106].edge[DIR_CURVED].ui_line = 7; 
   track[106].edge[DIR_CURVED].ui_col = 31;
   track[106].edge[DIR_CURVED].ui_len = 12;
@@ -1396,7 +1397,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[107].edge[DIR_AHEAD].reverse = &track[2].edge[DIR_AHEAD];
   track[107].edge[DIR_AHEAD].src = &track[107];
   track[107].edge[DIR_AHEAD].dest = &track[3];
-  track[107].edge[DIR_AHEAD].dist = 62;
+  track[107].edge[DIR_AHEAD].dist = 43;
   track[107].edge[DIR_AHEAD].ui_line = 8; 
   track[107].edge[DIR_AHEAD].ui_col = 29;
   track[107].edge[DIR_AHEAD].ui_len = 1;
@@ -1408,14 +1409,14 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[108].edge[DIR_STRAIGHT].reverse = &track[37].edge[DIR_AHEAD];
   track[108].edge[DIR_STRAIGHT].src = &track[108];
   track[108].edge[DIR_STRAIGHT].dest = &track[36];
-  track[108].edge[DIR_STRAIGHT].dist = 411;
+  track[108].edge[DIR_STRAIGHT].dist = 433;
   track[108].edge[DIR_STRAIGHT].ui_line = 24; 
   track[108].edge[DIR_STRAIGHT].ui_col = 32;
   track[108].edge[DIR_STRAIGHT].ui_len = 14;
   track[108].edge[DIR_CURVED].reverse = &track[40].edge[DIR_AHEAD];
   track[108].edge[DIR_CURVED].src = &track[108];
   track[108].edge[DIR_CURVED].dest = &track[41];
-  track[108].edge[DIR_CURVED].dist = 305;
+  track[108].edge[DIR_CURVED].dist = 326;
   track[108].edge[DIR_CURVED].ui_line = 24; 
   track[108].edge[DIR_CURVED].ui_col = 33;
   track[108].edge[DIR_CURVED].ui_len = 10;
@@ -1427,7 +1428,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[109].edge[DIR_AHEAD].reverse = &track[31].edge[DIR_AHEAD];
   track[109].edge[DIR_AHEAD].src = &track[109];
   track[109].edge[DIR_AHEAD].dest = &track[30];
-  track[109].edge[DIR_AHEAD].dist = 70;
+  track[109].edge[DIR_AHEAD].dist = 50;
   track[109].edge[DIR_AHEAD].ui_line = 23; 
   track[109].edge[DIR_AHEAD].ui_col = 31;
   track[109].edge[DIR_AHEAD].ui_len = 2;
@@ -1439,14 +1440,14 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[110].edge[DIR_STRAIGHT].reverse = &track[17].edge[DIR_AHEAD];
   track[110].edge[DIR_STRAIGHT].src = &track[110];
   track[110].edge[DIR_STRAIGHT].dest = &track[16];
-  track[110].edge[DIR_STRAIGHT].dist = 225;
+  track[110].edge[DIR_STRAIGHT].dist = 231;
   track[110].edge[DIR_STRAIGHT].ui_line = 25; 
   track[110].edge[DIR_STRAIGHT].ui_col = 60;
   track[110].edge[DIR_STRAIGHT].ui_len = 2;
   track[110].edge[DIR_CURVED].reverse = &track[19].edge[DIR_AHEAD];
   track[110].edge[DIR_CURVED].src = &track[110];
   track[110].edge[DIR_CURVED].dest = &track[18];
-  track[110].edge[DIR_CURVED].dist = 220;
+  track[110].edge[DIR_CURVED].dist = 239;
   track[110].edge[DIR_CURVED].ui_line = 25; 
   track[110].edge[DIR_CURVED].ui_col = 59;
   track[110].edge[DIR_CURVED].ui_len = 3;
@@ -1458,7 +1459,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[111].edge[DIR_AHEAD].reverse = &track[41].edge[DIR_AHEAD];
   track[111].edge[DIR_AHEAD].src = &track[111];
   track[111].edge[DIR_AHEAD].dest = &track[40];
-  track[111].edge[DIR_AHEAD].dist = 146;
+  track[111].edge[DIR_AHEAD].dist = 128;
   track[111].edge[DIR_AHEAD].ui_line = 25; 
   track[111].edge[DIR_AHEAD].ui_col = 58;
   track[111].edge[DIR_AHEAD].ui_len = 14;
@@ -1470,14 +1471,14 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[112].edge[DIR_STRAIGHT].reverse = &track[61].edge[DIR_AHEAD];
   track[112].edge[DIR_STRAIGHT].src = &track[112];
   track[112].edge[DIR_STRAIGHT].dest = &track[60];
-  track[112].edge[DIR_STRAIGHT].dist = 225;
+  track[112].edge[DIR_STRAIGHT].dist = 239;
   track[112].edge[DIR_STRAIGHT].ui_line = 25; 
   track[112].edge[DIR_STRAIGHT].ui_col = 87;
   track[112].edge[DIR_STRAIGHT].ui_len = 2;
   track[112].edge[DIR_CURVED].reverse = &track[63].edge[DIR_AHEAD];
   track[112].edge[DIR_CURVED].src = &track[112];
   track[112].edge[DIR_CURVED].dest = &track[62];
-  track[112].edge[DIR_CURVED].dist = 230;
+  track[112].edge[DIR_CURVED].dist = 246;
   track[112].edge[DIR_CURVED].ui_line = 25; 
   track[112].edge[DIR_CURVED].ui_col = 88;
   track[112].edge[DIR_CURVED].ui_len = 3;
@@ -1489,7 +1490,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[113].edge[DIR_AHEAD].reverse = &track[76].edge[DIR_AHEAD];
   track[113].edge[DIR_AHEAD].src = &track[113];
   track[113].edge[DIR_AHEAD].dest = &track[77];
-  track[113].edge[DIR_AHEAD].dist = 62;
+  track[113].edge[DIR_AHEAD].dist = 43;
   track[113].edge[DIR_AHEAD].ui_line = 25; 
   track[113].edge[DIR_AHEAD].ui_col = 89;
   track[113].edge[DIR_AHEAD].ui_len = 10;
@@ -1501,14 +1502,14 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[114].edge[DIR_STRAIGHT].reverse = &track[38].edge[DIR_AHEAD];
   track[114].edge[DIR_STRAIGHT].src = &track[114];
   track[114].edge[DIR_STRAIGHT].dest = &track[39];
-  track[114].edge[DIR_STRAIGHT].dist = 215;
+  track[114].edge[DIR_STRAIGHT].dist = 231;
   track[114].edge[DIR_STRAIGHT].ui_line = 29; 
   track[114].edge[DIR_STRAIGHT].ui_col = 60;
   track[114].edge[DIR_STRAIGHT].ui_len = 4;
   track[114].edge[DIR_CURVED].reverse = &track[90].edge[DIR_CURVED];
   track[114].edge[DIR_CURVED].src = &track[114];
   track[114].edge[DIR_CURVED].dest = &track[91];
-  track[114].edge[DIR_CURVED].dist = 338;
+  track[114].edge[DIR_CURVED].dist = 371;
   track[114].edge[DIR_CURVED].ui_line = 29; 
   track[114].edge[DIR_CURVED].ui_col = 61;
   track[114].edge[DIR_CURVED].ui_len = 6;
@@ -1520,7 +1521,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[115].edge[DIR_AHEAD].reverse = &track[89].edge[DIR_AHEAD];
   track[115].edge[DIR_AHEAD].src = &track[115];
   track[115].edge[DIR_AHEAD].dest = &track[88];
-  track[115].edge[DIR_AHEAD].dist = 187;
+  track[115].edge[DIR_AHEAD].dist = 155;
   track[115].edge[DIR_AHEAD].ui_line = 29; 
   track[115].edge[DIR_AHEAD].ui_col = 62;
   track[115].edge[DIR_AHEAD].ui_len = 23;
@@ -1532,14 +1533,14 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[116].edge[DIR_STRAIGHT].reverse = &track[124].edge[DIR_AHEAD];
   track[116].edge[DIR_STRAIGHT].src = &track[116];
   track[116].edge[DIR_STRAIGHT].dest = &track[125];
-  track[116].edge[DIR_STRAIGHT].dist = 230;
+  track[116].edge[DIR_STRAIGHT].dist = 253;
   track[116].edge[DIR_STRAIGHT].ui_line = 18; 
   track[116].edge[DIR_STRAIGHT].ui_col = 73;
   track[116].edge[DIR_STRAIGHT].ui_len = 4;
   track[116].edge[DIR_CURVED].reverse = &track[33].edge[DIR_AHEAD];
   track[116].edge[DIR_CURVED].src = &track[116];
   track[116].edge[DIR_CURVED].dest = &track[32];
-  track[116].edge[DIR_CURVED].dist = 228;
+  track[116].edge[DIR_CURVED].dist = 246;
   track[116].edge[DIR_CURVED].ui_line = 18; 
   track[116].edge[DIR_CURVED].ui_col = 72;
   track[116].edge[DIR_CURVED].ui_len = 3;
@@ -1551,7 +1552,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[117].edge[DIR_AHEAD].reverse = &track[118].edge[DIR_STRAIGHT];
   track[117].edge[DIR_AHEAD].src = &track[117];
   track[117].edge[DIR_AHEAD].dest = &track[119];
-  track[117].edge[DIR_AHEAD].dist = 24;
+  track[117].edge[DIR_AHEAD].dist = 0;
   track[117].edge[DIR_AHEAD].ui_line = 17; 
   track[117].edge[DIR_AHEAD].ui_col = 73;
   track[117].edge[DIR_AHEAD].ui_len = 0;
@@ -1563,14 +1564,14 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[118].edge[DIR_STRAIGHT].reverse = &track[117].edge[DIR_AHEAD];
   track[118].edge[DIR_STRAIGHT].src = &track[118];
   track[118].edge[DIR_STRAIGHT].dest = &track[116];
-  track[118].edge[DIR_STRAIGHT].dist = 24;
+  track[118].edge[DIR_STRAIGHT].dist = 0;
   track[118].edge[DIR_STRAIGHT].ui_line = 17; 
   track[118].edge[DIR_STRAIGHT].ui_col = 73;
   track[118].edge[DIR_STRAIGHT].ui_len = 0;
   track[118].edge[DIR_CURVED].reverse = &track[28].edge[DIR_AHEAD];
   track[118].edge[DIR_CURVED].src = &track[118];
   track[118].edge[DIR_CURVED].dest = &track[29];
-  track[118].edge[DIR_CURVED].dist = 224;
+  track[118].edge[DIR_CURVED].dist = 239;
   track[118].edge[DIR_CURVED].ui_line = 17; 
   track[118].edge[DIR_CURVED].ui_col = 74;
   track[118].edge[DIR_CURVED].ui_len = 4;
@@ -1582,7 +1583,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[119].edge[DIR_AHEAD].reverse = &track[123].edge[DIR_AHEAD];
   track[119].edge[DIR_AHEAD].src = &track[119];
   track[119].edge[DIR_AHEAD].dest = &track[122];
-  track[119].edge[DIR_AHEAD].dist = 32;
+  track[119].edge[DIR_AHEAD].dist = 0;
   track[119].edge[DIR_AHEAD].ui_line = 16; 
   track[119].edge[DIR_AHEAD].ui_col = 73;
   track[119].edge[DIR_AHEAD].ui_len = 2;
@@ -1594,14 +1595,14 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[120].edge[DIR_STRAIGHT].reverse = &track[126].edge[DIR_AHEAD];
   track[120].edge[DIR_STRAIGHT].src = &track[120];
   track[120].edge[DIR_STRAIGHT].dest = &track[127];
-  track[120].edge[DIR_STRAIGHT].dist = 247;
+  track[120].edge[DIR_STRAIGHT].dist = 282;
   track[120].edge[DIR_STRAIGHT].ui_line = 12; 
   track[120].edge[DIR_STRAIGHT].ui_col = 73;
   track[120].edge[DIR_STRAIGHT].ui_len = 4;
   track[120].edge[DIR_CURVED].reverse = &track[48].edge[DIR_AHEAD];
   track[120].edge[DIR_CURVED].src = &track[120];
   track[120].edge[DIR_CURVED].dest = &track[49];
-  track[120].edge[DIR_CURVED].dist = 227;
+  track[120].edge[DIR_CURVED].dist = 246;
   track[120].edge[DIR_CURVED].ui_line = 12; 
   track[120].edge[DIR_CURVED].ui_col = 74;
   track[120].edge[DIR_CURVED].ui_len = 3;
@@ -1613,7 +1614,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[121].edge[DIR_AHEAD].reverse = &track[122].edge[DIR_STRAIGHT];
   track[121].edge[DIR_AHEAD].src = &track[121];
   track[121].edge[DIR_AHEAD].dest = &track[123];
-  track[121].edge[DIR_AHEAD].dist = 24;
+  track[121].edge[DIR_AHEAD].dist = 0;
   track[121].edge[DIR_AHEAD].ui_line = 13; 
   track[121].edge[DIR_AHEAD].ui_col = 73;
   track[121].edge[DIR_AHEAD].ui_len = 0;
@@ -1625,14 +1626,14 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[122].edge[DIR_STRAIGHT].reverse = &track[121].edge[DIR_AHEAD];
   track[122].edge[DIR_STRAIGHT].src = &track[122];
   track[122].edge[DIR_STRAIGHT].dest = &track[120];
-  track[122].edge[DIR_STRAIGHT].dist = 24;
+  track[122].edge[DIR_STRAIGHT].dist = 0;
   track[122].edge[DIR_STRAIGHT].ui_line = 13; 
   track[122].edge[DIR_STRAIGHT].ui_col = 73;
   track[122].edge[DIR_STRAIGHT].ui_len = 0;
   track[122].edge[DIR_CURVED].reverse = &track[64].edge[DIR_AHEAD];
   track[122].edge[DIR_CURVED].src = &track[122];
   track[122].edge[DIR_CURVED].dest = &track[65];
-  track[122].edge[DIR_CURVED].dist = 222;
+  track[122].edge[DIR_CURVED].dist = 239;
   track[122].edge[DIR_CURVED].ui_line = 13; 
   track[122].edge[DIR_CURVED].ui_col = 72;
   track[122].edge[DIR_CURVED].ui_len = 3;
@@ -1644,7 +1645,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[123].edge[DIR_AHEAD].reverse = &track[119].edge[DIR_AHEAD];
   track[123].edge[DIR_AHEAD].src = &track[123];
   track[123].edge[DIR_AHEAD].dest = &track[118];
-  track[123].edge[DIR_AHEAD].dist = 32;
+  track[123].edge[DIR_AHEAD].dist = 0;
   track[123].edge[DIR_AHEAD].ui_line = 14; 
   track[123].edge[DIR_AHEAD].ui_col = 73;
   track[123].edge[DIR_AHEAD].ui_len = 2;
@@ -1655,7 +1656,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[124].edge[DIR_AHEAD].reverse = &track[116].edge[DIR_STRAIGHT];
   track[124].edge[DIR_AHEAD].src = &track[124];
   track[124].edge[DIR_AHEAD].dest = &track[117];
-  track[124].edge[DIR_AHEAD].dist = 230;
+  track[124].edge[DIR_AHEAD].dist = 253;
   track[124].edge[DIR_AHEAD].ui_line = 22; 
   track[124].edge[DIR_AHEAD].ui_col = 73;
   track[124].edge[DIR_AHEAD].ui_len = 4;
@@ -1670,7 +1671,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[126].edge[DIR_AHEAD].reverse = &track[120].edge[DIR_STRAIGHT];
   track[126].edge[DIR_AHEAD].src = &track[126];
   track[126].edge[DIR_AHEAD].dest = &track[121];
-  track[126].edge[DIR_AHEAD].dist = 247;
+  track[126].edge[DIR_AHEAD].dist = 282;
   track[126].edge[DIR_AHEAD].ui_line = 8; 
   track[126].edge[DIR_AHEAD].ui_col = 73;
   track[126].edge[DIR_AHEAD].ui_len = 4;
@@ -1685,7 +1686,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[128].edge[DIR_AHEAD].reverse = &track[34].edge[DIR_AHEAD];
   track[128].edge[DIR_AHEAD].src = &track[128];
   track[128].edge[DIR_AHEAD].dest = &track[35];
-  track[128].edge[DIR_AHEAD].dist = 410;
+  track[128].edge[DIR_AHEAD].dist = 514;
   track[128].edge[DIR_AHEAD].ui_line = 29; 
   track[128].edge[DIR_AHEAD].ui_col = 112;
   track[128].edge[DIR_AHEAD].ui_len = 23;
@@ -1700,7 +1701,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[130].edge[DIR_AHEAD].reverse = &track[13].edge[DIR_AHEAD];
   track[130].edge[DIR_AHEAD].src = &track[130];
   track[130].edge[DIR_AHEAD].dest = &track[12];
-  track[130].edge[DIR_AHEAD].dist = 320;
+  track[130].edge[DIR_AHEAD].dist = 325;
   track[130].edge[DIR_AHEAD].ui_line = 3; 
   track[130].edge[DIR_AHEAD].ui_col = 1;
   track[130].edge[DIR_AHEAD].ui_len = 16;
@@ -1715,7 +1716,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[132].edge[DIR_AHEAD].reverse = &track[1].edge[DIR_AHEAD];
   track[132].edge[DIR_AHEAD].src = &track[132];
   track[132].edge[DIR_AHEAD].dest = &track[0];
-  track[132].edge[DIR_AHEAD].dist = 500;
+  track[132].edge[DIR_AHEAD].dist = 504;
   track[132].edge[DIR_AHEAD].ui_line = 1; 
   track[132].edge[DIR_AHEAD].ui_col = 1;
   track[132].edge[DIR_AHEAD].ui_len = 26;
@@ -1730,7 +1731,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[134].edge[DIR_AHEAD].reverse = &track[14].edge[DIR_AHEAD];
   track[134].edge[DIR_AHEAD].src = &track[134];
   track[134].edge[DIR_AHEAD].dest = &track[15];
-  track[134].edge[DIR_AHEAD].dist = 145;
+  track[134].edge[DIR_AHEAD].dist = 144;
   track[134].edge[DIR_AHEAD].ui_line = 5; 
   track[134].edge[DIR_AHEAD].ui_col = 2;
   track[134].edge[DIR_AHEAD].ui_len = 6;
@@ -1745,7 +1746,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[136].edge[DIR_AHEAD].reverse = &track[23].edge[DIR_AHEAD];
   track[136].edge[DIR_AHEAD].src = &track[136];
   track[136].edge[DIR_AHEAD].dest = &track[22];
-  track[136].edge[DIR_AHEAD].dist = 60;
+  track[136].edge[DIR_AHEAD].dist = 43;
   track[136].edge[DIR_AHEAD].ui_line = 25; 
   track[136].edge[DIR_AHEAD].ui_col = 2;
   track[136].edge[DIR_AHEAD].ui_len = 2;
@@ -1760,7 +1761,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[138].edge[DIR_AHEAD].reverse = &track[11].edge[DIR_AHEAD];
   track[138].edge[DIR_AHEAD].src = &track[138];
   track[138].edge[DIR_AHEAD].dest = &track[10];
-  track[138].edge[DIR_AHEAD].dist = 60;
+  track[138].edge[DIR_AHEAD].dist = 43;
   track[138].edge[DIR_AHEAD].ui_line = 23; 
   track[138].edge[DIR_AHEAD].ui_col = 3;
   track[138].edge[DIR_AHEAD].ui_len = 1;
@@ -1775,7 +1776,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[140].edge[DIR_AHEAD].reverse = &track[25].edge[DIR_AHEAD];
   track[140].edge[DIR_AHEAD].src = &track[140];
   track[140].edge[DIR_AHEAD].dest = &track[24];
-  track[140].edge[DIR_AHEAD].dist = 70;
+  track[140].edge[DIR_AHEAD].dist = 50;
   track[140].edge[DIR_AHEAD].ui_line = 29; 
   track[140].edge[DIR_AHEAD].ui_col = 2;
   track[140].edge[DIR_AHEAD].ui_len = 2;
@@ -1790,7 +1791,7 @@ void init_tracka(track_node *track) { memset(track, 0, TRACK_MAX*sizeof(track_no
   track[142].edge[DIR_AHEAD].reverse = &track[27].edge[DIR_AHEAD];
   track[142].edge[DIR_AHEAD].src = &track[142];
   track[142].edge[DIR_AHEAD].dest = &track[26];
-  track[142].edge[DIR_AHEAD].dist = 70;
+  track[142].edge[DIR_AHEAD].dist = 50;
   track[142].edge[DIR_AHEAD].ui_line = 27; 
   track[142].edge[DIR_AHEAD].ui_col = 2;
   track[142].edge[DIR_AHEAD].ui_len = 2;

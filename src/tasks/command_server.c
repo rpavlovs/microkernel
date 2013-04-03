@@ -36,7 +36,6 @@ void init_cmd_queue(Command_queue *cmd_queue){
 void enqueue_cmd( Command temp_cmd, Command_queue *cmd_queue ){
 	bwassert( cmd_queue->size != CHAR_QUEUE_SIZE, "Command queue should not overflow" );
 	
-	cmd_queue->size++; 
 	if ( ++(cmd_queue->newest) >= COMMAND_QUEUE_SIZE )
 		cmd_queue->newest = 0; 
 	
@@ -47,6 +46,8 @@ void enqueue_cmd( Command temp_cmd, Command_queue *cmd_queue ){
 	cmd->param = temp_cmd.param; 
 	cmd->sender_tid = temp_cmd.sender_tid; 
 	cmd->sensors = temp_cmd.sensors; 
+
+	cmd_queue->size++;
 }
 
 Command dequeue_cmd( Command_queue *cmd_queue ){
@@ -75,13 +76,16 @@ void command_notifier(){
 	Train_list train_list; 
 	init_train_list( &train_list ); 
 	
-	bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND SERVER: recieving init info" );
+	bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND_NOTIFIER: recieving init info" );
 	Receive( &cmd_server_tid, ( char * ) &initial_msg, sizeof( initial_msg ) );
 	Reply( cmd_server_tid, 0, 0 ); 
 	
 	Command_queue *cmd_queue = initial_msg.cmd_queue; 
 	FOREVER{
+		bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND_NOTIFIER: Listening for work" );
+
 		if( cmd_queue->size > 0 ){
+			bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND_NOTIFIER: Serving request" );
 			Command command = dequeue_cmd( cmd_queue ); 
 			char requested_pos; 
 			
@@ -94,8 +98,8 @@ void command_notifier(){
 					train_list.trains[ command.element_id ].speed = command.param; 
 					
 					// Send commands to UART 1. 
-					Putc( COM1, command.param );
-					Putc( COM1, command.element_id );
+					//Putc( COM1, command.param );
+					//Putc( COM1, command.element_id );
 					
 					bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND_NOTIFIER: finished tr command" );
 					break; 
@@ -103,18 +107,18 @@ void command_notifier(){
 					bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND_NOTIFIER: send rv" );
 					
 					// Stop train
-					Putc( COM1, 0 );				// Stop the train
-					Putc( COM1, command.element_id );
+					//Putc( COM1, 0 );				// Stop the train
+					//Putc( COM1, command.element_id );
 					if ( train_list.trains[ command.element_id ].speed > 0 )
 						Delay( REVERSE_CMD_DELAY );		// Wait some time to avoid damaging the trains. 
 					
 					// Reverse train
-					Putc( COM1, 15 );
-					Putc( COM1, command.element_id ); 
+					//Putc( COM1, 15 );
+					//Putc( COM1, command.element_id ); 
 					
 					// Restart train
-					Putc( COM1, train_list.trains[ command.element_id ].speed );
-					Putc( COM1, command.element_id ); 
+					//Putc( COM1, train_list.trains[ command.element_id ].speed );
+					//Putc( COM1, command.element_id ); 
 					
 					bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND_NOTIFIER: finished rv command" );
 					break; 
@@ -123,18 +127,18 @@ void command_notifier(){
 
 					requested_pos = ( char ) command.param; 
 					if ( requested_pos == SWITCH_STRAIGHT_POS ){
-						Putc( COM1, 33 );
+						//Putc( COM1, 33 );
 					}
 					else if ( requested_pos == SWITCH_CURVE_POS ){
-						Putc( COM1, 34 );
+						//Putc( COM1, 34 );
 					}
 					else{
-						bwassert( 0, "COMMAND SERVER: Invalid switch position. [ pos: %c ]", requested_pos ); 
+						bwassert( 0, "COMMAND_NOTIFIER: Invalid switch position. [ pos: %c ]", requested_pos ); 
 					}
-					Putc( COM1, command.element_id );
+					//Putc( COM1, command.element_id );
 					
 					// Reset the switch (so that the solenoid doesn't burn)
-					Putc( COM1, 32 );
+					//Putc( COM1, 32 );
 
 					bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND_NOTIFIER: finished sw command" );
 					break; 
@@ -142,13 +146,13 @@ void command_notifier(){
 					// Simply execute the reset code.
 					bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND_NOTIFIER: reset sensors" );
 
-					Putc( COM1, RESET_CODE );
+					//Putc( COM1, RESET_CODE );
 					Reply( command.sender_tid, 0, 0 ); 
 					bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND_NOTIFIER: finished resettting sensors command" );
 					break; 
 				case QUERY_SENSORS_CMD_TYPE:
 					bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND_NOTIFIER: query sensors" );
-					
+
 					// Init
 					char *sensors = command.sensors; 
 					
@@ -212,14 +216,14 @@ void commandserver(){
 
 		switch( cmd_request.type ){
 			case ADD_CMD_REQUEST:
-				bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND SERVER: Added command from [cmd: %d sender_tid: %d]",
-					cmd_request.cmd, sender_tid );
+				bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND SERVER: Added command [cmd_type: %d sender_tid: %d]",
+					cmd_request.cmd.cmd_type, sender_tid );
 				enqueue_cmd( cmd_request.cmd, &cmd_queue ); 
 				Reply( sender_tid, 0, 0 ); 
 				break; 
 			case QUERY_CMD_REQUEST:
-				bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND SERVER: Added query command from [sender_tid: %d]",
-					sender_tid );
+				bwdebug( DBG_USR, COMMAND_SERVER_DEBUG_AREA, "COMMAND SERVER: Added query command from [cmd_type: %d sender_tid: %d]",
+					cmd_request.cmd.cmd_type, sender_tid );
 				enqueue_cmd( cmd_request.cmd, &cmd_queue ); 
 				// NOTE: This command requires returning data. Hence, there's no reply here.
 				break; 

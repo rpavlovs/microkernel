@@ -22,6 +22,7 @@ void sensors_server_notifier(){
 	bwassert( cmd_server_tid >= 0, "SENSORS SERVER: This task requires the command server to be able to operate." ); 
 	
 	// Reset the sensors
+	bwdebug( DBG_SYS, SENSORS_SERVER_DEBUG_AREA, "SENSORS_SERVER_NOTIFIER: Resetting sensors" );
 	my_tid = MyTid(); 
 	cmd_request.type = QUERY_CMD_REQUEST; 
 	cmd_request.cmd.cmd_type = RESET_SENSORS_CMD_TYPE; 	
@@ -29,10 +30,13 @@ void sensors_server_notifier(){
 	Send( cmd_server_tid, ( char * ) &cmd_request, sizeof( cmd_request ), 0, 0  );
 	
 	// Receive trash?
+	bwdebug( DBG_SYS, SENSORS_SERVER_DEBUG_AREA, "SENSORS_SERVER_NOTIFIER: recieving trash" );
 	cmd_request.type = QUERY_CMD_REQUEST; 
 	cmd_request.cmd.cmd_type = QUERY_SENSORS_CMD_TYPE; 
 	cmd_request.cmd.sensors = sensor_data; 
 	Send( cmd_server_tid, ( char * ) &cmd_request, sizeof( cmd_request ), 0, 0  ); 
+
+	bwdebug( DBG_SYS, SENSORS_SERVER_DEBUG_AREA, "SENSORS_SERVER_NOTIFIER: Unblocking sensor server" );
 	Reply( sensor_server_tid, 0, 0 );
 	
 	// Configure the messages. 
@@ -144,6 +148,13 @@ void wake_all_sensors_waiting_tasks( All_sensors_waiting_queue *waiting_queue, S
 }
 
 // -- Sensor history manipulation  methods ------------------------------------------------------------------------------------------
+void init_sensor_data( char s88s[10] ){
+	int i; 
+	for ( i = 0; i < 10; i++ ){
+		s88s[i] = '\0';
+	}
+}
+
 void init_sensor_history( Sensor_history *history ) {
 	history->newest_pos = -1;
 	history->size = 0;
@@ -269,6 +280,8 @@ void sensors_server() {
 	Sensor_id_list_reply sensor_id_list_reply; 
 	
 	// Initialization
+	init_sensor_data( s88s ); 
+	init_sensor_data( s88s_prev ); 
 	init_sensor_history( &sensor_history );
 	init_sensor_waiting_lists( sensors_waiting_list ); 
 	init_all_sensors_waiting_queue( &all_sensors_waiting_queue ); 
@@ -301,7 +314,9 @@ void sensors_server() {
 				break;
 			case GET_SENSOR_LIST_MSG:
 				// Get the list of sensors
+				bwdebug( DBG_USR, TEMP_DEBUG_AREA, "Received msg" ); 
 				Reply( sender_tid, ( char * ) &sensor_id_list_reply, sizeof( sensor_id_list_reply ) );
+				bwdebug( DBG_USR, TEMP_DEBUG_AREA, "Replying msg" ); 
 			default:
 				bwdebug( DBG_SYS, SENSORS_SERVER_DEBUG_AREA, "SENSORS_SERVER: Invalid request. [type: %d]", sensor_msg.type );
 				break; 

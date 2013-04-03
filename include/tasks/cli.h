@@ -1,8 +1,8 @@
 #ifndef __TASK_CLI_H__
 #define __TASK_CLI_H__
 
-#include "userspace.h"
-
+#include "train_manager_server.h"
+#include "lib/queues.h"
 
 #define CLI_ROW_POS						38
 #define CLI_COL_POS						3
@@ -40,6 +40,9 @@
 #define TRAIN_MGR_INDEX				2
 
 #define CLI_SERVERS_LIST_SIZE		3
+#define TRAIN1_INDEX				0
+#define TRAIN2_INDEX				1
+#define TRAIN3_INDEX				2
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 // Structs

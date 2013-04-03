@@ -21,13 +21,13 @@ void user_dashboard() {
 		curr_time = Time();
 		
 		// Update clock
-		draw_clock( str_buff, curr_time );
+		//draw_clock( str_buff, curr_time );
 
 		// Update CPU utilization
 		if( last_util_update + CPU_UTIL_UPDATE_INTERVAL < curr_time ) {
 			last_util_update = curr_time;
 			GetSysdata( &sysdata );
-			draw_cpu_util( str_buff, sysdata.cpu_utilization );
+			//draw_cpu_util( str_buff, sysdata.cpu_utilization );
 		}
 
 		DelayUntil( curr_time + CLOCK_UPDATE_INTERVAL );

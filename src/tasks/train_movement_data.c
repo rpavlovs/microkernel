@@ -7,7 +7,7 @@ int get_train_group( int train_number ){
 	// TODO: Finish this list
 	if ( train_number == 39 || train_number == 37 )
 		return TRAIN_GROUP_1; 
-	else if ( train_number == 44 || train_number == 50 )
+	else if ( train_number == 44 || train_number == 45 || train_number == 49 || train_number == 50 )
 		return TRAIN_GROUP_2;
 	else
 		return -1; 
@@ -152,7 +152,7 @@ void load_calibration_data( Calibration_data *calibration_data, int train_number
 			break; 
 		case TRAIN_GROUP_2:
 			// TODO: Review this values
-			calibration_data->short_speed_cutoff = 400; // 400 cm. 
+			calibration_data->short_speed_cutoff = 616; // 61.6 cm. 
 
 			// Speed 1
 			calibration_data->speed_data[0].velocity_enabled = 0;
@@ -201,7 +201,7 @@ void load_calibration_data( Calibration_data *calibration_data, int train_number
 
 			// Speed 6
 			calibration_data->speed_data[5].velocity_enabled = 1;
-			calibration_data->speed_data[5].velocity = 0.252198937;
+			calibration_data->speed_data[5].velocity = 0.271970398;
 			//calibration_data->speed_data[5].time_to_constant_speed = 2804;			// Check if this is correct 
 			//calibration_data->speed_data[5].distance_during_acceleration = 299;		// Check if this is correct
 			calibration_data->speed_data[5].time_to_constant_speed = 2804;			// Check if this is correct 
@@ -230,7 +230,7 @@ void load_calibration_data( Calibration_data *calibration_data, int train_number
 
 			// Speed 9
 			calibration_data->speed_data[8].velocity_enabled = 1;
-			calibration_data->speed_data[8].velocity = 0.437297838;
+			calibration_data->speed_data[8].velocity = 0.437856328;
 			//calibration_data->speed_data[8].time_to_constant_speed = 3000;			// Check if this is correct 
 			//calibration_data->speed_data[8].distance_during_acceleration = 481;		// Check if this is correct 
 			calibration_data->speed_data[8].time_to_constant_speed = 3000;			// Check if this is correct 
@@ -259,7 +259,7 @@ void load_calibration_data( Calibration_data *calibration_data, int train_number
 
 			// Speed 12
 			calibration_data->speed_data[11].velocity_enabled = 1;
-			calibration_data->speed_data[11].velocity = 0.580591343;
+			calibration_data->speed_data[11].velocity = 0.581332839;
 			//calibration_data->speed_data[11].time_to_constant_speed = 3200;	// Check if this is correct 3539
 			calibration_data->speed_data[11].time_to_constant_speed = 3545;	// Check if this is correct 3539
 			//calibration_data->speed_data[11].distance_during_acceleration = 670; // Check if this is correct 
@@ -291,7 +291,8 @@ void load_calibration_data( Calibration_data *calibration_data, int train_number
 			break; 
 		default: 
 			bwassert( 0, 
-				"TRAIN_MOVEMENT_DATA: Cannot find calibration data for this train." ); 
+				"TRAIN_MOVEMENT_DATA: Cannot find calibration data for this train. [ train_id: %d ]", 
+				train_number ); 
 			break; 
 	}
 

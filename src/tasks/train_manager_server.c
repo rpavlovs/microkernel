@@ -21,12 +21,28 @@ track_node *get_location_node( const char *location_name, track_node *track ){
 		return 0; 
 }
 
-void train_manager(){
-	bwdebug( DBG_USR, TRAIN_MGR_DEBUG_AREA, "TRAIN_MANAGER: start" );
-	// Initialization
+void init_track_display( track_node *track ){
 	int display_tid, i;
 	msg_init_track_disp init_display_msg;
 	msg_display_request req_msg;
+
+	init_display_msg.type = MSG_TYPE_INIT_TRACK_DISP;
+	init_display_msg.track = track;
+	display_tid = Create( 9, track_display );
+	Send( display_tid, (char *)&init_display_msg, sizeof(init_display_msg), 0, 0 );
+
+	req_msg.type = MSG_TYPE_DISP_SWITCH;
+	req_msg.state = DIR_CURVED;
+	for( i = 80; i < 123; ++i ) {
+		if( i % 2 == 1 ) continue;
+		req_msg.switch_id = i;		
+		Send( display_tid, (char *)&req_msg, sizeof(req_msg), 0, 0 );
+	}
+}
+
+void train_manager(){
+	// Initialization
+	bwdebug( DBG_USR, TRAIN_MGR_DEBUG_AREA, "TRAIN_MANAGER: start" );
 	RegisterAs( TRAIN_MANAGER_NAME );
 
 	// Create other necessary tasks
@@ -58,19 +74,7 @@ void train_manager(){
 
 	// Initialize route server data
 	init_track( track );
-
-	init_display_msg.type = MSG_TYPE_INIT_TRACK_DISP;
-	init_display_msg.track = track;
-	display_tid = Create( 9, track_display );
-	Send( display_tid, (char *)&init_display_msg, sizeof(init_display_msg), 0, 0 );
-
-	req_msg.type = MSG_TYPE_DISP_SWITCH;
-	req_msg.state = DIR_CURVED;
-	for( i = 80; i < 123; ++i ) {
-		if( i % 2 == 1 ) continue;
-		req_msg.switch_id = i;		
-		Send( display_tid, (char *)&req_msg, sizeof(req_msg), 0, 0 );
-	}
+	init_track_display( track ); 
 
 	init_reply.track = track; 
 	Reply( sender_tid, ( char * ) &init_reply, sizeof( init_reply ) );
@@ -89,9 +93,11 @@ void train_manager(){
 						bwassert( 0, "TRAIN_MANAGER_SERVER: Could not create the train server [ result: %d ]", train_tid );
 
 					// Initialize train
-					train_initialization.train_id = msg.element_id; 
-					train_initialization.direction = msg.param; 
 					train_initialization.track = track;
+					train_initialization.direction = msg.param; 
+					train_initialization.train_num = num_trains++; 
+					train_initialization.train_id = msg.element_id; 
+					
 					Send( train_tid, ( char * ) &train_initialization, sizeof( train_initialization ), 0, 0  );
 
 					msg_reply.train_tid = train_tid; 

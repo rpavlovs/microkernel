@@ -6,7 +6,7 @@
 // Constants
 // -------------------------------------------------------------------
 #define NUM_SPEEDS					14
-#define NUM_CALIBRATED_DISTANCES	5
+#define NUM_CALIBRATED_DISTANCES	12
 
 #define TRAIN_GROUP_1				0
 #define TRAIN_GROUP_2				1
@@ -32,10 +32,24 @@ static const int Speed_acc_table[ NUM_SPEEDS ][ NUM_CALIBRATED_DISTANCES ][3] = 
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
 	}, 
 
 	// Speed 2
 	{
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
@@ -50,10 +64,24 @@ static const int Speed_acc_table[ NUM_SPEEDS ][ NUM_CALIBRATED_DISTANCES ][3] = 
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
 	},
 
 	// Speed 4
 	{
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
@@ -68,10 +96,24 @@ static const int Speed_acc_table[ NUM_SPEEDS ][ NUM_CALIBRATED_DISTANCES ][3] = 
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
 	},
 
 	// Speed 6
 	{
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
@@ -86,10 +128,24 @@ static const int Speed_acc_table[ NUM_SPEEDS ][ NUM_CALIBRATED_DISTANCES ][3] = 
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
 	},
 
 	// Speed 8
 	{
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
@@ -104,10 +160,24 @@ static const int Speed_acc_table[ NUM_SPEEDS ][ NUM_CALIBRATED_DISTANCES ][3] = 
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
 	},
 
 	// Speed 10
 	{
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
@@ -122,19 +192,40 @@ static const int Speed_acc_table[ NUM_SPEEDS ][ NUM_CALIBRATED_DISTANCES ][3] = 
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
 	},
 
 	// Speed 12
 	{
-		{ 14,  500,  520  },	// The stopping time is invented
-		{ 117, 1000, 1200 },	// The stopping time is invented
-		{ 304, 1500, 2000 },	// The stopping time is invented
-		{ 610, 2000, 2500 },	// The stopping time is invented
-		{ 987, 2500, 3000 },	// The stopping time is invented
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
 	},
 
 	// Speed 13
 	{
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
@@ -149,7 +240,14 @@ static const int Speed_acc_table[ NUM_SPEEDS ][ NUM_CALIBRATED_DISTANCES ][3] = 
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
-	}
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+	},
 }; 
 
 static const int Speed_acc_table_group2[ NUM_SPEEDS ][ NUM_CALIBRATED_DISTANCES ][3] = { 
@@ -166,10 +264,24 @@ static const int Speed_acc_table_group2[ NUM_SPEEDS ][ NUM_CALIBRATED_DISTANCES 
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
-	}, 
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+	},
 
 	// Speed 2
 	{
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
@@ -184,10 +296,24 @@ static const int Speed_acc_table_group2[ NUM_SPEEDS ][ NUM_CALIBRATED_DISTANCES 
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
 	},
 
 	// Speed 4
 	{
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
@@ -202,19 +328,45 @@ static const int Speed_acc_table_group2[ NUM_SPEEDS ][ NUM_CALIBRATED_DISTANCES 
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
 	},
-
+	
+	/* This array contains: 
+		1. Distance traveled in a short time
+		2. The moment when the stopping command was issued. 
+		3. The total time the trip took. 
+	*/
 	// Speed 6
 	{
-		{ 0, 0, 0 },
-		{ 0, 0, 0 },
-		{ 0, 0, 0 },
-		{ 0, 0, 0 },
-		{ 0, 0, 0 },
+		{ 2,   250,  260  },	// The total times are invented
+		{ 10,  500,  800  },
+		{ 28,  750,  1000 },
+		{ 58,  1000, 1300 },
+		{ 83,  1250, 1700 },
+		{ 135, 1500, 2100 },
+		{ 184, 1750, 3000 },
+		{ 271, 2000, 3700 },
+		{ 331, 2250, 4000 },
+		{ 456, 2500, 5000 },
+		{ 558, 2750, 5550 },
+		{ 616, 3000, 5800 },
 	},
 
 	// Speed 7
 	{
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
@@ -229,10 +381,24 @@ static const int Speed_acc_table_group2[ NUM_SPEEDS ][ NUM_CALIBRATED_DISTANCES 
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
 	},
 
 	// Speed 9
 	{
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
@@ -247,6 +413,13 @@ static const int Speed_acc_table_group2[ NUM_SPEEDS ][ NUM_CALIBRATED_DISTANCES 
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
 	},
 
 	// Speed 11
@@ -256,19 +429,40 @@ static const int Speed_acc_table_group2[ NUM_SPEEDS ][ NUM_CALIBRATED_DISTANCES 
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
 	},
 
 	// Speed 12
 	{
-		{ 0, 1000, 0 },	// The stopping time is invented
-		{ 0, 2000, 0 },	// The stopping time is invented
-		{ 0, 3000, 0 },	// The stopping time is invented
-		{ 0, 4000, 0 },	// The stopping time is invented
-		{ 0, 5000, 0 },	// The stopping time is invented
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
 	},
 
 	// Speed 13
 	{
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
@@ -283,7 +477,14 @@ static const int Speed_acc_table_group2[ NUM_SPEEDS ][ NUM_CALIBRATED_DISTANCES 
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
-	}
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+	},
 }; 
 
 // -------------------------------------------------------------------
@@ -311,7 +512,7 @@ typedef struct{
 	// and distance traveled during that time. 
 	// NOTES: 
 	// - The distance is measured in mm. 
-	int **calibrated_distances; 
+	const int **calibrated_distances; 
 } Speed_calibration_data; 
 
 typedef struct{

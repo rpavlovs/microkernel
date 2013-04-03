@@ -1,7 +1,7 @@
 #ifndef TRAIN_MANAGER_H
 #define	TRAIN_MANAGER_H
 
-#include "userspace.h"
+//#include "userspace.h"
 
 // -------------------------------------------------------------------
 // Constants
@@ -20,6 +20,8 @@
 
 #define NUM_TRAINS							3
 #define MAX_NUM_NODES_TRACK					145
+
+#include "track_node.h"
 
 // -------------------------------------------------------------------
 // Structs

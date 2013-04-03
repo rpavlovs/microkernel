@@ -24,16 +24,23 @@ void init_cli_data( CLI_data *cli_data, Servers_tid_list *servers_list ){
 	cli_data->track = init_reply.track; 
 
 	// TODO: TEMP -> ADD THE TRAIN DATA HERE. 
+	// Creat the trains here
 	Train_manager_msg msg; 
 	Train_manager_reply reply_msg; 
 	msg.msg_type = TRAIN_MGR_ADD_TRAIN_MSG; 
-	//msg.element_id = 37;
-	msg.element_id = 50;
 	msg.param = TRAIN_DIRECTION_FORWARD; 
+
+	// Train 1: ID -> 50
+	msg.element_id = 50;
 	Send( train_mgm_tid, ( char * ) & msg, sizeof( msg ), ( char * ) &reply_msg, sizeof( reply_msg ) ); 
-	//cli_data->train_id[0] = 37; 
-	cli_data->train_id[0] = 50; 
-	cli_data->train_tid[0] = reply_msg.train_tid; 
+	cli_data->train_id[TRAIN1_INDEX] = msg.element_id;  
+	cli_data->train_tid[TRAIN1_INDEX] = reply_msg.train_tid; 
+
+	// Train 2: ID -> 49
+	msg.element_id = 49;
+	Send( train_mgm_tid, ( char * ) & msg, sizeof( msg ), ( char * ) &reply_msg, sizeof( reply_msg ) ); 
+	cli_data->train_id[TRAIN2_INDEX] = msg.element_id;  
+	cli_data->train_tid[TRAIN2_INDEX] = reply_msg.train_tid; 
 
 	// TODO: SHOW THE CURRENT POSITION ON SCREEN. 
 }

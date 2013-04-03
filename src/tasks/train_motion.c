@@ -261,36 +261,34 @@ int get_short_distance_traveled( int time_since_change, Train_status *train_stat
 		train_status->train_id, time_since_change );
 
 	int distance_traveled = 0; 
-	int motion_state = train_status->motion_state;
+	int motion_state = train_status->motion_state; 
 	if ( motion_state == TRAIN_ACCELERATING || motion_state == TRAIN_CONSTANT_SPEED || motion_state == TRAIN_DEACCELERATING ){
 		// The train is moving. We don't care about how long it takes to get to constant
 		// speed if ever, or how long it takes to deaccelerate. The distance is very short
 		// so we only work in terms of total distance and total speed. 
-		int distance_traveled, time, total_distance_in_speed, total_travel_time; 
-		Train_motion_data *motion_data = &train_status->motion_data;
-		Speed_calibration_data *speed_calibration = &(calibration_data->speed_data[motion_data->train_speed]); 
+		int time, total_travel_time; 
+		Train_motion_data *motion_data = &train_status->motion_data; 
+		Speed_calibration_data *speed_calibration = &( calibration_data->speed_data[ motion_data->train_speed ] ); 
 
-		total_distance_in_speed = get_short_distance( motion_data->train_speed, speed_calibration );
-		total_travel_time = get_short_distance_total_time( motion_data->train_speed, speed_calibration ); 
+		total_travel_time = get_short_distance_total_time( motion_data->calibrated_dist_index, speed_calibration ); 
 		time = total_travel_time - time_since_change;
 
 		if ( time > 0 ){
 			// Train is still moving. 
-			distance_traveled = 
-				( total_distance_in_speed * time_since_change ) / ( total_travel_time );
+			distance_traveled = ( motion_data->distance_to_travel * time_since_change ) / ( total_travel_time );
 		}
 		else{
 			// The train has already stopped
-			distance_traveled = total_distance_in_speed; 
+			distance_traveled = motion_data->distance_to_travel; 
 			train_status->motion_state = TRAIN_STILL; 
 		}
-    }
+	}
     else {
 		// Wrong state. 
 		bwassert( 0, "TRAIN_MOTION: get_short_distance_traveled -> Wrong train state." );
 	}
 
-    // Get the distance traveled since last refresh
+	// Get the distance traveled since last refresh
     int distance_since_change = distance_traveled - train_status->distance_since_speed_change;
     bwassert( distance_since_change >= 0, 
             "TRAIN_MOTION: get_short_distance_traveled -> The distance cannot be negative." ); 
@@ -328,6 +326,9 @@ int get_straight_distance( Train_status *status ){
 
         // Remove the distance that the train has already moved from the initial landmark. 
         total_straight_distance -= status->current_position.offset; 
+		bwprintf( COM2, "Initial offset Dist: %d\n", total_straight_distance ); 
+
+		landmark = status->route_data.landmarks[ landmark_index ]; 
 
         // Get the distance of the next landmarks without reverse (reverse would require the train to stop).
         // NOTE: Here we only count FULL edges; the final offset will be considered later.
@@ -343,6 +344,8 @@ int get_straight_distance( Train_status *status ){
 				break; 
 			}
 	
+			bwprintf( COM2, "Landmark: %s Dist: %d\n", landmark->name, edge->dist ); 
+
 			total_straight_distance += edge->dist;
             landmark_index++; 
         }
@@ -352,26 +355,35 @@ int get_straight_distance( Train_status *status ){
 			landmark = next_landmark; 
 
         // Add the offset from the last landmark
-        if ( is_reverse ){
+		if ( is_reverse && next_landmark != status->current_goal.landmark ){
 			final_offset_dist = REVERSE_DEFAULT_OFFSET;
         }
-        else{
+		else if( !is_reverse ){
 			// The offset is the offset of the goal. 
 			// NOTE: This offset is only added if we need to travel in a straight line to the goal
 			final_offset_dist = status->current_goal.offset;
         }
+		else{
+			// This route requires a reverse to get to the goal. However, this reverse is on the final
+			// landmark; no extra space needs to be added. 
+		}
+		bwprintf( COM2, "Final offset Dist: %d\n", final_offset_dist );
 		total_straight_distance += final_offset_dist; 
 
 		// In case the only landmarks were for a reverse, then the distance to travel is 0. 
 		if ( total_straight_distance < 0 )
 			total_straight_distance = 0; 
 
+		bwdebug( DBG_USR, TEMP2_DEBUG_AREA, 
+			"TRAIN_MOTION: \nget_straight_distance -> Landmark1: %s Offset: %d Landmark2: %s Offset: %d Dist: %d\n", 
+			status->current_position.landmark->name, status->current_position.offset, 
+			landmark->name, final_offset_dist, total_straight_distance ); 
 		bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, 
 			"TRAIN_MOTION: \nget_straight_distance -> Landmark1: %s Offset: %d Landmark2: %s Offset: %d Dist: %d\n", 
 			status->current_position.landmark->name, status->current_position.offset, 
 			landmark->name, final_offset_dist, total_straight_distance ); 
 
-        return total_straight_distance + 1; // TODO: Should we keep this +1?
+        return total_straight_distance; //+ 1; // TODO: Should we keep this +1?
 }
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -396,8 +408,6 @@ int calculate_speed_to_use( Train_status *status, Calibration_data *calibration_
     int total_straight_distance = get_straight_distance( status );
     if ( total_straight_distance <= 0 ){
 		// The train doesn't have to move. 
-		//status->motion_data.distance_type = SHORT_DISTANCE;
-		//status->motion_data.train_speed = 0; 
 		return 0; 
     }
 
@@ -410,39 +420,29 @@ int calculate_speed_to_use( Train_status *status, Calibration_data *calibration_
     if ( total_straight_distance <= calibration_data->short_speed_cutoff ){
 
         // Which short distance should we use? 
+		//bwprintf( COM2, "Calculating short distance [ dist: %d ] \n", status->motion_data.distance_to_travel );
 		status->motion_data.distance_type = SHORT_DISTANCE; 
-        speed_to_use = MAX_SPEED; 
+        speed_to_use = 6; 
         speed_found = 0; 
 
-        while( speed_to_use > 0 && !speed_found ){
-			// Iterate from the highest speed to the lowest
-            speed_data = &( calibration_data->speed_data[ --speed_to_use ] ); 
-                        
-            for ( index = 0; index < NUM_CALIBRATED_DISTANCES; index++ ){
-                // This speed is too high; better use a lower one
-				distance_in_speed = get_short_distance( index, speed_data ); 
-                if ( index == 0 && distance_in_speed > total_straight_distance )
-                     break;
+		// We only consider speed 6
+		speed_to_use--; 
+		speed_data = &( calibration_data->speed_data[ speed_to_use ] );
 
-                if ( distance_in_speed > total_straight_distance || distance_in_speed == 0  ){
-                    // We found a close speed that travels a longer distance than what we expected; we need to use
-                    // the previous one. 
-                    speed_found = 1; 
-                    break; 
-                }
-                else if ( distance_in_speed == total_straight_distance ){
-                        // A perfect match was found. 
-                        speed_found = 2; 
-                }
-            }
+		for( index = 0; index < NUM_CALIBRATED_DISTANCES; index++ ){
+			distance_in_speed = get_short_distance( index, speed_data ); 
 
-            if ( index == NUM_CALIBRATED_DISTANCES || speed_found ){
-                if ( speed_found != 2 )
-                        index--;
+			if ( distance_in_speed >= status->motion_data.distance_to_travel ){
+				speed_found = 1; 
+				break; 
+			}
+		}
 
-                // TODO: If the distance is not completely precise, should we calculate an interpolation? 
-            }
-        }
+		bwassert( speed_found, "TRAIN_MOTION: calculate_speed_to_use -> Short speed must always be found. Maybe the the speed cutoff is wrong." ); 
+
+		//bwprintf( COM2, "Speed for short distance found [ speed: %d index: %d ] \n", speed_to_use + 1, index );
+		// Set the index of the calibrated distance that will be used
+		status->motion_data.calibrated_dist_index = index; 
     }
     else{
 		status->motion_data.distance_type = LONG_DISTANCE;
@@ -479,7 +479,7 @@ int has_train_arrived( Train_status *train_status ){
         Train_position goal_position = train_status->current_goal; 
         if (
 				current_position.landmark == goal_position.landmark && 
-				current_position.offset >= ( goal_position.offset - 100 ) )
+				current_position.offset >= ( goal_position.offset - 2 ) )
 		{
 			bwprintf( COM2, "ARRIVED! Total Distance: %d", train_status->distance_since_speed_change ); 
             return 1; 
@@ -668,6 +668,62 @@ void handle_update_request( Train_update_request *update_request, Train_status *
 	}
 }
 
+void start_short_distance_movement( int speed_to_use, Train_status *train_status, Train_server_data *server_data ){
+	// Variables
+	int start_cmd_delay, stop_cmd_delay, distance_to_reserve, is_dist_reserved; 
+	int num_sw_changed, default_time_to_stop, default_distance_traveled; 
+
+	// Reserve the distance to use
+	distance_to_reserve = train_status->motion_data.distance_to_travel;
+	is_dist_reserved = reserve_distance( distance_to_reserve, train_status, server_data ); 
+
+	if ( is_dist_reserved ){
+		// TODO: Do we need to update the sensor attribution list here? 
+
+		// Do we need to move any switches? 
+		start_cmd_delay = 0; 
+		num_sw_changed = check_next_sw_pos( distance_to_reserve, train_status, server_data );
+		if ( num_sw_changed ){
+			//cmd_delay = current_time + get_sw_delay_time( server_data ); 
+		}
+
+		// Determine when to stop the train
+		Calibration_data *calibration_data = &server_data->calibration_data;
+		Speed_calibration_data *speed_calibration =  &( calibration_data->speed_data[ speed_to_use - 1 ] ); 
+		int calibrated_dist_index = train_status->motion_data.calibrated_dist_index;
+		default_time_to_stop = get_short_distance_stopping_time( calibrated_dist_index, speed_calibration );
+		default_distance_traveled = get_short_distance( calibrated_dist_index, speed_calibration );
+
+		start_cmd_delay += TimeInMs(); // Current time
+		stop_cmd_delay = ( distance_to_reserve * default_time_to_stop ) / default_distance_traveled;
+		stop_cmd_delay += start_cmd_delay;
+
+		// Send the commands
+		send_train_move_command( speed_to_use, start_cmd_delay, train_status, server_data );
+		send_train_move_command( TRAIN_STOP_CMD_SPEED, stop_cmd_delay, train_status, server_data ); 
+	}
+}
+
+int track_train_short_distance( Train_status *train_status, Train_server_data *server_data ){
+	int continue_execution = 0; 
+	if ( train_status->motion_state == TRAIN_STILL ){
+		// For short distances the only important state is when the train is still. 
+		// We don't care about the other states because the distances are too small. 
+		if ( has_train_arrived( train_status ) ){
+			// The train has reached its destination
+			// - Remove the current goal
+			initialize_goal( train_status );
+
+			continue_execution = 1; 
+		}
+
+		// Release all the reserved track; keep only the current size of the train. 
+		reserve_distance( 0, train_status, server_data );
+	}
+
+	return continue_execution;
+}
+
 void predict_train_movement( int current_time, Train_status *train_status, Train_server_data *server_data ){
 	// Initialization
 	int cmd_delay, speed_to_use, distance_to_reserve, time_in_constant_speed; 
@@ -681,6 +737,13 @@ void predict_train_movement( int current_time, Train_status *train_status, Train
 
 		if ( original_speed == curr_speed && curr_speed == 0 )
 			return;
+	}
+
+	// If the train is moving a short distance track it somewhere else
+	if ( train_status->motion_data.distance_type == SHORT_DISTANCE ){
+		int continue_exec = track_train_short_distance( train_status, server_data );
+		if ( !continue_exec )
+			return; 
 	}
 
 	// Determine what's going to happen in the future, and how to react to it. 
@@ -727,35 +790,41 @@ void predict_train_movement( int current_time, Train_status *train_status, Train
 				speed_to_use = calculate_speed_to_use( train_status, &server_data->calibration_data );
 			}
 
-			// 2. RESERVATION
-			//		- The train is going to move, and it's already facing the right direction. 
-			//		- How far should we reserve?
-			distance_to_reserve = 
-				//get_train_acceleration_distance( speed_to_use, server_data ) + // TODO: Make sure we don't need this part -> I don't think we need it. 
-				get_train_stopping_distance( speed_to_use, server_data ) + 
-				get_reservation_distance_buffer( server_data );
+			if ( train_status->motion_data.distance_type == SHORT_DISTANCE ){
+				// Since the behavior of short distances is different, they are handled in a different function. 
+				start_short_distance_movement( speed_to_use, train_status, server_data );
+			}
+			else{
+				// 2. RESERVATION
+				//		- The train is going to move, and it's already facing the right direction. 
+				//		- How far should we reserve?
+				distance_to_reserve = 
+					//get_train_acceleration_distance( speed_to_use, server_data ) + // TODO: Make sure we don't need this part -> I don't think we need it. 
+					get_train_stopping_distance( speed_to_use, server_data ) + 
+					get_reservation_distance_buffer( server_data );
 
-			is_distance_reserved = reserve_distance( distance_to_reserve, train_status, server_data ); 
+				is_distance_reserved = reserve_distance( distance_to_reserve, train_status, server_data ); 
 
-			// 3. START MOVEMENT
-			//		- If the reservation was successful, are there any switches that need to be moved? 
-			//		- If the reservation was successful, start moving
-			if ( is_distance_reserved ){
-				if ( train_status->train_state == TRAIN_STATE_MOVE_TO_GOAL ){
-					// Move switches within that distance
-					int num_sw_changed = check_next_sw_pos( distance_to_reserve, train_status, server_data );
-					if ( num_sw_changed ){
-						//cmd_delay = current_time + get_sw_delay_time( server_data ); 
+				// 3. START MOVEMENT
+				//		- If the reservation was successful, are there any switches that need to be moved? 
+				//		- If the reservation was successful, start moving
+				if ( is_distance_reserved ){
+					if ( train_status->train_state == TRAIN_STATE_MOVE_TO_GOAL ){
+						// Move switches within that distance
+						int num_sw_changed = check_next_sw_pos( distance_to_reserve, train_status, server_data );
+						if ( num_sw_changed ){
+							//cmd_delay = current_time + get_sw_delay_time( server_data ); 
+						}
+
+						// Add the sensors to attribution list.
+						add_sensors_attrib_list( distance_to_reserve, train_status, server_data ); 
 					}
 
-					// Add the sensors to attribution list.
-					add_sensors_attrib_list( distance_to_reserve, train_status, server_data ); 
+					// Start moving
+					//bwprintf( COM2, "Starting Moving: [ train_id: %d speed: %d dir: %d ]\n", 
+					//	train_status->train_id, speed_to_use, train_status->train_direction ); 
+					send_train_move_command( speed_to_use, cmd_delay, train_status, server_data );
 				}
-
-				// Start moving
-				//bwprintf( COM2, "Starting Moving: [ train_id: %d speed: %d dir: %d ]\n", 
-				//	train_status->train_id, speed_to_use, train_status->train_direction ); 
-				send_train_move_command( speed_to_use, cmd_delay, train_status, server_data );
 			}
 
 			break; 

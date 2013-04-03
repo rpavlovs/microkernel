@@ -75,13 +75,14 @@ void print_train_status( Train_status *train_status ){
 	// Prepare the information to print
 	temp_buffer += saveCursor( temp_buffer ); 
 	temp_buffer += hideCursor( temp_buffer );
-	temp_buffer += cursorPositioning( temp_buffer, TRAIN_STATUS_ROW_POS, TRAIN_STATUS_COL_POS );
+	temp_buffer += cursorPositioning( temp_buffer, TRAIN_STATUS_ROW_POS + train_status->train_num, TRAIN_STATUS_COL_POS );
 	temp_buffer += sprintf( temp_buffer, "Id -> %d   Direction -> %s   Landmark -> %s", 
 		train_status->train_id, 
 		( train_status->train_direction == TRAIN_DIRECTION_FORWARD ) ? "FOR" : "REV", train_status->current_position.landmark->name ); 
 	temp_buffer += append_char( temp_buffer, ' ', 5 - strlen( train_status->current_position.landmark->name ) );
 	temp_buffer += sprintf( temp_buffer, 
 		" Offset -> %d ", train_status->current_position.offset ); 
+	temp_buffer += sprintf( temp_buffer, "   Speed -> %d   Error -> %d", train_status->motion_data.train_speed, train_status->motion_data.current_error ); 
 	temp_buffer += restoreCursor( temp_buffer );
 
 	// Send the string to UART 2. 
@@ -118,6 +119,7 @@ void clear_train_motion_data( Train_status *train_status ){
 	train_status->motion_data.current_error = 0; 
 	train_status->motion_data.distance_to_travel = 0; 
 	train_status->motion_data.original_train_speed = 0; 
+	train_status->motion_data.calibrated_dist_index = 0; 
 	train_status->motion_data.distance_type = LONG_DISTANCE; 
 	train_status->motion_data.time_since_deacceleration = 0; 
 }
@@ -241,16 +243,30 @@ int check_next_sw_pos( int distance_to_check, Train_status *train_status, Train_
 	return num_sw_changed; 
 }
 
-int get_short_distance( int train_speed, Speed_calibration_data *speed_calibration ){
-	return speed_calibration->calibrated_distances[ train_speed ][ CALIBRATED_DISTANCE_INDEX ]; 
+int get_short_distance( int distance_index, Speed_calibration_data *speed_calibration ){
+	const int **calibrated_distances = speed_calibration->calibrated_distances;
+	int offset = ( distance_index * 3 ) + CALIBRATED_DISTANCE_INDEX;
+
+	return ( int ) *( calibrated_distances + offset );
+
+	//calibrated_distances + ( distance_index * 3 ) +
+
+	//return ( int ) ( &calibrated_distances[distance_index] )[ CALIBRATED_DISTANCE_INDEX ];
+	//return *( calibrated_distances + offset );
 }
 
-int get_short_distance_stopping_time( int train_speed, Speed_calibration_data *speed_calibration ){
-	return speed_calibration->calibrated_distances[ train_speed ][ CALIBRATED_STOP_TIME_INDEX ];
+int get_short_distance_stopping_time( int distance_index, Speed_calibration_data *speed_calibration ){
+	const int **calibrated_distances = speed_calibration->calibrated_distances;
+	int offset = ( distance_index * 3 ) + CALIBRATED_STOP_TIME_INDEX;
+
+	return ( int ) *( calibrated_distances + offset );
 }
 
-int get_short_distance_total_time( int train_speed, Speed_calibration_data *speed_calibration ){
-	return speed_calibration->calibrated_distances[ train_speed ][ CALIBRATED_TOTAL_TIME_INDEX ];
+int get_short_distance_total_time( int distance_index, Speed_calibration_data *speed_calibration ){
+	const int **calibrated_distances = speed_calibration->calibrated_distances;
+	int offset = ( distance_index * 3 ) + CALIBRATED_TOTAL_TIME_INDEX;
+
+	return ( int ) *( calibrated_distances + offset );
 }
 
 track_node *get_prev_node( Train_position *train_pos ){

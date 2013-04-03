@@ -313,6 +313,7 @@ int Putstr( int channel, char *str ) {
 	req.str = str;
 	
 	Send( server_tid, (char *) &req, sizeof(req), 0, 0 );
+	
 	return 0;
 }
 

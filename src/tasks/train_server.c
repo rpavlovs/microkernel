@@ -145,9 +145,11 @@ void retrieve_sensor_list( Train_server_data *train_server_data ){
 	Sensor_id_list_reply sensor_id_list_reply;
 
 	// Get the list of sensors
-	bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, "TRAIN_SERVER: Retrieving sensors list" );
-	sensor_msg.type = GET_SENSOR_LIST_MSG; 
 	int sensor_server_tid = train_server_data->tasks_tids[ TR_SENSOR_SERVER_TID_INDEX ];
+	bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, "TRAIN_SERVER: Retrieving sensors list [ sensor_srv_tid: %d ]", 
+		sensor_server_tid );
+
+	sensor_msg.type = GET_SENSOR_LIST_MSG; 
 	Send( sensor_server_tid, ( char * ) &sensor_msg, sizeof( sensor_msg ), 
 		( char * ) &sensor_id_list_reply, sizeof( sensor_id_list_reply ) );
 
@@ -200,6 +202,7 @@ void initialize_train_status( Train_status *train_status, Train_initialization_m
 	bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, "TRAIN_SERVER: Initializing train information [ train_id: %d ]", init_info.train_id );
 
 	train_status->train_id = init_info.train_id; 
+	train_status->train_num = init_info.train_num; 
 	train_status->train_direction = init_info.direction;
 	train_status->train_state = TRAIN_STATE_MOVE_FREE; 
 	train_status->motion_state = TRAIN_STILL; 

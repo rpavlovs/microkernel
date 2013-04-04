@@ -557,8 +557,10 @@ void update_train_position_landmark( int distance_since_update, Train_status *tr
 
 		// If there's a goal update its landmark index. 
 		if( train_status->train_state == TRAIN_STATE_MOVE_TO_GOAL ){
-			if ( train_status->route_data.landmark_index < train_status->route_data.num_landmarks ){
-				train_status->route_data.landmark_index++;
+			int landmark_index = train_status->route_data.landmark_index;
+			if ( landmark_index < train_status->route_data.num_landmarks ){
+				if ( train_status->route_data.landmarks[ landmark_index + 1 ] == current_node )
+					train_status->route_data.landmark_index++;
 			}
         }
 

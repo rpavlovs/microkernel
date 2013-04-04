@@ -62,7 +62,7 @@ typedef struct{
     int landmark_index;             // The current landmark
     track_edge *edges[ TRACK_MAX ];
     track_node *landmarks[ TRACK_MAX ]; 
-    int switches_state[ NUM_SWITCHES ]; 
+    char switches_state[ NUM_SWITCHES ]; 
 } Train_route_data;
 
 struct Train_status_struct{

@@ -21,7 +21,7 @@ int request_new_path( Train_status *train_status, Train_server_data *server_data
 	// Basic data
 	route_msg.type = GET_SHORTEST_ROUTE_MSG;
 	route_msg.track = server_data->track;
-	route_msg.train_direction = &train_status->train_direction; 
+	route_msg.train_index = train_status->train_num; 
 	
 	// Current Position
 	route_msg.current_landmark = train_status->current_position.landmark; 

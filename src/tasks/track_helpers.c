@@ -15,13 +15,13 @@ void init_track( track_node* track ){
         node->neighbours_count = 0;
         init_node_neighbours( node );
         
-        // Initialization for Reservation algorithm
         for(j = 0; j < 2; j++){
-            node->edge[j].reservers[0] = 0;    //TODO: refactor to train IDs
-            node->edge[j].reservers[1] = 0;    //TODO: refactor to train IDs
-            node->edge[j].reservers[2] = 0;    //TODO: refactor to train IDs
-            
             for(k = 0; k < 3; k++){
+                // Initialization of routing algorithm
+                node->edge[j].routers[k] = 0;
+
+                // Initialization for Reservation algorithm
+                node->edge[j].reservers[k] = 0;
                 node->edge[j].start[k] = -1;
                 node->edge[j].end[k] = -1;
             }
@@ -124,31 +124,39 @@ void init_node_neighbours( track_node* node ){
                     break;
 
             case NODE_BRANCH:
-                    node->neighbours_count = 2;
+                    node->neighbours_count = 3;
 
                     if(node->edge[DIR_STRAIGHT].dist < node->edge[DIR_CURVED].dist)
                     {
-                            node->neighbours[0] = node->edge[DIR_STRAIGHT].dest;
-                            node->neighbours[1] = node->edge[DIR_CURVED].dest;
+                            node->neighbours[0] = node->reverse;
+                            node->neighbours[1] = node->edge[DIR_STRAIGHT].dest;
+                            node->neighbours[2] = node->edge[DIR_CURVED].dest;
 
-                            node->distances[0] = node->edge[DIR_STRAIGHT].dist;
-                            node->distances[1] = node->edge[DIR_CURVED].dist;
+                            node->distances[0] = 0;
+                            node->distances[1] = node->edge[DIR_STRAIGHT].dist;
+                            node->distances[2] = node->edge[DIR_CURVED].dist;
                     }
                     else
                     {
-                            node->neighbours[0] = node->edge[DIR_CURVED].dest;
-                            node->neighbours[1] = node->edge[DIR_STRAIGHT].dest;
+                            node->neighbours[0] = node->reverse;
+                            node->neighbours[1] = node->edge[DIR_CURVED].dest;
+                            node->neighbours[2] = node->edge[DIR_STRAIGHT].dest;
 
-                            node->distances[0] = node->edge[DIR_CURVED].dist;
-                            node->distances[1] = node->edge[DIR_STRAIGHT].dist;
+                            node->distances[0] = 0;
+                            node->distances[1] = node->edge[DIR_CURVED].dist;
+                            node->distances[2] = node->edge[DIR_STRAIGHT].dist;
                     }
 
                     break;
 
             case NODE_MERGE:
-                    node->neighbours_count = 1;
-                    node->neighbours[0] = node->edge[DIR_AHEAD].dest;
-                    node->distances[0] = node->edge[DIR_AHEAD].dist;
+                    node->neighbours_count = 2;
+                    
+                    node->neighbours[0] = node->reverse;
+                    node->neighbours[1] = node->edge[DIR_AHEAD].dest;
+                    
+                    node->distances[0] = 0;
+                    node->distances[1] = node->edge[DIR_AHEAD].dist;
 
                     break;
 
@@ -195,3 +203,19 @@ int get_edge_by_nodes(
     // Shouldn't get here
     return 0;
 }
+
+// Returns:
+//      0 - when the edge IS NOT routed
+//      1 - when the edge IS routed
+int edge_is_routed( track_edge* edge ){
+    int i;
+    
+    for(i = 0; i < 3; i++){
+        if( edge->routers[i] ){
+            return 1;
+        }
+    }
+    
+    return 0;
+}
+

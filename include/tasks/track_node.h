@@ -31,9 +31,6 @@ struct track_edge {
   
   int ui_line, ui_col, ui_len; // ui start line, column and length
 
-  //Routing algorithm
-  int routers[3];
-
   //Reservation algorithm
   int reservers[3];     //TODO: refactor reserved[TRAINS_NUMBER]
   int start[3];         //TODO: refactor start[TRAINS_NUMBER]
@@ -53,10 +50,11 @@ struct track_node {
   int label;
   track_node* previous;
   int neighbours_count;
-  track_node* neighbours[3];
-  int distances[3];
+  track_node* neighbours[2];
+  int distances[2];
+  
+  //Reservation algorithm
+  //int reserved;
+  //int reserver;
 };
-
 #endif
-
-

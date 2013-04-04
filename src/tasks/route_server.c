@@ -3,12 +3,17 @@
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 // Route Server
 // -----------------------------------------------------------------------------------------------------------------------------------------------
-void init_dijkstra( track_node *track ){
-    int i;
+void init_routing( track_node *track, int train_index ){
+    int i, j;
+    
     for(i = 0; i < TRACK_MAX; i++){
         track[i].visited = 0;
         track[i].label = INFINITY;
         track[i].previous = 0;
+        
+        for(j = 0; j < 2; j++){
+            track[i].edge[j].routers[train_index] = 0;
+        }
     }
 }
 
@@ -27,10 +32,10 @@ void get_min_label( track_node* track, track_node** min_node, int* min_label ){
     int i;
     *min_label = INFINITY;
     for( i = 0; i < TRACK_MAX; i++){
-            if( *min_label > track[i].label && !track[i].visited ){
-                    *min_label = track[i].label;
-                    *min_node = &track[i];
-            }
+        if( *min_label > track[i].label && !track[i].visited ){
+                *min_label = track[i].label;
+                *min_node = &track[i];
+        }
     }
 }
 
@@ -41,47 +46,79 @@ void update_labels( track_node *node ){
     //Updating label of each node neighbour
     for( i = 0; i < node->neighbours_count; i++ ){
 
-        //If the neighbour is not reserved by other train
-        //if( !(node->neighbours[i]->reserved) ){
+        //Calculate new label by Dijkstra
+        node_label = node->label;
+        calc_label = node_label + node->distances[i];
+        neighbour_label = node->neighbours[i]->label;
 
-            //Calculate new label by Dijkstra
-            node_label = node->label;
-            calc_label = node_label + node->distances[i];
-            neighbour_label = node->neighbours[i]->label;
+        //Include neighbour in route
+        if( calc_label < neighbour_label ){
+            node->neighbours[i]->label = calc_label;
+            node->neighbours[i]->previous = node;
+        }
+    }
+}
 
-            //Include neighbour in route
-            if( calc_label < neighbour_label ){
-                node->neighbours[i]->label = calc_label;
-                node->neighbours[i]->previous = node;
+void update_labels_complex( track_node *node, int avoid_routed ){
+    //Utility variables
+    int i, node_label, calc_label, neighbour_label;
+    track_edge *edge;
+
+    //Updating label of each node neighbour
+    for( i = 0; i < node->neighbours_count; i++ ){
+
+        // If there is a need to avoid already routed routes
+        if( avoid_routed ){
+            // We are able to get an edge
+            if(get_edge_by_nodes( node, node->neighbours[i], &edge )){
+                // If edge is free from routing
+                if( edge_is_routed( edge ) ){
+                    //printf("Edge is routed! SRC: %s; DST: %s\n",
+                            //edge->src->name, edge->dest->name);
+                    continue;
+                }
             }
-        //}
+        }
+        
+        //Calculate new label by Dijkstra
+        node_label = node->label;
+        calc_label = node_label + node->distances[i];
+        neighbour_label = node->neighbours[i]->label;
+
+        //Include neighbour in route
+        if( calc_label < neighbour_label ){
+            node->neighbours[i]->label = calc_label;
+            node->neighbours[i]->previous = node;
+        }
     }
 }
 
 //TODO:
 // A train is regarded as a point!!! TODO: refactor to a train with length
-void get_shortest_route(track_node* track, int* train_direction,
+void get_shortest_route(track_node* track, int train_index,
                         track_node* train_node, int train_shift,
                         track_node* target_node, int target_shift,
                         int* switches,
                         int* route_found, track_node** route, 
-                        int* route_length, track_edge** edges){
-    //printf("ENTERED\n");
+                        int* route_length, track_edge** edges,
+                        int avoid_routed){
+    //printf("get_shortest_route: ENTERED\n");
 
     // Initialization /////////////////////////////////////////////////////////
     // Utility variables
     int i, min_label, switch_num;
-    track_node* min_node;
-    track_node* temp_node;
-    track_node* temp_route[TRACK_MAX];
+    track_node *min_node;
+    track_node *temp_node;
+    track_edge *temp_edge;
+    track_node *temp_route[TRACK_MAX];
 
     //Initialization
-    init_dijkstra( track );
+    init_routing( track, train_index );
     train_node->label = 0;
     *route_found = 0;
     *route_length = 0;
 
-    //printf("INITIALIZED\n");
+    ////printf("INITIALIZED\n");
 
     // Main loop //////////////////////////////////////////////////////////////
     while( exist_unvisited( track ) ){        
@@ -89,7 +126,7 @@ void get_shortest_route(track_node* track, int* train_direction,
         get_min_label( track, &min_node, &min_label );
         min_node->visited = 1;
         
-        ////printf("MIN LABEL: %s\n", min_node->name );
+        //printf("MIN LABEL: %s\n", min_node->name );
 
         //At least one way to the target is found
         if( min_node == target_node ){
@@ -107,7 +144,7 @@ void get_shortest_route(track_node* track, int* train_direction,
 
         // Update neighbours
         // init_node_neighbours( min_node );
-        update_labels( min_node );
+        update_labels_complex( min_node, avoid_routed );
     }
 
     if( *route_found ){
@@ -141,14 +178,14 @@ void get_shortest_route(track_node* track, int* train_direction,
                 
                 if( route[i]->edge[DIR_STRAIGHT].dest == route[i + 1] ){
                     //Adjust switch to straight
-                    switches[get_switch_index( switch_num )] = SWITCH_STRAIGHT_POS;
-                    ////printf("STRAIGHT SWITCH is found: %d\n", switch_num);
+                    switches[get_switch_index( switch_num )] = 0;
+                    //printf("STRAIGHT SWITCH is found: %d\n", switch_num);
                 }
                 
                 else if( route[i]->edge[DIR_CURVED].dest == route[i + 1] ){
                     //Adjust switch to curved
-                    switches[get_switch_index( switch_num )] = SWITCH_CURVE_POS;
-                    ////printf("CURVED SWITCH is found: %d\n", switch_num);
+                    switches[get_switch_index( switch_num )] = 1;
+                    //printf("CURVED SWITCH is found: %d\n", switch_num);
                 }
             }
         }
@@ -156,9 +193,22 @@ void get_shortest_route(track_node* track, int* train_direction,
         // Constructing edges pointers array //////////////////////////////////
         //printf("CONSTRUCTING EDGES ARRAY\n");
         for( i = 0; i < *route_length - 1; i++ ){
-            get_edge_by_nodes(
+            if(!get_edge_by_nodes(
                 route[i], route[i + 1],
-                &edges[i]);
+                &edges[i])){
+                //printf("Edge retrieval failed. N01: %s; N02: %s\n",
+                        //route[i]->name, route[i+1]->name);
+            }else{
+                //printf("Edge retrieval succeeded.\n");
+            }
+        }
+        
+        // Marking the route as routed :) /////////////////////////////////////
+        for( i = 0; i < *route_length - 1; i++ ){
+            temp_edge = edges[i];
+            if(temp_edge != 0){
+                temp_edge->routers[train_index] = 1;
+            }
         }
         
         // Printing the route /////////////////////////////////////////////////
@@ -168,23 +218,20 @@ void get_shortest_route(track_node* track, int* train_direction,
             //printf("%s; ", route[i]->name);
         }
     }
-    //printf("\nEXITED\n");
+    
+    //printf("\nget_shortest_route: EXITED\n");
 }
 
 void route_server() {
-	bwdebug( DBG_SYS, ROUTE_SRV_DEBUG_AREA, "ROUTE_SERVER: enters" );
-	RegisterAs( ROUTE_SERVER_NAME ); 
+	// bwdebug( DBG_SYS, "ROUTE_SERVER: enters" );
 	
 	// Data structures
 	int sender_tid;
 	Route_msg route_msg;
 	
 	while(1) {
-		bwdebug( DBG_SYS, ROUTE_SRV_DEBUG_AREA, "ROUTE_SERVER: listening for a request" );
-		Receive( &sender_tid, ( char * ) &route_msg, sizeof( route_msg )  );
-
-		bwdebug( DBG_SYS, ROUTE_SRV_DEBUG_AREA, "ROUTE_SERVER: Received request [ sender_tid: %d type: %d ]", 
-			sender_tid, route_msg.type );
+		//bwdebug( DBG_SYS, "ROUTE_SERVER: listening for a request" );
+		//Receive( &sender_tid, ( char * ) &route_msg, sizeof( route_msg )  );
 
 		switch( route_msg.type ){
 			//This message can arrive from:
@@ -193,26 +240,36 @@ void route_server() {
 			//	Train AI
 			case GET_SHORTEST_ROUTE_MSG:
 
-                get_shortest_route(
-                    route_msg.track, route_msg.train_direction,
-                    route_msg.current_landmark, route_msg.train_shift,
-                    route_msg.target_node, route_msg.target_shift,
-                    route_msg.switches,
-                    route_msg.route_found,
-                    route_msg.landmarks,
-                    route_msg.num_landmarks,
-                    route_msg.edges);
+                                // Try to get a route avoiding routed edges
+                                get_shortest_route(
+                                    route_msg.track, route_msg.train_index,
+                                    route_msg.current_landmark, route_msg.train_shift,
+                                    route_msg.target_node, route_msg.target_shift,
+                                    route_msg.switches,
+                                    route_msg.route_found, route_msg.landmarks,
+                                    route_msg.num_landmarks, route_msg.edges,
+                                    1);
+                                
+                                // If a route is not found, try without avoiding
+                                if(!(*route_msg.route_found)){
+                                    get_shortest_route(
+                                    route_msg.track, route_msg.train_index,
+                                    route_msg.current_landmark, route_msg.train_shift,
+                                    route_msg.target_node, route_msg.target_shift,
+                                    route_msg.switches,
+                                    route_msg.route_found, route_msg.landmarks,
+                                    route_msg.num_landmarks, route_msg.edges,
+                                    0);
+                                }
 
-				bwdebug( DBG_SYS, ROUTE_SRV_DEBUG_AREA, "ROUTE_SERVER: Replying request [ sender_tid: %d type: %d ]", 
-					sender_tid, route_msg.type );
-				Reply( sender_tid, 0, 0 );
+				//Reply( sender_tid, 0, 0 );
 
 				break;
 
 			default:
-				bwdebug( DBG_SYS, ROUTE_SRV_DEBUG_AREA, 
-					"ROUTE_SERVER: Invalid request. [type: %d]", route_msg.type );
+				//bwdebug( DBG_SYS, "ROUTE_SERVER: Invalid request. [type: %d]", route_msg.type );
 				break;
 		}
 	}
 }
+

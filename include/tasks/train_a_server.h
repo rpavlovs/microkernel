@@ -1,28 +1,37 @@
-#ifndef TRACK_HELPERS_H
-#define	TRACK_HELPERS_H
-
-#include "track_data.h"
-#include "track_node.h"
+#ifndef __TRAIN_A_SERVER_H__
+#define	__TRAIN_A_SERVER_H__
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 // Constants
 // -----------------------------------------------------------------------------------------------------------------------------------------------
+#define TRAIN_A_SERVER_PRIORITY		12
+
+#define TRAIN_A_SERVER_NAME			"train_a_server"
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 // Structures
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 
+// Messages
+typedef struct{
+	int type;
+
+	track_node *track;
+	int *train_direction;
+	int train_node;
+	int train_shift;
+
+	//int target_node;
+	//int target_shift;
+
+	//int *current_switches;
+	//int *target_switches;
+} Train_a_msg;
+
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 // Methods
 // -----------------------------------------------------------------------------------------------------------------------------------------------
-void init_track( track_node* track );
-int get_switch_index( int switch_num );
-int get_switch_num( int switch_index );
-void get_node_neighbours( track_node *node );
-void init_node_neighbours( track_node *node );
-int get_edge_by_nodes(
-        track_node* src, track_node* dest,
-        track_edge **edge);
-int edge_is_routed( track_edge* edge );
 
-#endif	/* TRACK_HELPERS_H */
+void train_a_server();
+
+#endif	/* TRAIN_A_SERVER_H */

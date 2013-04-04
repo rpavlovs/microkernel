@@ -15,6 +15,7 @@
 //#define TRACK_MAX 144		//TODO: Refactor
 #define INFINITY 1000000000	//TODO: Refactor
 
+
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 // Structures
 // -----------------------------------------------------------------------------------------------------------------------------------------------
@@ -25,7 +26,8 @@ typedef struct{
     track_node *track;
 
     // Current train information
-    int *train_direction;
+    int *train_direction; //TODO: DELETE FROM THE MESSAGE!!!
+	int train_index;
     track_node *current_landmark;
     int train_shift;
 
@@ -53,12 +55,14 @@ typedef struct{
 int exist_unvisited( track_node *track );
 void get_min_label( track_node* track, track_node** min_node, int* min_label );
 void update_labels( track_node *node );
-void get_shortest_route(track_node* track, int* train_direction,
+void update_labels_complex( track_node *node, int avoid_routed );
+void get_shortest_route(track_node* track, int train_index,
                         track_node* train_node, int train_shift,
                         track_node* target_node, int target_shift,
                         int* switches,
                         int* route_found, track_node** route, 
-                        int* route_length, track_edge** edges);
+                        int* route_length, track_edge** edges,
+                        int avoid_routed);
 void route_server();
 
 #endif	/* ROUTE_SERVER_H */

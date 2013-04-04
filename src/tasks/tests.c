@@ -7,10 +7,10 @@
 #define INT_ENABLE_OFFSET		0x10
 #define INT_RESET_VALUE			0x0
 
-// -----------------------------------------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------
 // Stress Tests
 // -- These tests are longer, and more time consuming.
-// -----------------------------------------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------
 void stress_test_uart1_getc(){
 	FOREVER {
 		char c = Getc( COM1 );
@@ -37,10 +37,10 @@ void stress_test_uart2_putc(){
 	Exit();	
 }
 
-// -----------------------------------------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------
 // Simple Tests
 // -- These tests are similar to unit tests, since they are very small and run fast. 
-// -----------------------------------------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------
 
 void test_track_display() {
 	int display_tid;
@@ -119,10 +119,10 @@ void test_debug(){
 	*vic2EnablePointer = initialInterruptsVIC2; 
 
 	// Show the flag values
-	bwprintf( COM2, "FLAG: KERNEL_DEBUG_AREA Value: %d\n", KERNEL_DEBUG_AREA );				// Should be 1
-	bwprintf( COM2, "FLAG: SCHEDULER_DEBUG_AREA Value: %d\n", SCHEDULER_DEBUG_AREA );		// Should be 2
-	bwprintf( COM2, "FLAG: HWI_DEBUG_AREA Value: %d\n", HWI_DEBUG_AREA );					// Should be 4
-	bwprintf( COM2, "FLAG: RPS_GAME_DEBUG_AREA Value: %d\n", RPS_GAME_DEBUG_AREA );			// Should be ?
+	bwprintf( COM2, "FLAG: KERNEL_DEBUG_AREA Value: %d\n", KERNEL_DEBUG_AREA );		
+	bwprintf( COM2, "FLAG: SCHEDULER_DEBUG_AREA Value: %d\n", SCHEDULER_DEBUG_AREA );
+	bwprintf( COM2, "FLAG: HWI_DEBUG_AREA Value: %d\n", HWI_DEBUG_AREA );			
+	bwprintf( COM2, "FLAG: RPS_GAME_DEBUG_AREA Value: %d\n", RPS_GAME_DEBUG_AREA );	
 
 	// Print a value that should be executed
 	bwdebug( DBG_SYS, UART1_SENDER_DEBUG_AREA, "TEST1: This should show.\n" );
@@ -208,7 +208,8 @@ print_hwi_registers(){
 	
 	int i; 
 	for ( i = 0; i < 9; i++ ){
-		bwprintf( COM2, "PTR VALUE: BASE + %x REAL ADDRESS: %x VALUE: %x\n", i * 4, ptr, *ptr  ); 
+		bwprintf( COM2,
+			"PTR VALUE: BASE + %x REAL ADDRESS: %x VALUE: %x\n", i * 4, ptr, *ptr  ); 
 		ptr += 1; 
 	}
 }

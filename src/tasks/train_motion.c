@@ -935,52 +935,72 @@ void predict_train_movement( int current_time, Train_status *train_status, Train
 // -----------------------------------------------------------------------------------------------------------------------------------------------------
 // Sensor Updates
 // -----------------------------------------------------------------------------------------------------------------------------------------------------
-int is_sensor_in_attrib_list( Train_server_data *server_data, int sensor_index ){
+track_node *get_sensor_from_attr_list( Train_server_data *server_data, int sensor_index ){
 	int i; 
 	const char *ptr; 
+	track_node *result = 0; 
 	char *sensor_name = server_data->sensor_names[ sensor_index ];
 
 	for ( i = 0; i < server_data->num_sensors_attr_list; i++ ){
-		ptr = server_data->sensor_attr_list[i]->name;
-		if ( strcmp( sensor_name, ptr ) == 0 )
-			return 1; 
+		ptr = server_data->sensor_attr_list[i]->name; 
+		if ( strcmp( sensor_name, ptr ) == 0 ){
+			result = server_data->sensor_attr_list[i];
+			break;
+		}
 	}
 
-	return 0; 
+	return result; 
 }
 
-void add_sensors_attrib_list( int distance_to_check, Train_status *train_status, Train_server_data *server_data ){
-	
+void add_sensors_attrib_list( Train_status *train_status, Train_server_data *server_data ){
+
 	bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, 
 		"TRAIN_MOTION: add_sensors_attrib_list-> Updating sensor attribution list [ train_id: %d ]", 
 		train_status->train_id);
-	
+
 	// Variables
-	int landmark_index, num_sensors_attr_list; 
-	track_node *node; 
-	track_edge *edge; 
+	int distance_to_check = train_status->train_reservation.distance_reserved; 
+	Train_reservation *curr_reservation = &train_status->train_reservation; 
+	track_node *curr_node = curr_reservation->reservation_start.landmark; 
+	track_edge *curr_edge = curr_reservation->reservation_start.edge; 
+	
+	// Remove the distance that we have already traveled.
+	if ( curr_reservation->reservation_start.offset > 0 ){
+		distance_to_check -= ( curr_edge->dist - curr_reservation->reservation_start.offset ); 
+	}
 
-	// Remove the distance that we have already traveled. 
-	landmark_index = train_status->route_data.landmark_index;
-	distance_to_check -= ( train_status->route_data.edges[ landmark_index ]->dist - train_status->current_position.offset );
-
-	// Is there a sensor in our route within the reserved distance?
-	landmark_index++; 
-	while( distance_to_check > 0 && landmark_index < train_status->route_data.num_landmarks ){
-
-		// Get the next node and edge
-		node = train_status->route_data.landmarks[landmark_index]; 
-		edge = train_status->route_data.edges[ landmark_index - 1 ];
-
-		if ( node->type == NODE_SENSOR ){
+	// Is there a sensor in our route within the reserved distance? 
+	int num_sensors_attr_list = 0; 
+	while( distance_to_check > 0 ){
+		if ( curr_node->type == NODE_SENSOR ){
 			// This node is a sensor. Add it to the attribution list. 
-			server_data->sensor_attr_list[num_sensors_attr_list] = node; 
-			num_sensors_attr_list++; 
+			server_data->sensor_attr_list[num_sensors_attr_list] = curr_node; 
+			num_sensors_attr_list++;
 		}
 
-		if ( landmark_index + 1 < train_status->route_data.num_landmarks && edge )
-			distance_to_check -= edge->dist;
-		landmark_index++; 
+		if ( curr_node->type == NODE_EXIT ){
+			// There are no more nodes after this one. 
+			break; 
+		}
+		else if ( curr_node->type == NODE_BRANCH ){
+			// This node is a merge. Determine where the reserved distance goes to. 
+			char curr_sw_pos = get_current_sw_pos( curr_node->reverse, train_status, server_data ); 
+
+			if ( curr_sw_pos == SWITCH_STRAIGHT_POS ) {
+				curr_node = curr_edge->dest; 
+				curr_edge = &curr_node->edge[ DIR_STRAIGHT ];
+			}
+			else {
+				curr_node = curr_edge->dest; 
+				curr_edge = &curr_node->edge[ DIR_CURVED ];
+			}
+		}
+		else{
+			curr_node = curr_edge->dest; 
+			curr_edge = &curr_node->edge[ DIR_AHEAD ];
+		}
+
+		distance_to_check -= curr_edge->dist; 
 	}
 
 	// Store the values in the attribution list
@@ -999,7 +1019,9 @@ track_node *get_sensor_triggered( Train_server_data *server_data ){
 		if ( *ptr_sensors_not == 1 && *ptr_sensors_not != *ptr_sensors && !sensor_found ){
 			// If a sensor was triggered, and another sensor was previously found, try to see
 			// if that sensor is part of the attribution list. 
-			is_sensor_in_attrib_list( server_data, i );
+			sensor_triggered = get_sensor_from_attr_list( server_data, i ); 
+			if ( sensor_triggered )
+				sensor_found = 1;
 		}
 
 		*ptr_sensors = *ptr_sensors_not; // Copy the value

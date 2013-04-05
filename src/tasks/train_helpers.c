@@ -42,31 +42,8 @@ void calculate_reservation_start( int distance_reserved, Train_status *train_sta
 			bwassert( 0, "Cannot reserve distance before an enter node. " );
 		}
 		else if ( curr_node->type == NODE_MERGE ){
-			int switch_id = get_switch_id_from_node_name( curr_node->reverse->name );
-
 			// This node is a merge. Determine which branch the train came from.
-			char curr_sw_pos; 
-			if ( train_status->train_state == TRAIN_STATE_MOVE_TO_GOAL ){
-				// The train has a goal; it already knows the poisition of the switches. 
-				int switch_index = get_switch_index( switch_id ); 
-				curr_sw_pos = train_status->route_data.switches_state[ switch_index ]; 
-			}
-			else {
-				// The train doesn't have a goal, so it doesn't know the position of the switches. 
-				// Query the switch server. 
-				Cmd_request cmd_request; 
-				Switch_query_reply query_msg_reply; 
-
-				cmd_request.type = QUERY_CMD_REQUEST; 
-				cmd_request.cmd.cmd_type = SWITCH_STATE_CMD_TYPE; 
-				cmd_request.cmd.element_id = switch_id; 
-
-				int sw_server_tid = server_data->tasks_tids[ TR_SWITCH_SERVER_TID_INDEX ];
-				Send( sw_server_tid, ( char * ) &cmd_request, sizeof( cmd_request ), ( char * ) &query_msg_reply, 
-					sizeof( query_msg_reply ) ); 
-
-				curr_sw_pos = query_msg_reply.switch_position; 
-			}
+			char curr_sw_pos = get_current_sw_pos( curr_node->reverse, train_status, server_data ); 
 
 			// Based on the switch position, determine which part of the track is reserved. 
 			if ( curr_sw_pos == SWITCH_STRAIGHT_POS ){
@@ -176,6 +153,39 @@ int request_new_path( Train_status *train_status, Train_server_data *server_data
 // ----------------------------------------------------------------------------------------------
 // Switches Helpers
 // ----------------------------------------------------------------------------------------------
+char get_current_sw_pos( track_node *sw_node, Train_status *train_status, Train_server_data *server_data ){
+	
+	char curr_sw_pos = '\0';
+	if ( sw_node->type == NODE_BRANCH || sw_node->type == NODE_MERGE ){
+
+		// Get the id of the switch based on its node name
+		int switch_id = get_switch_id_from_node_name( sw_node->name ); 
+
+		if ( train_status->train_state == TRAIN_STATE_MOVE_TO_GOAL ){
+			// The train has a goal; it already knows the poisition of the switches. 
+			int switch_index = get_switch_index( switch_id ); 
+			curr_sw_pos = train_status->route_data.switches_state[ switch_index ]; 
+		}
+		else{
+			// The train doesn't have a goal, so it doesn't know the position of the switches. 
+			// Query the switch server. 
+			Cmd_request cmd_request; 
+			Switch_query_reply query_msg_reply; 
+
+			cmd_request.type = QUERY_CMD_REQUEST; 
+			cmd_request.cmd.cmd_type = SWITCH_STATE_CMD_TYPE; 
+			cmd_request.cmd.element_id = switch_id;
+
+			int sw_server_tid = server_data->tasks_tids[ TR_SWITCH_SERVER_TID_INDEX ];
+			Send( sw_server_tid, ( char * ) &cmd_request, sizeof( cmd_request ), ( char * ) &query_msg_reply, 
+				sizeof( query_msg_reply ) );
+
+			curr_sw_pos = query_msg_reply.switch_position; 
+		}
+	}
+
+	return curr_sw_pos; 
+}
 
 int check_next_sw_pos( int distance_to_check, Train_status *train_status, Train_server_data *server_data ){
 	bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, "TRAIN_HELPERS: check_next_sw_pos Checking if a sw needs to be switched" );

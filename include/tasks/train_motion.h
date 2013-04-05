@@ -8,7 +8,7 @@
 // ----------------------------------------------------------------------------------------------
 // Train direction
 #define TRAIN_DIRECTION_FORWARD				1
-#define TRAIN_DIRECTION_REVERSE				2
+#define TRAIN_DIRECTION_REVERSE				0
 
 // Train motion state
 #define TRAIN_STILL							0               // The train is not moving

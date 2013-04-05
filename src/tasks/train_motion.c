@@ -732,6 +732,13 @@ void predict_train_movement( int current_time, Train_status *train_status, Train
 	int cmd_delay, speed_to_use, distance_to_reserve, time_in_constant_speed; 
 	int is_distance_reserved, next_update_time, accurate_current_time ; 
 
+	// If the train is moving a short distance track it somewhere else
+	if ( train_status->motion_data.distance_type == SHORT_DISTANCE ){
+		int continue_exec = track_train_short_distance( train_status, server_data );
+		if ( !continue_exec )
+			return; 
+	}
+
 	// Is the train supposed to move?
 	// - If not, there's no need to stay in this method. 
 	if ( train_status->train_state == TRAIN_STATE_MOVE_FREE ){
@@ -740,13 +747,6 @@ void predict_train_movement( int current_time, Train_status *train_status, Train
 
 		if ( original_speed == curr_speed && curr_speed == 0 )
 			return;
-	}
-
-	// If the train is moving a short distance track it somewhere else
-	if ( train_status->motion_data.distance_type == SHORT_DISTANCE ){
-		int continue_exec = track_train_short_distance( train_status, server_data );
-		if ( !continue_exec )
-			return; 
 	}
 
 	// Determine what's going to happen in the future, and how to react to it. 
@@ -772,7 +772,9 @@ void predict_train_movement( int current_time, Train_status *train_status, Train
 					// - Remove the current goal
 					initialize_goal( train_status );
 
-					// TODO: Remove the sensor tracking of this part of the track 
+					// Release all track reserved ( will only keep the current position of the train ).
+					reserve_distance( 0, train_status, server_data ); 
+					add_sensors_attrib_list( train_status, server_data );
 					break; 
 				}
 

@@ -12,11 +12,12 @@
 #define TR_SWITCH_SERVER_TID_INDEX				1
 #define TR_SENSOR_SERVER_TID_INDEX				2
 #define TR_ROUTE_SERVER_TID_INDEX				3
-#define TR_WAIT_NOTIFIER_TID_INDEX				4
-#define TR_SENSOR_NOTIFIER_TID_INDEX			5
-#define TR_WAIT_NOT_COURIER_TID_INDEX			6
-#define TR_SENSOR_NOT_COURIER_TID_INDEX			7
-#define TR_CMD_NOT_TID_INDEX					8
+#define TR_RESERVATION_SERVER_TID_INDEX			4
+#define TR_WAIT_NOTIFIER_TID_INDEX				5
+#define TR_SENSOR_NOTIFIER_TID_INDEX			6
+#define TR_WAIT_NOT_COURIER_TID_INDEX			7
+#define TR_SENSOR_NOT_COURIER_TID_INDEX			8
+#define TR_CMD_NOT_TID_INDEX					9
 
 // Train update types
 #define NORMAL_UPDATE							1		// Request to only update the current train information

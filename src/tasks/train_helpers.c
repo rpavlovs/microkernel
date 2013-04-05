@@ -23,7 +23,7 @@ void calculate_reservation_start( int distance_reserved, Train_status *train_sta
 
 	track_node *curr_node, *prev_node;
     Train_position curr_pos = train_status->current_position; 
-    
+
 	// Remove the current offset
 	if ( curr_pos.offset >= extra_length_to_reserve ){
 		curr_pos.offset -= extra_length_to_reserve;
@@ -38,8 +38,9 @@ void calculate_reservation_start( int distance_reserved, Train_status *train_sta
 		curr_node = curr_pos.landmark; 
 
 		// Determine the new landmark 
-		if ( curr_node->type == NODE_ENTER && extra_length_to_reserve >= curr_pos.edge->dist ){
-			bwassert( 0, "Cannot reserve distance before an enter node. " );
+		if ( curr_node->type == NODE_ENTER && extra_length_to_reserve ){
+			bwassert( 0, "Cannot reserve distance before an enter node. [ train_id: %d Landmark: %s Offset: %d Dist: %d ]", 
+				train_status->train_id, train_status->current_position.landmark->name, train_status->current_position.offset, extra_length_to_reserve );
 		}
 		else if ( curr_node->type == NODE_MERGE ){
 			// This node is a merge. Determine which branch the train came from.
@@ -83,12 +84,52 @@ void calculate_reservation_start( int distance_reserved, Train_status *train_sta
 }
 
 int reserve_distance( int distance_to_reserve, Train_status *train_status, Train_server_data *server_data ){
-	// TODO: Add Pavel's code here
+	// Prepare message
+	int is_distance_reserved = 0; 
+	//int is_distance_reserved = 1;	// RESERVED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
+	Reservation_msg reservation_msg;
+	reservation_msg.type = RESERVE_ROUTE_MSG;
+
+	reservation_msg.track = server_data->track; 
+
+	reservation_msg.train_index = train_status->train_num;
+	reservation_msg.train_direction = 1;//train_status->train_direction; 
+	reservation_msg.train_node = train_status->current_position.landmark; 
+	reservation_msg.train_edge = train_status->current_position.edge; 
+	reservation_msg.train_shift = train_status->current_position.offset; 
+
+	reservation_msg.route = train_status->route_data.landmarks; 
+	reservation_msg.route_edges = train_status->route_data.edges; 
+	reservation_msg.route_length = train_status->route_data.num_landmarks; 
+
+	if ( distance_to_reserve > 1 )
+		reservation_msg.reservation = distance_to_reserve - 1;
+	else
+		reservation_msg.reservation = distance_to_reserve;
+
+	reservation_msg.route_is_reserved = &is_distance_reserved; 
+	
+	bwdebug( DBG_USR, TEMP2_DEBUG_AREA, "ASKING FOR DISTANCE: tid: %d dist: %d dist_substracted: %d", 
+		train_status->train_id, distance_to_reserve, distance_to_reserve - 1 ); 
+	Send( server_data->tasks_tids[ TR_RESERVATION_SERVER_TID_INDEX ], ( char * ) &reservation_msg, 
+		sizeof( reservation_msg ), 0, 0);
+	bwdebug( DBG_USR, TEMP2_DEBUG_AREA, "replied: [ RESULT: %d ]", is_distance_reserved ); 
 
 	// The distance was reserved.
-	calculate_reservation_start( distance_to_reserve, train_status, server_data );
-
-	return 1; 
+	if ( is_distance_reserved ){
+		calculate_reservation_start( distance_to_reserve, train_status, server_data );
+	}
+	else{
+		bwprintf( COM2, "RESERVATION DENIED [ Curr_pos: %s Offset: %d Dist: %d ]", 
+			train_status->current_position.landmark->name, train_status->current_position.offset, 
+			distance_to_reserve - 1 ); 		
+		bwdebug( DBG_USR, TEMP2_DEBUG_AREA, "------------------------------------------\n"); 
+		bwdebug( DBG_USR, TEMP2_DEBUG_AREA, "RESERVATION DENIED [ Curr_pos: %s Offset: %d Dist: %d ]", 
+			train_status->current_position.landmark->name, train_status->current_position.offset, 
+			distance_to_reserve - 1 ); 
+	}
+	
+	return is_distance_reserved; 
 }
 
 // ----------------------------------------------------------------------------------------------
@@ -129,6 +170,8 @@ int request_new_path( Train_status *train_status, Train_server_data *server_data
 	route_msg.edges = ( track_edge ** ) train_status->route_data.edges; 
 	route_msg.landmarks = ( track_node ** ) train_status->route_data.landmarks;
 
+	bwprintf( COM2, "REQUESTING_ROUTE: Origin: %s Destination: %s\n", 
+		route_msg.current_landmark->name, route_msg.target_node->name ); 
 	Send( server_data->tasks_tids[ TR_ROUTE_SERVER_TID_INDEX ], 
 		( char * ) &route_msg, sizeof( route_msg ), 0, 0 ); 
 
@@ -393,11 +436,6 @@ int get_short_distance( int distance_index, Speed_calibration_data *speed_calibr
 	int offset = ( distance_index * 3 ) + CALIBRATED_DISTANCE_INDEX;
 
 	return ( int ) *( calibrated_distances + offset );
-
-	//calibrated_distances + ( distance_index * 3 ) +
-
-	//return ( int ) ( &calibrated_distances[distance_index] )[ CALIBRATED_DISTANCE_INDEX ];
-	//return *( calibrated_distances + offset );
 }
 
 int get_short_distance_stopping_time( int distance_index, Speed_calibration_data *speed_calibration ){

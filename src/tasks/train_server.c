@@ -93,6 +93,10 @@ void initialize_tasks_list( Train_server_data *train_server_data ){
 	tasks_tids[ TR_ROUTE_SERVER_TID_INDEX ] = route_srv_tid; 
 	bwassert( route_srv_tid >= 0, "TRAIN_SERVER: This task requires the route server to work properly." );
 
+	int reserv_srv_tid = WhoIs( RESERVATION_SERVER_NAME ); 
+	tasks_tids[ TR_RESERVATION_SERVER_TID_INDEX ] = reserv_srv_tid; 
+	bwassert( reserv_srv_tid >= 0, "TRAIN_SERVER: This task requires the reservation server to work properly." );
+
 	// Train Cmd Notifier
 	tasks_tids[TR_CMD_NOT_TID_INDEX] = Create( TRAIN_CMD_NOT_TASK_PRIORITY, train_cmd_notifier ); 
 	if ( tasks_tids[TR_CMD_NOT_TID_INDEX] < 0 )
@@ -215,10 +219,18 @@ void initialize_train_status( Train_status *train_status, Train_initialization_m
 	initialize_goal( train_status );
 
 	// TODO: Temp
-	train_status->current_position.landmark = &init_info.track[24];  // "B9"
-	train_status->current_position.edge = &train_status->current_position.landmark->edge[DIR_AHEAD]; 
-	//train_status->current_position.offset = 55; // 5.5 cm -> train 37
-	train_status->current_position.offset = 130; // 13 cm -> train 50
+	if ( init_info.train_id == 49 ){
+		train_status->current_position.landmark = &init_info.track[15];  // "A16"
+		train_status->current_position.edge = &train_status->current_position.landmark->edge[DIR_AHEAD]; 
+		//train_status->current_position.offset = 55; // 5.5 cm -> train 37
+		train_status->current_position.offset = 20; // 2 cm -> train 49
+	}
+	else{
+		train_status->current_position.landmark = &init_info.track[24];  // "B9"
+		train_status->current_position.edge = &train_status->current_position.landmark->edge[DIR_AHEAD]; 
+		//train_status->current_position.offset = 55; // 5.5 cm -> train 37
+		train_status->current_position.offset = 130; // 13 cm -> train 50
+	}
 }
 
 // -------------------------------------------------------------------
@@ -242,6 +254,7 @@ void train_server(){
 	// Initialize train data
 	Train_status train_status; 
 	initialize_train_status( &train_status, train_initialization ); 
+	reserve_distance( 0, &train_status, &train_server_data );	// TODO: Might need to do this somewhere else. 
 
 	// Messages
 	Courier_msg courier_msg; 

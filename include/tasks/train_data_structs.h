@@ -11,7 +11,7 @@
 // -------------------------------------------------------------------
 // Constants
 // -------------------------------------------------------------------
-#define NUM_REQUIRED_TASKS_FOR_TRAIN			8		// The number of tis that we need to keep track of. 
+#define NUM_REQUIRED_TASKS_FOR_TRAIN			10		// The number of tis that we need to keep track of. 
 
 #define SENSOR_ATTR_LIST_SIZE					20		// The size of the sensor attribution list
 

@@ -219,3 +219,17 @@ int edge_is_routed( track_edge* edge ){
     return 0;
 }
 
+// Returns:
+//      0 - when the edge IS NOT reserved
+//      1 - when the edge IS reserved
+int edge_is_reserved(int train_index, track_edge* edge ){
+    int i;
+    
+    for(i = 0; i < 3; i++){
+        if( (i != train_index) && (edge->reservers[i]) ){
+            return 1;
+        }
+    }
+    
+    return 0;
+}

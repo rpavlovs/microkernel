@@ -24,5 +24,6 @@ int get_edge_by_nodes(
         track_node* src, track_node* dest,
         track_edge **edge);
 int edge_is_routed( track_edge* edge );
+int edge_is_reserved( int train_index, track_edge* edge );
 
 #endif	/* TRACK_HELPERS_H */

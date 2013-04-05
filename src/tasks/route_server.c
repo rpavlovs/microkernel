@@ -59,7 +59,7 @@ void update_labels( track_node *node ){
     }
 }
 
-void update_labels_complex( track_node *node, int avoid_routed ){
+void update_labels_complex(int train_index, track_node *node, int avoid_routed ){
     //Utility variables
     int i, node_label, calc_label, neighbour_label;
     track_edge *edge;
@@ -67,8 +67,9 @@ void update_labels_complex( track_node *node, int avoid_routed ){
     //Updating label of each node neighbour
     for( i = 0; i < node->neighbours_count; i++ ){
 
+		// ROUTING AVOIDANCE ////////////////////////////////////////////////////////
         // If there is a need to avoid already routed routes
-        if( avoid_routed ){
+        /*if( avoid_routed ){
             // We are able to get an edge
             if(get_edge_by_nodes( node, node->neighbours[i], &edge )){
                 // If edge is free from routing
@@ -77,6 +78,17 @@ void update_labels_complex( track_node *node, int avoid_routed ){
                             //edge->src->name, edge->dest->name);
                     continue;
                 }
+            }
+        }*/
+
+		// RESERVATION AVOIDANCE ////////////////////////////////////////////////////
+		// We are able to get an edge
+        if(get_edge_by_nodes( node, node->neighbours[i], &edge )){
+            // If edge is free from routing
+            if( edge_is_reserved( train_index, edge ) ){
+                //printf("Edge is routed! SRC: %s; DST: %s\n",
+                        //edge->src->name, edge->dest->name);
+                continue;
             }
         }
         
@@ -144,7 +156,7 @@ void get_shortest_route(track_node* track, int train_index,
 
         // Update neighbours
         // init_node_neighbours( min_node );
-        update_labels_complex( min_node, avoid_routed );
+        update_labels_complex( train_index, min_node, avoid_routed );
     }
 
     if( *route_found ){
@@ -251,9 +263,12 @@ void route_server() {
                                     route_msg.route_found, route_msg.landmarks,
                                     route_msg.num_landmarks, route_msg.edges,
                                     1);
+
+								bwprintf(COM2, "ROUTE_FOUND value is: %d\n", *(route_msg.route_found));
                                 
                                 // If a route is not found, try without avoiding
-                                if(!(*route_msg.route_found)){
+                                if(!(*(route_msg.route_found))){
+									bwprintf(COM2, "FIND ROUTE WITHOUT ROUTING AVOIDANCE!!!\n");
                                     get_shortest_route(
                                     route_msg.track, route_msg.train_index,
                                     route_msg.current_landmark, route_msg.train_shift,

@@ -820,7 +820,7 @@ void predict_train_movement( int current_time, Train_status *train_status, Train
 						}
 
 						// Add the sensors to attribution list.
-						add_sensors_attrib_list( distance_to_reserve, train_status, server_data ); 
+						add_sensors_attrib_list( train_status, server_data ); 
 					}
 
 					// Start moving
@@ -902,7 +902,7 @@ void predict_train_movement( int current_time, Train_status *train_status, Train
 				}
 
 				// Add sensors to attribution list
-				add_sensors_attrib_list( distance_to_reserve, train_status, server_data ); 
+				add_sensors_attrib_list( train_status, server_data ); 
 			}
 			else{
 				// The new distance couldn't be reserved. STOP RIGHT AWAY!!!
@@ -926,7 +926,7 @@ void predict_train_movement( int current_time, Train_status *train_status, Train
 			reserve_distance( distance_to_reserve, train_status, server_data );
 
 			// Add sensors to attribution list
-			add_sensors_attrib_list( distance_to_reserve, train_status, server_data ); 
+			add_sensors_attrib_list( train_status, server_data ); 
 
 			break;
 	}

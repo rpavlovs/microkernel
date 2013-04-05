@@ -53,7 +53,6 @@ float get_time_for_distance(
 void predict_train_movement( 
 	int current_time, Train_status *train_status, Train_server_data *server_data );
 
-void add_sensors_attrib_list( 
-	int distance_to_check, Train_status *train_status, Train_server_data *server_data );
+void add_sensors_attrib_list( Train_status *train_status, Train_server_data *server_data );
 
 #endif

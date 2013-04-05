@@ -22,7 +22,9 @@
 
 #define TRAIN_STOP_CMD_SPEED				0
 
-#define REVERSE_DEFAULT_OFFSET				130				// TODO: Review this value
+// Offset required to switch a sw safely
+#define LENGTH_TRAIN_AHEAD                  50                              // TODO: Review this values
+#define LENGHT_TRAIN_BACK                   150
 
 // ----------------------------------------------------------------------------------------------
 // Methods

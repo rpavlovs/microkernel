@@ -1,7 +1,123 @@
 #include <userspace.h>
 
 // ----------------------------------------------------------------------------------------------
-// Train Helpers
+// Reservation
+// ----------------------------------------------------------------------------------------------
+void calculate_reservation_start( int distance_reserved, Train_status *train_status, Train_server_data *server_data ){
+	/*
+    bwdebug( DBG_USR, TEMP2_DEBUG_AREA, 
+            "TRAIN_HELPERS: calculate_reservation_start -> Calculating reservation start [ train_id: %d distance_requested: %d ]", 
+            train_status->train_id, distance_reserved );
+    bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, 
+            "TRAIN_HELPERS: calculate_reservation_start -> Calculating reservation start [ train_id: %d distance_requested: %d ]", 
+            train_status->train_id, distance_reserved );
+
+    // Determine where the reserved distance starts. 
+    // NOTE: 
+    // - If the train is moving forward, an extra reservation needs to consider the back of the train, which
+    //   is big. 
+    // - If the train is moving backwards, only a small extra reservation is required, since the head of the train
+    //   is small. 
+	int extra_length_to_reserve = ( train_status->train_direction == TRAIN_DIRECTION_FORWARD ) ? LENGHT_TRAIN_BACK: LENGTH_TRAIN_AHEAD;
+	int total_distance_reserved = distance_reserved + extra_length_to_reserve;
+
+	track_node *curr_node, *prev_node;
+    Train_position curr_pos = train_status->current_position; 
+    
+	
+
+	// Remove the current offset
+	if ( curr_pos.offset >= extra_length_to_reserve ){
+		curr_pos.offset -= extra_length_to_reserve;
+		extra_length_to_reserve = 0; 
+	}
+	else{
+		extra_length_to_reserve -= curr_pos.offset;
+	}
+
+	// Check where the reservation should start
+	while( extra_length_to_reserve > 0 ){
+		curr_node = curr_pos.landmark; 
+
+		// Determine the new landmark 
+		if ( curr_node->type == NODE_ENTER && extra_length_to_reserve >= curr_pos.edge->dist ){
+			bwassert( 0, "Cannot reserve distance before an enter node. " );
+		}
+		else if ( curr_node->type == NODE_MERGE ){
+			int switch_id = get_switch_id_from_node_name( curr_node->reverse->name );
+
+			// This node is a merge. Determine which branch the train came from.
+			char curr_sw_pos; 
+			if ( train_status->train_state == TRAIN_STATE_MOVE_TO_GOAL ){
+				// The train has a goal; it already knows the poisition of the switches. 
+				int switch_index = get_switch_index( switch_id ); 
+				curr_sw_pos = train_status->route_data.switches_state[ switch_index ]; 
+			}
+			else {
+				// The train doesn't have a goal, so it doesn't know the position of the switches. 
+				// Query the switch server. 
+				Cmd_request cmd_request; 
+				Switch_query_reply query_msg_reply; 
+
+				cmd_request.type = QUERY_CMD_REQUEST; 
+				cmd_request.cmd.cmd_type = SWITCH_STATE_CMD_TYPE; 
+				cmd_request.cmd.element_id = switch_id; 
+
+				int sw_server_tid = server_data->tasks_tids[ TR_SWITCH_SERVER_TID_INDEX ];
+				Send( sw_server_tid, ( char * ) &cmd_request, sizeof( cmd_request ), ( char * ) &query_msg_reply, 
+					sizeof( query_msg_reply ) ); 
+
+				curr_sw_pos = query_msg_reply.switch_position; 
+			}
+
+			// Based on the switch position, determine which part of the track is reserved. 
+			if ( curr_sw_pos == SWITCH_STRAIGHT_POS ){
+				curr_pos.landmark = curr_node->reverse->edge[ DIR_STRAIGHT ].dest->reverse;
+				curr_pos.edge = curr_node->reverse->edge[ DIR_STRAIGHT ].reverse;
+			}
+			else {
+				curr_pos.landmark = curr_node->reverse->edge[ DIR_CURVED ].dest->reverse;
+				curr_pos.edge = curr_node->reverse->edge[ DIR_CURVED ].reverse;
+			}
+		}
+		else{
+			curr_pos.landmark = curr_node->reverse->edge[ DIR_AHEAD ].dest->reverse;
+            curr_pos.edge = curr_node->reverse->edge[ DIR_AHEAD ].reverse;
+		}
+
+		// Is the position reserved even backwards? 
+		if ( curr_pos.edge->dist >= extra_length_to_reserve ){
+			curr_pos.offset = ( curr_pos.edge->dist - extra_length_to_reserve );
+			extra_length_to_reserve = 0; 
+		}
+		else{
+			extra_length_to_reserve -= curr_pos.edge->dist; 
+		}
+	}
+
+	// Save the data in the train status
+	train_status->train_reservation.reservation_start = curr_pos; 
+	train_status->train_reservation.distance_reserved = total_distance_reserved;
+
+    bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, 
+        "TRAIN_HELPERS: calculate_reservation_start -> Reservation start calculated\n" 
+        " - [ train_id: %d distance_requested: %d total_dist_reserved: %d Init_landmark: %s Init_offset: %d ]", 
+        train_status->train_id, distance_reserved, total_distance_reserved,
+        train_status->train_reservation.reservation_start.landmark->name, train_status->train_reservation.reservation_start.offset);
+	*/
+}
+
+int reserve_distance( int distance_to_reserve, Train_status *train_status, Train_server_data *server_data ){
+	// TODO: Add Pavel's code here
+
+	// The distance was reserved.
+	calculate_reservation_start( distance_to_reserve, train_status, server_data );
+
+	return 1; 
+}
+
+// ----------------------------------------------------------------------------------------------
+// Path Calculation
 // ----------------------------------------------------------------------------------------------
 int request_new_path( Train_status *train_status, Train_server_data *server_data ){
 
@@ -59,100 +175,9 @@ int request_new_path( Train_status *train_status, Train_server_data *server_data
 	return route_found; 
 }
 
-int reserve_distance( int distance_to_reserve, Train_status *train_status, Train_server_data *server_data ){
-	// TODO: Add the reservation code here. 
-	return 1; 
-}
-
-void print_train_status( Train_status *train_status ){
-	// Initialization
-	bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, 
-		"TRAIN_SERVER: Printing status[ train_id: %d ]", train_status->train_id );
-
-	char buff[500];
-	char *temp_buffer = buff; 
-
-	// Prepare the information to print
-	temp_buffer += saveCursor( temp_buffer ); 
-	temp_buffer += hideCursor( temp_buffer );
-	temp_buffer += cursorPositioning( temp_buffer, TRAIN_STATUS_ROW_POS + train_status->train_num, TRAIN_STATUS_COL_POS );
-	temp_buffer += sprintf( temp_buffer, "Id -> %d   Direction -> %s   Landmark -> %s", 
-		train_status->train_id, 
-		( train_status->train_direction == TRAIN_DIRECTION_FORWARD ) ? "FOR" : "REV", train_status->current_position.landmark->name ); 
-	temp_buffer += append_char( temp_buffer, ' ', 5 - strlen( train_status->current_position.landmark->name ) );
-	temp_buffer += sprintf( temp_buffer, 
-		" Offset -> %d ", train_status->current_position.offset ); 
-	temp_buffer += sprintf( temp_buffer, "   Speed -> %d   Error -> %d", train_status->motion_data.train_speed, train_status->motion_data.current_error ); 
-	temp_buffer += restoreCursor( temp_buffer );
-
-	// Send the string to UART 2. 
-	//Putstr( COM2, buff );
-}
-
-/*
-  This method is used to update the reference landmark when a reverse command is issued. 
-*/
-int reverse_current_position( Train_status *train_status ){
-
-	// 1. Change the landmark from the source to the destination. 
-	train_status->current_position.landmark = train_status->current_position.edge->dest->reverse; 
-        
-	// 2. Update the offset. 
-	int offset = train_status->current_position.offset; 
-	offset = train_status->current_position.edge->dist - offset; 
-	train_status->current_position.offset = offset; 
-
-	// 3. Change the edge. 
-	// TODO: Is this the right way to do this? 
-	train_status->current_position.edge = train_status->current_position.edge->reverse; 
-
-	return 0; 
-}
-
-void clear_train_motion_data( Train_status *train_status ){
-	// TODO: Check if this is correct. 
-	train_status->is_reversing = 0; 
-	train_status->distance_since_speed_change = 0; 
-	train_status->distance_before_deacceleration = 0; 
-
-	train_status->motion_data.train_speed = 0; 
-	train_status->motion_data.current_error = 0; 
-	train_status->motion_data.distance_to_travel = 0; 
-	train_status->motion_data.original_train_speed = 0; 
-	train_status->motion_data.calibrated_dist_index = 0; 
-	train_status->motion_data.distance_type = LONG_DISTANCE; 
-	train_status->motion_data.time_since_deacceleration = 0; 
-}
-
-void initialize_goal( Train_status *train_status ){
-	// If there was a goal, erase it. 
-	train_status->train_state = TRAIN_STATE_MOVE_FREE; 
-
-	// Make sure that the current "goal" is empty
-	train_status->current_goal.edge = 0; 
-    train_status->current_goal.landmark = 0; 
-    train_status->current_goal.offset = 0;
-
-	clear_train_motion_data( train_status ); 
-}
-
-int requires_reversing( Train_status *train_status ){
-	track_node *current_node, *next_node;
-
-	int num_landmarks = train_status->route_data.num_landmarks; 
-	int landmarks_index = train_status->route_data.landmark_index; 
-
-	if ( landmarks_index + 1 < num_landmarks ){
-		// Two nodes are required to mark reverse. 
-		current_node = train_status->route_data.landmarks[ landmarks_index ];
-		next_node = train_status->route_data.landmarks[ landmarks_index + 1 ];
-
-		if ( current_node->reverse == next_node )
-			return 1; 
-	}
-
-	return 0; 
-}
+// ----------------------------------------------------------------------------------------------
+// Switches Helpers
+// ----------------------------------------------------------------------------------------------
 
 int check_next_sw_pos( int distance_to_check, Train_status *train_status, Train_server_data *server_data ){
 	bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, "TRAIN_HELPERS: check_next_sw_pos Checking if a sw needs to be switched" );
@@ -241,6 +266,118 @@ int check_next_sw_pos( int distance_to_check, Train_status *train_status, Train_
 	}
 	
 	return num_sw_changed; 
+}
+
+/*
+    This method is used to get the extra distance that the train must move after a switch to be able to move it safely. 
+    NOTE: 
+    - The position of the train that we consider is the "sensor trigger" (the metalic cover on the bottom of the train). 
+        This trigger is located at the beginning of the front wheels; a switch can be moved safely when all the wheels of the
+        train have passed it. 
+*/
+int get_sw_clear_movement_distance( Train_status *train_status, Train_server_data *server_data ){
+    // NOTE: 
+    // - If the train is moving forward, it means that the train needs to move until the back wheels have crossed the switch,
+    //       which is a big distance. 
+    // - If the train is moving backwards, it means that most of the train has already passed the switch. Only an extra offset 
+    //   is required. 
+	int offset = ( train_status->train_direction == TRAIN_DIRECTION_FORWARD ) ?
+		LENGHT_TRAIN_BACK : LENGTH_TRAIN_AHEAD;
+
+	return offset; 
+}
+
+// ----------------------------------------------------------------------------------------------
+// Train Helpers
+// ----------------------------------------------------------------------------------------------
+void print_train_status( Train_status *train_status ){
+	// Initialization
+	bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, 
+		"TRAIN_SERVER: Printing status[ train_id: %d ]", train_status->train_id );
+
+	char buff[500];
+	char *temp_buffer = buff; 
+
+	// Prepare the information to print
+	temp_buffer += saveCursor( temp_buffer ); 
+	temp_buffer += hideCursor( temp_buffer );
+	temp_buffer += cursorPositioning( temp_buffer, TRAIN_STATUS_ROW_POS + train_status->train_num, TRAIN_STATUS_COL_POS );
+	temp_buffer += sprintf( temp_buffer, "Id -> %d   Direction -> %s   Landmark -> %s", 
+		train_status->train_id, 
+		( train_status->train_direction == TRAIN_DIRECTION_FORWARD ) ? "FOR" : "REV", train_status->current_position.landmark->name ); 
+	temp_buffer += append_char( temp_buffer, ' ', 5 - strlen( train_status->current_position.landmark->name ) );
+	temp_buffer += sprintf( temp_buffer, 
+		" Offset -> %d ", train_status->current_position.offset ); 
+	temp_buffer += sprintf( temp_buffer, "   Speed -> %d   Error -> %d", train_status->motion_data.train_speed, train_status->motion_data.current_error ); 
+	temp_buffer += restoreCursor( temp_buffer );
+
+	// Send the string to UART 2. 
+	//Putstr( COM2, buff );
+}
+
+/*
+  This method is used to update the reference landmark when a reverse command is issued. 
+*/
+int reverse_current_position( Train_status *train_status ){
+
+	// 1. Change the landmark from the source to the destination. 
+	train_status->current_position.landmark = train_status->current_position.edge->dest->reverse; 
+        
+	// 2. Update the offset. 
+	int offset = train_status->current_position.offset; 
+	offset = train_status->current_position.edge->dist - offset; 
+	train_status->current_position.offset = offset; 
+
+	// 3. Change the edge. 
+	// TODO: Is this the right way to do this? 
+	train_status->current_position.edge = train_status->current_position.edge->reverse; 
+
+	return 0; 
+}
+
+void clear_train_motion_data( Train_status *train_status ){
+	// TODO: Check if this is correct. 
+	train_status->is_reversing = 0; 
+	train_status->distance_since_speed_change = 0; 
+	train_status->distance_before_deacceleration = 0; 
+
+	train_status->motion_data.train_speed = 0; 
+	train_status->motion_data.current_error = 0; 
+	train_status->motion_data.distance_to_travel = 0; 
+	train_status->motion_data.original_train_speed = 0; 
+	train_status->motion_data.calibrated_dist_index = 0; 
+	train_status->motion_data.distance_type = LONG_DISTANCE; 
+	train_status->motion_data.time_since_deacceleration = 0; 
+}
+
+void initialize_goal( Train_status *train_status ){
+	// If there was a goal, erase it. 
+	train_status->train_state = TRAIN_STATE_MOVE_FREE; 
+
+	// Make sure that the current "goal" is empty
+	train_status->current_goal.edge = 0; 
+    train_status->current_goal.landmark = 0; 
+    train_status->current_goal.offset = 0;
+
+	clear_train_motion_data( train_status ); 
+}
+
+int requires_reversing( Train_status *train_status ){
+	track_node *current_node, *next_node;
+
+	int num_landmarks = train_status->route_data.num_landmarks; 
+	int landmarks_index = train_status->route_data.landmark_index; 
+
+	if ( landmarks_index + 1 < num_landmarks ){
+		// Two nodes are required to mark reverse. 
+		current_node = train_status->route_data.landmarks[ landmarks_index ];
+		next_node = train_status->route_data.landmarks[ landmarks_index + 1 ];
+
+		if ( current_node->reverse == next_node )
+			return 1; 
+	}
+
+	return 0; 
 }
 
 int get_short_distance( int distance_index, Speed_calibration_data *speed_calibration ){

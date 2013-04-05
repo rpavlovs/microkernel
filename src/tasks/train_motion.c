@@ -310,7 +310,7 @@ int get_short_distance_traveled( int time_since_change, Train_status *train_stat
   Return: 
   - The total straight distance. 
 */
-int get_straight_distance( Train_status *status ){
+int get_straight_distance( Train_status *status, Train_server_data *server_data ){
         // Initialization
         int is_reverse = 0; 
 		int final_offset_dist = 0; 
@@ -356,7 +356,7 @@ int get_straight_distance( Train_status *status ){
 
         // Add the offset from the last landmark
 		if ( is_reverse && next_landmark != status->current_goal.landmark ){
-			final_offset_dist = REVERSE_DEFAULT_OFFSET;
+			final_offset_dist = get_sw_clear_movement_distance( status, server_data );
         }
 		else if( !is_reverse ){
 			// The offset is the offset of the goal. 
@@ -395,7 +395,7 @@ int get_straight_distance( Train_status *status ){
   - The best speed to use to reach a requested location. It also says if it is a "short" or
     "long" distance. 
 */
-int calculate_speed_to_use( Train_status *status, Calibration_data *calibration_data ){
+int calculate_speed_to_use( Train_status *status, Train_server_data *server_data ){
 
 	bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, 
 		"TRAIN_MOTION: Starting calculation of speed to use. [ train_id: %d ]", status->train_id );
@@ -403,9 +403,10 @@ int calculate_speed_to_use( Train_status *status, Calibration_data *calibration_
 	// Initialization
 	int speed_to_use, index, speed_found, distance_in_speed; 
 	Speed_calibration_data *speed_data; 
+	Calibration_data *calibration_data  = &server_data->calibration_data; 
 
     // Calculate the speed required to travel the total straight distance. 
-    int total_straight_distance = get_straight_distance( status );
+    int total_straight_distance = get_straight_distance( status, server_data );
     if ( total_straight_distance <= 0 ){
 		// The train doesn't have to move. 
 		return 0; 
@@ -789,7 +790,7 @@ void predict_train_movement( int current_time, Train_status *train_status, Train
 				}
 
 				// Calculate the next "straight" movement
-				speed_to_use = calculate_speed_to_use( train_status, &server_data->calibration_data );
+				speed_to_use = calculate_speed_to_use( train_status, server_data );
 			}
 
 			if ( train_status->motion_data.distance_type == SHORT_DISTANCE ){

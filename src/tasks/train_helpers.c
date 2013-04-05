@@ -24,8 +24,6 @@ void calculate_reservation_start( int distance_reserved, Train_status *train_sta
 	track_node *curr_node, *prev_node;
     Train_position curr_pos = train_status->current_position; 
     
-	
-
 	// Remove the current offset
 	if ( curr_pos.offset >= extra_length_to_reserve ){
 		curr_pos.offset -= extra_length_to_reserve;

@@ -4,7 +4,7 @@
 // Reservation
 // ----------------------------------------------------------------------------------------------
 void calculate_reservation_start( int distance_reserved, Train_status *train_status, Train_server_data *server_data ){
-	/*
+	
     bwdebug( DBG_USR, TEMP2_DEBUG_AREA, 
             "TRAIN_HELPERS: calculate_reservation_start -> Calculating reservation start [ train_id: %d distance_requested: %d ]", 
             train_status->train_id, distance_reserved );
@@ -102,7 +102,7 @@ void calculate_reservation_start( int distance_reserved, Train_status *train_sta
         " - [ train_id: %d distance_requested: %d total_dist_reserved: %d Init_landmark: %s Init_offset: %d ]", 
         train_status->train_id, distance_reserved, total_distance_reserved,
         train_status->train_reservation.reservation_start.landmark->name, train_status->train_reservation.reservation_start.offset);
-	*/
+	
 }
 
 int reserve_distance( int distance_to_reserve, Train_status *train_status, Train_server_data *server_data ){

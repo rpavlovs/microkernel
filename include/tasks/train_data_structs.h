@@ -39,6 +39,12 @@ typedef struct{
 	int size; 
 } Train_cmd_queue;
 
+// -- Reservation -----------------------------
+typedef struct{
+	int distance_reserved; 
+	Train_position reservation_start; 
+} Train_reservation; 
+
 // -- Train Data ------------------------------
 typedef struct{
 	track_node *landmark;			// Which node has the train last reached. 
@@ -83,7 +89,7 @@ struct Train_status_struct{
 	Train_position current_goal; 
 	Train_position current_position; 
 	Train_motion_data motion_data; 
-	
+	Train_reservation train_reservation; 
 };
 
 struct Train_update_request_struct{

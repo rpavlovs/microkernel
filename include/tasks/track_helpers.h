@@ -25,5 +25,9 @@ int get_edge_by_nodes(
         track_edge **edge);
 int edge_is_routed( track_edge* edge );
 int edge_is_reserved( int train_index, track_edge* edge );
+int edge_has_reservation_conflict(
+        int train_index,
+        track_edge* edge,
+        int reservation_start, int reservation_end );
 
 #endif	/* TRACK_HELPERS_H */

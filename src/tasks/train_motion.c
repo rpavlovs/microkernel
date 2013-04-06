@@ -38,7 +38,7 @@ void send_train_move_command( int tr_speed, int delay_time, Train_status *train_
 		new_time = delay_time; 
 	}
 	else{
-		bwprintf( COM2, "TRAIN_MOTION: Sending cmd\n - [ Ticks: %d Ms: %d Train: %d Speed: %d ]", 
+		bwprintf( COM2, "TRAIN_MOTION: Sending cmd [ Ticks: %d Ms: %d Train: %d Speed: %d ]\n", 
 			current_time / 10, current_time, train_status->train_id, tr_speed ); 
 		send_command( TRAIN_CMD_TYPE, train_status->train_id, tr_speed, cmd_server_tid );
 
@@ -242,7 +242,9 @@ int get_long_distance_traveled( int time_since_change, Train_status *train_statu
     // one calculated during the previous refresh. 
     // TODO: After checking the sensors remember to correctly update this parameters to avoid having negative values. 
     int distance_since_change = distance_traveled - train_status->distance_since_speed_change;
-    bwassert( distance_since_change >= 0, "TRAIN_MOTION: get_long_distance_traveled -> The distance cannot be negative." ); 
+    bwassert( distance_since_change >= 0, 
+		"TRAIN_MOTION: get_long_distance_traveled -> The distance cannot be negative. [ dist_traveled: %d dist_since_sp_ch: %d ]", 
+		distance_traveled, train_status->distance_since_speed_change ); 
 
     // Update state
     train_status->distance_since_speed_change = distance_traveled;
@@ -326,7 +328,7 @@ int get_straight_distance( Train_status *status, Train_server_data *server_data 
 
         // Remove the distance that the train has already moved from the initial landmark. 
         total_straight_distance -= status->current_position.offset; 
-		bwprintf( COM2, "Initial offset Dist: %d\n", total_straight_distance ); 
+		//bwprintf( COM2, "Initial offset Dist: %d\n", total_straight_distance ); 
 
 		landmark = status->route_data.landmarks[ landmark_index ]; 
 
@@ -344,7 +346,7 @@ int get_straight_distance( Train_status *status, Train_server_data *server_data 
 				break; 
 			}
 	
-			bwprintf( COM2, "Landmark: %s Dist: %d\n", landmark->name, edge->dist ); 
+			//bwprintf( COM2, "Landmark: %s Dist: %d\n", landmark->name, edge->dist ); 
 
 			total_straight_distance += edge->dist;
             landmark_index++; 
@@ -367,17 +369,18 @@ int get_straight_distance( Train_status *status, Train_server_data *server_data 
 			// This route requires a reverse to get to the goal. However, this reverse is on the final
 			// landmark; no extra space needs to be added. 
 		}
-		bwprintf( COM2, "Final offset Dist: %d\n", final_offset_dist );
+		//bwprintf( COM2, "Final offset Dist: %d\n", final_offset_dist );
 		total_straight_distance += final_offset_dist; 
 
 		// In case the only landmarks were for a reverse, then the distance to travel is 0. 
 		if ( total_straight_distance < 0 )
 			total_straight_distance = 0; 
 
+		/*
 		bwdebug( DBG_USR, TEMP2_DEBUG_AREA, 
 			"TRAIN_MOTION: \nget_straight_distance -> Landmark1: %s Offset: %d Landmark2: %s Offset: %d Dist: %d\n", 
 			status->current_position.landmark->name, status->current_position.offset, 
-			landmark->name, final_offset_dist, total_straight_distance ); 
+			landmark->name, final_offset_dist, total_straight_distance ); */
 		bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, 
 			"TRAIN_MOTION: \nget_straight_distance -> Landmark1: %s Offset: %d Landmark2: %s Offset: %d Dist: %d\n", 
 			status->current_position.landmark->name, status->current_position.offset, 
@@ -509,13 +512,13 @@ void update_train_position_landmark( int distance_since_update, Train_status *tr
 		train_status->train_id, current_node->name, train_status->current_position.offset,
 		distance_from_landmark, distance_to_landmark );
 
-	
-	//bwprintf( COM2, 
-	//	"TRAIN_MOTION: update_train_position_landmark -> \n"
-	//	"Calculating new landmark and offset. \n[ train_id: %d landmark: %s current_pos: %d distance_from: %d distance_to: %d tot_dist: %d ]\n", 
-	//	train_status->train_id, current_node->name, train_status->current_position.offset,
-	//	distance_from_landmark, distance_to_landmark, train_status->distance_since_speed_change );
-
+	/*
+	bwprintf( COM2, 
+		"TRAIN_MOTION: update_train_position_landmark -> \n"
+		"Calculating new landmark and offset. \n[ train_id: %d landmark: %s current_pos: %d distance_from: %d distance_to: %d tot_dist: %d ]\n", 
+		train_status->train_id, current_node->name, train_status->current_position.offset,
+		distance_from_landmark, distance_to_landmark, train_status->distance_since_speed_change );
+		*/
 	while( ( distance_from_landmark - distance_to_landmark ) >= 0 ){
 
 		// The train has reached a new landmark. 
@@ -574,6 +577,13 @@ void update_train_position_landmark( int distance_since_update, Train_status *tr
 	train_status->current_position.edge = current_edge; 
 	train_status->current_position.landmark = current_node; 
 	train_status->current_position.offset = distance_from_landmark; 
+	/*
+	bwprintf( COM2, 
+		"TRAIN_MOTION: update_train_position_landmark PATH CALCULATED -> \n"
+		"[ train_id: %d landmark: %s current_pos: %d ]\n", 
+		train_status->train_id, train_status->current_position.landmark->name,
+		train_status->current_position.offset );
+		*/
 }
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -664,7 +674,9 @@ void handle_update_request( Train_update_request *update_request, Train_status *
 		train_status->current_goal.edge = &( train_status->current_goal.landmark->edge[ DIR_AHEAD ] ); 
 
 		int path_found = request_new_path( train_status, server_data );
-		bwassert( path_found, "TRAIN_MOTION: Path couldn't be found" ); 
+		bwassert( path_found, "TRAIN_MOTION: Path couldn't be found [ train_id: %d curr_landmark: %s curr_offset: %d dest: %s ]", 
+			train_status->train_id, train_status->current_position.landmark->name, train_status->current_position.offset, 
+			train_status->current_goal.landmark->name ); 
 
 		// 3. Now the train has a goal. Update the status accordingly.
 		train_status->train_state = TRAIN_STATE_MOVE_TO_GOAL; 
@@ -704,6 +716,10 @@ void start_short_distance_movement( int speed_to_use, Train_status *train_status
 		// Send the commands
 		send_train_move_command( speed_to_use, start_cmd_delay, train_status, server_data );
 		send_train_move_command( TRAIN_STOP_CMD_SPEED, stop_cmd_delay, train_status, server_data ); 
+	}
+	else{
+		// Couldn't move -> reset. 
+		clear_train_motion_data( train_status ); 
 	}
 }
 

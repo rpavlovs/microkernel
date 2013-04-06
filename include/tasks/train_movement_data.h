@@ -6,7 +6,7 @@
 // Constants
 // -------------------------------------------------------------------
 #define NUM_SPEEDS					14
-#define NUM_CALIBRATED_DISTANCES	12
+#define NUM_CALIBRATED_DISTANCES	13
 
 #define TRAIN_GROUP_1				0
 #define TRAIN_GROUP_2				1
@@ -37,23 +37,24 @@ static const int Speed_acc_table[ 2 ][ NUM_CALIBRATED_DISTANCES ][3] = {
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
-		{ 0, 0, 0 },
+		{ 0, 0, 0 }
 	},
 
 	// Speed 6
 	{
-		{ 0, 0, 0 },
-		{ 0, 0, 0 },
-		{ 0, 0, 0 },
-		{ 0, 0, 0 },
-		{ 0, 0, 0 },
-		{ 0, 0, 0 },
-		{ 0, 0, 0 },
-		{ 0, 0, 0 },
-		{ 0, 0, 0 },
-		{ 0, 0, 0 },
-		{ 0, 0, 0 },
-		{ 0, 0, 0 },
+		{ 4,   250,  260  },		// The total times are invented
+		{ 8,   500,  800  },
+		{ 20,  750,  1000 },
+		{ 49,  1000, 1300 },
+		{ 77,  1250, 1700 },
+		{ 108, 1500, 2100 },
+		{ 142, 1750, 3000 },
+		{ 202, 2000, 3700 },
+		{ 272, 2250, 4000 },
+		{ 331, 2500, 5000 },
+		{ 420, 2750, 5550 },
+		{ 539, 3000, 5800 },
+		{ 670, 3250, 6050 }
 	}
 }; 
 
@@ -78,6 +79,7 @@ static const int Speed_acc_table_group2[ 2 ][ NUM_CALIBRATED_DISTANCES ][3] = {
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
+		{ 0, 0, 0 }
 	},
 	// Speed 6
 	{
@@ -93,6 +95,7 @@ static const int Speed_acc_table_group2[ 2 ][ NUM_CALIBRATED_DISTANCES ][3] = {
 		{ 456, 2500, 5000 },
 		{ 558, 2750, 5550 },
 		{ 616, 3000, 5800 },
+		{ 688, 3250, 6050 }
 	}
 }; 
 

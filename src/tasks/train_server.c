@@ -212,8 +212,10 @@ void initialize_train_status( Train_status *train_status, Train_initialization_m
 	train_status->motion_state = TRAIN_STILL; 
 	train_status->is_reversing = 0; 
 
-	train_status->motion_data.current_error = 0;
 	train_status->motion_data.train_speed = 0; 
+	train_status->motion_data.total_error = 0; 
+	train_status->motion_data.current_error = 0;
+	train_status->motion_data.num_error_measurements = 0; 
 	train_status->motion_data.original_train_speed = 0; 
 
 	initialize_goal( train_status );

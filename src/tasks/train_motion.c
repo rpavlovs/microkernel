@@ -146,8 +146,6 @@ int get_distance_traveled( int current_time, Train_status *train_status, Train_s
 	else
 		distance_traveled = get_long_distance_traveled( time_since_change, train_status, &( server_data->calibration_data ) ); 
 
-	distance_traveled += train_status->motion_data.current_error; 
-
 	bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, 
 		"TRAIN_SERVER: get_distance_traveled -> Distance calculated. [ train_id: %d time_since_change: %d distance: %d ]", 
 		train_status->train_id, time_since_change, distance_traveled );
@@ -1130,14 +1128,24 @@ int update_with_sensor_data( track_node *triggered_sensor, Train_status *train_s
 	// Initialization
 	int error_distance = get_dist_between_sensor_and_landmark( triggered_sensor, train_status, server_data );
 
-	// Make the sensor the current position
-	// TODO: MAKE SURE THE ERROR IS INTEGRATED IN THE RIGHT WAY!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	train_status->current_position.offset = 0; 
-	train_status->current_position.landmark = triggered_sensor;
-	train_status->current_position.edge = &triggered_sensor->edge[ DIR_AHEAD ];
+	// While moving, the current position of the train is not updated. The error distance is calculated and
+	// as soon as the train stops its position is adjusted using the calculared error distance. 
 
-	// Update the error
-	train_status->motion_data.current_error += error_distance;
+	// Make the sensor the current position
+	if ( train_status->motion_state == TRAIN_STILL ){
+		// The train is not moving. We can safely adjust its position. 
+		train_status->current_position.offset = 0; 
+		train_status->current_position.landmark = triggered_sensor;
+		train_status->current_position.edge = &triggered_sensor->edge[ DIR_AHEAD ];
+	}
+	else{
+		// Update the error
+		train_status->motion_data.current_error += error_distance;
+	}
+
+	train_status->motion_data.total_error += get_abs_value( error_distance ); 
+	train_status->motion_data.num_error_measurements++; 
+
 	return 1; 
 }
 

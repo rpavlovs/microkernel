@@ -53,7 +53,11 @@ typedef struct{
 	int distance_to_travel;			
 	int original_train_speed;		// Only used for reversing without a goal. 
 	int time_since_deacceleration; 
+
+	// Error
 	int current_error;				// The difference between the real position and the actual position.
+	int total_error;				// The error since the beginning of the program. 
+	int num_error_measurements;		// The number of times the error has been updated. 
 } Train_motion_data; 
 
 typedef struct{

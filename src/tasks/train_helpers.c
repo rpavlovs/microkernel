@@ -366,7 +366,7 @@ void print_train_status( Train_status *train_status ){
 	temp_buffer += restoreCursor( temp_buffer );
 
 	// Send the string to UART 2. 
-	Putstr( COM2, buff );
+	//Putstr( COM2, buff );
 }
 
 /*

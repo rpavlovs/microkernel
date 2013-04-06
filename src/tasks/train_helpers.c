@@ -120,11 +120,11 @@ int reserve_distance( int distance_to_reserve, Train_status *train_status, Train
 		calculate_reservation_start( distance_to_reserve, train_status, server_data );
 	}
 	else{
-		/*
+		
 		bwprintf( COM2, "RESERVATION DENIED [ Curr_pos: %s Offset: %d Dist: %d ]\n", 
 			train_status->current_position.landmark->name, train_status->current_position.offset, 
 			distance_to_reserve - 1 ); 		
-			*/
+			
 		bwdebug( DBG_USR, TEMP2_DEBUG_AREA, "RESERVATION DENIED [ Curr_pos: %s Offset: %d Dist: %d ]", 
 			train_status->current_position.landmark->name, train_status->current_position.offset, 
 			distance_to_reserve - 1 ); 
@@ -366,7 +366,7 @@ void print_train_status( Train_status *train_status ){
 	temp_buffer += restoreCursor( temp_buffer );
 
 	// Send the string to UART 2. 
-	//Putstr( COM2, buff );
+	Putstr( COM2, buff );
 }
 
 /*

@@ -233,3 +233,48 @@ int edge_is_reserved(int train_index, track_edge* edge ){
     
     return 0;
 }
+
+//Returns:
+//      0 - when edge DOESN'T HAVE any conflicts
+//      1 - when edge HAS conflicts
+int edge_has_reservation_conflict(
+        int train_index,
+        track_edge* edge,
+        int reservation_start, int reservation_end ){
+    
+    // Utility variables
+    int i, reverse_start, reverse_end;
+    
+    // Check input parameters
+    if((train_index < 0 || train_index > 2) ||
+        (reservation_start < 0 || reservation_end > edge->dist - 1)){
+        bwdebug( DBG_USR, TEMP2_DEBUG_AREA, "Input parameters of edge_has_reservation_conflicte are wrong!!!\n");
+        return 1;
+    }
+    
+    // Check if there are any contradictory reservations on this route
+    for( i = 0; i < 3; i++ ){
+		if( i != train_index ){
+		    if(
+		            (reservation_start <= edge->start[i] && edge->start[i] <= reservation_end) ||
+		            (reservation_start <= edge->end[i] && edge->end[i] <= reservation_end) ||
+		            (edge->start[i] <= reservation_start && reservation_end <= edge->end[i])
+		      ){
+		        //bwdebug( DBG_USR, TEMP2_DEBUG_AREA, "edge_has_reservation_conflict: CONFLICT FOUND!!!\n");
+		        return 1;
+		    }
+		}
+    }
+
+	return 0;
+}
+
+
+
+
+
+
+
+
+
+

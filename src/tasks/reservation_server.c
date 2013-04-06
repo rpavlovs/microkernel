@@ -461,7 +461,7 @@ int check_stop(
         int reserve_forward, int reserve_backward){
     
     // General variables
-    int i, j;
+    // int i, j;
     int min_forward, min_backward;              //temp variables
     int leftover_forward, leftover_backward;    //for saving leftovers
     int reservation_start, reservation_end;     //for checking edges
@@ -489,7 +489,7 @@ int check_stop(
         train_index, edge,
         reservation_start, reservation_end )){
         //printf("FIRST EDGE: check_stopping_edge FAILED\n");
-        return 0;
+        //return 0;
     }
     
     // Update variables

@@ -39,22 +39,49 @@ void get_min_label( track_node* track, track_node** min_node, int* min_label ){
     }
 }
 
-void update_labels( track_node *node ){
+void update_first(int train_index, track_node *train_node, track_edge *train_edge,
+					int train_shift, int avoid_routed ){
     //Utility variables
     int i, node_label, calc_label, neighbour_label;
+	int temp_shift;
+    track_edge *temp_edge;
 
     //Updating label of each node neighbour
-    for( i = 0; i < node->neighbours_count; i++ ){
+    for( i = 0; i < train_node->neighbours_count; i++ ){
 
+		// RESERVATION AVOIDANCE ////////////////////////////////////
+		// We are able to get an edge
+		if( avoid_routed ){
+		    if(get_edge_by_nodes( train_node, train_node->neighbours[i], &temp_edge )){
+				temp_shift = 0;
+				// If we can enforce train_shift
+				if( temp_edge == train_edge ){
+					temp_shift = train_shift;
+				}
+			    // If edge has reservation conflict
+			    if( edge_has_reservation_conflict(
+					train_index, temp_edge, temp_shift, temp_edge->dist - 1 ) ){
+			        continue;
+			    }
+		    }
+		}
+        
+		// Dijkstra /////////////////////////////////////////////////
         //Calculate new label by Dijkstra
-        node_label = node->label;
-        calc_label = node_label + node->distances[i];
-        neighbour_label = node->neighbours[i]->label;
+        node_label = train_node->label;
+		calc_label = train_node->distances[i] + node_label;
+		neighbour_label = train_node->neighbours[i]->label;
+
+		if(get_edge_by_nodes( train_node, train_node->neighbours[i], &temp_edge )){
+			if( temp_edge == train_edge ){
+				calc_label = train_node->distances[i] - node_label;
+			}
+		}
 
         //Include neighbour in route
         if( calc_label < neighbour_label ){
-            node->neighbours[i]->label = calc_label;
-            node->neighbours[i]->previous = node;
+            train_node->neighbours[i]->label = calc_label;
+            train_node->neighbours[i]->previous = train_node;
         }
     }
 }
@@ -72,10 +99,8 @@ void update_labels_complex(int train_index, track_node *node, int node_shift, in
 		if( avoid_routed ){
 		    if(get_edge_by_nodes( node, node->neighbours[i], &edge )){
 		        // If edge is free from routing
-		        if( edge_has_reservation_conflict( 
+		        if( edge_has_reservation_conflict(
 					train_index, edge, node_shift, edge->dist - 1 ) ){
-		            //printf("Edge is routed! SRC: %s; DST: %s\n",
-		                    //edge->src->name, edge->dest->name);
 		            continue;
 		        }
 		    }
@@ -109,6 +134,7 @@ void get_shortest_route(track_node* track, int train_index,
     // Initialization /////////////////////////////////////////////////////////
     // Utility variables
     int i, min_label, switch_num, node_shift;
+	int first_dijkstra_iteration;
     track_node *min_node;
     track_node *temp_node;
     track_edge *temp_edge;
@@ -116,14 +142,18 @@ void get_shortest_route(track_node* track, int train_index,
 
     //Initialization
     init_routing( track, train_index );
-    train_node->label = 0;
     *route_found = 0;
     *route_length = 0;
+    train_node->label = 0;
+
+	//Special initialization //////////////////////////////////////////////////
+	//train_node->label = train_shift;
+	first_dijkstra_iteration = 1;
 
     ////printf("INITIALIZED\n");
 
     // Main loop //////////////////////////////////////////////////////////////
-    while( exist_unvisited( track ) ){        
+    while( exist_unvisited( track ) ){
         // Iteration initialization
         get_min_label( track, &min_node, &min_label );
         min_node->visited = 1;
@@ -153,7 +183,14 @@ void get_shortest_route(track_node* track, int train_index,
 		}
 
         // Update neighbours
-        update_labels_complex( train_index, min_node, node_shift, avoid_routed );
+		if(first_dijkstra_iteration){
+			//update_first( train_index, min_node, train_edge, train_shift, avoid_routed );
+			first_dijkstra_iteration = 0;
+	        update_labels_complex( train_index, min_node, node_shift, avoid_routed );
+		}
+		else{
+	        update_labels_complex( train_index, min_node, node_shift, avoid_routed );
+		}
     }
 
     if( *route_found ){
@@ -264,8 +301,8 @@ void route_server() {
 								bwprintf(COM2, "ROUTE_FOUND value is: %d\n", *(route_msg.route_found));
                                 
                                 // If a route is not found, try without avoiding
-                                /*if(!(*(route_msg.route_found))){
-									bwprintf(COM2, "FIND ROUTE WITHOUT ROUTING AVOIDANCE!!!\n");
+                                if(!(*(route_msg.route_found))){
+									bwprintf(COM2, "FIND ROUTE WITH INTERSECTIONS!!!\n");
                                     get_shortest_route(
                                     route_msg.track, route_msg.train_index,
                                     route_msg.current_landmark, route_msg.train_shift,
@@ -274,7 +311,7 @@ void route_server() {
                                     route_msg.route_found, route_msg.landmarks,
                                     route_msg.num_landmarks, route_msg.edges,
                                     0);
-                                }*/
+                                }
 
 				bwdebug( DBG_SYS, ROUTE_SRV_DEBUG_AREA, "ROUTE_SERVER: Replying [ sender_tid: %d ]", sender_tid );
 				Reply( sender_tid, 0, 0 );

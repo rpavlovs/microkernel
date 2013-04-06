@@ -26,16 +26,15 @@ typedef struct{
     track_node *track;
 
     // Current train information
-    //int *train_direction; //TODO: DELETE FROM THE MESSAGE!!!
 	int train_index;
     track_node *current_landmark;
     int train_shift;
 
     // Route
     int* route_found;
-    track_node **landmarks;  // The landmarks (nodes) to follow to reach to the destination.
-    int *num_landmarks;     // The num. of landmarks (including the origin landmark).
-    track_edge **edges;      // The edges connecting the landmarks to reach the destination.
+    track_node **landmarks;	// The landmarks (nodes) to follow to reach to the destination.
+    int *num_landmarks;		// The num. of landmarks (including the origin landmark).
+    track_edge **edges;		// The edges connecting the landmarks to reach the destination.
     
     // Target information
     track_node *target_node;
@@ -54,9 +53,9 @@ typedef struct{
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 int exist_unvisited( track_node *track );
 void get_min_label( track_node* track, track_node** min_node, int* min_label );
-void update_labels( track_node *node );
-void update_labels_complex(int train_index, track_node *node, 
-							int node_shift, int avoid_routed );
+void update_first(int train_index, track_node *train_node, track_edge *train_edge,
+					int train_shift, int avoid_routed );
+void update_labels_complex(int train_index, track_node *node, int node_shift, int avoid_routed );
 void get_shortest_route(track_node* track, int train_index,
                         track_node* train_node, int train_shift,
                         track_node* target_node, int target_shift,
@@ -67,3 +66,13 @@ void get_shortest_route(track_node* track, int train_index,
 void route_server();
 
 #endif	/* ROUTE_SERVER_H */
+
+
+
+
+
+
+
+
+
+

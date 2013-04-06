@@ -177,14 +177,14 @@ int request_new_path( Train_status *train_status, Train_server_data *server_data
 		( char * ) &route_msg, sizeof( route_msg ), 0, 0 ); 
 
 	// Temp
-	/*
+	
 	int j; 
 	for ( j = 0; j < *route_msg.num_landmarks; j++ ){
 		//bwprintf( COM2, "%s:%d ", route_msg.landmarks[j]->name, route_msg.edges[j]->dist );
 		bwprintf( COM2, "%s:%d ", train_status->route_data.landmarks[j]->name, train_status->route_data.edges[j]->dist );
 	}
 	bwprintf( COM2, "\n" ); 
-	*/
+	
 	/*
 	while( 1 )
 		;
@@ -366,7 +366,7 @@ void print_train_status( Train_status *train_status ){
 	temp_buffer += restoreCursor( temp_buffer );
 
 	// Send the string to UART 2. 
-	Putstr( COM2, buff );
+	// Putstr( COM2, buff );
 }
 
 /*

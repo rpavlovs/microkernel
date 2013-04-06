@@ -71,7 +71,7 @@ void train_cmd_notifier(){
 				}
 			}
 			//bwprintf( COM2, "TRAIN_CMD_NOTIFIER: Delaying until: %d Cmd Until:%d\n", time_to_send_cmd, cmd.delay_until ); 
-			bwprintf( COM2, "TRAIN_CMD_NOTIFIER: Sending cmd\n - [ Ticks: %d Ms: %d Train: %d Speed: %d ]\n", 
+			bwprintf( COM2, "\nTRAIN_CMD_NOTIFIER: Sending cmd\n - [ Ticks: %d Ms: %d Train: %d Speed: %d ]\n", 
 				cmd.delay_until / 10, cmd.delay_until, cmd.request.cmd.element_id, cmd.request.cmd.param ); 
 			Send( cmd_server_tid, ( char * ) &cmd.request, sizeof( cmd.request ), 0, 0 ); 
 		} 

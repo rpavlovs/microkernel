@@ -163,7 +163,7 @@ void command_notifier(){
 					// Retrieve and return the sensors data. 
 					int i;
 					for( i = 0; i < 10; ++i ) {
-						//sensors[i] = Getc( COM1 );
+						sensors[i] = Getc( COM1 );
 					}
 					Reply( command.sender_tid, 0, 0 ); 
 					

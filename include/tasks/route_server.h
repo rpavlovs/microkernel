@@ -28,6 +28,7 @@ typedef struct{
     // Current train information
 	int train_index;
     track_node *current_landmark;
+	track_edge *train_edge;
     int train_shift;
 
     // Route
@@ -57,7 +58,7 @@ void update_first(int train_index, track_node *train_node, track_edge *train_edg
 					int train_shift, int avoid_routed );
 void update_labels_complex(int train_index, track_node *node, int node_shift, int avoid_routed );
 void get_shortest_route(track_node* track, int train_index,
-                        track_node* train_node, int train_shift,
+                        track_node* train_node, track_edge* train_edge, int train_shift,
                         track_node* target_node, int target_shift,
                         char* switches,
                         int* route_found, track_node** route, 

@@ -158,6 +158,7 @@ int request_new_path( Train_status *train_status, Train_server_data *server_data
 	
 	// Current Position
 	route_msg.current_landmark = train_status->current_position.landmark; 
+	route_msg.train_edge = train_status->current_position.edge;
 	route_msg.train_shift = train_status->current_position.offset; 
 	
 	// Goal

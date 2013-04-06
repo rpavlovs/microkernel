@@ -123,7 +123,7 @@ void update_labels_complex(int train_index, track_node *node, int node_shift, in
 //TODO:
 // A train is regarded as a point!!! TODO: refactor to a train with length
 void get_shortest_route(track_node* track, int train_index,
-                        track_node* train_node, int train_shift,
+                        track_node* train_node, track_edge* train_edge, int train_shift,
                         track_node* target_node, int target_shift,
                         char* switches,
                         int* route_found, track_node** route, 
@@ -147,8 +147,9 @@ void get_shortest_route(track_node* track, int train_index,
     train_node->label = 0;
 
 	//Special initialization //////////////////////////////////////////////////
-	//train_node->label = train_shift;
+	train_node->label = train_shift;
 	first_dijkstra_iteration = 1;
+	node_shift = 0;
 
     ////printf("INITIALIZED\n");
 
@@ -175,18 +176,18 @@ void get_shortest_route(track_node* track, int train_index,
         }
 
 		// Adjust node shift
-		if(min_node == train_node){
+		/*if(min_node == train_node){
 			node_shift = train_shift;
 		}
 		else{
 			node_shift = 0;
-		}
+		}*/
 
         // Update neighbours
 		if(first_dijkstra_iteration){
-			//update_first( train_index, min_node, train_edge, train_shift, avoid_routed );
 			first_dijkstra_iteration = 0;
-	        update_labels_complex( train_index, min_node, node_shift, avoid_routed );
+			update_first( train_index, min_node, train_edge, train_shift, avoid_routed );
+	        //update_labels_complex( train_index, min_node, node_shift, avoid_routed );
 		}
 		else{
 	        update_labels_complex( train_index, min_node, node_shift, avoid_routed );
@@ -291,7 +292,7 @@ void route_server() {
                                 // Try to get a route avoiding routed edges
                                 get_shortest_route(
                                     route_msg.track, route_msg.train_index,
-                                    route_msg.current_landmark, route_msg.train_shift,
+                                    route_msg.current_landmark, route_msg.train_edge, route_msg.train_shift,
                                     route_msg.target_node, route_msg.target_shift,
                                     route_msg.switches,
                                     route_msg.route_found, route_msg.landmarks,
@@ -305,7 +306,7 @@ void route_server() {
 									bwprintf(COM2, "FIND ROUTE WITH INTERSECTIONS!!!\n");
                                     get_shortest_route(
                                     route_msg.track, route_msg.train_index,
-                                    route_msg.current_landmark, route_msg.train_shift,
+                                    route_msg.current_landmark, route_msg.train_edge, route_msg.train_shift,
                                     route_msg.target_node, route_msg.target_shift,
                                     route_msg.switches,
                                     route_msg.route_found, route_msg.landmarks,

@@ -65,5 +65,7 @@ int get_switch_index( int sw_id );
 
 int get_switch_id( int sw_index );
 
+int get_switch_id_from_node_name( const char *name ); 
+
 #endif	/* SWITCHES_SERVER_H */
 

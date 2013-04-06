@@ -8,7 +8,7 @@
 // ----------------------------------------------------------------------------------------------
 // Train direction
 #define TRAIN_DIRECTION_FORWARD				1
-#define TRAIN_DIRECTION_REVERSE				2
+#define TRAIN_DIRECTION_REVERSE				0
 
 // Train motion state
 #define TRAIN_STILL							0               // The train is not moving
@@ -22,7 +22,9 @@
 
 #define TRAIN_STOP_CMD_SPEED				0
 
-#define REVERSE_DEFAULT_OFFSET				130				// TODO: Review this value
+// Offset required to switch a sw safely
+#define LENGTH_TRAIN_AHEAD                  50                              // TODO: Review this values
+#define LENGHT_TRAIN_BACK                   150
 
 // ----------------------------------------------------------------------------------------------
 // Methods
@@ -51,7 +53,6 @@ float get_time_for_distance(
 void predict_train_movement( 
 	int current_time, Train_status *train_status, Train_server_data *server_data );
 
-void add_sensors_attrib_list( 
-	int distance_to_check, Train_status *train_status, Train_server_data *server_data );
+void add_sensors_attrib_list( Train_status *train_status, Train_server_data *server_data );
 
 #endif

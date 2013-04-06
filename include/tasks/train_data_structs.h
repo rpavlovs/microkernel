@@ -11,7 +11,7 @@
 // -------------------------------------------------------------------
 // Constants
 // -------------------------------------------------------------------
-#define NUM_REQUIRED_TASKS_FOR_TRAIN			8		// The number of tis that we need to keep track of. 
+#define NUM_REQUIRED_TASKS_FOR_TRAIN			10		// The number of tis that we need to keep track of. 
 
 #define SENSOR_ATTR_LIST_SIZE					20		// The size of the sensor attribution list
 
@@ -62,8 +62,13 @@ typedef struct{
     int landmark_index;             // The current landmark
     track_edge *edges[ TRACK_MAX ];
     track_node *landmarks[ TRACK_MAX ]; 
-    int switches_state[ NUM_SWITCHES ]; 
+    char switches_state[ NUM_SWITCHES ]; 
 } Train_route_data;
+
+typedef struct{
+	int distance_reserved; 
+	Train_position reservation_start; 
+} Train_reservation; 
 
 struct Train_status_struct{
 	// Train Info
@@ -83,7 +88,7 @@ struct Train_status_struct{
 	Train_position current_goal; 
 	Train_position current_position; 
 	Train_motion_data motion_data; 
-	
+	Train_reservation train_reservation; 
 };
 
 struct Train_update_request_struct{

@@ -7,6 +7,15 @@
  * NOTE: This server needs to be created after the command server, since the initialization of this task requires
  * initializing the switches. 
  * ----------------------------------------------------------------------------------------------------------------------------------------------*/
+/*
+	This method gets the id of the switch from its node name. 
+*/
+int get_switch_id_from_node_name( const char *name ){
+	char temp_str[10]; 
+	int switch_id = atoi( substr( temp_str, name, 2, 6 ) );
+
+	return switch_id; 
+}
 
 /*
  * get_switch_id

@@ -310,7 +310,7 @@ int get_short_distance_traveled( int time_since_change, Train_status *train_stat
   Return: 
   - The total straight distance. 
 */
-int get_straight_distance( Train_status *status ){
+int get_straight_distance( Train_status *status, Train_server_data *server_data ){
         // Initialization
         int is_reverse = 0; 
 		int final_offset_dist = 0; 
@@ -356,7 +356,7 @@ int get_straight_distance( Train_status *status ){
 
         // Add the offset from the last landmark
 		if ( is_reverse && next_landmark != status->current_goal.landmark ){
-			final_offset_dist = REVERSE_DEFAULT_OFFSET;
+			final_offset_dist = get_sw_clear_movement_distance( status, server_data );
         }
 		else if( !is_reverse ){
 			// The offset is the offset of the goal. 
@@ -395,7 +395,7 @@ int get_straight_distance( Train_status *status ){
   - The best speed to use to reach a requested location. It also says if it is a "short" or
     "long" distance. 
 */
-int calculate_speed_to_use( Train_status *status, Calibration_data *calibration_data ){
+int calculate_speed_to_use( Train_status *status, Train_server_data *server_data ){
 
 	bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, 
 		"TRAIN_MOTION: Starting calculation of speed to use. [ train_id: %d ]", status->train_id );
@@ -403,9 +403,10 @@ int calculate_speed_to_use( Train_status *status, Calibration_data *calibration_
 	// Initialization
 	int speed_to_use, index, speed_found, distance_in_speed; 
 	Speed_calibration_data *speed_data; 
+	Calibration_data *calibration_data  = &server_data->calibration_data; 
 
     // Calculate the speed required to travel the total straight distance. 
-    int total_straight_distance = get_straight_distance( status );
+    int total_straight_distance = get_straight_distance( status, server_data );
     if ( total_straight_distance <= 0 ){
 		// The train doesn't have to move. 
 		return 0; 
@@ -557,8 +558,10 @@ void update_train_position_landmark( int distance_since_update, Train_status *tr
 
 		// If there's a goal update its landmark index. 
 		if( train_status->train_state == TRAIN_STATE_MOVE_TO_GOAL ){
-			if ( train_status->route_data.landmark_index < train_status->route_data.num_landmarks ){
-				train_status->route_data.landmark_index++;
+			int landmark_index = train_status->route_data.landmark_index;
+			if ( landmark_index < train_status->route_data.num_landmarks ){
+				if ( train_status->route_data.landmarks[ landmark_index + 1 ] == current_node )
+					train_status->route_data.landmark_index++;
 			}
         }
 
@@ -729,6 +732,13 @@ void predict_train_movement( int current_time, Train_status *train_status, Train
 	int cmd_delay, speed_to_use, distance_to_reserve, time_in_constant_speed; 
 	int is_distance_reserved, next_update_time, accurate_current_time ; 
 
+	// If the train is moving a short distance track it somewhere else
+	if ( train_status->motion_data.distance_type == SHORT_DISTANCE ){
+		int continue_exec = track_train_short_distance( train_status, server_data );
+		if ( !continue_exec )
+			return; 
+	}
+
 	// Is the train supposed to move?
 	// - If not, there's no need to stay in this method. 
 	if ( train_status->train_state == TRAIN_STATE_MOVE_FREE ){
@@ -737,13 +747,6 @@ void predict_train_movement( int current_time, Train_status *train_status, Train
 
 		if ( original_speed == curr_speed && curr_speed == 0 )
 			return;
-	}
-
-	// If the train is moving a short distance track it somewhere else
-	if ( train_status->motion_data.distance_type == SHORT_DISTANCE ){
-		int continue_exec = track_train_short_distance( train_status, server_data );
-		if ( !continue_exec )
-			return; 
 	}
 
 	// Determine what's going to happen in the future, and how to react to it. 
@@ -769,7 +772,9 @@ void predict_train_movement( int current_time, Train_status *train_status, Train
 					// - Remove the current goal
 					initialize_goal( train_status );
 
-					// TODO: Remove the sensor tracking of this part of the track 
+					// Release all track reserved ( will only keep the current position of the train ).
+					reserve_distance( 0, train_status, server_data ); 
+					add_sensors_attrib_list( train_status, server_data );
 					break; 
 				}
 
@@ -787,7 +792,7 @@ void predict_train_movement( int current_time, Train_status *train_status, Train
 				}
 
 				// Calculate the next "straight" movement
-				speed_to_use = calculate_speed_to_use( train_status, &server_data->calibration_data );
+				speed_to_use = calculate_speed_to_use( train_status, server_data );
 			}
 
 			if ( train_status->motion_data.distance_type == SHORT_DISTANCE ){
@@ -817,7 +822,7 @@ void predict_train_movement( int current_time, Train_status *train_status, Train
 						}
 
 						// Add the sensors to attribution list.
-						add_sensors_attrib_list( distance_to_reserve, train_status, server_data ); 
+						add_sensors_attrib_list( train_status, server_data ); 
 					}
 
 					// Start moving
@@ -899,7 +904,7 @@ void predict_train_movement( int current_time, Train_status *train_status, Train
 				}
 
 				// Add sensors to attribution list
-				add_sensors_attrib_list( distance_to_reserve, train_status, server_data ); 
+				add_sensors_attrib_list( train_status, server_data ); 
 			}
 			else{
 				// The new distance couldn't be reserved. STOP RIGHT AWAY!!!
@@ -923,7 +928,7 @@ void predict_train_movement( int current_time, Train_status *train_status, Train
 			reserve_distance( distance_to_reserve, train_status, server_data );
 
 			// Add sensors to attribution list
-			add_sensors_attrib_list( distance_to_reserve, train_status, server_data ); 
+			add_sensors_attrib_list( train_status, server_data ); 
 
 			break;
 	}
@@ -932,52 +937,73 @@ void predict_train_movement( int current_time, Train_status *train_status, Train
 // -----------------------------------------------------------------------------------------------------------------------------------------------------
 // Sensor Updates
 // -----------------------------------------------------------------------------------------------------------------------------------------------------
-int is_sensor_in_attrib_list( Train_server_data *server_data, int sensor_index ){
+track_node *get_sensor_from_attr_list( Train_server_data *server_data, int sensor_index ){
 	int i; 
 	const char *ptr; 
+	track_node *result = 0; 
 	char *sensor_name = server_data->sensor_names[ sensor_index ];
 
 	for ( i = 0; i < server_data->num_sensors_attr_list; i++ ){
-		ptr = server_data->sensor_attr_list[i]->name;
-		if ( strcmp( sensor_name, ptr ) == 0 )
-			return 1; 
+		ptr = server_data->sensor_attr_list[i]->name; 
+		if ( strcmp( sensor_name, ptr ) == 0 ){
+			result = server_data->sensor_attr_list[i];
+			break;
+		}
 	}
 
-	return 0; 
+	return result; 
 }
 
-void add_sensors_attrib_list( int distance_to_check, Train_status *train_status, Train_server_data *server_data ){
-	
+void add_sensors_attrib_list( Train_status *train_status, Train_server_data *server_data ){
+
 	bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, 
 		"TRAIN_MOTION: add_sensors_attrib_list-> Updating sensor attribution list [ train_id: %d ]", 
 		train_status->train_id);
-	
+
 	// Variables
-	int landmark_index, num_sensors_attr_list; 
-	track_node *node; 
-	track_edge *edge; 
+	int distance_to_check = train_status->train_reservation.distance_reserved; 
+	Train_reservation *curr_reservation = &train_status->train_reservation; 
+	track_node *curr_node = curr_reservation->reservation_start.landmark; 
+	track_edge *curr_edge = curr_reservation->reservation_start.edge; 
+	
+	// Remove the distance that we have already traveled.
+	if ( curr_reservation->reservation_start.offset > 0 ){
+		distance_to_check -= ( curr_edge->dist - curr_reservation->reservation_start.offset ); 
+		curr_node = curr_edge->dest; 
+	}
 
-	// Remove the distance that we have already traveled. 
-	landmark_index = train_status->route_data.landmark_index;
-	distance_to_check -= ( train_status->route_data.edges[ landmark_index ]->dist - train_status->current_position.offset );
-
-	// Is there a sensor in our route within the reserved distance?
-	landmark_index++; 
-	while( distance_to_check > 0 && landmark_index < train_status->route_data.num_landmarks ){
-
-		// Get the next node and edge
-		node = train_status->route_data.landmarks[landmark_index]; 
-		edge = train_status->route_data.edges[ landmark_index - 1 ];
-
-		if ( node->type == NODE_SENSOR ){
+	// Is there a sensor in our route within the reserved distance? 
+	int num_sensors_attr_list = 0; 
+	while( distance_to_check > 0 ){
+		if ( curr_node->type == NODE_SENSOR ){
 			// This node is a sensor. Add it to the attribution list. 
-			server_data->sensor_attr_list[num_sensors_attr_list] = node; 
-			num_sensors_attr_list++; 
+			server_data->sensor_attr_list[num_sensors_attr_list] = curr_node; 
+			num_sensors_attr_list++;
 		}
 
-		if ( landmark_index + 1 < train_status->route_data.num_landmarks && edge )
-			distance_to_check -= edge->dist;
-		landmark_index++; 
+		if ( curr_node->type == NODE_EXIT ){
+			// There are no more nodes after this one. 
+			break; 
+		}
+		else if ( curr_node->type == NODE_BRANCH ){
+			// This node is a merge. Determine where the reserved distance goes to. 
+			char curr_sw_pos = get_current_sw_pos( curr_node, train_status, server_data ); 
+
+			if ( curr_sw_pos == SWITCH_STRAIGHT_POS ) {
+				curr_edge = &curr_node->edge[ DIR_STRAIGHT ];
+				curr_node = curr_edge->dest; 
+			}
+			else {
+				curr_edge = &curr_node->edge[ DIR_CURVED ];
+				curr_node = curr_edge->dest; 
+			}
+		}
+		else{
+			curr_edge = &curr_node->edge[ DIR_AHEAD ];
+			curr_node = curr_edge->dest; 
+		}
+
+		distance_to_check -= curr_edge->dist; 
 	}
 
 	// Store the values in the attribution list
@@ -996,7 +1022,9 @@ track_node *get_sensor_triggered( Train_server_data *server_data ){
 		if ( *ptr_sensors_not == 1 && *ptr_sensors_not != *ptr_sensors && !sensor_found ){
 			// If a sensor was triggered, and another sensor was previously found, try to see
 			// if that sensor is part of the attribution list. 
-			is_sensor_in_attrib_list( server_data, i );
+			sensor_triggered = get_sensor_from_attr_list( server_data, i ); 
+			if ( sensor_triggered )
+				sensor_found = 1;
 		}
 
 		*ptr_sensors = *ptr_sensors_not; // Copy the value
@@ -1005,62 +1033,89 @@ track_node *get_sensor_triggered( Train_server_data *server_data ){
 	return sensor_triggered; 
 }
 
+int get_dist_between_sensor_and_landmark( track_node *triggered_sensor, Train_status *train_status, Train_server_data *server_data ){
+	// Variables
+	Train_reservation *curr_reservation; 
+
+	int sensor_found = 0; 
+	int curr_landmark_found = 0; 
+	int dist_between_landmarks = 0; 
+	int distance_to_check = train_status->train_reservation.distance_reserved; 
+
+	track_node *curr_node = curr_reservation->reservation_start.landmark; 
+	track_edge *curr_edge = curr_reservation->reservation_start.edge; 
+
+	if ( triggered_sensor != train_status->current_position.landmark ){
+
+		// Remove the distance that we have already traveled.
+		if ( curr_reservation->reservation_start.offset > 0 ){
+			distance_to_check -= ( curr_edge->dist - curr_reservation->reservation_start.offset );
+			curr_node = curr_edge->dest; 
+		}
+
+		while( distance_to_check > 0 && ( !sensor_found || !curr_landmark_found ) ){
+
+			// Have we found any of the landmarks? 
+			if ( curr_node == triggered_sensor )
+				sensor_found = 1; 
+			else if ( curr_node == train_status->current_position.landmark )
+				curr_landmark_found = 1; 
+
+			if ( sensor_found && curr_landmark_found )
+				break; 
+
+			// Determine where to move based on the landmark
+			if ( curr_node->type == NODE_EXIT ){
+				// There are no more nodes after this one. 
+				break; 
+			}
+			else if ( curr_node->type == NODE_BRANCH ){
+				// This node is a merge. Determine where the reserved distance goes to. 
+				char curr_sw_pos = get_current_sw_pos( curr_node->reverse, train_status, server_data ); 
+
+				if ( curr_sw_pos == SWITCH_STRAIGHT_POS ) {
+					curr_edge = &curr_node->edge[ DIR_STRAIGHT ];
+					curr_node = curr_edge->dest; 
+				}
+				else{
+					curr_edge = &curr_node->edge[ DIR_CURVED ];
+					curr_node = curr_edge->dest; 
+				}
+			}
+			else{
+				curr_edge = &curr_node->edge[ DIR_AHEAD ];
+				curr_node = curr_edge->dest; 
+			}
+			distance_to_check -= curr_edge->dist; 
+			
+			// Shall we add any distance? 
+			if ( sensor_found )
+				dist_between_landmarks -= curr_edge->dist;
+			else if ( curr_landmark_found )
+				dist_between_landmarks += curr_edge->dist; 
+		}
+
+		bwassert( sensor_found && curr_landmark_found, 
+			"TRAIN_MOTION: get_dist_between_sensor_and_landmark: Both landmarks must be found" ); 
+	}
+	else{
+		// Case : The triggered sensor is the same as the current position
+		// - No need to check any other landmarks
+	}
+
+	// Substract the offset of the current position. 
+	dist_between_landmarks -= train_status->current_position.offset; 
+
+	return dist_between_landmarks;
+}
+
 int update_with_sensor_data( track_node *triggered_sensor, Train_status *train_status, 
 							 Train_server_data *server_data ){
 	// Initialization
-	int error_distance; 
-	track_node *prev_node; 
-	Train_position current_pos = train_status->current_position;
-
-	// What's the distance from the calculated position to the actual position? 
-	// NOTE: From the current position we check the next and previous landmark and see if
-	// the triggered sensor is there. If not, the train is declared lost. 
-	if ( current_pos.landmark == triggered_sensor ){
-		error_distance = -current_pos.offset;
-	}
-	else if( current_pos.edge->dest == triggered_sensor ){
-		error_distance = current_pos.edge->dist - current_pos.offset;
-	}
-	else{ 
-		int sensor_found = 0; 
-		prev_node = get_prev_node( &current_pos );
-
-		if ( prev_node ){
-			if ( prev_node == triggered_sensor ){
-				sensor_found = 1; 
-				error_distance = current_pos.landmark->reverse->edge[ DIR_AHEAD ].dist;
-			}
-		}
-		else if( current_pos.landmark->type == NODE_MERGE ) {
-			// The current node is a merge
-			track_node *straight_node = current_pos.landmark->reverse->edge[ DIR_STRAIGHT ].dest;
-			track_node *reverse_node = current_pos.landmark->reverse->edge[ DIR_CURVED ].dest; 
-
-			if ( straight_node == triggered_sensor ){
-				sensor_found = 1; 
-				error_distance = current_pos.landmark->reverse->edge[ DIR_STRAIGHT ].dist;
-			}
-			else if( reverse_node == triggered_sensor ){
-				sensor_found = 1; 
-				error_distance = current_pos.landmark->reverse->edge[ DIR_CURVED ].dist;
-			}
-		}
-
-		if( sensor_found ){
-			error_distance = ( error_distance * -1 ) - current_pos.offset; 
-		}
-		else{
-			bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, 
-				"TRAIN_MOTION: update_with_sensor_data -> The train is lost [ train_id: %d ]", 
-				train_status->train_id );
-			// TODO: Mark the train status as lost
-			// Stop the train right away. 
-			return 0; 
-		}
-	}
+	int error_distance = get_dist_between_sensor_and_landmark( triggered_sensor, train_status, server_data );
 
 	// Make the sensor the current position
-	// TODO: Do we need to calculate the time the train spent processing? 
+	// TODO: MAKE SURE THE ERROR IS INTEGRATED IN THE RIGHT WAY!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	train_status->current_position.offset = 0; 
 	train_status->current_position.landmark = triggered_sensor;
 	train_status->current_position.edge = &triggered_sensor->edge[ DIR_AHEAD ];

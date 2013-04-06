@@ -46,9 +46,15 @@ void train_manager(){
 	RegisterAs( TRAIN_MANAGER_NAME );
 
 	// Create other necessary tasks
-	int route_srv_tid = Create( ROUTE_SERVER_PRIORITY, route_server ); 
+	// - Route server
+	int route_srv_tid = Create( ROUTE_SERVER_PRIORITY, route_server );
 	bwdebug( DBG_USR, TRAIN_MGR_DEBUG_AREA, 
 		"TRAIN_MANAGER: Created route server successfully [ route_srv_tid: %d ]", route_srv_tid );
+
+	// - Reservation server
+	int reservation_srv_tid = Create( RESERVATION_SERVER_PRIORITY, reservation_server ); 
+	bwdebug( DBG_USR, TRAIN_MGR_DEBUG_AREA, 
+		"TRAIN_MANAGER: Created reservation server successfully [ reservation_srv_tid: %d ]", reservation_srv_tid );
 
 	int num_trains, sender_tid;
 	num_trains = 0;							// Currently there are no trains

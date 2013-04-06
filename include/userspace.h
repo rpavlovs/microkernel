@@ -22,6 +22,7 @@
 #include "tasks/train_cmd_notifier.h"
 
 // Servers
+#include "tasks/reservation_server.h"
 #include "tasks/route_server.h"
 #include "tasks/command_server.h"
 #include "tasks/sensors_server.h"

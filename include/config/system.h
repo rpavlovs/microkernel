@@ -10,8 +10,8 @@
 // 2 - sytem/user tasks
 // 3 - kernel requests + sytem/user tasks
 // 4 - all
-#define DEBUG_LEVEL 						3
-#define DEBUG_AREAS							0 | TEMP2_DEBUG_AREA // | TRAIN_SRV_DEBUG_AREA // | SENSORS_SERVER_DEBUG_AREA | COMMAND_SERVER_DEBUG_AREA
+#define DEBUG_LEVEL 						0
+#define DEBUG_AREAS							0 | TEMP2_DEBUG_AREA | RESERVATION_SRV_DEBUG_AREA // | TRAIN_SRV_DEBUG_AREA // | SENSORS_SERVER_DEBUG_AREA | COMMAND_SERVER_DEBUG_AREA
 //#define DEBUG_AREAS							0x1FFFC0
 //#define DEBUG_AREAS							0 | TRAIN_MGR_DEBUG_AREA | TRAIN_SRV_DEBUG_AREA //COMMAND_SERVER_DEBUG_AREA | KERNEL_DEBUG_AREA
 
@@ -41,11 +41,12 @@
 #define TRAIN_NOTIFIERS_DEBUG_AREA			1 << 20
 #define TRAIN_MGR_DEBUG_AREA				1 << 21
 #define ROUTE_SRV_DEBUG_AREA				1 << 22
+#define RESERVATION_SRV_DEBUG_AREA			1 << 23
 
 // TODO: DELETE THIS DEBUG AREAS
-#define DELAY_DEBUG_AREA					1 << 23
-#define TEMP_DEBUG_AREA						1 << 24
-#define TEMP2_DEBUG_AREA					1 << 25
+#define DELAY_DEBUG_AREA					1 << 24
+#define TEMP_DEBUG_AREA						1 << 25
+#define TEMP2_DEBUG_AREA					1 << 26
 
 // ------------------------------------------------------------------------------------------
 // Task priorities
@@ -68,6 +69,7 @@
 #define SWITCHES_SERVER_PRIORITY			10			// SWITCHES SERVER
 #define ROUTE_SERVER_PRIORITY				12			// ROUTE SERVER
 #define ROUTE_NOTIFIER_PRIORITY				13
+#define RESERVATION_SERVER_PRIORITY			12			// RESERVATION SERVER
 #define CLOCK_TASK_PRIORITY					8			// CLOCK 
 #define CLI_PRIORITY						8			// CLI
 #define TRAIN_MGR_TASK_PRIORITY				8			// TRAIN MANAGER SERVER

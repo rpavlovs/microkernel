@@ -7,6 +7,9 @@
 // Communication
 #include "tasks/couriers.h"
 
+// Libs
+#include "lib/math.h"
+
 // Tests
 #include "tasks/tests.h"
 

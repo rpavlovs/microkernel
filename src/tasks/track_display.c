@@ -30,6 +30,7 @@ void track_display() {
 	for( i = 0; i < MAX_TRAIN_ID+1; ++i ) {
 		train_posns[i].row = 0;
 		train_posns[i].col = 0;
+		train_posns[i].dir = '>';
 	}
 
 	//bwprintf( COM2, "TRACK_DISPLAY: Initializing\n" ); 
@@ -275,10 +276,8 @@ void draw_train( int train_id, train_position *train_pos) {
 	char *ptr = buff;
 
 	ptr += saveCursor( ptr );
-	//ptr += cursorPositioning( ptr,
-	//	TRACK_POS_LINE + train_pos->row - 1, TRACK_POS_COL + train_pos->col );
-	ptr += sprintf( ptr, "\033[%d;%dH", 
-		TRACK_POS_LINE + train_pos->row - 1, TRACK_POS_COL + train_pos->col ); 
+	ptr += cursorPositioning( ptr,
+		TRACK_POS_LINE + train_pos->row - 1, TRACK_POS_COL + train_pos->col );
 
 	// Add the color
 	switch( train_id ){
@@ -304,8 +303,6 @@ void draw_train( int train_id, train_position *train_pos) {
 	ptr += restoreCursor( ptr );
 	
 	Putstr( COM2, buff );
-	//if ( train_id == 49 )
-	//	bwprintf( COM2, "%d", train_pos->dir ); 
 }
 
 void erase_train( train_position *train_pos, char *layout ) {

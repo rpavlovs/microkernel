@@ -158,6 +158,7 @@ int request_new_path( Train_status *train_status, Train_server_data *server_data
 	
 	// Current Position
 	route_msg.current_landmark = train_status->current_position.landmark; 
+	route_msg.train_edge = train_status->current_position.edge;
 	route_msg.train_shift = train_status->current_position.offset; 
 	
 	// Goal
@@ -185,7 +186,6 @@ int request_new_path( Train_status *train_status, Train_server_data *server_data
 	}
 	bwprintf( COM2, "\n" ); 
 	*/
-
 	/*
 	while( 1 )
 		;
@@ -369,7 +369,7 @@ void print_train_status( Train_status *train_status ){
 	temp_buffer += restoreCursor( temp_buffer );
 
 	// Send the string to UART 2. 
-	//Putstr( COM2, buff );
+	// Putstr( COM2, buff );
 }
 
 void send_dashboard_train_pos( Train_status *train_status, Train_server_data *server_data ){

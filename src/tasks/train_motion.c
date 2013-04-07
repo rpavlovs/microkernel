@@ -889,9 +889,8 @@ void predict_train_movement( int current_time, Train_status *train_status, Train
 					// used for reverse causes problems. 
 					clear_train_motion_data( train_status );
 					int path_found = request_new_path( train_status, server_data );
-					bwassert( path_found, "TRAIN_MOTION: Path couldn't be found" ); 
-
-					reserve_distance( 0, train_status, server_data ); 
+					bwassert( path_found, "TRAIN_MOTION: Path couldn't be found" );
+					reserve_distance( 0, train_status, server_data );
 				}
 
 				// Calculate the next "straight" movement

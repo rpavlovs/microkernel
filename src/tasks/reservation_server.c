@@ -169,12 +169,14 @@ int get_next_node(
 
 // Prints all reservations of a given edge
 void print_edge_reservations(track_edge *edge){
-    //printf("PRINTING EDGE RESERVATION... ");
-    //printf("SOURCE: %s; DEST: %s; DIST: %d\n", edge->src->name, edge->dest->name, edge->dist);
-	//bwdebug( DBG_USR, TEMP2_DEBUG_AREA, "SOURCE: %s; DEST: %s; DIST: %d\n", edge->src->name, edge->dest->name, edge->dist );
+    /*printf("PRINTING EDGE RESERVATION... ");
+    printf("SOURCE: %s; DEST: %s; DIST: %d\n", edge->src->name, edge->dest->name, edge->dist);
+	bwdebug( DBG_USR, TEMP2_DEBUG_AREA, "SOURCE: %s; DEST: %s; DIST: %d\n", edge->src->name, edge->dest->name, edge->dist );*/
+	bwprintf( COM2, "SOURCE: %s; DEST: %s; DIST: %d\n", edge->src->name, edge->dest->name, edge->dist );
     int i;
     for(i = 0; i < 3; i++){
         //bwdebug( DBG_USR, TEMP2_DEBUG_AREA, "Reserver: %d; start: %d; end: %d;\n", edge->reservers[i], edge->start[i], edge->end[i]);
+		bwprintf( COM2, "Reserver: %d; start: %d; end: %d;\n", edge->reservers[i], edge->start[i], edge->end[i]);
     }
 }
 
@@ -222,7 +224,7 @@ int check_stopping_edge(
     // Check input parameters
     if((train_index < 0 || train_index > 2) ||
         (reservation_start < 0 || reservation_end > edge->dist - 1)){
-        bwdebug( DBG_USR, TEMP2_DEBUG_AREA, "Input parameters of check_stopping_edge are wrong!\n");
+        bwprintf( COM2, "Input parameters of check_stopping_edge are wrong!!!\n");
         return 0;
     }
     
@@ -252,7 +254,7 @@ int check_stopping_edge(
     edge->reverse->start[train_index] = reverse_start;
     edge->reverse->end[train_index] = reverse_end;
     
-    print_edge_reservations(edge);
+    //print_edge_reservations(edge);
     
     return 1;
 }
@@ -452,9 +454,7 @@ int check_backward_tree(
 
 //Returns:
 //      0 - when stop WAS NOT reserved
-//      1 - when stop WAS reserved
-//Notes:
-//      1. 
+//      1 - when stop WAS reserved (Always returns 1)
 int check_stop(
         int train_index,
         track_node *train_node, track_edge *train_edge, int train_offset,
@@ -485,12 +485,9 @@ int check_stop(
     reservation_start = train_offset - min_backward;
     reservation_end = train_offset + min_forward - 1;
     
-    if(!check_stopping_edge(
+    check_stopping_edge(
         train_index, edge,
-        reservation_start, reservation_end )){
-        //printf("FIRST EDGE: check_stopping_edge FAILED\n");
-        //return 0;
-    }
+        reservation_start, reservation_end );
     
     // Update variables
     leftover_forward -= min_forward;
@@ -540,6 +537,103 @@ int check_stop(
 }
 
 //Returns:
+//      0 - when stop WAS NOT reserved
+//      1 - when stop WAS reserved
+int check_short_stopping_route(
+        int train_index,
+        track_node *train_node, track_edge *train_edge, int train_offset,
+        int reserve_forward, int reserve_backward){
+    
+    // General variables
+    // int i, j;
+    int min_forward, min_backward;              //temp variables
+    int leftover_forward, leftover_backward;    //for saving leftovers
+    int reservation_start, reservation_end;     //for checking edges
+    track_node *node;                           //for route-iteration
+    track_edge *edge;
+    
+    ///////////////////////////////////////////////////////////////////////////
+    // Preparing to check the first edge///////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
+    //printf("STOP: first edge checking...\n");
+    
+    leftover_forward = reserve_forward;
+    leftover_backward = reserve_backward;
+    node = train_node;
+    edge = train_edge;
+    
+    // Check the current train edge
+    min_forward = min( leftover_forward, edge->dist - train_offset );
+    min_backward = min( leftover_backward, train_offset );
+
+    reservation_start = train_offset - min_backward;
+    reservation_end = train_offset + min_forward - 1;
+
+    if(!check_stopping_edge(
+        train_index, edge,
+        reservation_start, reservation_end )){
+        bwprintf( COM2, "RESERVATION ALGORITHM: SHORT STOPPING ROUTE: FIRST EDGE: check_stopping_edge FAILED. Res_start: %d, Res_end: %d\n", 
+					reservation_start, reservation_end );
+        return 0;
+    }
+
+    // Update variables
+    leftover_forward -= min_forward;
+    leftover_backward -= min_backward;
+    
+    ///////////////////////////////////////////////////////////////////////////
+    // Check all other edges forward //////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
+    //printf("STOP: forward edge checking...\n");
+    node = train_edge->dest;
+    edge = train_edge;
+    
+    if(leftover_forward > 0){
+        if(!check_forward_tree(
+            train_index, node,
+            leftover_forward, TRAIN_LENGTH, 1)){
+	        bwprintf( COM2, "RESERVATION ALGORITHM: SHORT STOPPING ROUTE: FORWARD TREE: reservation failed!!!\n" );
+			return 0;
+		}
+    }
+    
+    ///////////////////////////////////////////////////////////////////////////
+    // Process special cases like merges and branches /////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
+    //printf("STOP: special cases checking...\n");
+    node = train_edge->dest;
+    edge = train_edge;
+    
+    if(!check_node_for_branch(
+        train_index,
+        train_node, train_edge, 1)){
+        bwprintf( COM2, "RESERVATION ALGORITHM: SHORT STOPPING ROUTE: BRANCH: reservation failed!!!\n" );
+		return 0;
+	}
+
+    if(!check_node_for_merge(
+        train_index,
+        train_edge, node, 1)){
+        bwprintf( COM2, "RESERVATION ALGORITHM: SHORT STOPPING ROUTE: MERGE: reservation failed!!!\n" );
+		return 0;
+	}
+    
+    ///////////////////////////////////////////////////////////////////////////
+    // Check all other edges backward /////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
+    //printf("STOP: backward edge checking...\n");
+    
+    if(leftover_backward > 0){
+        check_backward_tree(
+            train_index, train_node,
+            leftover_backward, TRAIN_LENGTH, 0);
+    }
+    
+    // Finally!!! :)
+    return 1;
+}
+
+//Returns:
 //      0 - when stopping route WAS NOT reserved
 //      1 - when stopping route WAS reserved
 //Notes:
@@ -559,7 +653,7 @@ int check_stopping_route(
     track_node *node, *next_node, *prev_node;   //for route-iteration
     track_edge *edge;
 
-	bwdebug( DBG_USR, TEMP2_DEBUG_AREA, "INPUT_INNER: Node: %s; Shift: %d; Res: %d; Route Length: %d\n", train_node->name, train_offset, reserve_forward, route_length);
+	//bwdebug( DBG_USR, TEMP2_DEBUG_AREA, "INPUT_INNER: Node: %s; Shift: %d; Res: %d; Route Length: %d\n", train_node->name, train_offset, reserve_forward, route_length);
     
     ///////////////////////////////////////////////////////////////////////////
     // Preparing to check the first edge///////////////////////////////////////
@@ -571,14 +665,16 @@ int check_stopping_route(
     if(!get_next_node(
         route, route_length,
         node, &next_node )){
-        bwdebug( DBG_USR, TEMP2_DEBUG_AREA, "FIRST EDGE: get_next_node FAILED\n");
+        //bwdebug( DBG_USR, TEMP2_DEBUG_AREA, "FIRST EDGE: get_next_node FAILED\n");
+        bwprintf( COM2, "RESERVATION ALGORITHM: FIRST EDGE: get_next_node FAILED\n");
         return 0;
     }
     
     if(!get_edge_by_nodes(
         node, next_node,
         &edge)){
-        bwdebug( DBG_USR, TEMP2_DEBUG_AREA, "FIRST EDGE: get_edge_by_nodes FAILED\n");
+        //bwdebug( DBG_USR, TEMP2_DEBUG_AREA, "FIRST EDGE: get_edge_by_nodes FAILED\n");
+        bwprintf( COM2, "RESERVATION ALGORITHM: FIRST EDGE: get_edge_by_nodes FAILED\n");
         return 0;
     }
     
@@ -592,7 +688,8 @@ int check_stopping_route(
     if(!check_stopping_edge(
         train_index, edge,
         reservation_start, reservation_end )){
-        bwdebug( DBG_USR, TEMP2_DEBUG_AREA, "FIRST EDGE: check_stopping_edge FAILED\n");
+        //bwdebug( DBG_USR, TEMP2_DEBUG_AREA, "FIRST EDGE: check_stopping_edge FAILED\n");
+        bwprintf( COM2, "RESERVATION ALGORITHM: FIRST EDGE: check_stopping_edge FAILED. Res_start: %d, Res_end: %d\n", reservation_start, reservation_end );
         return 0;
     }
     
@@ -618,7 +715,8 @@ int check_stopping_route(
                     leftover_forward = 0;
                 }
                 else{
-                    bwdebug( DBG_USR, TEMP2_DEBUG_AREA, "FORWARD EDGES: check_forward_tree: FAILED. Leftover: %d\n", leftover_forward);
+                    //bwdebug( DBG_USR, TEMP2_DEBUG_AREA, "FORWARD EDGES: check_forward_tree: FAILED. Leftover: %d\n", leftover_forward);
+                    bwprintf( COM2, "RESERVATION ALGORITHM: FORWARD EDGES: check_forward_tree for reverse: FAILED. Leftover: %d\n", leftover_forward);
                     return 0;
                 }
             }
@@ -630,7 +728,8 @@ int check_stopping_route(
 				leftover_forward = 0;
 			}
 			else{
-				bwdebug( DBG_USR, TEMP2_DEBUG_AREA, "FORWARD EDGES: get_next_node FAILED. Leftover: %d\n", leftover_forward);
+				//bwdebug( DBG_USR, TEMP2_DEBUG_AREA, "FORWARD EDGES: get_next_node FAILED. Leftover: %d\n", leftover_forward);
+				bwprintf( COM2, "RESERVATION ALGORITHM: FORWARD EDGES: check_forward_tree for stopping FAILED. Leftover: %d\n", leftover_forward );
 				return 0;
 			}
         }
@@ -641,7 +740,7 @@ int check_stopping_route(
             if(!get_edge_by_nodes(
                 node, next_node,
                 &edge)){
-                bwdebug( DBG_USR, TEMP2_DEBUG_AREA, "FORWARD EDGES: get_edge_by_nodes FAILED\n");
+                bwprintf( COM2, "RESERVATION ALGORITHM: FORWARD EDGES: get_edge_by_nodes FAILED\n");
                 return 0;
             }
 
@@ -652,9 +751,9 @@ int check_stopping_route(
             if(!check_stopping_edge(
                 train_index, edge,
                 reservation_start, reservation_end )){
-                bwdebug( DBG_USR, TEMP2_DEBUG_AREA, "FORWARD EDGES: check_stopping_edge FAILED\n");
+                bwprintf( COM2, "RESERVATION ALGORITHM: FORWARD EDGES: check_stopping_edge FAILED\n");
                 return 0;
-            }            
+            }
 
             // Update the variables
             leftover_forward -= min( leftover_forward, edge->dist );
@@ -687,7 +786,7 @@ int check_stopping_route(
                         if(!check_stopping_edge(
                             train_index, edge,
                             0, SAFE_DELTA)){
-                            bwdebug( DBG_USR, TEMP2_DEBUG_AREA, "SPECIAL CASE 01: check_stopping_edge FAILED\n");
+                            bwprintf( COM2, "RESERVATION ALGORITHM: SPECIAL CASE 01 NODE_BRANCH: check_stopping_edge FAILED\n");
                             return 0;
                         }
                     }
@@ -721,7 +820,7 @@ int check_stopping_route(
                             train_index, edge->reverse,
                             edge->reverse->dist - SAFE_DELTA,
                             edge->reverse->dist - 1)){
-                            bwdebug( DBG_USR, TEMP2_DEBUG_AREA, "SPECIAL CASE 02: check_stopping_edge FAILED\n");
+                            bwprintf( COM2, "RESERVATION ALGORITHM: SPECIAL CASE 02 NODE_MERGE: check_stopping_edge FAILED\n");
                             return 0;
                         }
                     }
@@ -744,14 +843,14 @@ int check_stopping_route(
     tree_reserved = 0;
     
     while(leftover_backward > 0){
-		bwdebug( DBG_USR, TEMP2_DEBUG_AREA, "INPUT_INNER2: Node: %s; Temp Node: %s;\n", train_node->name, node->name);
+		//bwdebug( DBG_USR, TEMP2_DEBUG_AREA, "INPUT_INNER2: Node: %s; Temp Node: %s;\n", train_node->name, node->name);
 
         // Get previous edge to check
         if(!get_previous_node(
             route, route_length,
             node, &forest,
             nodes_tree, edges_tree)){
-            bwdebug( DBG_USR, TEMP2_DEBUG_AREA, "BACKWARD EDGES: get_previous_node2 FAILED\n");
+            bwprintf( COM2, "RESERVATION ALGORITHM: BACKWARD EDGES: get_previous_node FAILED\n");
             return 0;
         }
 
@@ -797,7 +896,7 @@ int check_stopping_route(
             if(!check_stopping_edge(
                 train_index, edge,
                 reservation_start, reservation_end )){
-                bwdebug( DBG_USR, TEMP2_DEBUG_AREA, "BACKWARD EDGES: check_stopping_edge in previous FAILED\n");
+                bwprintf( COM2, "RESERVATION ALGORITHM: BACKWARD EDGES: check_stopping_edge in previous FAILED\n");
                 return 0;
             }
 
@@ -849,14 +948,15 @@ void reserve_route(
         int train_index, int train_direction,
         track_node *train_node, track_edge *train_edge, int train_shift,
         int reservation, int *route_is_reserved){
-    
+
     int reserve_forward, reserve_backward;
     
+	// Reservation initialization /////////////////////////////////////////////
     //Clear the route before reservation
-    if(!free_route(track, train_index)){
+    /*if(!free_route(track, train_index)){
         *route_is_reserved = 0;
         return;
-    }
+    }*/
     
     //Calculate reservation lengths
     //Forward direction
@@ -870,21 +970,52 @@ void reserve_route(
         reserve_backward = TRAIN_HEAD;
     }
     
-    // Reserving stop or stopping route?
+	// Performing reservation /////////////////////////////////////////////////
+    // Reserving stop position
     if(reservation == 0){
-        *route_is_reserved = check_stop(
+		free_route(track, train_index);
+		check_stop(
+			train_index,
+			train_node, train_edge, train_shift,
+			reserve_forward, reserve_backward);
+        *route_is_reserved = 1;
+    }
+    // Reserving short stopping route
+    else if(route_length == 1){
+		free_route(track, train_index);
+		*route_is_reserved = check_short_stopping_route(
                                 train_index,
                                 train_node, train_edge, train_shift,
                                 reserve_forward, reserve_backward);
+
+		//If route reservation failed - reserve current train stop
+		if(!(*route_is_reserved)){
+			free_route(track, train_index);
+			check_stop(
+                train_index,
+                train_node, train_edge, train_shift,
+                reserve_forward, reserve_backward);
+		}
     }
-    else{
+    // Reserving long stopping route
+	else{
+		free_route(track, train_index);
         *route_is_reserved = check_stopping_route(
                                 route, route_edges, route_length,
                                 train_index,
                                 train_node, train_edge, train_shift,
                                 reserve_forward, reserve_backward);
-    }
-    
+
+		//If route reservation failed - reserve current train stop
+		if(!(*route_is_reserved)){
+			free_route(track, train_index);
+			check_stop(
+                train_index,
+                train_node, train_edge, train_shift,
+                reserve_forward, reserve_backward);
+		}
+	}
+
     return;
 }
 
@@ -914,6 +1045,7 @@ void reservation_server(){
 			case RESERVE_ROUTE_MSG:
 
 				bwdebug( DBG_USR, TEMP2_DEBUG_AREA, "INPUT_OUTER: Node: %s; Shift: %d; Res: %d\n", res_msg.train_node->name, res_msg.train_shift, res_msg.reservation );
+				//bwprintf( COM2, "RESERVATION ALGORITHM: Train direction is: %d\n", res_msg.train_direction );
 
                                 reserve_route(
                                     res_msg.track,

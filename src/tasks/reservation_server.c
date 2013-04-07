@@ -454,9 +454,7 @@ int check_backward_tree(
 
 //Returns:
 //      0 - when stop WAS NOT reserved
-//      1 - when stop WAS reserved
-//Notes:
-//      1. 
+//      1 - when stop WAS reserved (Always returns 1)
 int check_stop(
         int train_index,
         track_node *train_node, track_edge *train_edge, int train_offset,
@@ -522,6 +520,103 @@ int check_stop(
     check_node_for_merge(
         train_index,
         train_edge, node, 0);
+    
+    ///////////////////////////////////////////////////////////////////////////
+    // Check all other edges backward /////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
+    //printf("STOP: backward edge checking...\n");
+    
+    if(leftover_backward > 0){
+        check_backward_tree(
+            train_index, train_node,
+            leftover_backward, TRAIN_LENGTH, 0);
+    }
+    
+    // Finally!!! :)
+    return 1;
+}
+
+//Returns:
+//      0 - when stop WAS NOT reserved
+//      1 - when stop WAS reserved
+int check_short_stopping_route(
+        int train_index,
+        track_node *train_node, track_edge *train_edge, int train_offset,
+        int reserve_forward, int reserve_backward){
+    
+    // General variables
+    // int i, j;
+    int min_forward, min_backward;              //temp variables
+    int leftover_forward, leftover_backward;    //for saving leftovers
+    int reservation_start, reservation_end;     //for checking edges
+    track_node *node;                           //for route-iteration
+    track_edge *edge;
+    
+    ///////////////////////////////////////////////////////////////////////////
+    // Preparing to check the first edge///////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
+    //printf("STOP: first edge checking...\n");
+    
+    leftover_forward = reserve_forward;
+    leftover_backward = reserve_backward;
+    node = train_node;
+    edge = train_edge;
+    
+    // Check the current train edge
+    min_forward = min( leftover_forward, edge->dist - train_offset );
+    min_backward = min( leftover_backward, train_offset );
+
+    reservation_start = train_offset - min_backward;
+    reservation_end = train_offset + min_forward - 1;
+
+    if(!check_stopping_edge(
+        train_index, edge,
+        reservation_start, reservation_end )){
+        bwprintf( COM2, "RESERVATION ALGORITHM: SHORT STOPPING ROUTE: FIRST EDGE: check_stopping_edge FAILED. Res_start: %d, Res_end: %d\n", 
+					reservation_start, reservation_end );
+        return 0;
+    }
+
+    // Update variables
+    leftover_forward -= min_forward;
+    leftover_backward -= min_backward;
+    
+    ///////////////////////////////////////////////////////////////////////////
+    // Check all other edges forward //////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
+    //printf("STOP: forward edge checking...\n");
+    node = train_edge->dest;
+    edge = train_edge;
+    
+    if(leftover_forward > 0){
+        if(!check_forward_tree(
+            train_index, node,
+            leftover_forward, TRAIN_LENGTH, 1)){
+	        bwprintf( COM2, "RESERVATION ALGORITHM: SHORT STOPPING ROUTE: FORWARD TREE: reservation failed!!!\n" );
+			return 0;
+		}
+    }
+    
+    ///////////////////////////////////////////////////////////////////////////
+    // Process special cases like merges and branches /////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
+    //printf("STOP: special cases checking...\n");
+    node = train_edge->dest;
+    edge = train_edge;
+    
+    if(!check_node_for_branch(
+        train_index,
+        train_node, train_edge, 1)){
+        bwprintf( COM2, "RESERVATION ALGORITHM: SHORT STOPPING ROUTE: BRANCH: reservation failed!!!\n" );
+		return 0;
+	}
+
+    if(!check_node_for_merge(
+        train_index,
+        train_edge, node, 1)){
+        bwprintf( COM2, "RESERVATION ALGORITHM: SHORT STOPPING ROUTE: MERGE: reservation failed!!!\n" );
+		return 0;
+	}
     
     ///////////////////////////////////////////////////////////////////////////
     // Check all other edges backward /////////////////////////////////////////
@@ -854,14 +949,14 @@ void reserve_route(
         track_node *train_node, track_edge *train_edge, int train_shift,
         int reservation, int *route_is_reserved){
 
-	int stop_answer;    
     int reserve_forward, reserve_backward;
     
+	// Reservation initialization /////////////////////////////////////////////
     //Clear the route before reservation
-    if(!free_route(track, train_index)){
+    /*if(!free_route(track, train_index)){
         *route_is_reserved = 0;
         return;
-    }
+    }*/
     
     //Calculate reservation lengths
     //Forward direction
@@ -875,21 +970,52 @@ void reserve_route(
         reserve_backward = TRAIN_HEAD;
     }
     
-    // Reserving stop or stopping route?
+	// Performing reservation /////////////////////////////////////////////////
+    // Reserving stop position
     if(reservation == 0){
-        *route_is_reserved = check_stop(
+		free_route(track, train_index);
+		check_stop(
+			train_index,
+			train_node, train_edge, train_shift,
+			reserve_forward, reserve_backward);
+        *route_is_reserved = 1;
+    }
+    // Reserving short stopping route
+    else if(route_length == 1){
+		free_route(track, train_index);
+		*route_is_reserved = check_short_stopping_route(
                                 train_index,
                                 train_node, train_edge, train_shift,
                                 reserve_forward, reserve_backward);
+
+		//If route reservation failed - reserve current train stop
+		if(!(*route_is_reserved)){
+			free_route(track, train_index);
+			check_stop(
+                train_index,
+                train_node, train_edge, train_shift,
+                reserve_forward, reserve_backward);
+		}
     }
-    else{
+    // Reserving long stopping route
+	else{
+		free_route(track, train_index);
         *route_is_reserved = check_stopping_route(
                                 route, route_edges, route_length,
                                 train_index,
                                 train_node, train_edge, train_shift,
                                 reserve_forward, reserve_backward);
-    }
-    
+
+		//If route reservation failed - reserve current train stop
+		if(!(*route_is_reserved)){
+			free_route(track, train_index);
+			check_stop(
+                train_index,
+                train_node, train_edge, train_shift,
+                reserve_forward, reserve_backward);
+		}
+	}
+
     return;
 }
 
@@ -919,7 +1045,7 @@ void reservation_server(){
 			case RESERVE_ROUTE_MSG:
 
 				bwdebug( DBG_USR, TEMP2_DEBUG_AREA, "INPUT_OUTER: Node: %s; Shift: %d; Res: %d\n", res_msg.train_node->name, res_msg.train_shift, res_msg.reservation );
-				bwprintf( COM2, "RESERVATION ALGORITHM: Train direction is: %d\n", res_msg.train_direction );
+				//bwprintf( COM2, "RESERVATION ALGORITHM: Train direction is: %d\n", res_msg.train_direction );
 
                                 reserve_route(
                                     res_msg.track,

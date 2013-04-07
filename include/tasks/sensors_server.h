@@ -73,7 +73,7 @@ typedef struct {
 	Sensor_history *sensor_history; 
 	Sensor_waiting_list *sensor_waiting_list; 
 	All_sensors_waiting_queue *all_sensors_wait_queue; 
-	Sensor_update_reply *update_reply_msg; 
+	Sensor_update_reply update_reply_msg; 
 } Sensor_server_data;
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------

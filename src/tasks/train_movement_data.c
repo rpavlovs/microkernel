@@ -9,6 +9,8 @@ int get_train_group( int train_number ){
 		return TRAIN_GROUP_1; 
 	else if ( train_number == 44 || train_number == 49 || train_number == 50 )
 		return TRAIN_GROUP_2;
+	else if ( train_number == 43 || train_number == 47 )
+		return TRAIN_GROUP_3;
 	else
 		return -1; 
 }
@@ -287,7 +289,134 @@ void load_calibration_data( Calibration_data *calibration_data, int train_number
 			calibration_data->speed_data[13].calibrated_distances = ( const int ** ) Speed_acc_table_group2[0];
 			break; 
 		case TRAIN_GROUP_3:
-			// TODO: Add the calibration data: TRAIN_GROUP_3. 
+			// TODO: Review this values
+			calibration_data->short_speed_cutoff = 635; // 63.5 cm. 
+
+			// Speed 1
+			calibration_data->speed_data[0].velocity_enabled = 0;
+			calibration_data->speed_data[0].velocity = 0.0;
+			calibration_data->speed_data[0].time_to_constant_speed = 0; 
+			calibration_data->speed_data[0].distance_during_acceleration = 0; 
+			calibration_data->speed_data[0].stopping_distance = 0; 
+			calibration_data->speed_data[0].stopping_time = 0; 
+			calibration_data->speed_data[0].calibrated_distances = ( const int ** ) Speed_acc_table_group3[0];
+
+			// Speed 2
+			calibration_data->speed_data[1].velocity_enabled = 0;
+			calibration_data->speed_data[1].velocity = 0.0;
+			calibration_data->speed_data[1].time_to_constant_speed = 0; 
+			calibration_data->speed_data[1].distance_during_acceleration = 0; 
+			calibration_data->speed_data[1].stopping_distance = 0; 
+			calibration_data->speed_data[1].stopping_time = 0; 
+			calibration_data->speed_data[1].calibrated_distances = ( const int ** ) Speed_acc_table_group3[0];
+
+			// Speed 3
+			calibration_data->speed_data[2].velocity_enabled = 0;
+			calibration_data->speed_data[2].velocity = 0.0;
+			calibration_data->speed_data[2].time_to_constant_speed = 0; 
+			calibration_data->speed_data[2].distance_during_acceleration = 0; 
+			calibration_data->speed_data[2].stopping_distance = 0; 
+			calibration_data->speed_data[2].stopping_time = 0; 
+			calibration_data->speed_data[2].calibrated_distances = ( const int ** ) Speed_acc_table_group3[0];
+
+			// Speed 4
+			calibration_data->speed_data[3].velocity_enabled = 0;
+			calibration_data->speed_data[3].velocity = 0.0;
+			calibration_data->speed_data[3].time_to_constant_speed = 0; 
+			calibration_data->speed_data[3].distance_during_acceleration = 0; 
+			calibration_data->speed_data[3].stopping_distance = 0; 
+			calibration_data->speed_data[3].stopping_time = 0; 
+			calibration_data->speed_data[3].calibrated_distances = ( const int ** ) Speed_acc_table_group3[0];
+
+			// Speed 5
+			calibration_data->speed_data[4].velocity_enabled = 0;
+			calibration_data->speed_data[4].velocity = 0.204075387;
+			calibration_data->speed_data[4].time_to_constant_speed = 0; 
+			calibration_data->speed_data[4].distance_during_acceleration = 0; 
+			calibration_data->speed_data[4].stopping_distance = 0; 
+			calibration_data->speed_data[4].stopping_time = 0; 
+			calibration_data->speed_data[4].calibrated_distances = ( const int ** ) Speed_acc_table_group3[0];
+
+			// Speed 6
+			calibration_data->speed_data[5].velocity_enabled = 1;
+			calibration_data->speed_data[5].velocity = 0.282822251;
+			calibration_data->speed_data[5].time_to_constant_speed = 3000;			// Check if this is correct 
+			calibration_data->speed_data[5].distance_during_acceleration = 288;		// Check if this is correct
+			calibration_data->speed_data[5].stopping_distance = 347; 
+			calibration_data->speed_data[5].stopping_time = 3238; 
+			calibration_data->speed_data[5].calibrated_distances = ( const int ** ) Speed_acc_table_group3[1];
+
+			// Speed 7
+			calibration_data->speed_data[6].velocity_enabled = 0;
+			calibration_data->speed_data[6].velocity = 0.306954331;
+			calibration_data->speed_data[6].time_to_constant_speed = 0; 
+			calibration_data->speed_data[6].distance_during_acceleration = 0; 
+			calibration_data->speed_data[6].stopping_distance = 0; 
+			calibration_data->speed_data[6].stopping_time = 0; 
+			calibration_data->speed_data[6].calibrated_distances = ( const int ** ) Speed_acc_table_group3[0];
+
+			// Speed 8
+			calibration_data->speed_data[7].velocity_enabled = 0;
+			calibration_data->speed_data[7].velocity = 0.355127702;
+			calibration_data->speed_data[7].time_to_constant_speed = 0; 
+			calibration_data->speed_data[7].distance_during_acceleration = 0; 
+			calibration_data->speed_data[7].stopping_distance = 0; 
+			calibration_data->speed_data[7].stopping_time = 0; 
+			calibration_data->speed_data[7].calibrated_distances = ( const int ** ) Speed_acc_table_group3[0];
+
+			// Speed 9
+			calibration_data->speed_data[8].velocity_enabled = 1;
+			calibration_data->speed_data[8].velocity = 0.42752364;
+			calibration_data->speed_data[8].time_to_constant_speed = 3500;			// Check if this is correct 
+			calibration_data->speed_data[8].distance_during_acceleration = 458;		// Check if this is correct 
+			calibration_data->speed_data[8].stopping_distance = 550; 
+			calibration_data->speed_data[8].stopping_time = 3707; 
+			calibration_data->speed_data[8].calibrated_distances = ( const int ** ) Speed_acc_table_group3[0];
+
+			// Speed 10
+			calibration_data->speed_data[9].velocity_enabled = 0;
+			calibration_data->speed_data[9].velocity = 0.447922752;
+			calibration_data->speed_data[9].time_to_constant_speed = 0; 
+			calibration_data->speed_data[9].distance_during_acceleration = 0; 
+			calibration_data->speed_data[9].stopping_distance = 0; 
+			calibration_data->speed_data[9].stopping_time = 0; 
+			calibration_data->speed_data[9].calibrated_distances = ( const int ** ) Speed_acc_table_group3[0];
+
+			// Speed 11
+			calibration_data->speed_data[10].velocity_enabled = 0;
+			calibration_data->speed_data[10].velocity = 0.490881107;
+			calibration_data->speed_data[10].time_to_constant_speed = 0; 
+			calibration_data->speed_data[10].distance_during_acceleration = 0; 
+			calibration_data->speed_data[10].stopping_distance = 0; 
+			calibration_data->speed_data[10].stopping_time = 0; 
+			calibration_data->speed_data[10].calibrated_distances = ( const int ** ) Speed_acc_table_group3[0];
+
+			// Speed 12
+			calibration_data->speed_data[11].velocity_enabled = 1;
+			calibration_data->speed_data[11].velocity = 0.570327553;
+			calibration_data->speed_data[11].time_to_constant_speed = 3750;	
+			calibration_data->speed_data[11].distance_during_acceleration = 510;
+			calibration_data->speed_data[11].stopping_distance = 766; 
+			calibration_data->speed_data[11].stopping_time = 4172;
+			calibration_data->speed_data[11].calibrated_distances = ( const int ** ) Speed_acc_table_group3[0];
+
+			// Speed 13
+			calibration_data->speed_data[12].velocity_enabled = 0;
+			calibration_data->speed_data[12].velocity = 0.583022937;
+			calibration_data->speed_data[12].time_to_constant_speed = 0; 
+			calibration_data->speed_data[12].distance_during_acceleration = 0; 
+			calibration_data->speed_data[12].stopping_distance = 0; 
+			calibration_data->speed_data[12].stopping_time = 0; 
+			calibration_data->speed_data[12].calibrated_distances = ( const int ** ) Speed_acc_table_group3[0];
+
+			// Speed 14
+			calibration_data->speed_data[13].velocity_enabled = 0;
+			calibration_data->speed_data[13].velocity = 0.583030451;
+			calibration_data->speed_data[13].time_to_constant_speed = 0; 
+			calibration_data->speed_data[13].distance_during_acceleration = 0; 
+			calibration_data->speed_data[13].stopping_distance = 0; 
+			calibration_data->speed_data[13].stopping_time = 0; 
+			calibration_data->speed_data[13].calibrated_distances = ( const int ** ) Speed_acc_table_group3[0];
 			break; 
 		default: 
 			bwassert( 0, 

@@ -21,7 +21,7 @@ void calculate_reservation_start( int distance_reserved, Train_status *train_sta
 	int extra_length_to_reserve = ( train_status->train_direction == TRAIN_DIRECTION_FORWARD ) ? LENGHT_TRAIN_BACK: LENGTH_TRAIN_AHEAD;
 	int total_distance_reserved = distance_reserved + extra_length_to_reserve;
 
-	track_node *curr_node, *prev_node;
+	track_node *curr_node;
     Train_position curr_pos = train_status->current_position; 
 
 	// Remove the current offset
@@ -93,7 +93,7 @@ int reserve_distance( int distance_to_reserve, Train_status *train_status, Train
 	reservation_msg.track = server_data->track; 
 
 	reservation_msg.train_index = train_status->train_num;
-	reservation_msg.train_direction = 1;//train_status->train_direction; 
+	reservation_msg.train_direction = train_status->train_direction; 
 	reservation_msg.train_node = train_status->current_position.landmark; 
 	reservation_msg.train_edge = train_status->current_position.edge; 
 	reservation_msg.train_shift = train_status->current_position.offset; 
@@ -110,7 +110,7 @@ int reserve_distance( int distance_to_reserve, Train_status *train_status, Train
 	reservation_msg.route_is_reserved = &is_distance_reserved; 
 	
 	bwdebug( DBG_USR, TEMP2_DEBUG_AREA, "ASKING FOR DISTANCE: tid: %d dist: %d dist_substracted: %d", 
-		train_status->train_id, distance_to_reserve, distance_to_reserve - 1 ); 
+		train_status->train_id, distance_to_reserve, reservation_msg.reservation ); 
 	Send( server_data->tasks_tids[ TR_RESERVATION_SERVER_TID_INDEX ], ( char * ) &reservation_msg, 
 		sizeof( reservation_msg ), 0, 0);
 	bwdebug( DBG_USR, TEMP2_DEBUG_AREA, "replied: [ RESULT: %d ]", is_distance_reserved ); 
@@ -123,11 +123,11 @@ int reserve_distance( int distance_to_reserve, Train_status *train_status, Train
 		
 		bwprintf( COM2, "RESERVATION DENIED [ Curr_pos: %s Offset: %d Dist: %d ]\n", 
 			train_status->current_position.landmark->name, train_status->current_position.offset, 
-			distance_to_reserve - 1 ); 		
+			reservation_msg.reservation ); 		
 			
 		bwdebug( DBG_USR, TEMP2_DEBUG_AREA, "RESERVATION DENIED [ Curr_pos: %s Offset: %d Dist: %d ]", 
 			train_status->current_position.landmark->name, train_status->current_position.offset, 
-			distance_to_reserve - 1 ); 
+			reservation_msg.reservation ); 
 	}
 	
 	return is_distance_reserved; 
@@ -171,8 +171,8 @@ int request_new_path( Train_status *train_status, Train_server_data *server_data
 	route_msg.edges = ( track_edge ** ) train_status->route_data.edges; 
 	route_msg.landmarks = ( track_node ** ) train_status->route_data.landmarks;
 
-	bwprintf( COM2, "REQUESTING_ROUTE: Origin: %s Destination: %s\n", 
-		route_msg.current_landmark->name, route_msg.target_node->name ); 
+	//bwprintf( COM2, "REQUESTING_ROUTE: Origin: %s Destination: %s\n", 
+	//	route_msg.current_landmark->name, route_msg.target_node->name ); 
 	Send( server_data->tasks_tids[ TR_ROUTE_SERVER_TID_INDEX ], 
 		( char * ) &route_msg, sizeof( route_msg ), 0, 0 ); 
 
@@ -185,6 +185,7 @@ int request_new_path( Train_status *train_status, Train_server_data *server_data
 	}
 	bwprintf( COM2, "\n" ); 
 	*/
+
 	/*
 	while( 1 )
 		;
@@ -342,7 +343,7 @@ int get_sw_clear_movement_distance( Train_status *train_status, Train_server_dat
 }
 
 // ----------------------------------------------------------------------------------------------
-// Train Helpers
+// Screen Printing
 // ----------------------------------------------------------------------------------------------
 void print_train_status( Train_status *train_status ){
 	// Initialization
@@ -362,13 +363,39 @@ void print_train_status( Train_status *train_status ){
 	temp_buffer += append_char( temp_buffer, ' ', 5 - strlen( train_status->current_position.landmark->name ) );
 	temp_buffer += sprintf( temp_buffer, 
 		" Offset -> %d ", train_status->current_position.offset ); 
-	temp_buffer += sprintf( temp_buffer, "   Speed -> %d   Error -> %d", train_status->motion_data.train_speed, train_status->motion_data.current_error ); 
+	temp_buffer += sprintf( temp_buffer, "   Speed -> %d   Error -> %d	Total Error: %d", 
+		train_status->motion_data.train_speed, train_status->motion_data.current_error, 
+		get_total_error_avg( train_status ) ); 
 	temp_buffer += restoreCursor( temp_buffer );
 
 	// Send the string to UART 2. 
 	//Putstr( COM2, buff );
 }
 
+void send_dashboard_train_pos( Train_status *train_status, Train_server_data *server_data ){
+	// Initialization
+	msg_display_request req_msg;
+
+	req_msg.type = MSG_TYPE_DISP_TRAIN;
+	req_msg.train_id = train_status->train_id; 
+	req_msg.landmark = train_status->current_position.landmark->index;
+	req_msg.offset = train_status->current_position.offset; 
+
+	req_msg.dir = DIR_STRAIGHT; 
+	track_node* curr_landmark = train_status->current_position.landmark;
+	track_edge* curr_edge = train_status->current_position.edge; 
+	if ( curr_landmark->type == NODE_BRANCH ){
+		if ( &curr_landmark->edge[ DIR_CURVED ] == curr_edge )
+			req_msg.dir = DIR_CURVED; 
+	}
+	
+	int display_tid = server_data->tasks_tids[ TR_DISPLAY_TID_INDEX ]; 
+	Send( display_tid, ( char * ) &req_msg, sizeof( req_msg ), 0, 0 ); 
+}
+
+// ----------------------------------------------------------------------------------------------
+// Train Helpers
+// ----------------------------------------------------------------------------------------------
 /*
   This method is used to update the reference landmark when a reverse command is issued. 
 */
@@ -427,8 +454,9 @@ int requires_reversing( Train_status *train_status ){
 		current_node = train_status->route_data.landmarks[ landmarks_index ];
 		next_node = train_status->route_data.landmarks[ landmarks_index + 1 ];
 
-		if ( current_node->reverse == next_node )
+		if ( current_node->reverse == next_node ){
 			return 1; 
+		}
 	}
 
 	return 0; 
@@ -552,4 +580,11 @@ inline int get_reverse_delay_time( Train_server_data *server_data ){
 inline int round_decimal_up( float value ){
 	value += .9999; // It works more like a roof than a rounding function. 
 	return ( int ) value; 
+}
+
+inline int get_total_error_avg( Train_status *train_status ){
+	int total_error = ( train_status->motion_data.num_error_measurements > 0 ) ? 
+		train_status->motion_data.total_error / train_status->motion_data.num_error_measurements : 0; 
+
+	return total_error; 
 }

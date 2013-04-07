@@ -10,8 +10,8 @@
 // 2 - sytem/user tasks
 // 3 - kernel requests + sytem/user tasks
 // 4 - all
-#define DEBUG_LEVEL 						0
-#define DEBUG_AREAS							0 | TEMP2_DEBUG_AREA | RESERVATION_SRV_DEBUG_AREA // | TRAIN_SRV_DEBUG_AREA // | SENSORS_SERVER_DEBUG_AREA | COMMAND_SERVER_DEBUG_AREA
+#define DEBUG_LEVEL 						3
+#define DEBUG_AREAS							0 | TEMP3_DEBUG_AREA // | TRAIN_SRV_DEBUG_AREA // | SENSORS_SERVER_DEBUG_AREA | COMMAND_SERVER_DEBUG_AREA
 //#define DEBUG_AREAS							0x1FFFC0
 //#define DEBUG_AREAS							0 | TRAIN_MGR_DEBUG_AREA | TRAIN_SRV_DEBUG_AREA //COMMAND_SERVER_DEBUG_AREA | KERNEL_DEBUG_AREA
 
@@ -47,6 +47,7 @@
 #define DELAY_DEBUG_AREA					1 << 24
 #define TEMP_DEBUG_AREA						1 << 25
 #define TEMP2_DEBUG_AREA					1 << 26
+#define TEMP3_DEBUG_AREA					1 << 27
 
 // ------------------------------------------------------------------------------------------
 // Task priorities

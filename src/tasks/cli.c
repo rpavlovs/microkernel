@@ -32,6 +32,7 @@ void init_cli_data( CLI_data *cli_data, Servers_tid_list *servers_list ){
 
 	// Train 1: ID -> 50
 	msg.element_id = 50;
+	msg.element_id = 47;
 	Send( train_mgm_tid, ( char * ) & msg, sizeof( msg ), ( char * ) &reply_msg, sizeof( reply_msg ) ); 
 	cli_data->train_id[TRAIN1_INDEX] = msg.element_id;  
 	cli_data->train_tid[TRAIN1_INDEX] = reply_msg.train_tid; 

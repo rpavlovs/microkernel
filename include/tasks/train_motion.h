@@ -55,4 +55,6 @@ void predict_train_movement(
 
 void add_sensors_attrib_list( Train_status *train_status, Train_server_data *server_data );
 
+void adjust_pos_with_sensor_data( Train_status *train_status, Train_server_data *server_data ); 
+
 #endif

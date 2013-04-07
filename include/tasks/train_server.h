@@ -18,6 +18,7 @@
 #define TR_WAIT_NOT_COURIER_TID_INDEX			7
 #define TR_SENSOR_NOT_COURIER_TID_INDEX			8
 #define TR_CMD_NOT_TID_INDEX					9
+#define TR_DISPLAY_TID_INDEX					10
 
 // Train update types
 #define NORMAL_UPDATE							1		// Request to only update the current train information

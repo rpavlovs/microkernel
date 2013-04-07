@@ -11,7 +11,7 @@
 // -------------------------------------------------------------------
 // Constants
 // -------------------------------------------------------------------
-#define NUM_REQUIRED_TASKS_FOR_TRAIN			10		// The number of tis that we need to keep track of. 
+#define NUM_REQUIRED_TASKS_FOR_TRAIN			11		// The number of tis that we need to keep track of. 
 
 #define SENSOR_ATTR_LIST_SIZE					20		// The size of the sensor attribution list
 
@@ -97,6 +97,7 @@ struct Train_status_struct{
 
 struct Train_update_request_struct{
 	int update_type; 
+	track_node *triggered_sensor; 
 	Command cmd; 
 }; 
 
@@ -132,7 +133,7 @@ typedef struct {
 } Train_cmd_notifier_msg; 
 
 typedef struct {
-	int **sensor_state;	// A pointer to the array in the notifier's address space
+	int **sensor_state;			// A pointer to the array in the notifier's address space
 	int sensor_server_tid; 
 } Sensor_notifier_init_msg; 
 

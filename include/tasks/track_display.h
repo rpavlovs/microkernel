@@ -1,6 +1,8 @@
 #ifndef __TRACK_DISPLAY_H__
 #define __TRACK_DISPLAY_H__
 
+#define TRACK_DISPLAY_NAME			"track_display"
+
 #define TRACK_WIDTH 				125
 #define TRACK_HEIGHT 				30
 

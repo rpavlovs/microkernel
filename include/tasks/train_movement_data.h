@@ -6,7 +6,7 @@
 // Constants
 // -------------------------------------------------------------------
 #define NUM_SPEEDS					14
-#define NUM_CALIBRATED_DISTANCES	13
+#define NUM_CALIBRATED_DISTANCES	15
 
 #define TRAIN_GROUP_1				0
 #define TRAIN_GROUP_2				1
@@ -98,6 +98,48 @@ static const int Speed_acc_table_group2[ 2 ][ NUM_CALIBRATED_DISTANCES ][3] = {
 		{ 688, 3250, 6050 }
 	}
 }; 
+
+static const int Speed_acc_table_group3[ 2 ][ NUM_CALIBRATED_DISTANCES ][3] = { 
+	/* This array contains: 
+		1. Distance traveled in a short time
+		2. The moment when the stopping command was issued. 
+		3. The total time the trip took. 
+	*/
+	// Other Speeds
+	{
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 }
+	},
+	// Speed 6
+	{
+		{ 6,   250,  260 },		// The total times are invented
+		{ 13,  500,  850 },
+		{ 29,  750,  1000 },
+		{ 56,  1000, 1800 },
+		{ 85,  1250, 2200 },
+		{ 132, 1500, 2850 },
+		{ 177, 1750, 3500 },
+		{ 236, 2000, 4300 },
+		{ 311, 2250, 5000 },
+		{ 402, 2500, 5500 },
+		{ 517, 2750, 5950 },
+		{ 634, 3000, 6238 },
+		{ 708, 3250, 6488 },
+		{ 780, 3500, 6738 },
+		{ 846, 3750, 6988 },
+	}
+};
 
 // -------------------------------------------------------------------
 // Structs

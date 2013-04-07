@@ -30,6 +30,8 @@ void train_sensor_notifier(){
 
 	// Variables
 	int sender_tid, sensor_server_tid; 
+	sensor_server_tid = WhoIs( SENSORS_SERVER_NAME ); 
+	bwassert( sensor_server_tid, "TRAIN_SENSOR_NOTIFIER: This task requires the command server to work properly." ); 
 
 	// Messages
 	Sensor_msg sensor_msg; 	
@@ -37,15 +39,29 @@ void train_sensor_notifier(){
 	Sensor_notifier_init_msg init_msg; 
 	Sensor_update_reply sensor_update_reply; 
 
+	// Initialize values
+	int i; 
+	for( i = 0; i < NUM_SENSORS; i++ ){
+		sensor_update_reply.sensors_value[i] = 0; 
+	}
+
 	// Share data with the train server
 	Receive( &sender_tid, ( char * ) &init_msg, sizeof( init_msg ) );
+
+	//bwprintf( COM2, "NOTIFIER -> [ addr: %x value: %x not_addr: %x val: %d ]\n", 
+	//	init_msg.sensor_state, *init_msg.sensor_state, sensor_update_reply.sensors_value, *sensor_update_reply.sensors_value  ); 
 	*init_msg.sensor_state = sensor_update_reply.sensors_value;
+	//bwprintf( COM2, "NOTIFIER 2 -> [ addr: %x value: %x not_addr: %x val: %d  ]\n", 
+	//	init_msg.sensor_state, *init_msg.sensor_state, sensor_update_reply.sensors_value, *sensor_update_reply.sensors_value ); 
+
 	Reply( sender_tid, 0, 0 );
 
 	FOREVER{
 		// Listening for a request
 		bwdebug( DBG_USR, TRAIN_NOTIFIERS_DEBUG_AREA, "TRAIN_SENSOR_NOTIFIER: listening for a request" );
 		Receive( &sender_tid, ( char * ) &courier_msg, sizeof( courier_msg ) );
+		//bwdebug( DBG_USR, TEMP3_DEBUG_AREA, "TRAIN_SENSOR_NOTIFIER: received a request from [ sender_tid: %d ]", 
+		//	sender_tid );
 
 		// Wait for the sensors update
 		sensor_msg.type = WAIT_ALL_SENSORS_CHANGE_MSG;
@@ -89,6 +105,10 @@ void initialize_tasks_list( Train_server_data *train_server_data ){
 	tasks_tids[ TR_SENSOR_SERVER_TID_INDEX ] = sensor_server_tid; 
 	bwassert( sensor_server_tid >= 0, "TRAIN_SERVER: This task requires the sensor server to work properly." );
 
+	int display_tid = WhoIs( TRACK_DISPLAY_NAME ); 
+	tasks_tids[ TR_DISPLAY_TID_INDEX ] = display_tid; 
+	bwassert( display_tid >= 0, "TRAIN_SERVER: This task requires the display server to work properly." );
+
 	int route_srv_tid = WhoIs( ROUTE_SERVER_NAME );
 	tasks_tids[ TR_ROUTE_SERVER_TID_INDEX ] = route_srv_tid; 
 	bwassert( route_srv_tid >= 0, "TRAIN_SERVER: This task requires the route server to work properly." );
@@ -112,25 +132,26 @@ void initialize_tasks_list( Train_server_data *train_server_data ){
 	else
 		bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, "TRAIN_SERVER: Wait notifier created successfully [ tid: %d ]", 
 			tasks_tids[TR_WAIT_NOTIFIER_TID_INDEX] );
-
 	
-	// Sensor Notifier
-	/*
+	// Sensor Notifier	
 	Sensor_notifier_init_msg init_msg; 
 	init_msg.sensor_server_tid = sensor_server_tid; 
-	init_msg.sensor_state = ( int ** ) &train_server_data->notifier_sensor_values;
+	init_msg.sensor_state = &train_server_data->notifier_sensor_values;
+
 	tasks_tids[TR_SENSOR_NOTIFIER_TID_INDEX] = Create( TRAIN_SENSOR_NOT_TASK_PRIORITY, train_sensor_notifier ); 
     if ( tasks_tids[TR_SENSOR_NOTIFIER_TID_INDEX] < 0 ){
 		bwassert( 0, "TRAIN_SERVER: The train requires a sensor notifier to work properly." ); 
 	}
     else {
+		//bwprintf( COM2, "TRAIN_SRV NOTIFIER_VALUES -> [ addr: %x value: %x val: %d ]\n", 
+		//	&train_server_data->notifier_sensor_values, train_server_data->notifier_sensor_values, *train_server_data->notifier_sensor_values ); 
 		Send( tasks_tids[ TR_SENSOR_NOTIFIER_TID_INDEX ], ( char * ) &init_msg, sizeof( init_msg ), 0, 0 );
-		
+		//bwprintf( COM2, "TRAIN_SRV NOTIFIER_VALUES RET -> [ addr: %x value: %x val: %d ]\n", 
+		//	&train_server_data->notifier_sensor_values, train_server_data->notifier_sensor_values, *train_server_data->notifier_sensor_values  ); 
 
         bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, "TRAIN_SERVER: Sensor notifier created successfully [ tid: %d ]", 
 			tasks_tids[TR_SENSOR_NOTIFIER_TID_INDEX] );
 	}
-	*/
 	
 	// Couriers
 	int my_tid = MyTid(); 
@@ -138,9 +159,10 @@ void initialize_tasks_list( Train_server_data *train_server_data ){
 	bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, "TRAIN_SERVER: Wait notifier courier created successfully [ tid: %d ]", 
 		tasks_tids[TR_WAIT_NOT_COURIER_TID_INDEX] );
 
-	/*
 	tasks_tids[TR_SENSOR_NOT_COURIER_TID_INDEX] = create_courier( my_tid, tasks_tids[TR_SENSOR_NOTIFIER_TID_INDEX], 0, 0 );
-	*/
+	bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, "TRAIN_SERVER: Sensor notifier courier created successfully [ tid: %d ]", 
+		tasks_tids[TR_SENSOR_NOT_COURIER_TID_INDEX] );
+	
 }
 
 void retrieve_sensor_list( Train_server_data *train_server_data ){
@@ -192,9 +214,7 @@ void initialize_train_cmd_notifier( Train_server_data *server_data ){
 	server_data->is_cmd_notifier_idle = 0; 
 
 	// Initialize the queue
-	//bwprintf( COM2, "TRAIN_SERVER: Initializing train command notifier\n" );
 	init_train_cmd_queue( &server_data->train_cmd_queue ); 
-	//TR_CMD_NOT_TID_INDEXbwprintf( COM2, "TRAIN_SERVER: tRAIN CMD QUEUE SIZE: %d Location %d\n", server_data->train_cmd_queue.size, &server_data->train_cmd_queue.size );
 
 	// Send the initialization info
 	Train_cmd_notifier_msg msg;
@@ -283,15 +303,17 @@ void train_server(){
 				bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, 
 					"TRAIN_SERVER: Received sensor courier message [ sender_tid: %d ]", sender_tid );
 				
-				// If one of the triggered sensors was in the attribution list, update.
+				// If one of the triggered sensors was in the attribution list, update.		
 				track_node *triggered_sensor = get_sensor_triggered( &train_server_data ); 
 				if ( triggered_sensor ){
-					update_request.update_type = UPDATE_FROM_SENSOR; 
+					bwprintf( COM2, "SENSOR TRIGGERED\n" );
 					update = 1; 
+					update_request.update_type = UPDATE_FROM_SENSOR;
+					update_request.triggered_sensor = triggered_sensor; 
 				}
 			}
 			else if( sender_tid == tasks_tids[TR_WAIT_NOT_COURIER_TID_INDEX] ){
-				update_request.update_type = NORMAL_UPDATE; 
+				update_request.update_type = NORMAL_UPDATE;
 				update = 1; 
 			}
 			else{
@@ -347,8 +369,6 @@ void train_server(){
 
 		// Is the train notifier idle?
 		if ( train_server_data.is_cmd_notifier_idle && train_server_data.train_cmd_queue.size > 0 ){
-			//bwprintf( COM2, "UNBLOCKING TRAIN SERVER: train_server: idle: %d queue size: %d ", 
-			//	train_server_data.is_cmd_notifier_idle, train_server_data.train_cmd_queue.size ); 
 			Reply( train_server_data.tasks_tids[TR_CMD_NOT_TID_INDEX], 0, 0 );
 		}
 	}

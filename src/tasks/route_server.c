@@ -261,7 +261,7 @@ void route_server() {
                                     route_msg.num_landmarks, route_msg.edges,
                                     1);
 
-								bwprintf(COM2, "ROUTE_FOUND value is: %d\n", *(route_msg.route_found));
+								//bwprintf(COM2, "ROUTE_FOUND value is: %d\n", *(route_msg.route_found));
                                 
                                 // If a route is not found, try without avoiding
                                 /*if(!(*(route_msg.route_found))){

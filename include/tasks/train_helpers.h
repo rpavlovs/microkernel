@@ -31,6 +31,12 @@ inline int get_sw_delay_time( Train_server_data *server_data );
 
 inline int get_reverse_delay_time( Train_server_data *server_data );
 
+inline int get_total_error_avg( Train_status *train_status ); 
+
+int update_with_sensor_data( track_node *triggered_sensor, Train_status *train_status, Train_server_data *server_data );
+
+void send_dashboard_train_pos( Train_status *train_status, Train_server_data *server_data );
+
 // -------------------------------------------------------------------
 // Methods
 // -------------------------------------------------------------------

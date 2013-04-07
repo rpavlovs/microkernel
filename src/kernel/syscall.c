@@ -303,6 +303,7 @@ int Putc( int channel, char ch ) {
 }
 
 int Putstr( int channel, char *str ) {
+
 	if( channel != COM1 && channel != COM2 ) return -3; //COM channel is invalid
 
 	int server_tid = WhoIs( channel == COM1 ? "uart1_sender" : "uart2_sender" );

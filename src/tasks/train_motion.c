@@ -38,8 +38,8 @@ void send_train_move_command( int tr_speed, int delay_time, Train_status *train_
 		new_time = delay_time; 
 	}
 	else{
-		bwprintf( COM2, "TRAIN_MOTION: Sending cmd [ Ticks: %d Ms: %d Train: %d Speed: %d ]\n", 
-			current_time / 10, current_time, train_status->train_id, tr_speed ); 
+		//bwprintf( COM2, "TRAIN_MOTION: Sending cmd [ Ticks: %d Ms: %d Train: %d Speed: %d ]\n", 
+		//	current_time / 10, current_time, train_status->train_id, tr_speed ); 
 		send_command( TRAIN_CMD_TYPE, train_status->train_id, tr_speed, cmd_server_tid );
 
 		// TODO: Do we need to add a "CMD" delay. 
@@ -206,11 +206,11 @@ int get_long_distance_traveled( int time_since_change, Train_status *train_statu
 			distance_traveled += round_decimal_up( time_constant_speed * speed_calibration->velocity ); 
 			train_status->distance_before_deacceleration = distance_traveled; 
 			///*
-			//bwprintf( COM2, "\n--------- CALCULATING DISTANCE DURING CONSTANT SPEED: ---------------------------\n" ); 
-			//bwprintf( COM2, "   - Time_Deacc: %d Time_to_csp: %d Time_sp_ch: %d Time_CSP: %d\n", 
-			//	train_status->motion_data.time_since_deacceleration, speed_calibration->time_to_constant_speed, 
-			//	train_status->time_speed_change, time_constant_speed ); 
-			//bwprintf( COM2, "   - Dist_Acc: %d Dist_Trav: %d\n", speed_calibration->distance_during_acceleration, distance_traveled ); 
+			bwprintf( COM2, "\n--------- CALCULATING DISTANCE DURING CONSTANT SPEED: ---------------------------\n" ); 
+			bwprintf( COM2, "   - Time_Deacc: %d Time_to_csp: %d Time_sp_ch: %d Time_CSP: %d\n", 
+				train_status->motion_data.time_since_deacceleration, speed_calibration->time_to_constant_speed, 
+				train_status->time_speed_change, time_constant_speed ); 
+			bwprintf( COM2, "   - Dist_Acc: %d Dist_Trav: %d\n", speed_calibration->distance_during_acceleration, distance_traveled ); 
 			///*
 		}
 		else {
@@ -235,6 +235,11 @@ int get_long_distance_traveled( int time_since_change, Train_status *train_statu
         // Wrong state. 
         bwassert( 0, "TRAIN_MOTION: get_long_distance_traveled -> Wrong train state." );
     }
+
+			bwprintf( COM2, "\n--------- CALCULATING DISTANCE DURING CONSTANT SPEED: ---------------------------\n" ); 
+			bwprintf( COM2, "   - Dist_sp_ch: %d Dist_Trav: %d Distance_acc: %d State: %d Time SP: %d Time_to_CSP: %d Time_Deacc: %d \n", 
+				train_status->distance_since_speed_change, distance_traveled, train_status->distance_before_deacceleration, train_status->motion_state, 
+				train_status->time_speed_change, speed_calibration->time_to_constant_speed, train_status->motion_data.time_since_deacceleration ); 
 
     // distance_traveled contains the distance since the speed change. Now this distance is compared to the 
     // one calculated during the previous refresh. 
@@ -440,7 +445,8 @@ int calculate_speed_to_use( Train_status *status, Train_server_data *server_data
 			}
 		}
 
-		bwassert( speed_found, "TRAIN_MOTION: calculate_speed_to_use -> Short speed must always be found. Maybe the the speed cutoff is wrong." ); 
+		bwassert( speed_found, "TRAIN_MOTION: calculate_speed_to_use -> Short speed must always be found. Maybe the the speed cutoff is wrong.\n"
+			" [ distance: %d ]", total_straight_distance ); 
 
 		//bwprintf( COM2, "Speed for short distance found [ speed: %d index: %d ] \n", speed_to_use + 1, index );
 		// Set the index of the calibrated distance that will be used
@@ -475,16 +481,24 @@ int calculate_speed_to_use( Train_status *status, Train_server_data *server_data
 // -----------------------------------------------------------------------------------------------------------------------------------------------------
 // Landmark Methods
 // -----------------------------------------------------------------------------------------------------------------------------------------------------
-int has_train_arrived( Train_status *train_status ){
+int has_train_arrived( Train_status *train_status, Train_server_data *server_data ){
 	if ( train_status->train_state == TRAIN_STATE_MOVE_TO_GOAL ){
         Train_position current_position = train_status->current_position; 
         Train_position goal_position = train_status->current_goal; 
         if (
-				current_position.landmark == goal_position.landmark && 
-				current_position.offset >= ( goal_position.offset - 2 ) )
+			current_position.landmark == goal_position.landmark && 
+			( current_position.offset >= ( goal_position.offset - 2 ) )  )
 		{
-			bwprintf( COM2, "ARRIVED! Total Distance: %d", train_status->distance_since_speed_change ); 
-            return 1; 
+			// TODO: Uncomment this to enable the adjustment of the location based on the error. 
+			/*
+			if ( train_status->motion_data.current_error > 0 ){
+				
+				//adjust_pos_with_sensor_data( train_status, server_data );
+				clear_train_motion_data( train_status ); 
+			}
+			*/
+			//bwprintf( COM2, "ARRIVED! Total Distance: %d\n", train_status->distance_since_speed_change ); 
+			return 1; 
 		}
     }
     return 0; 
@@ -569,6 +583,12 @@ void update_train_position_landmark( int distance_since_update, Train_status *tr
 		// Update to the new values
 		distance_from_landmark -= distance_to_landmark; 
 		distance_to_landmark = current_edge->dist; 
+
+		// Make sure the movement is not outside normal boundaries. 
+		if ( current_node->type == NODE_EXIT && distance_from_landmark > 0 ){
+			bwassert( 0, "TRAIN_MOTION: update_train_position_landmark -> Invalid node [ node: %s distance_since_update: %d ]", 
+				current_node->name, distance_from_landmark ); 
+		}
 	}
 
 	// Update the train status with the calculated values
@@ -582,6 +602,62 @@ void update_train_position_landmark( int distance_since_update, Train_status *tr
 		train_status->train_id, train_status->current_position.landmark->name,
 		train_status->current_position.offset );
 		*/
+}
+
+void update_train_position_neg_landmark( int dist_to_adjust, Train_status *train_status, Train_server_data *server_data ){
+	bwassert( dist_to_adjust >= 0, 
+		"TRAIN_MOTION: update_train_position_neg_landmark -> The distance cannot be negative." ); 
+
+	// 1. Get the current landmark and edge. 
+	track_node *current_node = train_status->current_position.landmark; 
+	track_edge *current_edge = train_status->current_position.edge; 
+
+	// 2. Calculate the distance from the current landmark
+	int distance_from_landmark = get_abs_value( train_status->current_position.offset - dist_to_adjust ); 
+
+	// 3. Calculate the distance to the next landmark
+	int distance_to_landmark = train_status->current_position.offset; 
+
+	while( ( distance_from_landmark - distance_to_landmark ) >= 0 ){
+		// The train has reached a new landmark. 
+		current_node = current_edge->reverse->dest->reverse; 
+
+		// Which type of landmark is it? 
+		int landmark_type = current_node->type; 
+		if ( landmark_type == NODE_BRANCH ){
+			char curr_sw_pos = get_current_sw_pos( current_node, train_status, server_data ); 
+
+			if ( curr_sw_pos == SWITCH_STRAIGHT_POS ){
+				current_edge = current_node->reverse->edge[ DIR_STRAIGHT  ].reverse; 
+			}
+			else if ( curr_sw_pos == SWITCH_CURVE_POS ){
+				current_edge = current_node->reverse->edge[ DIR_CURVED ].reverse; 
+			}
+			else{
+				bwassert( 0, 
+					"TRAIN_MOTION: update_train_position_neg_landmark -> Invalid switch position [ sw_id: %s pos: %c ]", 
+					current_node->name, curr_sw_pos );
+			}
+		}
+		else{
+			current_edge = current_node->reverse->edge[ DIR_STRAIGHT ].reverse;
+		}
+
+		// Update to the new values
+		distance_from_landmark -= distance_to_landmark; 
+		distance_to_landmark = current_edge->dist; 
+
+		// Make sure the movement is not outside normal boundaries. 
+		if ( current_node->type == NODE_ENTER && distance_from_landmark > 0 ){
+			bwassert( 0, "TRAIN_MOTION: update_train_position_neg_landmark -> Invalid node [ node: %s dist_to_adj_left: %d ]", 
+				current_node->name, distance_from_landmark ); 
+		}
+	}
+
+	// Update the train status with the calculated values
+	train_status->current_position.edge = current_edge; 
+	train_status->current_position.landmark = current_node; 
+	train_status->current_position.offset = distance_from_landmark; 
 }
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -602,12 +678,17 @@ void update_train_status( Train_update_request *update_request, Train_status *tr
 	// 2. Handle the update request
 	handle_update_request( update_request, train_status, server_data ); 
 
-	// 3. Calculate the behavior of the train before the next update and 
-	//    determine if a command needs to be sent. 
-	predict_train_movement( current_time, train_status, server_data );
+	if ( update_request->update_type != UPDATE_FROM_SENSOR ){
+		// 3. Calculate the behavior of the train before the next update and 
+		//    determine if a command needs to be sent. 
+		predict_train_movement( current_time, train_status, server_data );
 
-	// 4. Print the information. 
-	print_train_status( train_status ); 
+		// 4. Print the information. 
+		print_train_status( train_status ); 
+
+		// 5. Update the status in the screen
+		send_dashboard_train_pos( train_status, server_data );
+	}
 }
 
 void update_train_position( int current_time, Train_status *train_status, Train_server_data *server_data ){
@@ -679,6 +760,9 @@ void handle_update_request( Train_update_request *update_request, Train_status *
 		// 3. Now the train has a goal. Update the status accordingly.
 		train_status->train_state = TRAIN_STATE_MOVE_TO_GOAL; 
 	}
+	else if ( update_request->update_type == UPDATE_FROM_SENSOR ){
+		update_with_sensor_data( update_request->triggered_sensor, train_status, server_data ); 
+	}
 }
 
 void start_short_distance_movement( int speed_to_use, Train_status *train_status, Train_server_data *server_data ){
@@ -726,7 +810,10 @@ int track_train_short_distance( Train_status *train_status, Train_server_data *s
 	if ( train_status->motion_state == TRAIN_STILL ){
 		// For short distances the only important state is when the train is still. 
 		// We don't care about the other states because the distances are too small. 
-		if ( has_train_arrived( train_status ) ){
+
+		// TODO: Is this correct? Shouldn't we just clean the motion data and let the other method
+		// determine what to do? 
+		if ( has_train_arrived( train_status, server_data ) ){
 			// The train has reached its destination
 			// - Remove the current goal
 			initialize_goal( train_status );
@@ -781,7 +868,7 @@ void predict_train_movement( int current_time, Train_status *train_status, Train
 				speed_to_use = train_status->motion_data.original_train_speed;
 			}
 			else if ( train_status->train_state == TRAIN_STATE_MOVE_TO_GOAL ){
-				if ( has_train_arrived( train_status ) ){
+				if ( has_train_arrived( train_status, server_data ) ){
 					// The train has reached its destination
 					// - Remove the current goal
 					initialize_goal( train_status );
@@ -803,6 +890,8 @@ void predict_train_movement( int current_time, Train_status *train_status, Train
 					clear_train_motion_data( train_status );
 					int path_found = request_new_path( train_status, server_data );
 					bwassert( path_found, "TRAIN_MOTION: Path couldn't be found" ); 
+
+					reserve_distance( 0, train_status, server_data ); 
 				}
 
 				// Calculate the next "straight" movement
@@ -818,7 +907,7 @@ void predict_train_movement( int current_time, Train_status *train_status, Train
 				//		- The train is going to move, and it's already facing the right direction. 
 				//		- How far should we reserve?
 				distance_to_reserve = 
-					//get_train_acceleration_distance( speed_to_use, server_data ) + // TODO: Make sure we don't need this part -> I don't think we need it. 
+					get_train_acceleration_distance( speed_to_use, server_data ) + 
 					get_train_stopping_distance( speed_to_use, server_data ) + 
 					get_reservation_distance_buffer( server_data );
 
@@ -921,10 +1010,10 @@ void predict_train_movement( int current_time, Train_status *train_status, Train
 				add_sensors_attrib_list( train_status, server_data ); 
 			}
 			else{
-				// The new distance couldn't be reserved. STOP RIGHT AWAY!!!
+				// The new distance couldn't be reserved. Stop as soon as we reach constant speed!!!
 				bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, "TRAIN_MOTION: Couldn't reserve distance. Stopping!! [ train_id: %d distance_requested: %d ]", 
 					train_status->train_id, distance_to_reserve ); 
-				send_train_move_command( TRAIN_STOP_CMD_SPEED, 0, train_status, server_data );
+				send_train_move_command( TRAIN_STOP_CMD_SPEED, time_speed_change + time_to_reach_constant_sp, train_status, server_data );
 			}
 
 			break;
@@ -951,6 +1040,25 @@ void predict_train_movement( int current_time, Train_status *train_status, Train
 // -----------------------------------------------------------------------------------------------------------------------------------------------------
 // Sensor Updates
 // -----------------------------------------------------------------------------------------------------------------------------------------------------
+void adjust_pos_with_sensor_data( Train_status *train_status, Train_server_data *server_data ){
+	bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, 
+		"TRAIN_MOTION: adjust_pos_with_sensor_data-> Updating position [ train_id: %d curr_error: %d ]", 
+		train_status->train_id, train_status->motion_data.current_error );
+
+	int current_error = train_status->motion_data.current_error; 
+
+	if ( current_error > 0 ){
+		update_train_position_landmark( current_error, train_status, server_data->tasks_tids ); 
+	}
+	else if ( current_error < 0 ) {
+		current_error = get_abs_value( current_error ); 
+		update_train_position_neg_landmark( current_error, train_status, server_data ); 
+	}
+
+	// Reset the current error. 
+	train_status->motion_data.current_error = 0; 
+}
+
 track_node *get_sensor_from_attr_list( Train_server_data *server_data, int sensor_index ){
 	int i; 
 	const char *ptr; 
@@ -1022,6 +1130,16 @@ void add_sensors_attrib_list( Train_status *train_status, Train_server_data *ser
 
 	// Store the values in the attribution list
 	server_data->num_sensors_attr_list = num_sensors_attr_list; 
+
+	/*
+	bwprintf( COM2, "SENSOR ATTR LIST UPDATED [ tr: %s offset: %d ]\n", 
+		train_status->current_position.landmark->name, train_status->current_position.offset ); 
+	int z; 
+	for ( z = 0; z < num_sensors_attr_list; z++ ){
+		bwprintf( COM2, " %s ", server_data->sensor_attr_list[ z ]->name ); 
+	}
+	bwprintf( COM2, "\n" ); 
+	*/
 }
 
 track_node *get_sensor_triggered( Train_server_data *server_data ){
@@ -1041,7 +1159,7 @@ track_node *get_sensor_triggered( Train_server_data *server_data ){
 				sensor_found = 1;
 		}
 
-		*ptr_sensors = *ptr_sensors_not; // Copy the value
+		*ptr_sensors++ = *ptr_sensors_not++; // Copy the value
 	}
 
 	return sensor_triggered; 
@@ -1049,8 +1167,15 @@ track_node *get_sensor_triggered( Train_server_data *server_data ){
 
 int get_dist_between_sensor_and_landmark( track_node *triggered_sensor, Train_status *train_status, Train_server_data *server_data ){
 	// Variables
-	Train_reservation *curr_reservation; 
-
+	Train_reservation *curr_reservation = &train_status->train_reservation; 
+	
+	/*
+	bwprintf( COM2, "CURRENT_POS: %s Offset: %d Triggered Sensor: %s \n", 
+		train_status->current_position.landmark->name, train_status->current_position.offset, triggered_sensor->name ); 
+	bwprintf( COM2, "CURRENT_RESERVATION: %s Offset: %d Distance: %d \n", 
+		curr_reservation->reservation_start.landmark->name, curr_reservation->reservation_start.offset, curr_reservation->distance_reserved ); 
+	bwprintf( COM2, "1 " ); 
+	*/
 	int sensor_found = 0; 
 	int curr_landmark_found = 0; 
 	int dist_between_landmarks = 0; 
@@ -1058,17 +1183,20 @@ int get_dist_between_sensor_and_landmark( track_node *triggered_sensor, Train_st
 
 	track_node *curr_node = curr_reservation->reservation_start.landmark; 
 	track_edge *curr_edge = curr_reservation->reservation_start.edge; 
+	//bwprintf( COM2, "2 " );
 
 	if ( triggered_sensor != train_status->current_position.landmark ){
-
+		//bwprintf( COM2, "3 " );
 		// Remove the distance that we have already traveled.
 		if ( curr_reservation->reservation_start.offset > 0 ){
+			//bwprintf( COM2, "4 " );
 			distance_to_check -= ( curr_edge->dist - curr_reservation->reservation_start.offset );
 			curr_node = curr_edge->dest; 
 		}
 
+		//bwprintf( COM2, "5 " );
 		while( distance_to_check > 0 && ( !sensor_found || !curr_landmark_found ) ){
-
+			//bwprintf( COM2, "6 " );
 			// Have we found any of the landmarks? 
 			if ( curr_node == triggered_sensor )
 				sensor_found = 1; 
@@ -1080,52 +1208,63 @@ int get_dist_between_sensor_and_landmark( track_node *triggered_sensor, Train_st
 
 			// Determine where to move based on the landmark
 			if ( curr_node->type == NODE_EXIT ){
+				//bwprintf( COM2, "7 " );
 				// There are no more nodes after this one. 
 				break; 
 			}
 			else if ( curr_node->type == NODE_BRANCH ){
+				//bwprintf( COM2, "8 " );
 				// This node is a merge. Determine where the reserved distance goes to. 
 				char curr_sw_pos = get_current_sw_pos( curr_node->reverse, train_status, server_data ); 
+				//bwprintf( COM2, "9 " );
 
 				if ( curr_sw_pos == SWITCH_STRAIGHT_POS ) {
+					//bwprintf( COM2, "10 " );
 					curr_edge = &curr_node->edge[ DIR_STRAIGHT ];
 					curr_node = curr_edge->dest; 
 				}
 				else{
+					//bwprintf( COM2, "11 " );
 					curr_edge = &curr_node->edge[ DIR_CURVED ];
 					curr_node = curr_edge->dest; 
 				}
 			}
 			else{
+				//printf( COM2, "12 " );
 				curr_edge = &curr_node->edge[ DIR_AHEAD ];
 				curr_node = curr_edge->dest; 
 			}
 			distance_to_check -= curr_edge->dist; 
+			//bwprintf( COM2, "13 " );
 			
 			// Shall we add any distance? 
 			if ( sensor_found )
 				dist_between_landmarks -= curr_edge->dist;
 			else if ( curr_landmark_found )
 				dist_between_landmarks += curr_edge->dist; 
+			//bwprintf( COM2, "14 " );
 		}
-
+		//bwprintf( COM2, "15 " );
 		bwassert( sensor_found && curr_landmark_found, 
 			"TRAIN_MOTION: get_dist_between_sensor_and_landmark: Both landmarks must be found" ); 
 	}
 	else{
+		//bwprintf( COM2, "16 " );
 		// Case : The triggered sensor is the same as the current position
 		// - No need to check any other landmarks
 	}
 
 	// Substract the offset of the current position. 
+	//bwprintf( COM2, "17 " );
 	dist_between_landmarks -= train_status->current_position.offset; 
+	//bwprintf( COM2, "18 [ Dist: %d ]\n", dist_between_landmarks );
 
 	return dist_between_landmarks;
 }
 
-int update_with_sensor_data( track_node *triggered_sensor, Train_status *train_status, 
-							 Train_server_data *server_data ){
+int update_with_sensor_data( track_node *triggered_sensor, Train_status *train_status, Train_server_data *server_data ){
 	// Initialization
+	bwdebug( DBG_USR, TEMP3_DEBUG_AREA, "TRAIN_MOTION: update_with_sensor_data -> UPDATE STARTS" ); 
 	int error_distance = get_dist_between_sensor_and_landmark( triggered_sensor, train_status, server_data );
 
 	// While moving, the current position of the train is not updated. The error distance is calculated and
@@ -1140,8 +1279,11 @@ int update_with_sensor_data( track_node *triggered_sensor, Train_status *train_s
 	}
 	else{
 		// Update the error
-		train_status->motion_data.current_error += error_distance;
+		train_status->motion_data.current_error = error_distance;
 	}
+
+	//bwprintf( COM2, "Error Distance: %d Landmark: %s Current_Offset: %d\n", 
+	//	error_distance, train_status->current_position.landmark->name, train_status->current_position.offset ); 
 
 	train_status->motion_data.total_error += get_abs_value( error_distance ); 
 	train_status->motion_data.num_error_measurements++; 

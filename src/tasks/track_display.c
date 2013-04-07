@@ -10,6 +10,8 @@ void erase_train( train_position *train_pos, char *layout);
 
 void track_display() {
 	//printf( COM2, "track_display: start\n" );
+	//bwprintf( COM2, "TRACK_DISPLAY: start\n" ); 
+
 	char layout[TRACK_HEIGHT][TRACK_WIDTH];
 	int layout_distance;
 	int sender_tid;
@@ -21,7 +23,7 @@ void track_display() {
 	track_edge *edge;
 	msg_display_request req;
 
-	RegisterAs( "track_display" );
+	RegisterAs( TRACK_DISPLAY_NAME );
 	
 	init_track_layout( (char *)layout );
 	draw_track( (char *)layout );
@@ -30,18 +32,24 @@ void track_display() {
 		train_posns[i].col = 0;
 	}
 
+	//bwprintf( COM2, "TRACK_DISPLAY: Initializing\n" ); 
 	Receive( &sender_tid, (char *)&init_msg, sizeof(init_msg) );
 	bwassert( init_msg.type == MSG_TYPE_INIT_TRACK_DISP,
 		"track_display: first recieved message should be the initialization message" );
 	track = init_msg.track;
 	Reply( sender_tid, 0, 0 );
+	//bwprintf( COM2, "TRACK_DISPLAY: Finished initialization \n" ); 
 
 	FOREVER {
+		//bwprintf( COM2, "TRACK_DISPLAY: Listening for a request \n" ); 
 		Receive( &sender_tid, (char *)&req, sizeof(init_msg) );
+		//bwprintf( COM2, "TRACK_DISPLAY: Received request [ sender_tid: %d request: %d ] \n", 
+		//	sender_tid, req.type ); 
 
 		switch( req.type ) {
 		case MSG_TYPE_DISP_TRAIN:
 			// printf( COM2, "track_display: show train request recieved\n" );
+			 
 			bwassert( !(req.dir == DIR_CURVED && track[req.landmark].type != NODE_BRANCH),
 				"draw_train: can go curved only on a branch" );
 
@@ -231,7 +239,6 @@ void draw_track( char *layout ) {
 	int i;
 
 	ptr = buff;
-	ptr += hideCursor( ptr );
 	ptr += saveCursor( ptr );
 
 	for( i = 1; i <= TRACK_HEIGHT; ++i ) {
@@ -240,7 +247,6 @@ void draw_track( char *layout ) {
 	}
 
 	ptr += restoreCursor( ptr );
-	ptr += showCursor( ptr );
 
 	Putstr( COM2, buff );
 }
@@ -249,7 +255,6 @@ void draw_branch( track_node *branch, int state, char *layout ) {
 	char buff[50];
 	char *ptr = buff;
 
-	ptr += hideCursor( ptr );
 	ptr += saveCursor( ptr );
 	ptr += cursorPositioning( ptr,
 		TRACK_POS_LINE + branch->edge[state].ui_line - 1,
@@ -261,37 +266,57 @@ void draw_branch( track_node *branch, int state, char *layout ) {
 		TRACK_POS_COL + branch->edge[!state].ui_col );
 	ptr += sprintf( ptr, "*" );
 	ptr += restoreCursor( ptr );
-	ptr += showCursor( ptr );
 	
 	Putstr( COM2, buff );
 }
 
 void draw_train( int train_id, train_position *train_pos) {
-	char buff[50];
+	char buff[70];
 	char *ptr = buff;
 
-	ptr += hideCursor( ptr );
 	ptr += saveCursor( ptr );
-	ptr += cursorPositioning( ptr,
-		TRACK_POS_LINE + train_pos->row - 1, TRACK_POS_COL + train_pos->col );
+	//ptr += cursorPositioning( ptr,
+	//	TRACK_POS_LINE + train_pos->row - 1, TRACK_POS_COL + train_pos->col );
+	ptr += sprintf( ptr, "\033[%d;%dH", 
+		TRACK_POS_LINE + train_pos->row - 1, TRACK_POS_COL + train_pos->col ); 
+
+	// Add the color
+	switch( train_id ){
+		case 43:
+			ptr += sprintf( ptr, "\033[36m" ); 
+			break;
+		case 47:
+			ptr += sprintf( ptr, "\033[31m" ); 
+			break; 
+		case 49:
+			ptr += sprintf( ptr, "\033[35m" ); 
+			break;
+		case 50: 
+			ptr += sprintf( ptr, "\033[34m" ); 
+			break;
+		default: 
+			ptr += sprintf( ptr, "\033[33m" ); 
+			break;
+	}
+
 	ptr += sprintf( ptr, "%c", train_pos->dir );
+	ptr += sprintf( ptr, "\033[37m" );			// Return to white text. 
 	ptr += restoreCursor( ptr );
-	ptr += showCursor( ptr );
 	
 	Putstr( COM2, buff );
+	//if ( train_id == 49 )
+	//	bwprintf( COM2, "%d", train_pos->dir ); 
 }
 
 void erase_train( train_position *train_pos, char *layout ) {
 	char buff[50];
 	char *ptr = buff;
 
-	ptr += hideCursor( ptr );
 	ptr += saveCursor( ptr );
 	ptr += cursorPositioning( ptr,
 		TRACK_POS_LINE + train_pos->row - 1, TRACK_POS_COL + train_pos->col );
 	ptr += sprintf( ptr, "%c", *(layout + (train_pos->row)*TRACK_WIDTH + train_pos->col) );
 	ptr += restoreCursor( ptr );
-	ptr += showCursor( ptr );
 	
 	Putstr( COM2, buff );
 }

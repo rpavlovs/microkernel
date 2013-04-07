@@ -205,13 +205,13 @@ int get_long_distance_traveled( int time_since_change, Train_status *train_statu
 			distance_traveled = speed_calibration->distance_during_acceleration; 
 			distance_traveled += round_decimal_up( time_constant_speed * speed_calibration->velocity ); 
 			train_status->distance_before_deacceleration = distance_traveled; 
-			///*
+			/*
 			bwprintf( COM2, "\n--------- CALCULATING DISTANCE DURING CONSTANT SPEED: ---------------------------\n" ); 
 			bwprintf( COM2, "   - Time_Deacc: %d Time_to_csp: %d Time_sp_ch: %d Time_CSP: %d\n", 
 				train_status->motion_data.time_since_deacceleration, speed_calibration->time_to_constant_speed, 
 				train_status->time_speed_change, time_constant_speed ); 
 			bwprintf( COM2, "   - Dist_Acc: %d Dist_Trav: %d\n", speed_calibration->distance_during_acceleration, distance_traveled ); 
-			///*
+			*/
 		}
 		else {
 			distance_traveled = train_status->distance_before_deacceleration;
@@ -235,11 +235,6 @@ int get_long_distance_traveled( int time_since_change, Train_status *train_statu
         // Wrong state. 
         bwassert( 0, "TRAIN_MOTION: get_long_distance_traveled -> Wrong train state." );
     }
-
-			bwprintf( COM2, "\n--------- CALCULATING DISTANCE DURING CONSTANT SPEED: ---------------------------\n" ); 
-			bwprintf( COM2, "   - Dist_sp_ch: %d Dist_Trav: %d Distance_acc: %d State: %d Time SP: %d Time_to_CSP: %d Time_Deacc: %d \n", 
-				train_status->distance_since_speed_change, distance_traveled, train_status->distance_before_deacceleration, train_status->motion_state, 
-				train_status->time_speed_change, speed_calibration->time_to_constant_speed, train_status->motion_data.time_since_deacceleration ); 
 
     // distance_traveled contains the distance since the speed change. Now this distance is compared to the 
     // one calculated during the previous refresh. 
@@ -445,8 +440,8 @@ int calculate_speed_to_use( Train_status *status, Train_server_data *server_data
 			}
 		}
 
-		bwprintf( COM2, "Speed for short distance found [ speed: %d index: %d dist: %d speed_cutoff: %d ] \n", 
-			speed_to_use + 1, index, total_straight_distance, calibration_data->short_speed_cutoff );
+		//bwprintf( COM2, "Speed for short distance found [ speed: %d index: %d dist: %d speed_cutoff: %d ] \n", 
+		//	speed_to_use + 1, index, total_straight_distance, calibration_data->short_speed_cutoff );
 		bwassert( speed_found, "TRAIN_MOTION: calculate_speed_to_use -> Short speed must always be found. Maybe the the speed cutoff is wrong.\n"
 			" [ distance: %d short_sp_cutoff: %d ]", total_straight_distance, calibration_data->short_speed_cutoff ); 
 
@@ -488,20 +483,21 @@ int has_train_arrived( Train_status *train_status, Train_server_data *server_dat
 	if ( train_status->train_state == TRAIN_STATE_MOVE_TO_GOAL ){
         Train_position current_position = train_status->current_position; 
         Train_position goal_position = train_status->current_goal; 
-        if (
-			current_position.landmark == goal_position.landmark && 
-			( current_position.offset >= ( goal_position.offset - 2 ) )  )
-		{
-			// TODO: Uncomment this to enable the adjustment of the location based on the error. 
-			/*
-			if ( train_status->motion_data.current_error > 0 ){
-				
-				//adjust_pos_with_sensor_data( train_status, server_data );
-				clear_train_motion_data( train_status ); 
+		int num_landmarks = train_status->route_data.num_landmarks;
+
+		//TODO: Modify this a little to make sure that reverses at the end work fine too. 
+		if ( current_position.landmark == goal_position.landmark ){
+			
+			int offset_diff = current_position.offset - ( goal_position.offset - 2 ); 
+			if ( num_landmarks == 1 && get_abs_value( offset_diff ) <= 0 ){
+				bwprintf( COM2, "ARRIVED! Total Distance: %d\n", train_status->distance_since_speed_change ); 
+				return 1; 
 			}
-			*/
-			//bwprintf( COM2, "ARRIVED! Total Distance: %d\n", train_status->distance_since_speed_change ); 
-			return 1; 
+			
+			if ( num_landmarks > 1 && offset_diff >= 0 ){
+				bwprintf( COM2, "ARRIVED! Total Distance: %d\n", train_status->distance_since_speed_change ); 
+				return 1; 
+			}
 		}
     }
     return 0; 

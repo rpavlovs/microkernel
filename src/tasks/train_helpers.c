@@ -121,9 +121,9 @@ int reserve_distance( int distance_to_reserve, Train_status *train_status, Train
 	}
 	else{
 		
-		bwprintf( COM2, "RESERVATION DENIED [ Curr_pos: %s Offset: %d Dist: %d ]\n", 
-			train_status->current_position.landmark->name, train_status->current_position.offset, 
-			reservation_msg.reservation ); 		
+		//bwprintf( COM2, "RESERVATION DENIED [ Curr_pos: %s Offset: %d Dist: %d ]\n", 
+		//	train_status->current_position.landmark->name, train_status->current_position.offset, 
+		//	reservation_msg.reservation ); 		
 			
 		bwdebug( DBG_USR, TEMP2_DEBUG_AREA, "RESERVATION DENIED [ Curr_pos: %s Offset: %d Dist: %d ]", 
 			train_status->current_position.landmark->name, train_status->current_position.offset, 
@@ -172,20 +172,21 @@ int request_new_path( Train_status *train_status, Train_server_data *server_data
 	route_msg.edges = ( track_edge ** ) train_status->route_data.edges; 
 	route_msg.landmarks = ( track_node ** ) train_status->route_data.landmarks;
 
-	//bwprintf( COM2, "REQUESTING_ROUTE: Origin: %s Destination: %s\n", 
-	//	route_msg.current_landmark->name, route_msg.target_node->name ); 
+	bwprintf( COM2, "REQUESTING_ROUTE: Origin: %s Destination: %s Current_offset: %d Current_goal_offset: %d \n", 
+		route_msg.current_landmark->name, route_msg.target_node->name, 
+		train_status->current_position.offset, train_status->current_goal.offset ); 
 	Send( server_data->tasks_tids[ TR_ROUTE_SERVER_TID_INDEX ], 
 		( char * ) &route_msg, sizeof( route_msg ), 0, 0 ); 
 
 	// Temp
-	/*
+	
 	int j; 
 	for ( j = 0; j < *route_msg.num_landmarks; j++ ){
 		//bwprintf( COM2, "%s:%d ", route_msg.landmarks[j]->name, route_msg.edges[j]->dist );
 		bwprintf( COM2, "%s:%d ", train_status->route_data.landmarks[j]->name, train_status->route_data.edges[j]->dist );
 	}
 	bwprintf( COM2, "\n" ); 
-	*/
+	
 	/*
 	while( 1 )
 		;
@@ -449,12 +450,34 @@ int requires_reversing( Train_status *train_status ){
 	int num_landmarks = train_status->route_data.num_landmarks; 
 	int landmarks_index = train_status->route_data.landmark_index; 
 
+	int current_offset = train_status->current_position.offset; 
+		int goal_offset = train_status->current_goal.offset; 
+			bwprintf( COM2, "Current_node: %s Next_node: %s current_offset: %d goal_off: %d\n", 
+				train_status->current_position.landmark->name, train_status->current_goal.landmark->name,
+			current_offset, goal_offset ); 
+
 	if ( landmarks_index + 1 < num_landmarks ){
 		// Two nodes are required to mark reverse. 
 		current_node = train_status->route_data.landmarks[ landmarks_index ];
 		next_node = train_status->route_data.landmarks[ landmarks_index + 1 ];
 
 		if ( current_node->reverse == next_node ){
+			return 1; 
+		}
+	}
+	else if ( num_landmarks == 1 ){
+		current_node = train_status->current_position.landmark; 
+		next_node = train_status->route_data.landmarks[ landmarks_index ];
+
+		int current_offset = train_status->current_position.offset; 
+		int goal_offset = train_status->current_goal.offset; 
+
+		bwprintf( COM2, "Current_node: %s Next_node: %s current_offset: %d goal_off: %d", 
+			current_node->name, next_node->name,
+			current_offset, goal_offset ); 
+		if ( current_node == next_node && goal_offset < current_offset ){
+			// This is the case where the train needs to reverse a short distance
+			// in the same edge. 
 			return 1; 
 		}
 	}

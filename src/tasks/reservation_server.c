@@ -666,7 +666,7 @@ int check_stopping_route(
         route, route_length,
         node, &next_node )){
         //bwdebug( DBG_USR, TEMP2_DEBUG_AREA, "FIRST EDGE: get_next_node FAILED\n");
-        bwprintf( COM2, "RESERVATION ALGORITHM: FIRST EDGE: get_next_node FAILED\n");
+        //bwprintf( COM2, "RESERVATION ALGORITHM: FIRST EDGE: get_next_node FAILED\n");
         return 0;
     }
     

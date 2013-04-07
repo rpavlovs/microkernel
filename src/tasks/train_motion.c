@@ -445,8 +445,10 @@ int calculate_speed_to_use( Train_status *status, Train_server_data *server_data
 			}
 		}
 
+		bwprintf( COM2, "Speed for short distance found [ speed: %d index: %d dist: %d speed_cutoff: %d ] \n", 
+			speed_to_use + 1, index, total_straight_distance, calibration_data->short_speed_cutoff );
 		bwassert( speed_found, "TRAIN_MOTION: calculate_speed_to_use -> Short speed must always be found. Maybe the the speed cutoff is wrong.\n"
-			" [ distance: %d ]", total_straight_distance ); 
+			" [ distance: %d short_sp_cutoff: %d ]", total_straight_distance, calibration_data->short_speed_cutoff ); 
 
 		//bwprintf( COM2, "Speed for short distance found [ speed: %d index: %d ] \n", speed_to_use + 1, index );
 		// Set the index of the calibrated distance that will be used
@@ -467,8 +469,9 @@ int calculate_speed_to_use( Train_status *status, Train_server_data *server_data
                         speed_found = 1; 
         }
 
-		bwassert( speed_to_use + 1 > 0, 
-                "TRAIN_MOTION: calculate_speed_to_use -> The train must move; the speed cannot be less than 1." ); 
+		bwassert( speed_to_use > 0, 
+                "TRAIN_MOTION: calculate_speed_to_use -> The train must move; the speed cannot be less than 1.\n"
+				"[ distance: %d short_sp_cutoff: %d ]", total_straight_distance, calibration_data->short_speed_cutoff ); 
     }
 
 	bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, 

@@ -22,9 +22,6 @@ void load_calibration_data( Calibration_data *calibration_data, int train_number
 
 	switch( train_group ){
 		case TRAIN_GROUP_1:
-			// TODO: Review this values
-			calibration_data->short_speed_cutoff = 671; // 67.1 cm. 
-
 			// Speed 1
 			calibration_data->speed_data[0].velocity_enabled = 0;
 			calibration_data->speed_data[0].velocity = 0.0;
@@ -153,9 +150,6 @@ void load_calibration_data( Calibration_data *calibration_data, int train_number
 
 			break; 
 		case TRAIN_GROUP_2:
-			// TODO: Review this values
-			calibration_data->short_speed_cutoff = 616; // 61.6 cm. 
-
 			// Speed 1
 			calibration_data->speed_data[0].velocity_enabled = 0;
 			calibration_data->speed_data[0].velocity = 0.0;
@@ -288,9 +282,7 @@ void load_calibration_data( Calibration_data *calibration_data, int train_number
 			calibration_data->speed_data[13].stopping_time = 0; 
 			calibration_data->speed_data[13].calibrated_distances = ( const int ** ) Speed_acc_table_group2[0];
 			break; 
-		case TRAIN_GROUP_3:
-			// TODO: Review this values
-			calibration_data->short_speed_cutoff = 635; // 63.5 cm. 
+		case TRAIN_GROUP_3: 
 
 			// Speed 1
 			calibration_data->speed_data[0].velocity_enabled = 0;
@@ -424,6 +416,10 @@ void load_calibration_data( Calibration_data *calibration_data, int train_number
 				train_number ); 
 			break; 
 	}
+
+	// Add the speed cutoff 
+	calibration_data->short_speed_cutoff = 
+		calibration_data->speed_data[ 5 ].stopping_distance + calibration_data->speed_data[ 5 ].distance_during_acceleration; 
 
 	bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, "TRAIN_SERVER: Calibration loaded successfully [ train: %d group: %d ]", 
 			train_number, train_group );

@@ -96,6 +96,8 @@ static const int Speed_acc_table_group2[ 2 ][ NUM_CALIBRATED_DISTANCES ][3] = {
 		{ 558, 2750, 5550 },
 		{ 616, 3000, 5800 },
 		{ 688, 3250, 6050 }
+		//{ 763, 3500, 6300 }, 
+		//{ 829, 4000, 6550 }
 	}
 }; 
 

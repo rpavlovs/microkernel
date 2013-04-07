@@ -100,7 +100,7 @@ void update_labels_complex(int train_index, track_node *node, int node_shift, in
 		    if(get_edge_by_nodes( node, node->neighbours[i], &edge )){
 		        // If edge is free from routing
 		        if( edge_has_reservation_conflict(
-					train_index, edge, node_shift, edge->dist - 1 ) ){
+					train_index, edge, 0, edge->dist - 1 ) ){
 		            continue;
 		        }
 		    }
@@ -278,9 +278,9 @@ void route_server() {
 	Route_msg route_msg;
 	
 	while(1) {
-		bwdebug( DBG_SYS, ROUTE_SRV_DEBUG_AREA, "ROUTE_SERVER: listening for a request" );
+		//bwdebug( DBG_SYS, ROUTE_SRV_DEBUG_AREA, "ROUTE_SERVER: listening for a request" );
 		Receive( &sender_tid, ( char * ) &route_msg, sizeof( route_msg )  );
-		bwdebug( DBG_SYS, ROUTE_SRV_DEBUG_AREA, "ROUTE_SERVER: received request [ sender_tid: %d ]", sender_tid );
+		//bwdebug( DBG_SYS, ROUTE_SRV_DEBUG_AREA, "ROUTE_SERVER: received request [ sender_tid: %d ]", sender_tid );
 
 		switch( route_msg.type ){
 			//This message can arrive from:
@@ -298,12 +298,10 @@ void route_server() {
                                     route_msg.route_found, route_msg.landmarks,
                                     route_msg.num_landmarks, route_msg.edges,
                                     1);
-
-								bwprintf(COM2, "ROUTE_FOUND value is: %d\n", *(route_msg.route_found));
                                 
                                 // If a route is not found, try without avoiding
                                 if(!(*(route_msg.route_found))){
-									bwprintf(COM2, "FIND ROUTE WITH INTERSECTIONS!!!\n");
+									bwprintf(COM2, "ROUTING ALGORITHM: Trying to find a route with reservations intersections\n");
                                     get_shortest_route(
                                     route_msg.track, route_msg.train_index,
                                     route_msg.current_landmark, route_msg.train_edge, route_msg.train_shift,
@@ -312,15 +310,19 @@ void route_server() {
                                     route_msg.route_found, route_msg.landmarks,
                                     route_msg.num_landmarks, route_msg.edges,
                                     0);
+
+									if(!(*(route_msg.route_found))){
+										bwprintf(COM2, "ROUTING ALGORITHM: No route is found!!! O_o\n");
+									}
                                 }
 
-				bwdebug( DBG_SYS, ROUTE_SRV_DEBUG_AREA, "ROUTE_SERVER: Replying [ sender_tid: %d ]", sender_tid );
+				//bwdebug( DBG_SYS, ROUTE_SRV_DEBUG_AREA, "ROUTE_SERVER: Replying [ sender_tid: %d ]", sender_tid );
 				Reply( sender_tid, 0, 0 );
 
 				break;
 
 			default:
-				bwdebug( DBG_SYS, ROUTE_SRV_DEBUG_AREA, "ROUTE_SERVER: Invalid request. [type: %d]", route_msg.type );
+				//bwdebug( DBG_SYS, ROUTE_SRV_DEBUG_AREA, "ROUTE_SERVER: Invalid request. [type: %d]", route_msg.type );
 				break;
 		}
 	}

@@ -93,7 +93,7 @@ int reserve_distance( int distance_to_reserve, Train_status *train_status, Train
 	reservation_msg.track = server_data->track; 
 
 	reservation_msg.train_index = train_status->train_num;
-	reservation_msg.train_direction = 1;//train_status->train_direction; 
+	reservation_msg.train_direction = train_status->train_direction; 
 	reservation_msg.train_node = train_status->current_position.landmark; 
 	reservation_msg.train_edge = train_status->current_position.edge; 
 	reservation_msg.train_shift = train_status->current_position.offset; 
@@ -110,7 +110,7 @@ int reserve_distance( int distance_to_reserve, Train_status *train_status, Train
 	reservation_msg.route_is_reserved = &is_distance_reserved; 
 	
 	bwdebug( DBG_USR, TEMP2_DEBUG_AREA, "ASKING FOR DISTANCE: tid: %d dist: %d dist_substracted: %d", 
-		train_status->train_id, distance_to_reserve, distance_to_reserve - 1 ); 
+		train_status->train_id, distance_to_reserve, reservation_msg.reservation ); 
 	Send( server_data->tasks_tids[ TR_RESERVATION_SERVER_TID_INDEX ], ( char * ) &reservation_msg, 
 		sizeof( reservation_msg ), 0, 0);
 	bwdebug( DBG_USR, TEMP2_DEBUG_AREA, "replied: [ RESULT: %d ]", is_distance_reserved ); 
@@ -123,11 +123,11 @@ int reserve_distance( int distance_to_reserve, Train_status *train_status, Train
 		
 		bwprintf( COM2, "RESERVATION DENIED [ Curr_pos: %s Offset: %d Dist: %d ]\n", 
 			train_status->current_position.landmark->name, train_status->current_position.offset, 
-			distance_to_reserve - 1 ); 		
+			reservation_msg.reservation ); 		
 			
 		bwdebug( DBG_USR, TEMP2_DEBUG_AREA, "RESERVATION DENIED [ Curr_pos: %s Offset: %d Dist: %d ]", 
 			train_status->current_position.landmark->name, train_status->current_position.offset, 
-			distance_to_reserve - 1 ); 
+			reservation_msg.reservation ); 
 	}
 	
 	return is_distance_reserved; 

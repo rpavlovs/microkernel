@@ -389,7 +389,7 @@ clean_system_state(){
 		"MOV		r0, #0"						"\n\t"
 		"MCR		p15, 0, r0, c7, c5, 0"		"\n\t"	// Invalidate caches
 		"MRC		p15, 0, r0, c1, c0, 0"		"\n\t"	// Get the current value in the co-processor
-		"ORR		r0, r0, #4096"				"\n\t"	// Enable caches
+		"ORR		r0, r0, #4096"				"\n\t"	// Enable instruction caches
 
 		// Enable fast processor clocking
 		"MOV		r1, #1"						"\n\t"	// TODO: Make sure this works fine

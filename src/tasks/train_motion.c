@@ -84,6 +84,19 @@ void send_reverse_command( Train_status *train_status, Train_server_data *server
 	reverse_current_position( train_status ); 
 }
 
+/*
+	This method stops the train movement as soon as it reaches constant speed. 
+*/
+void halt_train_movement( Train_status *train_status, Train_server_data *server_data ){
+	// Determine when the train will get to constant speed. 
+	int time_speed_change = train_status->time_speed_change; 
+	int time_to_reach_constant_sp = get_time_to_constant_speed( train_status, server_data );
+
+	// Send the stop command as soon as the train reaches constant speed. 
+	send_train_move_command( TRAIN_STOP_CMD_SPEED, time_speed_change + time_to_reach_constant_sp, 
+		train_status, server_data );
+}
+
 // -----------------------------------------------------------------------------------------------------------------------------------------------------
 // Distance Methods
 // -----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -668,25 +681,40 @@ void update_train_status( Train_update_request *update_request, Train_status *tr
 	bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, 
 		"TRAIN_MOTION: Starting train update. [ update_type: %d ]", update_request->update_type );
 
-	// TODO: Get this time at the beginnging of the server's operation; that way it will be more accurate
-	int current_time = TimeInMs();
+	if ( !( server_data->is_train_finding_mode && train_status->motion_state == TRAIN_STILL ) ){
 
-	// 1. Calculate the current position of the train. 
-	update_train_position( current_time, train_status, server_data ); 
+		// TODO: Get this time at the beginnging of the server's operation; that way it will be more accurate
+		int current_time = TimeInMs();
 
-	// 2. Handle the update request
-	handle_update_request( update_request, train_status, server_data ); 
+		// 1. Calculate the current position of the train. 
+		update_train_position( current_time, train_status, server_data ); 
 
-	if ( update_request->update_type != UPDATE_FROM_SENSOR ){
-		// 3. Calculate the behavior of the train before the next update and 
-		//    determine if a command needs to be sent. 
-		predict_train_movement( current_time, train_status, server_data );
+		// 2. Handle the update request
+		handle_update_request( update_request, train_status, server_data ); 
 
-		// 4. Print the information. 
-		print_train_status( train_status ); 
+		if ( server_data->is_train_finding_mode == 1 && train_status->motion_state == TRAIN_STILL ){
+			// Send the train location server a notification that this train is completely stopped. 
+			inform_train_stopped( train_status, server_data ); 
+			server_data->is_train_finding_mode = 2;
+		}
+		else if ( !( server_data->is_train_finding_mode && train_status->motion_state == TRAIN_STILL ) &&
+			update_request->update_type != UPDATE_FROM_SENSOR ){
 
-		// 5. Update the status in the screen
-		send_dashboard_train_pos( train_status, server_data );
+			// 3. Calculate the behavior of the train before the next update and 
+			//    determine if a command needs to be sent. 
+			predict_train_movement( current_time, train_status, server_data );
+
+			// 4. Print the information. 
+			print_train_status( train_status ); 
+
+			// 5. Update the status in the screen
+			send_dashboard_train_pos( train_status, server_data );
+		}
+
+	}
+	else{
+		bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, 
+			"TRAIN_MOTION: Server is in train finding mode. Ignoring update" );
 	}
 }
 
@@ -761,6 +789,25 @@ void handle_update_request( Train_update_request *update_request, Train_status *
 	}
 	else if ( update_request->update_type == UPDATE_FROM_SENSOR ){
 		update_with_sensor_data( update_request->triggered_sensor, train_status, server_data ); 
+	}
+	else if ( update_request->update_type == ENABLE_TRAIN_FINDING_MODE ){
+		server_data->is_train_finding_mode = 1; 
+	}
+	else if ( update_request->update_type == DISABLE_TRAIN_FINDING_MODE ){
+		server_data->is_train_finding_mode = 0; 
+	}
+	else if ( update_request->update_type == UPDATE_POS_FROM_WHERE_AM_I ){
+		if ( server_data->is_train_finding_mode ){
+			int new_offset = update_request->cmd.param; 
+			track_node *new_landmark = ( track_node * ) update_request->cmd.element_id; 
+			
+			train_status->current_position.landmark = new_landmark; 
+			train_status->current_position.offset = new_offset; 
+			train_status->current_position.edge = &( new_landmark->edge[ DIR_AHEAD ] ); 
+		}
+		else{
+			bwassert( 0, "TRAIN_MOTION: Cannot change the train position when the train is not in train_finding_mode." ); 
+		}
 	}
 }
 
@@ -1011,7 +1058,7 @@ void predict_train_movement( int current_time, Train_status *train_status, Train
 				// The new distance couldn't be reserved. Stop as soon as we reach constant speed!!!
 				bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, "TRAIN_MOTION: Couldn't reserve distance. Stopping!! [ train_id: %d distance_requested: %d ]", 
 					train_status->train_id, distance_to_reserve ); 
-				send_train_move_command( TRAIN_STOP_CMD_SPEED, time_speed_change + time_to_reach_constant_sp, train_status, server_data );
+				halt_train_movement( train_status, server_data ); 
 			}
 
 			break;

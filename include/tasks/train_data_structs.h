@@ -11,7 +11,7 @@
 // -------------------------------------------------------------------
 // Constants
 // -------------------------------------------------------------------
-#define NUM_REQUIRED_TASKS_FOR_TRAIN			11		// The number of tis that we need to keep track of. 
+#define NUM_REQUIRED_TASKS_FOR_TRAIN			12		// The number of tis that we need to keep track of. 
 
 #define SENSOR_ATTR_LIST_SIZE					20		// The size of the sensor attribution list
 
@@ -105,6 +105,9 @@ typedef struct{
 	track_node *track;
 	Calibration_data calibration_data; 
 	int tasks_tids[ NUM_REQUIRED_TASKS_FOR_TRAIN ];
+
+	// Train Finding State
+	int is_train_finding_mode; 
 
 	// Sensor Values ( Maybe put them in a different struct )
 	int *notifier_sensor_values; 

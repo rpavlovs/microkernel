@@ -117,6 +117,10 @@ void initialize_tasks_list( Train_server_data *train_server_data ){
 	tasks_tids[ TR_RESERVATION_SERVER_TID_INDEX ] = reserv_srv_tid; 
 	bwassert( reserv_srv_tid >= 0, "TRAIN_SERVER: This task requires the reservation server to work properly." );
 
+	int location_srv_tid = WhoIs( LOCATION_SERVER_NAME ); 
+	tasks_tids[ TR_LOC_SRV_TID_INDEX ] = location_srv_tid; 
+	bwassert( location_srv_tid >= 0, "TRAIN_SERVER: This task requires the location server to work properly." );
+
 	// Train Cmd Notifier
 	tasks_tids[TR_CMD_NOT_TID_INDEX] = Create( TRAIN_CMD_NOT_TASK_PRIORITY, train_cmd_notifier ); 
 	if ( tasks_tids[TR_CMD_NOT_TID_INDEX] < 0 )
@@ -191,6 +195,9 @@ void retrieve_sensor_list( Train_server_data *train_server_data ){
 }
 
 void initialize_train_server_data( Train_server_data *train_server_data, Train_initialization_msg init_info ){
+	// Initialize variable state
+	train_server_data->is_train_finding_mode = 0; 
+
 	// Get tasks tids
 	initialize_tasks_list( train_server_data );
 
@@ -341,18 +348,36 @@ void train_server(){
 				"TRAIN_SERVER: Received command [ sender_tid: %d cmd_type: %d ]", sender_tid, cmd_request.cmd.cmd_type );
 
 			int cmd_type = cmd_request.cmd.cmd_type; 
-			if ( cmd_type == TRAIN_CMD_TYPE || cmd_type == REVERSE_CMD_TYPE ){
-				// A command was received to make the train move freely
-				update_request.update_type = MOVE_FREE_UPDATE; 
-				update_request.cmd = cmd_request.cmd; 
-			}
-			else if ( cmd_type == MOVE_TO_POSITION_CMD_TYPE ){
-				// A command was made to make the train move to a particular location
-				update_request.update_type = CHANGE_GOAL_UPDATE; 
-				update_request.cmd = cmd_request.cmd;
-			}
-			else{
-				bwassert( 0, "TRAIN_SERVER: The received messages must be valid. [ Sender_Tid: %d ]", sender_tid );
+			switch( cmd_type ){
+				case TRAIN_CMD_TYPE: 
+				case REVERSE_CMD_TYPE:
+					// A command was received to make the train move freely
+					update_request.update_type = MOVE_FREE_UPDATE; 
+					update_request.cmd = cmd_request.cmd; 
+					break; 
+				case MOVE_TO_POSITION_CMD_TYPE:
+					// A command was made to make the train move to a particular location
+					update_request.update_type = CHANGE_GOAL_UPDATE; 
+					update_request.cmd = cmd_request.cmd;
+					break; 
+				case STOP_TRAIN_CMD_TYPE:
+					// Stop the train; probably there's a train lost. 
+					update_request.update_type = ENABLE_TRAIN_FINDING_MODE; 
+					update_request.cmd = cmd_request.cmd;
+					break;
+				case RESTART_TRAIN_CMD_TYPE:
+					// Re-start the train; probably the lost train has been found. 
+					update_request.update_type = DISABLE_TRAIN_FINDING_MODE; 
+					update_request.cmd = cmd_request.cmd;
+					break;
+				case UPDATE_TRAIN_POS_CMD_TYPE:
+					// This was the lost train; update its position. 
+					update_request.update_type = UPDATE_POS_FROM_WHERE_AM_I; 
+					update_request.cmd = cmd_request.cmd;
+					break;
+				default: 
+					bwassert( 0, "TRAIN_SERVER: The received messages must be valid. [ Sender_Tid: %d ]", sender_tid );
+					break; 
 			}
 
 			update = 1; 

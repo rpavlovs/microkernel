@@ -56,14 +56,19 @@ void train_manager(){
 	bwdebug( DBG_USR, TRAIN_MGR_DEBUG_AREA, 
 		"TRAIN_MANAGER: Created reservation server successfully [ reservation_srv_tid: %d ]", reservation_srv_tid );
 
+	// - Location Detection server
+	int location_srv_tid = Create( TRAIN_LOCATION_SRV_PRIORITY, location_detection_server ); 
+	bwdebug( DBG_USR, TRAIN_MGR_DEBUG_AREA, 
+		"TRAIN_MANAGER: Created location detection server successfully [ reservation_srv_tid: %d ]", location_srv_tid );
+
 	int num_trains, sender_tid;
-	num_trains = 0;							// Currently there are no trains
-	int trains_tids[ NUM_TRAINS ]; 
+	num_trains = 0;								// Currently there are no trains
 	track_node track[ MAX_NUM_NODES_TRACK ]; 
 
 	// Messages
 	Train_manager_msg msg; 
 	Train_manager_reply msg_reply; 
+	Location_server_msg location_srv_msg; 
 	Train_initialization_msg train_initialization; 
 
 	// Initialize the track data
@@ -94,7 +99,9 @@ void train_manager(){
 				// Create the train. 
 				if ( num_trains < NUM_TRAINS ){
 					int train_tid = Create( TRAIN_TASK_PRIORITY, train_server ); 
-					trains_tids[ num_trains ] = train_tid; 
+					location_srv_msg.train_tids[ num_trains ] = train_tid; 
+					location_srv_msg.train_nums[ num_trains ] = msg.element_id; 
+
 					if ( train_tid < 0 )
 						bwassert( 0, "TRAIN_MANAGER_SERVER: Could not create the train server [ result: %d ]", train_tid );
 
@@ -111,8 +118,14 @@ void train_manager(){
 				}
 				
 				break;
-			// TODO: Lost message -> Stop all trains, and only move 1 train
-			// TODO: Get track data
+			case TRAIN_MGR_FIND_TRAIN_MSG:
+				location_srv_msg.type = LOC_SRV_FIND_TRAIN_REQ; 
+				location_srv_msg.track = track; 
+				location_srv_msg.param = msg.element_id; 
+
+				Send( location_srv_tid, ( char * ) &location_srv_msg, sizeof( location_srv_msg ), 0, 0 );
+				
+				break;
 			default:
 				bwassert( 0, "TRAIN_MANAGER_SERVER: Invalid request type." );
 				break; 

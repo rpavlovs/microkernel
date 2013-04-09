@@ -106,6 +106,13 @@ void awaken_sensor_waiting_tasks( Sensor_waiting_list *list, char sensor_group, 
 }
 
 // -- Query for all sensors ------------------------------------
+void copy_sensor_data( int *sensor_data, int *destination ){
+	int i; 
+	for( i = 0; i < NUM_SENSORS; i++ ){
+		destination[i] = sensor_data[i];
+	}
+}
+
 void init_all_sensors_waiting_queue( All_sensors_waiting_queue *waiting_queue ){
 	waiting_queue->size = 0; 
 }
@@ -151,6 +158,11 @@ void init_server_data( Sensor_server_data *server_data ){
 	int i; 
 	for ( i = 0; i < NUM_SENSORS; i++ ){
 		server_data->update_reply_msg.sensors_value[ i ] = 0; 
+	}
+
+	// Init current sensor values
+	for( i = 0; i < NUM_SENSORS; i++ ){
+		server_data->curr_sensor_vals[i] = 0; 
 	}
 }
 
@@ -231,8 +243,11 @@ void parse_sensors( char *s88s, char *s88s_prev, Sensor_server_data *server_data
 				sensor_history_push( s88_num, sensor_id, val, sensor_history );
 				//awaken_sensor_waiting_tasks( waiting_list, 'A' + s88_num, sensor_id );
 				
-				// Update the information for the tasks waiting
+				// Update the current sensor data
 				int sensor_index = get_sensor_index( 'A' + s88_num, sensor_id ); 
+				server_data->curr_sensor_vals[ sensor_index ] = val;
+
+				// Update the information for the tasks waiting
 				server_data->update_reply_msg.sensors_value[ sensor_index ] = ( val ) ? 1 : 0;
 				send_update = 1; 
 			}
@@ -245,8 +260,11 @@ void parse_sensors( char *s88s, char *s88s_prev, Sensor_server_data *server_data
 				sensor_history_push( s88_num, sensor_id + 8, val, sensor_history );
 				//awaken_sensor_waiting_tasks( waiting_list, 'A' + s88_num, sensor_id + 8 );
 				
-				// Update the information for the tasks waiting	
+				// Update the current sensor data
 				int sensor_index = get_sensor_index( 'A' + s88_num, sensor_id + 8 ); 
+				server_data->curr_sensor_vals[ sensor_index ] = val; 
+
+				// Update the information for the tasks waiting	
 				server_data->update_reply_msg.sensors_value[ sensor_index ] = ( val ) ? 1 : 0;
 				send_update = 1; 
 				
@@ -325,6 +343,12 @@ void sensors_server() {
 			case GET_SENSOR_LIST_MSG:
 				// Get the list of sensors
 				Reply( sender_tid, ( char * ) &sensor_id_list_reply, sizeof( sensor_id_list_reply ) );
+				break;
+			case GET_SENSORS_CURR_VALUE:
+				// Get the current values of the sensors. 
+				copy_sensor_data( server_data.curr_sensor_vals, sensor_msg.sensors_val_destination ); 
+				Reply( sender_tid, 0, 0 ); 
+				break;
 			default:
 				bwdebug( DBG_SYS, SENSORS_SERVER_DEBUG_AREA, "SENSORS_SERVER: Invalid request. [type: %d]", sensor_msg.type );
 				break; 

@@ -141,10 +141,19 @@ int parse_and_exec_cmd( Char_queue *buf, Servers_tid_list *servers_list, CLI_dat
 		char_queue_pop_word( buf, landmark_name, 6 );
 		char_queue_pop_word( buf, offset, 5 );
 
-		if( landmark_name == '\0' || offset == '\0' )
+		if( train_id_str == '\0' || landmark_name == '\0' || offset == '\0' )
 			return INVALID_NUMBER_OF_ARGUMENTS;
 
 		return exec_gt( atoi(train_id_str), landmark_name, atoi( offset ), servers_list, cli_data ); 
+	}
+	if ( strcmp( cmd_name, "ls" ) == 0 ){
+		char train_id_str[3];
+		char_queue_pop_word( buf, train_id_str, 3 );
+
+		if ( train_id_str == '\0' )
+			return INVALID_NUMBER_OF_ARGUMENTS;
+
+		return exec_train_lost( atoi( train_id_str ), servers_list, cli_data ); 
 	}
 	if( strcmp( cmd_name, "q" ) == 0 ) {
 		return exec_q( );
@@ -228,6 +237,29 @@ int exec_gt( int train_id, const char *landmark_name, int offset, Servers_tid_li
 		return INVALID_TRAIN_ID;
 
 	send_command( MOVE_TO_POSITION_CMD_TYPE, ( int ) track_node, offset, train_tid );
+	return SUCCESS; 
+}
+
+int exec_train_lost( int train_id, Servers_tid_list *servers_list, CLI_data *cli_data ){
+	// Is this a correct train? 
+	int i; 
+	int num_trains = 2; // TODO: Change this if we add another train. 
+	for ( i = 0; i < num_trains; i++ ){
+		if ( cli_data->train_id[ i ] == train_id )
+			break; 
+	}
+
+	if ( i >= num_trains )
+		return INVALID_TRAIN_ID;
+
+	// Build the message to send
+	Train_manager_msg msg; 
+	msg.msg_type = TRAIN_MGR_FIND_TRAIN_MSG; 
+	msg.element_id = train_id; 
+
+	// Send the message to the train manager server
+	int train_mgm_tid = servers_list->items[TRAIN_MGR_INDEX]; 
+	Send( train_mgm_tid, ( char * ) & msg, sizeof( msg ), 0, 0 ); 
 	return SUCCESS; 
 }
 

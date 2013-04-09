@@ -15,6 +15,7 @@
 #define WAIT_SENSOR_CHANGE_MSG		2
 #define WAIT_ALL_SENSORS_CHANGE_MSG	3
 #define GET_SENSOR_LIST_MSG			4
+#define GET_SENSORS_CURR_VALUE		5
 
 #define SENSOR_NAME_SIZE			4
 #define NUM_SENSORS					80
@@ -58,6 +59,7 @@ typedef struct{
 	int type; 
 	char sensor_group; 
 	int pin_id; 
+	int *sensors_val_destination; 
 } Sensor_msg;
 
 typedef struct{
@@ -70,6 +72,7 @@ typedef struct{
 
 // Server data
 typedef struct {
+	int curr_sensor_vals[ NUM_SENSORS ];
 	Sensor_history *sensor_history; 
 	Sensor_waiting_list *sensor_waiting_list; 
 	All_sensors_waiting_queue *all_sensors_wait_queue; 

@@ -9,6 +9,7 @@
 
 // Libs
 #include "lib/math.h"
+#include "lib/train_lost_lib.h"
 
 // Tests
 #include "tasks/tests.h"
@@ -25,6 +26,7 @@
 #include "tasks/train_cmd_notifier.h"
 
 // Servers
+#include "tasks/location_detection_server.h"
 #include "tasks/reservation_server.h"
 #include "tasks/route_server.h"
 #include "tasks/command_server.h"

@@ -334,10 +334,10 @@ int check_forward_tree(
         int reservation, int reservation_limit, int strict){
 
     // If reverse delta is already violated - emergency stop
-    if(reservation > reservation_limit && strict){
+    /*if(reservation > reservation_limit && strict){
         //printf("RESERVATION_LIMIT is violated in check_forward_tree!!!\n");
         return 0;
-    }
+    }*/
 
     // Variables
     int i;
@@ -981,7 +981,8 @@ void reserve_route(
         *route_is_reserved = 1;
     }
     // Reserving short stopping route
-    else if(route_length == 1){
+    else if((route_length == 1) ||
+			(route[route_length - 1] == train_node && reservation > 0)){
 		free_route(track, train_index);
 		*route_is_reserved = check_short_stopping_route(
                                 train_index,

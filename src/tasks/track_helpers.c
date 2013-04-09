@@ -269,6 +269,36 @@ int edge_has_reservation_conflict(
 	return 0;
 }
 
+// -----------------------------------------------------------------------------------------------------------------------------------------------
+// Printing functions
+// -----------------------------------------------------------------------------------------------------------------------------------------------
+void bwprint_route( track_node **route, track_edge **route_edges, int route_length ){
+	int i;
+
+	bwprintf( COM2, "Printing route of length: %d. Nodes: ", route_length );
+	for( i = 0; i < route_length; i++ ){
+		bwprintf( COM2, "%s; ", route[i]->name );
+	}
+
+	bwprintf( COM2, "\n");
+}
+
+void bwprint_tree(track_node **nodes_tree, track_edge **edges_tree){
+	int i;
+
+	bwprintf( COM2, "Printing TREE of length: %d.\n Nodes: ", TREE_LENGTH );
+	for( i = 0; i < TREE_LENGTH; i++){
+		bwprintf( COM2, "%s; ", nodes_tree[i]->name );
+	}
+
+	bwprintf( COM2, "\nEdges: ");
+	for( i = 0; i < TREE_LENGTH; i++){
+		bwprintf( COM2, "SRC: %s, DST: %s; ", 
+					edges_tree[i]->src->name, edges_tree[i]->dest->name );
+	}
+
+	bwprintf( COM2, "\n");
+}
 
 
 

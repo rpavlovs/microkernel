@@ -8,9 +8,11 @@ void init_ai_server(track_node *track,
     // Positions nodes
     pos_nodes[0] = &track[1];          // A2
     pos_nodes[1] = &track[13];         // A14
-    pos_nodes[2] = &track[86];         // BR4
-    pos_nodes[3] = &track[80];         // BR1
-    pos_nodes[4] = &track[8];          // A9
+	pos_nodes[2] = &track[13];         // BR4
+    pos_nodes[3] = &track[8];         // BR1
+    //pos_nodes[2] = &track[86];         // BR4
+    //pos_nodes[3] = &track[80];         // BR1
+	pos_nodes[4] = &track[8];          // A9
     pos_nodes[5] = &track[6];          // A7
     pos_nodes[6] = &track[5];          // A6
     pos_nodes[7] = &track[34];         // C3
@@ -18,9 +20,11 @@ void init_ai_server(track_node *track,
     // Positions edges
     pos_edges[0] = &(track[1].edge[DIR_AHEAD]);        // A2
     pos_edges[1] = &(track[13].edge[DIR_AHEAD]);       // A14
-    pos_edges[2] = &(track[86].edge[DIR_STRAIGHT]);    // BR4
-    pos_edges[3] = &(track[80].edge[DIR_STRAIGHT]);    // BR1
-    pos_edges[4] = &(track[8].edge[DIR_AHEAD]);        // A9
+	pos_edges[2] = &(track[13].edge[DIR_STRAIGHT]);    // BR4
+    pos_edges[3] = &(track[8].edge[DIR_STRAIGHT]);    // BR1
+	//pos_edges[2] = &(track[86].edge[DIR_STRAIGHT]);    // BR4
+    //pos_edges[3] = &(track[80].edge[DIR_STRAIGHT]);    // BR1
+	pos_edges[4] = &(track[8].edge[DIR_AHEAD]);        // A9
     pos_edges[5] = &(track[6].edge[DIR_AHEAD]);        // A7
     pos_edges[6] = &(track[5].edge[DIR_AHEAD]);        // A6
     pos_edges[7] = &(track[34].edge[DIR_AHEAD]);       // C3
@@ -28,9 +32,11 @@ void init_ai_server(track_node *track,
     // Positions shifts
     pos_shifts[0] = 250;
     pos_shifts[1] = 250;
-    pos_shifts[2] = 500;
-    pos_shifts[3] = 500;
-    pos_shifts[4] = 250;
+	pos_shifts[2] = 250;
+    pos_shifts[3] = 250;
+	//pos_shifts[2] = 500;
+    //pos_shifts[3] = 500;
+	pos_shifts[4] = 250;
     pos_shifts[5] = 250;
     pos_shifts[6] = 250;
     pos_shifts[7] = 250;

@@ -197,6 +197,7 @@ void retrieve_sensor_list( Train_server_data *train_server_data ){
 void initialize_train_server_data( int train_mgr_tid, Train_server_data *train_server_data, Train_initialization_msg init_info ){
 	// Initialize variable state
 	train_server_data->is_train_finding_mode = 0; 
+	train_server_data->update_counter = 0; 
 	train_server_data->train_mgr_id = train_mgr_tid; 
 
 	// Get tasks tids

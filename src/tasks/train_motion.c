@@ -486,6 +486,8 @@ int calculate_speed_to_use( Train_status *status, Train_server_data *server_data
 		"TRAIN_MOTION: \ncalculate_speed_to_use -> Total_Dist %d Speed_to_use: %d Type: %d \n", 
 			total_straight_distance, speed_to_use + 1, status->motion_data.distance_type );
 
+	bwprintf( COM2, "Sp: %d", speed_to_use + 1 ); 
+
 	return speed_to_use + 1; 
 }
 
@@ -711,8 +713,11 @@ void update_train_status( Train_update_request *update_request, Train_status *tr
 			//send_dashboard_train_pos( train_status, server_data );
 		}
 
-		if ( train_status->motion_state != TRAIN_STILL ){
+		if ( server_data->update_counter == 0 || ( server_data->update_counter % 4 == 0 && train_status->motion_state != TRAIN_STILL ) ){
 			send_dashboard_train_pos( train_status, server_data );
+		}
+		else if ( train_status->motion_state != TRAIN_STILL ){
+			server_data->update_counter++;
 		}
 	}
 	else{

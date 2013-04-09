@@ -102,6 +102,8 @@ struct Train_update_request_struct{
 }; 
 
 typedef struct{
+	int update_counter; 
+
 	track_node *track;
 	Calibration_data calibration_data; 
 	int tasks_tids[ NUM_REQUIRED_TASKS_FOR_TRAIN ];

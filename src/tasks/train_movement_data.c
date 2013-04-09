@@ -332,8 +332,10 @@ void load_calibration_data( Calibration_data *calibration_data, int train_number
 			// Speed 6
 			calibration_data->speed_data[5].velocity_enabled = 1;
 			calibration_data->speed_data[5].velocity = 0.282822251;
+			//calibration_data->speed_data[5].time_to_constant_speed = 3000;			// Check if this is correct 
+			//calibration_data->speed_data[5].distance_during_acceleration = 288;		// Check if this is correct
 			calibration_data->speed_data[5].time_to_constant_speed = 3000;			// Check if this is correct 
-			calibration_data->speed_data[5].distance_during_acceleration = 288;		// Check if this is correct
+			calibration_data->speed_data[5].distance_during_acceleration = 300;		// Check if this is correct
 			calibration_data->speed_data[5].stopping_distance = 347; 
 			calibration_data->speed_data[5].stopping_time = 3238; 
 			calibration_data->speed_data[5].calibrated_distances = ( const int ** ) Speed_acc_table_group3[1];

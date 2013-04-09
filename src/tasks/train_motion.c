@@ -694,7 +694,7 @@ void update_train_status( Train_update_request *update_request, Train_status *tr
 
 		if ( server_data->is_train_finding_mode == 1 && train_status->motion_state == TRAIN_STILL ){
 			// Send the train location server a notification that this train is completely stopped. 
-			inform_train_stopped( train_status, server_data ); 
+			inform_train_stopped( train_status, server_data );
 			server_data->is_train_finding_mode = 2;
 		}
 		else if ( !( server_data->is_train_finding_mode && train_status->motion_state == TRAIN_STILL ) &&
@@ -708,9 +708,12 @@ void update_train_status( Train_update_request *update_request, Train_status *tr
 			print_train_status( train_status ); 
 
 			// 5. Update the status in the screen
-			send_dashboard_train_pos( train_status, server_data );
+			//send_dashboard_train_pos( train_status, server_data );
 		}
 
+		if ( train_status->motion_state != TRAIN_STILL ){
+			send_dashboard_train_pos( train_status, server_data );
+		}
 	}
 	else{
 		bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, 
@@ -922,6 +925,9 @@ void predict_train_movement( int current_time, Train_status *train_status, Train
 					// Release all track reserved ( will only keep the current position of the train ).
 					reserve_distance( 0, train_status, server_data ); 
 					add_sensors_attrib_list( train_status, server_data );
+
+					// Tell the train manager that we are ready to receive other task. 
+					request_new_goal( train_status, server_data );
 					break; 
 				}
 

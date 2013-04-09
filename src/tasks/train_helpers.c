@@ -84,6 +84,7 @@ void calculate_reservation_start( int distance_reserved, Train_status *train_sta
 }
 
 int reserve_distance( int distance_to_reserve, Train_status *train_status, Train_server_data *server_data ){
+	
 	// Prepare message
 	int is_distance_reserved = 0; 
 	//int is_distance_reserved = 1;	// RESERVED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
@@ -131,6 +132,8 @@ int reserve_distance( int distance_to_reserve, Train_status *train_status, Train
 	}
 	
 	return is_distance_reserved; 
+	
+	return 1; 
 }
 
 // ----------------------------------------------------------------------------------------------
@@ -172,21 +175,21 @@ int request_new_path( Train_status *train_status, Train_server_data *server_data
 	route_msg.edges = ( track_edge ** ) train_status->route_data.edges; 
 	route_msg.landmarks = ( track_node ** ) train_status->route_data.landmarks;
 
-	bwprintf( COM2, "REQUESTING_ROUTE: Origin: %s Destination: %s Current_offset: %d Current_goal_offset: %d \n", 
-		route_msg.current_landmark->name, route_msg.target_node->name, 
-		train_status->current_position.offset, train_status->current_goal.offset ); 
+	//bwprintf( COM2, "REQUESTING_ROUTE: Origin: %s Destination: %s Current_offset: %d Current_goal_offset: %d \n", 
+	//	route_msg.current_landmark->name, route_msg.target_node->name, 
+	//	train_status->current_position.offset, train_status->current_goal.offset ); 
 	Send( server_data->tasks_tids[ TR_ROUTE_SERVER_TID_INDEX ], 
 		( char * ) &route_msg, sizeof( route_msg ), 0, 0 ); 
 
 	// Temp
-	
+	/*
 	int j; 
 	for ( j = 0; j < *route_msg.num_landmarks; j++ ){
 		//bwprintf( COM2, "%s:%d ", route_msg.landmarks[j]->name, route_msg.edges[j]->dist );
 		bwprintf( COM2, "%s:%d ", train_status->route_data.landmarks[j]->name, train_status->route_data.edges[j]->dist );
 	}
 	bwprintf( COM2, "\n" ); 
-	
+	*/
 	/*
 	while( 1 )
 		;
@@ -370,7 +373,7 @@ void print_train_status( Train_status *train_status ){
 	temp_buffer += restoreCursor( temp_buffer );
 
 	// Send the string to UART 2. 
-	// Putstr( COM2, buff );
+	//Putstr( COM2, buff );
 }
 
 void send_dashboard_train_pos( Train_status *train_status, Train_server_data *server_data ){
@@ -397,6 +400,14 @@ void send_dashboard_train_pos( Train_status *train_status, Train_server_data *se
 // ----------------------------------------------------------------------------------------------
 // Train Helpers
 // ----------------------------------------------------------------------------------------------
+void request_new_goal( Train_status *train_status, Train_server_data *server_data ){
+	Train_manager_msg msg; 
+	msg.msg_type = TRAIN_ARRIVED_GOAL; 
+	msg.element_id = train_status->train_id; 
+
+	Send( server_data->train_mgr_id, ( char * ) &msg, sizeof( msg ), 0, 0 );
+}
+
 /*
   This method is used to update the reference landmark when a reverse command is issued. 
 */

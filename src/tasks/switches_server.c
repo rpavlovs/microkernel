@@ -57,6 +57,14 @@ int get_sw_index( int sw_id ){
 // -------------------------------------------------------------------
 // Query methods
 // -------------------------------------------------------------------
+int get_display_srv_tid(){
+	int display_tid = WhoIs( TRACK_DISPLAY_NAME );
+	if ( display_tid <= 0 )
+		display_tid = 0; 
+
+	return display_tid; 
+}
+
 char get_switch_position( int switch_id, Switches_list *sw_list ){
 	int switch_index = get_sw_index( switch_id ); 
 	if ( switch_index < 0 )
@@ -75,7 +83,58 @@ void get_all_switches_positions( char *target_switches, Switches_list *sw_list )
 	}
 }
 
-int change_switch_position( Cmd_request cmd_request, Switches_list *sw_list, int cmd_server_tid, char *str_buff ){	
+void init_switches_screen(){
+	char buff[250]; 
+	char *ptr = buff; 
+
+	ptr += cursorPositioning( ptr, 8, 1 );
+	ptr += sprintf( ptr, 
+		"##       Recent Sensors\n\n\n\n"
+		"##       Switch Positions      \n"
+		"##  1:  4:  7:  10:  13:  16:  \n"
+		"##  2:  5:  8:  11:  14:  17:  \n"
+		"##  3:  6:  9:  12:  15:  18:  \n"
+		"##  153:   154:   155:   156:  \n");
+
+	Putstr( COM2, buff ); 
+}
+/*
+void send_dashboard_train_pos( Train_status *train_status, Train_server_data *server_data ){
+
+	// Initialization
+	msg_display_request req_msg;
+
+	req_msg.type = MSG_TYPE_DISP_TRAIN;
+	req_msg.train_id = train_status->train_id; 
+	req_msg.landmark = train_status->current_position.landmark->index;
+	req_msg.offset = train_status->current_position.offset; 
+
+	req_msg.dir = DIR_STRAIGHT; 
+	track_node* curr_landmark = train_status->current_position.landmark;
+	track_edge* curr_edge = train_status->current_position.edge; 
+	if ( curr_landmark->type == NODE_BRANCH ){
+		if ( &curr_landmark->edge[ DIR_CURVED ] == curr_edge )
+			req_msg.dir = DIR_CURVED; 
+	}
+	
+	int display_tid = server_data->tasks_tids[ TR_DISPLAY_TID_INDEX ]; 
+	Send( display_tid, ( char * ) &req_msg, sizeof( req_msg ), 0, 0 ); 
+}
+*/
+
+void send_dashboard_sw_pos( int display_srv_tid, int sw_id, char pos ){
+	if ( display_srv_tid > 0 ){
+		// Initialization
+		msg_display_request req_msg;
+		req_msg.type = MSG_TYPE_DISP_SWITCH;
+		req_msg.switch_id = sw_id; 
+		req_msg.state = ( pos == SWITCH_STRAIGHT_POS ) ? DIR_STRAIGHT : DIR_CURVED; 
+
+		//Send( display_srv_tid, ( char * ) &req_msg, sizeof( req_msg ), 0, 0 ); 
+	}
+}
+
+int change_switch_position( Cmd_request cmd_request, Switches_list *sw_list, int cmd_server_tid, int display_srv_tid, char *str_buff ){	
 	bwdebug( DBG_USR, SWITCHES_SERVER_DEBUG_AREA, "CHANGE_SWITCH_POSITION: enters" );
 	// Send the command to the cmd_server.
 	Send( cmd_server_tid, ( char * ) &cmd_request, sizeof( cmd_request ), 0, 0  ); 
@@ -96,6 +155,9 @@ int change_switch_position( Cmd_request cmd_request, Switches_list *sw_list, int
 	size += cursorPositioning( ( str_buff + size ), row, col );	// Position the cursor to the right position. 
 	size += sprintf( ( str_buff + size ), "%c ", pos );			// Show the new cursor position. 
 	size += restoreCursor( str_buff + size );				// Restore the cursor to its original pos. 
+
+	// Send the display server a notification that a switch changed
+	send_dashboard_sw_pos( display_srv_tid, cmd_request.cmd.element_id, pos );
 	
 	bwdebug( DBG_USR, SWITCHES_SERVER_DEBUG_AREA, "CHANGE_SWITCH_POSITION: exit" );
 	return size; 
@@ -110,6 +172,7 @@ void init_switches( Switches_list *sw_list, int cmd_server_tid, char *buff ){
 	cmd_request.cmd.cmd_type = SWITCH_CMD_TYPE; 
 	cmd_request.cmd.param = SWITCH_CURVE_POS; 
 	
+	init_switches_screen(); 
 	for( i = 0; i < NUM_SWITCHES; i++ ){
 		// Get the switch ID from its index
 		sw_id = get_switch_id( i ); 
@@ -117,7 +180,7 @@ void init_switches( Switches_list *sw_list, int cmd_server_tid, char *buff ){
 
 		// Send the command to update the position physically
 		cmd_request.cmd.element_id = sw_id; 
-		change_switch_position( cmd_request, sw_list, cmd_server_tid, str_buff ); 
+		change_switch_position( cmd_request, sw_list, cmd_server_tid, 0, str_buff ); 
 		Putstr( COM2, str_buff );
 	}
 	bwdebug( DBG_USR, SWITCHES_SERVER_DEBUG_AREA, "INIT_SWITCHES: done" );
@@ -137,7 +200,9 @@ void switchserver(){
 	// The cmd server is required for the initialization of this server. 
 	// Hence, the cmd server must have been previously created. 
 	int cmd_server_tid = WhoIs( COMMAND_SERVER_NAME );
-	bwassert( cmd_server_tid >= 0, "SWITCH SERVER: This task requires the command server to be able to operate." ); 
+	bwassert( cmd_server_tid >= 0, "SWITCH SERVER: This task requires the command server to be able to operate." );
+
+	int display_tid;
  
 	Switches_list switches_list;
 	init_switches( &switches_list, cmd_server_tid, str_ptr ); 
@@ -156,7 +221,9 @@ void switchserver(){
 						sender_tid ); 
 					Reply( sender_tid, 0, 0 ); 
 			
-					change_switch_position( cmd_request, &switches_list, cmd_server_tid, str_ptr ); 
+					if ( display_tid <= 0 )
+						display_tid = get_display_srv_tid( ); 
+					change_switch_position( cmd_request, &switches_list, cmd_server_tid, display_tid, str_ptr ); 
 			
 					// Update the change in the screen. 
 					Putstr( COM2, str_ptr );

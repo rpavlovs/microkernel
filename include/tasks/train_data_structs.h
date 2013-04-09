@@ -108,6 +108,7 @@ typedef struct{
 
 	// Train Finding State
 	int is_train_finding_mode; 
+	int train_mgr_id; 
 
 	// Sensor Values ( Maybe put them in a different struct )
 	int *notifier_sensor_values; 

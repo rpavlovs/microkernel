@@ -11,8 +11,8 @@
 // 3 - kernel requests + sytem/user tasks
 // 4 - all
 #define DEBUG_LEVEL 						0
-//#define DEBUG_AREAS							0 | TEMP3_DEBUG_AREA // | TRAIN_SRV_DEBUG_AREA // | SENSORS_SERVER_DEBUG_AREA | COMMAND_SERVER_DEBUG_AREA
-#define DEBUG_AREAS							0x1FFFC0
+#define DEBUG_AREAS							0 | TEMP3_DEBUG_AREA | TRAIN_SRV_DEBUG_AREA // | SENSORS_SERVER_DEBUG_AREA | COMMAND_SERVER_DEBUG_AREA
+//#define DEBUG_AREAS							0x1FFFC0
 //#define DEBUG_AREAS							0 | LOCATION_SRV_DEBUG_AREA
 
 #define SYSTEM_DATA_UPDATE_FREQ				2
@@ -43,12 +43,13 @@
 #define ROUTE_SRV_DEBUG_AREA				1 << 22
 #define RESERVATION_SRV_DEBUG_AREA			1 << 23
 #define LOCATION_SRV_DEBUG_AREA				1 << 24
+#define	AI_SRV_DEBUG_AREA					1 << 25
 
 // TODO: DELETE THIS DEBUG AREAS
-#define DELAY_DEBUG_AREA					1 << 25
-#define TEMP_DEBUG_AREA						1 << 26
-#define TEMP2_DEBUG_AREA					1 << 27
-#define TEMP3_DEBUG_AREA					1 << 28
+#define DELAY_DEBUG_AREA					1 << 26
+#define TEMP_DEBUG_AREA						1 << 27
+#define TEMP2_DEBUG_AREA					1 << 28
+#define TEMP3_DEBUG_AREA					1 << 29
 
 // ------------------------------------------------------------------------------------------
 // Task priorities
@@ -79,6 +80,7 @@
 #define TRAIN_WAIT_NOT_TASK_PRIORITY		11			
 #define TRAIN_SENSOR_NOT_TASK_PRIORITY		11
 #define TRAIN_CMD_NOT_TASK_PRIORITY			11
+#define AI_SERVER_PRIORITY					12			// AI SERVER
 #define TRAIN_LOCATION_SRV_PRIORITY			10			// TRAIN LOCATION SERVER
 #define TRAIN_LOCATION_NOT_PRIORITY			11
 #define FIRST_TASK_PRIORITY					15			// FIRST TASK

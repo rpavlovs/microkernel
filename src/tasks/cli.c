@@ -33,6 +33,7 @@ void init_cli_data( CLI_data *cli_data, Servers_tid_list *servers_list ){
 	// Train 1: ID -> 50
 	msg.element_id = 50;
 	//msg.element_id = 47;
+	//msg.element_id = 43;
 	Send( train_mgm_tid, ( char * ) & msg, sizeof( msg ), ( char * ) &reply_msg, sizeof( reply_msg ) ); 
 	cli_data->train_id[TRAIN1_INDEX] = msg.element_id;  
 	cli_data->train_tid[TRAIN1_INDEX] = reply_msg.train_tid; 
@@ -146,6 +147,9 @@ int parse_and_exec_cmd( Char_queue *buf, Servers_tid_list *servers_list, CLI_dat
 
 		return exec_gt( atoi(train_id_str), landmark_name, atoi( offset ), servers_list, cli_data ); 
 	}
+	if ( strcmp( cmd_name, "st" ) == 0 ){
+		return exec_st( servers_list, cli_data ); 
+	}
 	if ( strcmp( cmd_name, "ls" ) == 0 ){
 		char train_id_str[3];
 		char_queue_pop_word( buf, train_id_str, 3 );
@@ -237,6 +241,17 @@ int exec_gt( int train_id, const char *landmark_name, int offset, Servers_tid_li
 		return INVALID_TRAIN_ID;
 
 	send_command( MOVE_TO_POSITION_CMD_TYPE, ( int ) track_node, offset, train_tid );
+	return SUCCESS; 
+}
+
+int exec_st( Servers_tid_list *servers_list, CLI_data *cli_data ){
+	// Build the message to send
+	Train_manager_msg msg; 
+	msg.msg_type = TRAIN_MGR_START_TRAINS; 
+
+	// Send the message to the train manager server
+	int train_mgm_tid = servers_list->items[TRAIN_MGR_INDEX]; 
+	Send( train_mgm_tid, ( char * ) & msg, sizeof( msg ), 0, 0 ); 
 	return SUCCESS; 
 }
 

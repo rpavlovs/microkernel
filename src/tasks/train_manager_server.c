@@ -40,6 +40,57 @@ void init_track_display( track_node *track ){
 	}
 }
 
+void request_new_route_for_train( int ai_server_tid, int train_index, int train_id, track_node *track ){
+	track_node *new_landmark; 
+	track_edge *new_edge; 
+	int new_offset; 
+
+	AI_msg ai_msg;
+	ai_msg.type = GET_NEXT_DESTINATION; 
+	ai_msg.train_index = train_index; 
+	ai_msg.target_edge = &new_edge; 
+	ai_msg.target_node = &new_landmark; 
+	ai_msg.target_shift = &new_offset; 
+	ai_msg.track = track; 
+
+	bwprintf( COM2, "before call [ai_server_tid: %d]\n", ai_server_tid ); 		
+	Send( ai_server_tid, ( char * ) &ai_msg, sizeof( ai_msg ), 0, 0 ); 
+	bwprintf( COM2, "after call\n"); 
+
+	bwprintf( COM2, "Destination. Node: %s; Edge SRC: %s; Edge DST: %s; Offset: %d", 
+		new_landmark->name, new_edge->src->name, new_edge->dest->name, new_offset );
+	bwprintf( COM2, "\nXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n" );
+
+	// Send the train its new destination
+	send_command( MOVE_TO_POSITION_CMD_TYPE, ( int ) new_landmark, new_offset, train_id );
+}
+
+int get_index_by_train_id( int train_id, Location_server_msg *location_srv_msg ){
+	int i; 
+	for ( i = 0; i < NUM_TRAINS; i++ ){
+		if ( location_srv_msg->train_nums[ i ] == train_id )
+			return i; 
+	}
+	return -1; 
+}
+
+int get_tid_by_train_id( int train_id, Location_server_msg *location_srv_msg ){
+	int i; 
+	for ( i = 0; i < NUM_TRAINS; i++ ){
+		if ( location_srv_msg->train_nums[ i ] == train_id )
+			return location_srv_msg->train_tids[ i ];
+	}
+	return -1; 
+}
+
+void init_loc_msg( Location_server_msg *location_srv_msg ){
+	int i; 
+	for ( i = 0; i < NUM_TRAINS; i++ ){
+		location_srv_msg->train_nums[i] = 0; 
+		location_srv_msg->train_tids[i] = 0; 
+	}
+}
+
 void train_manager(){
 	// Initialization
 	bwdebug( DBG_USR, TRAIN_MGR_DEBUG_AREA, "TRAIN_MANAGER: start" );
@@ -61,7 +112,12 @@ void train_manager(){
 	bwdebug( DBG_USR, TRAIN_MGR_DEBUG_AREA, 
 		"TRAIN_MANAGER: Created location detection server successfully [ reservation_srv_tid: %d ]", location_srv_tid );
 
-	int num_trains, sender_tid;
+	// - AI Server
+	int ai_server_tid = Create( AI_SERVER_PRIORITY, ai_server ); 
+	bwdebug( DBG_USR, TRAIN_MGR_DEBUG_AREA, 
+		"TRAIN_MANAGER: Created ai successfully [ reservation_srv_tid: %d ]", ai_server_tid );
+
+	int num_trains, sender_tid, i;
 	num_trains = 0;								// Currently there are no trains
 	track_node track[ MAX_NUM_NODES_TRACK ]; 
 
@@ -84,6 +140,7 @@ void train_manager(){
 	( init_msg.track_id == TRACK_ID_A ? init_tracka( track ) : init_trackb( track ) );
 
 	// Initialize route server data
+	init_loc_msg( &location_srv_msg ); 
 	init_track( track );
 	init_track_display( track ); 
 
@@ -119,6 +176,9 @@ void train_manager(){
 				
 				break;
 			case TRAIN_MGR_FIND_TRAIN_MSG:
+				// Reply right away to unblock the cli
+				Reply( sender_tid, 0, 0 ); 
+
 				location_srv_msg.type = LOC_SRV_FIND_TRAIN_REQ; 
 				location_srv_msg.track = track; 
 				location_srv_msg.param = msg.element_id; 
@@ -126,6 +186,24 @@ void train_manager(){
 				Send( location_srv_tid, ( char * ) &location_srv_msg, sizeof( location_srv_msg ), 0, 0 );
 				
 				break;
+			case TRAIN_MGR_START_TRAINS: 
+				// Send the train a new destination
+				for ( i = 0; i < NUM_TRAINS; i++ ){
+					int train_tid = location_srv_msg.train_tids[ i ];
+					if ( train_tid > 0 )
+						request_new_route_for_train( ai_server_tid, i, train_tid, track ); 
+				}
+				break; 
+			case TRAIN_ARRIVED_GOAL:
+				// Reply right away to unblock the train server
+				Reply( sender_tid, 0, 0 );
+
+				// Get the position from the train
+				int train_id = msg.element_id; 
+				int train_index = get_index_by_train_id( train_id, &location_srv_msg ); 
+				int train_tid = get_tid_by_train_id( train_id, &location_srv_msg ); 
+				//request_new_route_for_train( ai_server_tid, train_index, train_tid, track ); 
+				break; 
 			default:
 				bwassert( 0, "TRAIN_MANAGER_SERVER: Invalid request type." );
 				break; 

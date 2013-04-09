@@ -163,9 +163,9 @@ void initialize_tasks_list( Train_server_data *train_server_data ){
 	bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, "TRAIN_SERVER: Wait notifier courier created successfully [ tid: %d ]", 
 		tasks_tids[TR_WAIT_NOT_COURIER_TID_INDEX] );
 
-	tasks_tids[TR_SENSOR_NOT_COURIER_TID_INDEX] = create_courier( my_tid, tasks_tids[TR_SENSOR_NOTIFIER_TID_INDEX], 0, 0 );
-	bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, "TRAIN_SERVER: Sensor notifier courier created successfully [ tid: %d ]", 
-		tasks_tids[TR_SENSOR_NOT_COURIER_TID_INDEX] );
+	//tasks_tids[TR_SENSOR_NOT_COURIER_TID_INDEX] = create_courier( my_tid, tasks_tids[TR_SENSOR_NOTIFIER_TID_INDEX], 0, 0 );
+	//bwdebug( DBG_USR, TRAIN_SRV_DEBUG_AREA, "TRAIN_SERVER: Sensor notifier courier created successfully [ tid: %d ]", 
+	//	tasks_tids[TR_SENSOR_NOT_COURIER_TID_INDEX] );
 	
 }
 
@@ -194,9 +194,10 @@ void retrieve_sensor_list( Train_server_data *train_server_data ){
 			sensor_server_tid );
 }
 
-void initialize_train_server_data( Train_server_data *train_server_data, Train_initialization_msg init_info ){
+void initialize_train_server_data( int train_mgr_tid, Train_server_data *train_server_data, Train_initialization_msg init_info ){
 	// Initialize variable state
 	train_server_data->is_train_finding_mode = 0; 
+	train_server_data->train_mgr_id = train_mgr_tid; 
 
 	// Get tasks tids
 	initialize_tasks_list( train_server_data );
@@ -277,7 +278,7 @@ void train_server(){
 
 	// Initialize server data
 	Train_server_data train_server_data;
-	initialize_train_server_data( &train_server_data, train_initialization ); 
+	initialize_train_server_data( sender_tid, &train_server_data, train_initialization ); 
 	int *tasks_tids = train_server_data.tasks_tids; 
 
 	// Initialize train data

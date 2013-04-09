@@ -37,6 +37,8 @@ int update_with_sensor_data( track_node *triggered_sensor, Train_status *train_s
 
 void send_dashboard_train_pos( Train_status *train_status, Train_server_data *server_data );
 
+void request_new_goal( Train_status *train_status, Train_server_data *server_data );
+
 // -------------------------------------------------------------------
 // Methods
 // -------------------------------------------------------------------

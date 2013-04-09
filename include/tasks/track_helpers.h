@@ -29,5 +29,7 @@ int edge_has_reservation_conflict(
         int train_index,
         track_edge* edge,
         int reservation_start, int reservation_end );
+void bwprint_route( track_node **route, track_edge **route_edges, int route_length );
+void bwprint_tree(track_node **nodes_tree, track_edge **edges_tree);
 
 #endif	/* TRACK_HELPERS_H */

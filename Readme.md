@@ -1,1 +1,1 @@
-# CS 452/642 Microkernel #
+# CS NNN Microkernel #
